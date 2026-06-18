@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
+* { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+@keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.page-wrapper {
+  max-width: 430px;
+  margin: 0 auto;
+  background: #f9fafb;
+  min-height: 100vh;
+  position: relative;
+}
+
+.header-gradient {
+  background: linear-gradient(135deg, #7C3AED, #6d28d9);
+  padding: 28px 20px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+}
+
+.menu-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  background: white;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 14px;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+
+.menu-bottom-btn {
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; font-size: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s; padding: 4px 8px; border-radius: 10px;
+}
+.menu-bottom-btn:hover { background: rgba(124,58,237,0.08); }
+
+.card-white {
+  background: white;
+  border-radius: 18px;
+  border: 1.5px solid #f3f4f6;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.btn-orange {
+  background: linear-gradient(135deg, #F07A20, #ea6500);
+  border: none; border-radius: 12px; padding: 13px 20px;
+  color: white; cursor: pointer; font-weight: 700; font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 14px rgba(240,122,32,0.35);
+  transition: all 0.2s; width: 100%;
+  display: block;
+}
+.btn-orange:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(240,122,32,0.45); }
+
+.btn-purple {
+  background: linear-gradient(135deg, #7C3AED, #6d28d9);
+  border: none; border-radius: 12px; padding: 13px 20px;
+  color: white; cursor: pointer; font-weight: 700; font-size: 15px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+  transition: all 0.2s; width: 100%;
+  display: block;
+}
+.btn-purple:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.4); }
+
+.activity-card { transition: all 0.2s; }
+.activity-card:hover { transform: translateY(-2px); }
+
+.stat-pill {
+  background: #faf5ff; border-radius: 12px;
+  padding: 12px; text-align: center;
+  border: 1px solid #ede9fe;
+}
+
+body {
+  background: #e5e7eb;
+}
