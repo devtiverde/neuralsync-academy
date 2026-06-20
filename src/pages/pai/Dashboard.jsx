@@ -5,12 +5,12 @@ import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/pai.css'
 
 const AVATAR_MAP = {
-  'Explorer':'🧭','av_explorer':'🧭','Cientista':'🔬','av_cientista':'🔬',
-  'Astronauta':'🚀','av_astronauta':'🚀','Mago':'🧙','av_mago':'🧙',
-  'Artista':'🎨','av_artista':'🎨','Robô':'🤖','Robo':'🤖','av_robo':'🤖',
-  'Dino':'🦕','av_dino':'🦕','Ninja':'🥷','av_ninja':'🥷',
+  'explorer':'🧭','av_explorer':'🧭','cientista':'🔬','av_cientista':'🔬',
+  'astronauta':'🚀','av_astronauta':'🚀','mago':'🧙','av_mago':'🧙',
+  'artista':'🎨','av_artista':'🎨','robô':'🤖','robo':'🤖','av_robo':'🤖',
+  'dino':'🦕','av_dino':'🦕','ninja':'🥷','av_ninja':'🥷',
 }
-const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[av] || av)
+const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[String(av).toLowerCase()] || av)
 
 export default function Dashboard() {
   const { user, signOut, subscription } = useAuth()

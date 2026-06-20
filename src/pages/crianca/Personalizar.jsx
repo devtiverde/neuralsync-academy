@@ -7,12 +7,12 @@ const menu = [{"icon":"🏠","label":"Início","path":"/home-crianca"},{"icon":"
 
 const avatares = ['🦊', '🐱', '🐶', '🐸', '🦁', '🐼', '🦄', '🐯', '🦋', '🐬', '⭐', '🎨']
 const AVATAR_MAP = {
-  'Explorer':'🧭','av_explorer':'🧭','Cientista':'🔬','av_cientista':'🔬',
-  'Astronauta':'🚀','av_astronauta':'🚀','Mago':'🧙','av_mago':'🧙',
-  'Artista':'🎨','av_artista':'🎨','Robô':'🤖','Robo':'🤖','av_robo':'🤖',
-  'Dino':'🦕','av_dino':'🦕','Ninja':'🥷','av_ninja':'🥷',
+  'explorer':'🧭','av_explorer':'🧭','cientista':'🔬','av_cientista':'🔬',
+  'astronauta':'🚀','av_astronauta':'🚀','mago':'🧙','av_mago':'🧙',
+  'artista':'🎨','av_artista':'🎨','robô':'🤖','robo':'🤖','av_robo':'🤖',
+  'dino':'🦕','av_dino':'🦕','ninja':'🥷','av_ninja':'🥷',
 }
-const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[av] || av)
+const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[String(av).toLowerCase()] || av)
 const cores = ['#7C3AED', '#F07A20', '#10b981', '#3b82f6', '#ef4444', '#ec4899', '#f59e0b', '#06b6d4', '#8b5cf6', '#84cc16', '#f97316', '#14b8a6']
 
 export default function Personalizar() {
