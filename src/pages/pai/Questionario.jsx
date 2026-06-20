@@ -119,6 +119,7 @@ export default function Questionario() {
   const [selecionado, setSelecionado] = useState(null)
   const [resultado, setResultado] = useState(null)
   const [salvando, setSalvando] = useState(false)
+  const [erroSalvar, setErroSalvar] = useState(false)
 
   useEffect(() => {
     if (!childId) { navigate('/dashboard'); return }
@@ -161,6 +162,14 @@ export default function Questionario() {
               ⏳ Salvando perfil...
             </div>
           )}
+          {erroSalvar && (
+            <div style={{ marginTop: '12px', background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center' }}>
+              <span style={{ fontSize: '13px', color: '#dc2626', fontWeight: '600' }}>⚠️ Não foi possível salvar o perfil no servidor.</span>
+              <button onClick={tentarSalvarNovamente} style={{ background: '#dc2626', border: 'none', borderRadius: '8px', padding: '5px 12px', color: 'white', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>
+                Tentar novamente
+              </button>
+            </div>
+          )}
         </div>
 
         <PerfilCognitivoView perfil={resultado} nome={child.nome} />
@@ -201,11 +210,19 @@ export default function Questionario() {
 
   async function salvarBackground(perfil) {
     setSalvando(true)
+    setErroSalvar(false)
     const { error } = await supabase.from('children').update({
       perfil_cognitivo: perfil
     }).eq('id', childId)
     setSalvando(false)
-    if (error) console.error('Erro ao salvar perfil cognitivo:', error.message)
+    if (error) {
+      console.error('Erro ao salvar perfil cognitivo:', error.message)
+      setErroSalvar(true)
+    }
+  }
+
+  async function tentarSalvarNovamente() {
+    if (resultado) salvarBackground(resultado)
   }
 
   async function pular() {
