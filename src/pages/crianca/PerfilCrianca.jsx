@@ -11,6 +11,14 @@ const nomeFaixa = {
   criadores: 'Criadores 🎨', inventores: 'Inventores 💡',
 }
 
+const AVATAR_MAP = {
+  'Explorer':'🧭','av_explorer':'🧭','Cientista':'🔬','av_cientista':'🔬',
+  'Astronauta':'🚀','av_astronauta':'🚀','Mago':'🧙','av_mago':'🧙',
+  'Artista':'🎨','av_artista':'🎨','Robô':'🤖','Robo':'🤖','av_robo':'🤖',
+  'Dino':'🦕','av_dino':'🦕','Ninja':'🥷','av_ninja':'🥷',
+}
+const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[av] || av)
+
 const TIPO_HABILIDADE = {
   quiz: ['Lógica', 'Memória'], quizia: ['Lógica', 'Comunicação'],
   memoria: ['Memória', 'Concentração'], sequencia: ['Problemas', 'Lógica'],
@@ -92,7 +100,7 @@ export default function PerfilCrianca() {
     </div>
   )
 
-  const avatar = child.avatar || '🦊'
+  const avatar = resolverAvatar(child.avatar)
   const corPerfil = child.cor_perfil || '#7C3AED'
   const badges = BADGES.map(b => ({ ...b, desbloqueado: verificarBadge(b, child, historico) }))
 

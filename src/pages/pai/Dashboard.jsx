@@ -4,6 +4,14 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/pai.css'
 
+const AVATAR_MAP = {
+  'Explorer':'🧭','av_explorer':'🧭','Cientista':'🔬','av_cientista':'🔬',
+  'Astronauta':'🚀','av_astronauta':'🚀','Mago':'🧙','av_mago':'🧙',
+  'Artista':'🎨','av_artista':'🎨','Robô':'🤖','Robo':'🤖','av_robo':'🤖',
+  'Dino':'🦕','av_dino':'🦕','Ninja':'🥷','av_ninja':'🥷',
+}
+const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[av] || av)
+
 export default function Dashboard() {
   const { user, signOut, subscription } = useAuth()
   const navigate = useNavigate()
@@ -180,7 +188,7 @@ export default function Dashboard() {
                 <div key={child.id} className="pai-card" style={{padding: '24px'}}>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px'}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <div style={{width: '48px', height: '48px', borderRadius: '14px', background: child.cor_perfil || 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px'}}>{child.avatar || '🦊'}</div>
+                      <div style={{width: '48px', height: '48px', borderRadius: '14px', background: child.cor_perfil || 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px'}}>{resolverAvatar(child.avatar)}</div>
                       <div>
                         <h3 style={{fontWeight: '800', fontSize: '16px', marginBottom: '2px'}}>{child.nome}</h3>
                         <p style={{color: '#7C3AED', fontSize: '12px', fontWeight: '600'}}>{faixaLabel[normalizarFaixa(child.faixa_etaria, child.idade)]} • Nível {child.nivel}</p>

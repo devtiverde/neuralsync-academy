@@ -6,6 +6,13 @@ import '../../styles/crianca.css'
 const menu = [{"icon":"🏠","label":"Início","path":"/home-crianca"},{"icon":"🗺️","label":"Trilha","path":"/trilha"},{"icon":"🎬","label":"Kids","path":"/kids"},{"icon":"🏆","label":"Ranking","path":"/ranking"},{"icon":"🏪","label":"Loja","path":"/loja"},{"icon":"👤","label":"Perfil","path":"/perfil-crianca"}]
 
 const avatares = ['🦊', '🐱', '🐶', '🐸', '🦁', '🐼', '🦄', '🐯', '🦋', '🐬', '⭐', '🎨']
+const AVATAR_MAP = {
+  'Explorer':'🧭','av_explorer':'🧭','Cientista':'🔬','av_cientista':'🔬',
+  'Astronauta':'🚀','av_astronauta':'🚀','Mago':'🧙','av_mago':'🧙',
+  'Artista':'🎨','av_artista':'🎨','Robô':'🤖','Robo':'🤖','av_robo':'🤖',
+  'Dino':'🦕','av_dino':'🦕','Ninja':'🥷','av_ninja':'🥷',
+}
+const resolverAvatar = av => (!av ? '🦊' : AVATAR_MAP[av] || av)
 const cores = ['#7C3AED', '#F07A20', '#10b981', '#3b82f6', '#ef4444', '#ec4899', '#f59e0b', '#06b6d4', '#8b5cf6', '#84cc16', '#f97316', '#14b8a6']
 
 export default function Personalizar() {
@@ -21,7 +28,8 @@ export default function Personalizar() {
     const cached = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
     if (cached) {
       setChild(cached)
-      const idx = avatares.indexOf(cached.avatar)
+      const resolvedAvatar = resolverAvatar(cached.avatar)
+      const idx = avatares.indexOf(resolvedAvatar)
       setAvatarSel(idx >= 0 ? idx : 0)
       setCorSel(cached.cor_perfil || '#7C3AED')
       setBio(cached.bio || 'Adoro aprender coisas novas!')
