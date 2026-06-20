@@ -15,7 +15,26 @@ const menu = [
 
 const avatarPadrao = ['🦊', '👧', '👦', '🐱', '🐶', '🦁', '🐸', '🐧', '🦄', '🦉']
 
+const AVATAR_MAP = {
+  'explorer':'🧭','av_explorer':'🧭','cientista':'🔬','av_cientista':'🔬',
+  'astronauta':'🚀','av_astronauta':'🚀','mago':'🧙','av_mago':'🧙',
+  'artista':'🎨','av_artista':'🎨','robô':'🤖','robo':'🤖','av_robo':'🤖',
+  'dino':'🦕','av_dino':'🦕','ninja':'🥷','av_ninja':'🥷',
+}
+const resolverAvatar = (av, nome) => {
+  if (!av) return avatarPadrao[(nome || '').charCodeAt(0) % avatarPadrao.length]
+  return AVATAR_MAP[String(av).toLowerCase()] || av
+}
+
 const faixaLabel = { exploradores: 'Exploradores', construtores: 'Construtores', criadores: 'Criadores', inventores: 'Inventores' }
+const normalizarFaixa = f => {
+  const s = (f || '').toLowerCase()
+  if (s.startsWith('explor')) return 'exploradores'
+  if (s.startsWith('constr')) return 'construtores'
+  if (s.startsWith('criad'))  return 'criadores'
+  if (s.startsWith('invent')) return 'inventores'
+  return f
+}
 
 export default function Ranking() {
   const navigate = useNavigate()
@@ -37,7 +56,7 @@ export default function Ranking() {
   const activeId = activeChild?.id
 
   const rankeia = (arr) => [...arr]
-    .filter(c => faixaFiltro === 'todos' || c.faixa_etaria === faixaFiltro)
+    .filter(c => faixaFiltro === 'todos' || normalizarFaixa(c.faixa_etaria) === faixaFiltro)
     .sort((a, b) => aba === 'coins' ? b.neural_coins - a.neural_coins : b.xp - a.xp)
 
   const ranked = rankeia(criancas)
@@ -120,7 +139,7 @@ export default function Ranking() {
                   boxShadow: isEu ? '0 4px 16px rgba(124,58,237,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
                 }}>
                   <div style={{ fontSize: podioIdx === 1 ? '22px' : '18px', marginBottom: '6px' }}>{medalhaEmoji(originalPos)}</div>
-                  <div style={{ fontSize: podioIdx === 1 ? '32px' : '26px', marginBottom: '6px' }}>{item.avatar || avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+                  <div style={{ fontSize: podioIdx === 1 ? '32px' : '26px', marginBottom: '6px' }}>{resolverAvatar(item.avatar, item.nome)}</div>
                   <div style={{ fontWeight: '800', fontSize: '12px', color: isEu ? '#7C3AED' : '#0f0a1e', marginBottom: '4px' }}>{item.nome}{isEu ? ' (você)' : ''}</div>
                   <div style={{ fontSize: '11px', color: '#F07A20', fontWeight: '700' }}>
                     {aba === 'coins' ? '💰 ' + item.neural_coins : '⭐ ' + item.xp}
@@ -140,10 +159,10 @@ export default function Ranking() {
               return (
                 <div key={item.id} className="card-white" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', border: isEu ? '1.5px solid #7C3AED' : '1.5px solid #f3f4f6' }}>
                   <div style={{ width: '24px', fontWeight: '700', color: '#9ca3af', fontSize: '13px' }}>#{pos}</div>
-                  <div style={{ fontSize: '22px' }}>{item.avatar || avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+                  <div style={{ fontSize: '22px' }}>{resolverAvatar(item.avatar, item.nome)}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: '600', fontSize: '14px', color: isEu ? '#7C3AED' : '#0f0a1e' }}>{item.nome}{isEu ? ' (você)' : ''}</div>
-                    <div style={{ fontSize: '11px', color: '#9ca3af' }}>{faixaLabel[item.faixa_etaria] || item.faixa_etaria} • Nível {item.nivel}</div>
+                    <div style={{ fontSize: '11px', color: '#9ca3af' }}>{faixaLabel[normalizarFaixa(item.faixa_etaria)] || item.faixa_etaria} • Nível {item.nivel}</div>
                   </div>
                   <div style={{ color: '#F07A20', fontWeight: '700', fontSize: '13px' }}>
                     {aba === 'coins' ? '💰 ' + item.neural_coins : '⭐ ' + item.xp}
@@ -160,7 +179,7 @@ export default function Ranking() {
             <div style={{ width: '24px', fontWeight: '800', color: '#7C3AED', fontSize: '13px' }}>
               {minhaPosicao <= 3 ? ['🥇','🥈','🥉'][minhaPosicao - 1] : '#' + minhaPosicao}
             </div>
-            <div style={{ fontSize: '22px' }}>{eu.avatar || avatarPadrao[eu.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+            <div style={{ fontSize: '22px' }}>{resolverAvatar(eu.avatar, eu.nome)}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#7C3AED' }}>{eu.nome} (você)</div>
               <div style={{ fontSize: '11px', color: '#a78bfa' }}>🔥 {eu.streak_atual || 0} dias • Nível {eu.nivel}</div>

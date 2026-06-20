@@ -49,18 +49,19 @@ export default function Dashboard() {
     if (!novoFilho.nome || !novoFilho.idade) return
     if (!podeAdicionarFilho) return
     setSalvando(true)
-    const { data } = await supabase.from('children').insert({
+    const { data, error } = await supabase.from('children').insert({
       parent_id: user.id,
       nome: novoFilho.nome,
       idade: parseInt(novoFilho.idade),
       faixa_etaria: novoFilho.faixa_etaria,
       nivel: 1, xp: 0, neural_coins: 0, streak_atual: 0, streak_maximo: 0
     }).select().single()
+    setSalvando(false)
+    if (error) { showToast('Erro ao adicionar filho. Tente novamente.', 'erro'); return }
     setShowModal(false)
     setNovoFilho({ nome: '', idade: '', faixa_etaria: 'construtores' })
-    setSalvando(false)
-    if (data?.id) { showToast(`${novoFilho.nome} adicionado!`); navigate(`/questionario/${data.id}`) }
-    else { showToast(`${novoFilho.nome} adicionado!`); await loadChildren() }
+    if (data?.id) { showToast(`${data.nome} adicionado!`); navigate(`/questionario/${data.id}`) }
+    else { await loadChildren() }
   }
 
   const showToast = (msg, tipo = 'ok') => {
@@ -71,10 +72,12 @@ export default function Dashboard() {
   const excluirFilho = async () => {
     if (!childToDelete) return
     setExcluindo(true)
-    await supabase.from('children').delete().eq('id', childToDelete.id)
+    const nome = childToDelete.nome
+    const { error } = await supabase.from('children').delete().eq('id', childToDelete.id)
     setExcluindo(false)
     setChildToDelete(null)
-    showToast(`Perfil de ${childToDelete.nome} excluído.`, 'erro')
+    if (error) { showToast('Erro ao excluir. Tente novamente.', 'erro'); return }
+    showToast(`Perfil de ${nome} excluído.`, 'erro')
     loadChildren()
   }
 
@@ -86,12 +89,16 @@ export default function Dashboard() {
   const salvarEdicao = async () => {
     if (!childToEdit || !editForm.nome || !editForm.idade) return
     setEditando(true)
-    await supabase.from('children').update({
+    const { error } = await supabase.from('children').update({
       nome: editForm.nome,
       idade: parseInt(editForm.idade),
       faixa_etaria: editForm.faixa_etaria,
     }).eq('id', childToEdit.id)
     setEditando(false)
+    if (error) {
+      showToast('Erro ao salvar. Tente novamente.', 'erro')
+      return
+    }
     setChildToEdit(null)
     showToast(`Perfil de ${editForm.nome} atualizado!`)
     loadChildren()
