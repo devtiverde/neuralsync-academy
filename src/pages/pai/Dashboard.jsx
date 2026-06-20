@@ -174,7 +174,7 @@ export default function Dashboard() {
 
         {/* BANNER DE ASSINATURA */}
         {subscription && subscription.plano_status === 'ativo' && (
-          <div style={{background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <div style={{background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 'var(--r-md)', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
               <span style={{fontSize: '18px'}}>✅</span>
               <div>
@@ -188,7 +188,7 @@ export default function Dashboard() {
           </div>
         )}
         {(!subscription || subscription.plano_status === 'pendente') && (
-          <div style={{background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <div style={{background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 'var(--r-md)', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
               <span style={{fontSize: '18px'}}>⚠️</span>
               <span style={{fontWeight: '600', fontSize: '14px', color: '#92400e'}}>Você ainda não tem uma assinatura ativa.</span>
@@ -199,7 +199,7 @@ export default function Dashboard() {
           </div>
         )}
         {subscription?.plano_status === 'cancelado' && (
-          <div style={{background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <div style={{background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: 'var(--r-md)', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
               <span style={{fontSize: '18px'}}>❌</span>
               <span style={{fontWeight: '600', fontSize: '14px', color: '#991b1b'}}>Sua assinatura foi cancelada.</span>
@@ -238,7 +238,7 @@ export default function Dashboard() {
         {loading ? (
           <div style={{color: '#9ca3af', textAlign: 'center', padding: '40px'}}>Carregando...</div>
         ) : children.length === 0 ? (
-          <div style={{background: 'white', borderRadius: '20px', padding: '48px', textAlign: 'center', border: '2px dashed #ede9fe'}}>
+          <div style={{background: 'white', borderRadius: 'var(--r-xl)', padding: '48px', textAlign: 'center', border: '2px dashed var(--color-primary-border)'}}>
             <div style={{fontSize: '48px', marginBottom: '12px'}}>👨‍👧‍👦</div>
             <h3 style={{fontWeight: '800', marginBottom: '8px'}}>Adicione seu primeiro filho</h3>
             <p style={{color: '#6b7280', marginBottom: '20px', fontSize: '14px'}}>Comece a acompanhar o desenvolvimento cognitivo agora.</p>
@@ -260,7 +260,7 @@ export default function Dashboard() {
                     </div>
                     <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
                       <button onClick={() => abrirEditar(child)} title="Editar filho" style={{background:'#f3f4f6',border:'none',borderRadius:'8px',width:'30px',height:'30px',cursor:'pointer',fontSize:'14px',display:'flex',alignItems:'center',justifyContent:'center'}}>✏️</button>
-                      <div style={{background: '#fff7ed', borderRadius: '999px', padding: '4px 10px', fontSize: '12px', color: '#ea580c', fontWeight: '700'}}>🔥 {child.streak_atual} dias</div>
+                      <div style={{background: '#fff7ed', borderRadius: 'var(--r-full)', padding: '4px 10px', fontSize: '12px', color: '#ea580c', fontWeight: '700'}}>🔥 {child.streak_atual} dias</div>
                     </div>
                   </div>
 
@@ -276,7 +276,7 @@ export default function Dashboard() {
 
                   <div style={{display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px', marginBottom: '16px'}}>
                     {[['XP', child.xp, '#7C3AED'],['Coins 💰', child.neural_coins, '#F07A20'],['Idade', child.idade + ' anos', '#10b981']].map(([label, val, cor]) => (
-                      <div key={label} style={{background: '#faf5ff', borderRadius: '10px', padding: '10px', textAlign: 'center', border: '1px solid #ede9fe'}}>
+                      <div key={label} style={{background: 'var(--color-primary-ghost)', borderRadius: 'var(--r-sm)', padding: '10px', textAlign: 'center', border: '1px solid var(--color-primary-border)'}}>
                         <div style={{fontWeight: '900', fontSize: '15px', color: cor}}>{val}</div>
                         <div style={{fontSize: '10px', color: '#9ca3af', fontWeight: '500'}}>{label}</div>
                       </div>
@@ -284,7 +284,7 @@ export default function Dashboard() {
                   </div>
 
                   {child.perfil_cognitivo ? (
-                    <div style={{background:'#faf5ff',borderRadius:'12px',padding:'12px 14px',marginBottom:'12px',border:'1px solid #ede9fe'}}>
+                    <div style={{background:'var(--color-primary-ghost)',borderRadius:'var(--r-md)',padding:'12px 14px',marginBottom:'12px',border:'1px solid var(--color-primary-border)'}}>
                       <div style={{fontSize:'11px',fontWeight:'800',color:'#7C3AED',marginBottom:'8px'}}>🧠 Perfil Cognitivo</div>
                       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
                         {[
@@ -293,18 +293,18 @@ export default function Dashboard() {
                           ['Prioridade', {foco:'🎯 Foco',criatividade:'🎨 Criatividade',logica:'🧩 Lógica',emocional:'💛 Emocional'}[child.perfil_cognitivo.habilidade_prioridade]],
                           ['Regulação', {alta:'😊 Ótima',media:'🤔 Boa',baixa:'😤 Em dev.',muito_baixa:'😭 Atenção'}[child.perfil_cognitivo.regulacao_emocional]],
                         ].map(([label, val]) => (
-                          <div key={label} style={{background:'white',borderRadius:'8px',padding:'7px 10px',border:'1px solid #ede9fe'}}>
+                          <div key={label} style={{background:'var(--color-surface)',borderRadius:'var(--r-sm)',padding:'7px 10px',border:'1px solid var(--color-primary-border)'}}>
                             <div style={{fontSize:'9px',color:'#9ca3af',fontWeight:'700',marginBottom:'2px'}}>{label}</div>
                             <div style={{fontSize:'12px',fontWeight:'800',color:'#374151'}}>{val || '—'}</div>
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => navigate(`/perfil-cognitivo/${child.id}`)} style={{width:'100%',padding:'8px',borderRadius:'8px',border:'none',background:'#7C3AED',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',marginTop:'10px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
+                      <button onClick={() => navigate(`/perfil-cognitivo/${child.id}`)} style={{width:'100%',padding:'8px',borderRadius:'var(--r-sm)',border:'none',background:'var(--color-primary)',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',marginTop:'10px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
                         Ver perfil completo →
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => navigate(`/questionario/${child.id}`)} style={{width:'100%',padding:'10px',borderRadius:'12px',border:'1.5px dashed #c4b5fd',background:'#faf5ff',color:'#7C3AED',fontWeight:'700',fontSize:'13px',cursor:'pointer',marginBottom:'12px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
+                    <button onClick={() => navigate(`/questionario/${child.id}`)} style={{width:'100%',padding:'10px',borderRadius:'var(--r-md)',border:'1.5px dashed #c4b5fd',background:'var(--color-primary-ghost)',color:'var(--color-primary)',fontWeight:'700',fontSize:'13px',cursor:'pointer',marginBottom:'12px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
                       🧠 Criar Perfil Cognitivo →
                     </button>
                   )}
@@ -319,7 +319,7 @@ export default function Dashboard() {
                   <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginTop:'8px'}}>
                     <button
                       onClick={() => irParaHabilidades(child)}
-                      style={{padding:'8px', borderRadius:'10px', border:'1.5px solid #ddd6fe', background:'#faf5ff', color:'#7C3AED', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:'Plus Jakarta Sans, sans-serif'}}
+                      style={{padding:'8px', borderRadius:'var(--r-sm)', border:'1.5px solid #ddd6fe', background:'var(--color-primary-ghost)', color:'var(--color-primary)', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:'Plus Jakarta Sans, sans-serif'}}
                     >
                       📊 Habilidades
                     </button>
@@ -340,7 +340,7 @@ export default function Dashboard() {
       {/* MODAL EDITAR FILHO */}
       {childToEdit && (
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',zIndex:200}}>
-          <div style={{background:'white',borderRadius:'24px',padding:'32px',width:'100%',maxWidth:'400px',boxShadow:'0 20px 60px rgba(0,0,0,0.15)'}}>
+          <div style={{background:'white',borderRadius:'var(--r-xl)',padding:'32px',width:'100%',maxWidth:'400px',boxShadow:'var(--shadow-lg)'}}>
             <h3 style={{fontWeight:'900',fontSize:'20px',marginBottom:'6px',color:'#0f0a1e'}}>Editar {childToEdit.nome}</h3>
             <p style={{color:'#6b7280',fontSize:'14px',marginBottom:'24px'}}>Atualize os dados do perfil</p>
 
@@ -365,7 +365,7 @@ export default function Dashboard() {
             </div>
 
             <div style={{display:'flex',gap:'10px'}}>
-              <button onClick={() => setChildToEdit(null)} style={{flex:1,background:'#f9fafb',border:'1.5px solid #e5e7eb',borderRadius:'12px',padding:'13px',color:'#0f0a1e',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}>Cancelar</button>
+              <button onClick={() => setChildToEdit(null)} style={{flex:1,background:'var(--color-bg)',border:'1.5px solid var(--color-border-2)',borderRadius:'var(--r-md)',padding:'13px',color:'var(--color-text-1)',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}>Cancelar</button>
               <button onClick={salvarEdicao} disabled={editando} className="btn-primary" style={{flex:1}}>
                 {editando ? 'Salvando...' : 'Salvar'}
               </button>
@@ -377,7 +377,7 @@ export default function Dashboard() {
       {/* MODAL CONFIRMAR EXCLUSÃO */}
       {childToDelete && (
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',zIndex:200}}>
-          <div style={{background:'white',borderRadius:'24px',padding:'32px',width:'100%',maxWidth:'380px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}}>
+          <div style={{background:'white',borderRadius:'var(--r-xl)',padding:'32px',width:'100%',maxWidth:'380px',boxShadow:'var(--shadow-lg)'}}>
             <div style={{fontSize:'40px',textAlign:'center',marginBottom:'12px'}}>⚠️</div>
             <h3 style={{fontWeight:'900',fontSize:'18px',marginBottom:'8px',color:'#0f0a1e',textAlign:'center'}}>Excluir perfil de {childToDelete.nome}?</h3>
             <p style={{color:'#6b7280',fontSize:'13px',marginBottom:'24px',textAlign:'center',lineHeight:1.6}}>
@@ -386,14 +386,14 @@ export default function Dashboard() {
             <div style={{display:'flex',gap:'10px'}}>
               <button
                 onClick={() => setChildToDelete(null)}
-                style={{flex:1,background:'#f9fafb',border:'1.5px solid #e5e7eb',borderRadius:'12px',padding:'13px',color:'#0f0a1e',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}
+                style={{flex:1,background:'var(--color-bg)',border:'1.5px solid var(--color-border-2)',borderRadius:'var(--r-md)',padding:'13px',color:'var(--color-text-1)',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}
               >
                 Cancelar
               </button>
               <button
                 onClick={excluirFilho}
                 disabled={excluindo}
-                style={{flex:1,background:'#ef4444',border:'none',borderRadius:'12px',padding:'13px',color:'white',cursor:excluindo?'not-allowed':'pointer',fontWeight:'700',fontSize:'14px',fontFamily:'Plus Jakarta Sans, sans-serif',opacity:excluindo?0.7:1}}
+                style={{flex:1,background:'var(--color-error)',border:'none',borderRadius:'var(--r-md)',padding:'13px',color:'white',cursor:excluindo?'not-allowed':'pointer',fontWeight:'700',fontSize:'14px',fontFamily:'Plus Jakarta Sans, sans-serif',opacity:excluindo?0.7:1}}
               >
                 {excluindo ? 'Excluindo...' : 'Sim, excluir'}
               </button>
@@ -405,7 +405,7 @@ export default function Dashboard() {
       {/* MODAL ADICIONAR FILHO */}
       {showModal && (
         <div style={{position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 200}}>
-          <div style={{background: 'white', borderRadius: '24px', padding: '32px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)'}}>
+          <div style={{background: 'white', borderRadius: 'var(--r-xl)', padding: '32px', width: '100%', maxWidth: '400px', boxShadow: 'var(--shadow-lg)'}}>
             <h3 style={{fontWeight: '900', fontSize: '20px', marginBottom: '6px', color: '#0f0a1e'}}>Adicionar filho</h3>
             <p style={{color: '#6b7280', fontSize: '14px', marginBottom: '24px'}}>Preencha os dados do seu filho</p>
 
@@ -430,7 +430,7 @@ export default function Dashboard() {
             </div>
 
             <div style={{display: 'flex', gap: '10px'}}>
-              <button onClick={() => setShowModal(false)} style={{flex: 1, background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '12px', padding: '13px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>Cancelar</button>
+              <button onClick={() => setShowModal(false)} style={{flex: 1, background: 'var(--color-bg)', border: '1.5px solid var(--color-border-2)', borderRadius: 'var(--r-md)', padding: '13px', color: 'var(--color-text-1)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>Cancelar</button>
               <button className="btn-primary" style={{flex: 1}} onClick={adicionarFilho} disabled={salvando}>
                 {salvando ? 'Salvando...' : 'Adicionar'}
               </button>

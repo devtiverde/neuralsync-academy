@@ -75,7 +75,7 @@ export default function Ranking() {
       <div style={{background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', borderRadius: '999px', padding: '5px 14px', fontSize: '12px', color: '#a78bfa', fontWeight: '700', marginBottom: '16px'}}>Plano Família ou Premium</div>
       <h2 style={{color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px'}}>Ranking disponível<br />no Plano Família</h2>
       <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: '1.6', marginBottom: '28px', maxWidth: '280px'}}>Compare o desempenho com outras famílias e suba no ranking!</p>
-      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', marginBottom: '12px'}}>
+      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', marginBottom: '12px'}}>
         Ver planos →
       </button>
       <button onClick={() => navigate('/home-crianca')} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: '13px'}}>← Voltar</button>
@@ -89,7 +89,7 @@ export default function Ranking() {
   )
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
     <div className="page-wrapper" style={{ paddingBottom: '90px' }}>
 
       <div className="header-gradient">
@@ -100,7 +100,7 @@ export default function Ranking() {
             <button key={f} onClick={() => setFaixaFiltro(f)} style={{
               background: faixaFiltro === f ? 'white' : 'rgba(255,255,255,0.15)',
               color: faixaFiltro === f ? '#7C3AED' : 'white',
-              border: 'none', borderRadius: '20px', padding: '5px 12px',
+              border: 'none', borderRadius: 'var(--r-full)', padding: '5px 12px',
               fontSize: '11px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap',
               fontFamily: 'Plus Jakarta Sans, sans-serif',
             }}>{f === 'todos' ? 'Todos' : faixaLabel[f]}</button>
@@ -132,11 +132,11 @@ export default function Ranking() {
               return (
                 <div key={item.id} style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  background: 'white', borderRadius: '16px',
+                  background: 'white', borderRadius: 'var(--r-lg)',
                   padding: podioIdx === 1 ? '18px 12px' : '14px 10px',
                   flex: 1, minHeight: alturas[podioIdx] + 'px',
                   border: isEu ? '2px solid #7C3AED' : '1.5px solid #f3f4f6',
-                  boxShadow: isEu ? '0 4px 16px rgba(124,58,237,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
+                  boxShadow: isEu ? 'var(--shadow-primary)' : 'var(--shadow-sm)',
                 }}>
                   <div style={{ fontSize: podioIdx === 1 ? '22px' : '18px', marginBottom: '6px' }}>{medalhaEmoji(originalPos)}</div>
                   <div style={{ fontSize: podioIdx === 1 ? '32px' : '26px', marginBottom: '6px' }}>{resolverAvatar(item.avatar, item.nome)}</div>
@@ -175,7 +175,7 @@ export default function Ranking() {
 
         {/* SUA POSIÇÃO */}
         {eu && minhaPosicao > 0 && (
-          <div style={{ background: '#faf5ff', borderRadius: '14px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', border: '2px solid #7C3AED', marginBottom: '12px' }}>
+          <div style={{ background: 'var(--color-primary-ghost)', borderRadius: 'var(--r-md)', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', border: '2px solid var(--color-primary)', marginBottom: '12px' }}>
             <div style={{ width: '24px', fontWeight: '800', color: '#7C3AED', fontSize: '13px' }}>
               {minhaPosicao <= 3 ? ['🥇','🥈','🥉'][minhaPosicao - 1] : '#' + minhaPosicao}
             </div>

@@ -55,10 +55,10 @@ export default function Loja() {
   if (!temAcesso) return (
     <div style={{background: '#0f0a1e', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center'}}>
       <div style={{fontSize: '72px', marginBottom: '16px'}}>🏪</div>
-      <div style={{background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', borderRadius: '999px', padding: '5px 14px', fontSize: '12px', color: '#a78bfa', fontWeight: '700', marginBottom: '16px'}}>Plano Família ou Premium</div>
+      <div style={{background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '12px', color: '#a78bfa', fontWeight: '700', marginBottom: '16px'}}>Plano Família ou Premium</div>
       <h2 style={{color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px'}}>A Loja fica disponível<br />no Plano Família</h2>
       <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: '1.6', marginBottom: '28px', maxWidth: '280px'}}>Troque NeuralCoins por avatares, molduras e brindes exclusivos!</p>
-      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.4)', marginBottom: '12px'}}>
+      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))', border: 'none', borderRadius: 'var(--r-md)', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', boxShadow: 'var(--shadow-primary)', marginBottom: '12px'}}>
         Ver planos →
       </button>
       <button onClick={() => navigate('/home-crianca')} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: '13px'}}>← Voltar</button>
@@ -128,22 +128,22 @@ export default function Loja() {
   function renderBotao(item, isDesbloqueado, isLocked) {
     const isAvatar = item.id?.startsWith('av_')
     const isEquipado = isAvatar && item.emoji === avatarAtual
-    if (isEquipado) return <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#10b981', textAlign: 'center' }}>Equipado ✓</div>
+    if (isEquipado) return <div style={{ background: 'var(--color-success-ghost)', borderRadius: 'var(--r-sm)', padding: '7px', fontSize: '12px', fontWeight: '700', color: 'var(--color-success)', textAlign: 'center' }}>Equipado ✓</div>
     if (isDesbloqueado || comprados.includes(item.id)) {
       if (isAvatar) return (
-        <button onClick={() => equipar(item)} style={{ background: '#eff6ff', border: 'none', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#7C3AED', textAlign: 'center', cursor: 'pointer', width: '100%', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+        <button onClick={() => equipar(item)} style={{ background: '#eff6ff', border: 'none', borderRadius: 'var(--r-sm)', padding: '7px', fontSize: '12px', fontWeight: '700', color: 'var(--color-primary)', textAlign: 'center', cursor: 'pointer', width: '100%', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
           Equipar →
         </button>
       )
-      return <div style={{ background: '#eff6ff', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#3b82f6', textAlign: 'center' }}>Adquirido ✓</div>
+      return <div style={{ background: '#eff6ff', borderRadius: 'var(--r-sm)', padding: '7px', fontSize: '12px', fontWeight: '700', color: 'var(--color-info)', textAlign: 'center' }}>Adquirido ✓</div>
     }
-    if (isLocked) return <div style={{ background: '#f9fafb', borderRadius: '8px', padding: '7px', fontSize: '12px', color: '#9ca3af', textAlign: 'center' }}>🔒 Nível {item.nivel}</div>
+    if (isLocked) return <div style={{ background: 'var(--color-bg)', borderRadius: 'var(--r-sm)', padding: '7px', fontSize: '12px', color: 'var(--color-text-4)', textAlign: 'center' }}>🔒 Nível {item.nivel}</div>
     const podeComprar = saldo >= item.preco
     return (
       <button onClick={() => podeComprar && setModalItem(item)} style={{
-        background: podeComprar ? 'linear-gradient(135deg, #7C3AED, #6d28d9)' : '#f3f4f6',
-        border: 'none', borderRadius: '8px', padding: '8px',
-        color: podeComprar ? 'white' : '#9ca3af',
+        background: podeComprar ? 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))' : '#f3f4f6',
+        border: 'none', borderRadius: 'var(--r-sm)', padding: '8px',
+        color: podeComprar ? 'white' : 'var(--color-text-4)',
         cursor: podeComprar ? 'pointer' : 'default',
         fontWeight: '700', fontSize: '12px', width: '100%',
         fontFamily: 'Plus Jakarta Sans, sans-serif',
@@ -154,7 +154,7 @@ export default function Loja() {
   }
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
     <div className="page-wrapper" style={{ paddingBottom: '90px' }}>
 
       <div className="header-gradient">
@@ -163,7 +163,7 @@ export default function Loja() {
             <h2 style={{ color: 'white', fontSize: '20px', fontWeight: '900' }}>Loja NeuralSync 🏪</h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginTop: '2px' }}>Troque seus NeuralCoins</p>
           </div>
-          <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', borderRadius: '12px', padding: '8px 14px', textAlign: 'center' }}>
+          <div style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', borderRadius: 'var(--r-md)', padding: '8px 14px', textAlign: 'center' }}>
             <div style={{ color: '#92400e', fontWeight: '900', fontSize: '16px' }}>💰 {saldo}</div>
             <div style={{ color: '#78350f', fontSize: '10px', fontWeight: '600' }}>NeuralCoins</div>
           </div>
@@ -224,7 +224,7 @@ export default function Loja() {
 
         {aba === 'temas' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ background: '#faf5ff', borderRadius: '12px', padding: '12px 14px', fontSize: '13px', color: '#7C3AED', fontWeight: '600', marginBottom: '4px' }}>
+            <div style={{ background: 'var(--color-primary-ghost)', borderRadius: 'var(--r-md)', padding: '12px 14px', fontSize: '13px', color: 'var(--color-primary)', fontWeight: '600', marginBottom: '4px' }}>
               ✨ Personalize o visual do seu perfil com temas exclusivos!
             </div>
             {catalogoTemas.map(item => (
@@ -242,7 +242,7 @@ export default function Loja() {
 
         {aba === 'brindes' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ background: '#fff7ed', borderRadius: '12px', padding: '12px 14px', fontSize: '13px', color: '#F07A20', fontWeight: '600', marginBottom: '4px' }}>
+            <div style={{ background: 'var(--color-accent-ghost)', borderRadius: 'var(--r-md)', padding: '12px 14px', fontSize: '13px', color: 'var(--color-accent)', fontWeight: '600', marginBottom: '4px' }}>
               📦 Brindes físicos enviados para o seu endereço!
             </div>
             {catalogoBrindes.map(item => (
@@ -262,14 +262,14 @@ export default function Loja() {
 
       {modalItem && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 200 }}>
-          <div style={{ background: 'white', borderRadius: '24px', padding: '28px', textAlign: 'center', maxWidth: '300px', width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div style={{ background: 'white', borderRadius: 'var(--r-xl)', padding: '28px', textAlign: 'center', maxWidth: '300px', width: '100%', boxShadow: 'var(--shadow-lg)' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>{modalItem.emoji}</div>
             <h3 style={{ fontWeight: '800', marginBottom: '8px', color: '#0f0a1e' }}>Confirmar compra?</h3>
             <p style={{ color: '#6b7280', marginBottom: '4px', fontSize: '14px' }}>{modalItem.nome}</p>
             <p style={{ color: '#F07A20', fontWeight: '800', fontSize: '18px', marginBottom: '6px' }}>💰 {modalItem.preco}</p>
             <p style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '20px' }}>Saldo após: 💰 {saldo - modalItem.preco}</p>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setModalItem(null)} style={{ flex: 1, background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '12px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Cancelar</button>
+              <button onClick={() => setModalItem(null)} style={{ flex: 1, background: 'var(--color-bg)', border: '1.5px solid var(--color-border-2)', borderRadius: 'var(--r-md)', padding: '12px', color: 'var(--color-text-1)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Cancelar</button>
               <button onClick={comprar} className="btn-purple" style={{ flex: 1, padding: '12px' }}>Comprar! ✓</button>
             </div>
           </div>

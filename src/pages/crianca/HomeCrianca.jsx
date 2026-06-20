@@ -108,7 +108,7 @@ export default function HomeCrianca() {
   const xpPercent = Math.min((child.xp / (child.nivel * 500)) * 100, 100)
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div className="page-wrapper" style={{ paddingBottom: '90px' }}>
 
         {/* ── HEADER ── */}
@@ -141,7 +141,7 @@ export default function HomeCrianca() {
         <div style={{ padding: '16px 16px 0' }}>
 
           {/* ── STREAK ── */}
-          <div style={{ background: 'linear-gradient(135deg, #fff7ed, #ffedd5)', borderRadius: '16px', padding: '14px 16px', marginBottom: '12px', border: '1.5px solid #fed7aa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ background: 'linear-gradient(135deg, #fff7ed, #ffedd5)', borderRadius: 'var(--r-lg)', padding: '14px 16px', marginBottom: '12px', border: '1.5px solid #fed7aa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: '16px', fontWeight: '900', color: '#ea580c' }}>🔥 {child.streak_atual} dias seguidos!</div>
               <div style={{ fontSize: '12px', color: '#9a3412', marginTop: '2px' }}>Recorde: {child.streak_maximo} dias — não pare agora!</div>
@@ -151,11 +151,11 @@ export default function HomeCrianca() {
 
           {/* ── MISSÃO DO DIA ── */}
           {missaoAtual && (
-            <div style={{ background: 'white', borderRadius: '18px', padding: '18px', marginBottom: '16px', border: '2px solid #F07A20', boxShadow: '0 4px 20px rgba(240,122,32,0.15)' }}>
+            <div style={{ background: 'white', borderRadius: 'var(--r-lg)', padding: '18px', marginBottom: '16px', border: '2px solid #F07A20', boxShadow: 'var(--shadow-accent)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F07A20' }} />
                 <span style={{ fontSize: '10px', color: '#F07A20', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Missão do Dia</span>
-                <span style={{ background: tipoConfig[missaoAtual.tipo]?.cor + '20', color: tipoConfig[missaoAtual.tipo]?.cor, fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', marginLeft: '4px' }}>
+                <span style={{ background: tipoConfig[missaoAtual.tipo]?.cor + '20', color: tipoConfig[missaoAtual.tipo]?.cor, fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--r-full)', marginLeft: '4px' }}>
                   {tipoConfig[missaoAtual.tipo]?.icon} {tipoConfig[missaoAtual.tipo]?.label}
                 </span>
               </div>
@@ -195,13 +195,13 @@ export default function HomeCrianca() {
                   <button key={tipo} onClick={() => navigate('/trilha', { state: { filtroTipo: tipo } })} style={{
                     background: isIA ? 'linear-gradient(135deg, #faf5ff, #ede9fe)' : 'white',
                     border: isIA ? '1.5px solid #c4b5fd' : '1.5px solid #f0eeff',
-                    borderRadius: '16px', padding: '14px 8px',
+                    borderRadius: 'var(--r-lg)', padding: '14px 8px',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                    cursor: 'pointer', boxShadow: isIA ? '0 2px 8px rgba(124,58,237,0.1)' : '0 2px 8px rgba(0,0,0,0.06)',
+                    cursor: 'pointer', boxShadow: isIA ? 'var(--shadow-primary)' : 'var(--shadow-sm)',
                     position: 'relative',
                   }}>
                     {isIA && (
-                      <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'linear-gradient(135deg, #7C3AED, #a855f7)', color: 'white', fontSize: '8px', fontWeight: '800', padding: '1px 5px', borderRadius: '20px' }}>IA</span>
+                      <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'linear-gradient(135deg, #7C3AED, #a855f7)', color: 'white', fontSize: '8px', fontWeight: '800', padding: '1px 5px', borderRadius: 'var(--r-full)' }}>IA</span>
                     )}
                     <div style={{ fontSize: '26px', lineHeight: 1 }}>{cfg.icon}</div>
                     <div style={{ fontSize: '10px', fontWeight: '800', color: cfg.cor, textAlign: 'center', lineHeight: 1.2 }}>{cfg.label}</div>
@@ -216,12 +216,12 @@ export default function HomeCrianca() {
           <div style={{ marginBottom: '16px' }}>
             <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#0f0a1e', marginBottom: '10px' }}>Conteúdos</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <button onClick={() => navigate('/kids')} style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81)', borderRadius: '16px', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+              <button onClick={() => navigate('/kids')} style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81)', borderRadius: 'var(--r-lg)', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                 <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎬</div>
                 <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', marginBottom: '3px' }}>Kids TV</div>
                 <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Vídeos educativos</div>
               </button>
-              <button onClick={() => navigate('/ebook')} style={{ background: 'linear-gradient(135deg, #064e3b, #065f46)', borderRadius: '16px', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+              <button onClick={() => navigate('/ebook')} style={{ background: 'linear-gradient(135deg, #064e3b, #065f46)', borderRadius: 'var(--r-lg)', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                 <div style={{ fontSize: '28px', marginBottom: '8px' }}>📚</div>
                 <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', marginBottom: '3px' }}>Ebooks</div>
                 <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Leitura interativa</div>
@@ -244,7 +244,7 @@ export default function HomeCrianca() {
                         <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{item.data}</div>
                       </div>
                       {tc && (
-                        <div style={{ background: tc.cor + '20', color: tc.cor, fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
+                        <div style={{ background: tc.cor + '20', color: tc.cor, fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: 'var(--r-full)', whiteSpace: 'nowrap' }}>
                           {tc.icon} {tc.label}
                         </div>
                       )}
@@ -288,7 +288,7 @@ export default function HomeCrianca() {
               {!posicaoRanking && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Continue ganhando XP! 🚀</div>}
               <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '1px' }}>Continue ganhando NeuralCoins!</div>
             </div>
-            <button onClick={() => navigate('/ranking')} style={{ background: '#faf5ff', border: '1px solid #ede9fe', borderRadius: '8px', padding: '7px 12px', color: '#7C3AED', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver →</button>
+            <button onClick={() => navigate('/ranking')} style={{ background: 'var(--color-primary-ghost)', border: '1px solid var(--color-primary-border)', borderRadius: 'var(--r-sm)', padding: '7px 12px', color: 'var(--color-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver →</button>
           </div>
         </div>
 

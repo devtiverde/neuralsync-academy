@@ -76,7 +76,7 @@ export default function Encerramento() {
   }, [])
 
   return (
-    <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
+    <div style={{background: 'var(--color-bg)', minHeight: '100vh'}}>
     <div className="page-wrapper" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px', textAlign: 'center'}}>
 
       <div style={{fontSize: '64px', marginBottom: '14px'}}>🎉</div>
@@ -99,7 +99,7 @@ export default function Encerramento() {
       {mostrarBadge && (
         <div style={{
           background: 'linear-gradient(135deg, #fef3c7, #fde68a)',
-          borderRadius: '18px', padding: '18px 28px', marginBottom: '28px',
+          borderRadius: 'var(--r-lg)', padding: '18px 28px', marginBottom: '28px',
           border: '1.5px solid #fcd34d', width: '100%',
         }}>
           <div style={{fontSize: '32px', marginBottom: '6px'}}>🏆</div>
@@ -110,7 +110,7 @@ export default function Encerramento() {
 
       <div style={{display: 'flex', gap: '10px', width: '100%'}}>
         <button onClick={() => navigate('/trilha')} className="btn-purple" style={{flex: 1}}>Próxima atividade →</button>
-        <button onClick={() => navigate('/home-crianca')} style={{flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '12px', padding: '13px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>Início</button>
+        <button onClick={() => navigate('/home-crianca')} style={{flex: 1, background: 'var(--color-surface)', border: '1.5px solid var(--color-border-2)', borderRadius: 'var(--r-md)', padding: '13px', color: 'var(--color-text-1)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>Início</button>
       </div>
     </div>
     </div>

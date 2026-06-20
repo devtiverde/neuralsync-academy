@@ -110,7 +110,7 @@ export default function Trilha() {
   }
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div className="page-wrapper" style={{ paddingBottom: '90px' }}>
 
         {/* ── HEADER ── */}
@@ -128,7 +128,7 @@ export default function Trilha() {
         {/* ── FILTROS ── */}
         <div style={{ background: 'white', borderBottom: '1px solid #f0eeff', padding: '10px 16px', overflowX: 'auto', display: 'flex', gap: '8px', scrollbarWidth: 'none' }}>
           <button onClick={() => setFiltroTipo('todos')} style={{
-            flexShrink: 0, borderRadius: '20px', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
+            flexShrink: 0, borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
             background: filtroTipo === 'todos' ? '#7C3AED' : '#f3f4f6',
             color: filtroTipo === 'todos' ? 'white' : '#6b7280',
             border: filtroTipo === 'todos' ? 'none' : '1px solid #e5e7eb',
@@ -141,7 +141,7 @@ export default function Trilha() {
             const ativo = filtroTipo === tipo
             return (
               <button key={tipo} onClick={() => setFiltroTipo(tipo)} style={{
-                flexShrink: 0, borderRadius: '20px', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
+                flexShrink: 0, borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
                 background: ativo ? tc.cor : '#f3f4f6',
                 color: ativo ? 'white' : '#6b7280',
                 border: ativo ? 'none' : '1px solid #e5e7eb',
@@ -188,11 +188,11 @@ export default function Trilha() {
               const cfg = statusConfig[s]
               const tc = tipoConfig[act.tipo]
               return (
-                <div key={act.id} style={{ background: cfg.bg, borderRadius: '18px', padding: '16px', border: '1.5px solid ' + cfg.border, opacity: s === 'pendente' ? 0.55 : 1, transition: 'opacity 0.2s' }}>
+                <div key={act.id} style={{ background: cfg.bg, borderRadius: 'var(--r-lg)', padding: '16px', border: '1.5px solid ' + cfg.border, opacity: s === 'pendente' ? 0.55 : 1, transition: 'opacity 0.2s' }}>
 
                   {/* Badges */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                    <span style={{ background: tc.cor + '20', color: tc.cor, fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <span style={{ background: tc.cor + '20', color: tc.cor, fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--r-full)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       {tc.icon} {tc.label}
                     </span>
                     <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{act.habilidade}</span>
@@ -220,7 +220,7 @@ export default function Trilha() {
                     {s !== 'pendente' && (
                       <button onClick={() => iniciarAtividade(act)} style={{
                         background: s === 'concluido' ? '#10b981' : '#F07A20',
-                        border: 'none', borderRadius: '8px', padding: '7px 14px',
+                        border: 'none', borderRadius: 'var(--r-sm)', padding: '7px 14px',
                         color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '12px',
                         fontFamily: 'Plus Jakarta Sans, sans-serif',
                       }}>
@@ -234,14 +234,14 @@ export default function Trilha() {
 
             {/* Desafio da semana */}
             {filtroTipo === 'todos' && (
-              <div style={{ background: desafioReivindicado ? '#f0fdf4' : '#fffbeb', borderRadius: '18px', padding: '18px', border: `1.5px solid ${desafioReivindicado ? '#86efac' : '#fcd34d'}` }}>
+              <div style={{ background: desafioReivindicado ? '#f0fdf4' : '#fffbeb', borderRadius: 'var(--r-lg)', padding: '18px', border: `1.5px solid ${desafioReivindicado ? '#86efac' : '#fcd34d'}` }}>
                 <div style={{ fontSize: '10px', color: desafioReivindicado ? '#15803d' : '#d97706', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>⭐ Desafio da Semana</div>
                 <div style={{ fontWeight: '800', fontSize: '16px', marginBottom: '4px', color: '#0f0a1e' }}>Completar todas as atividades</div>
                 <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '10px' }}>Complete todas as {total} atividades da sua trilha esta semana para ganhar o bônus máximo!</div>
                 {desafioReivindicado ? (
                   <div style={{ fontSize: '13px', color: '#15803d', fontWeight: '800' }}>✅ Bônus já resgatado esta semana!</div>
                 ) : totalConcluidas === total && total > 0 ? (
-                  <button onClick={reivindicarDesafio} style={{ background: 'linear-gradient(135deg, #F07A20, #ea580c)', border: 'none', borderRadius: '10px', padding: '10px 20px', color: 'white', fontWeight: '800', fontSize: '14px', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                  <button onClick={reivindicarDesafio} style={{ background: 'linear-gradient(135deg, #F07A20, #ea580c)', border: 'none', borderRadius: 'var(--r-md)', padding: '10px 20px', color: 'white', fontWeight: '800', fontSize: '14px', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     🏆 Resgatar +500 XP e +500 Coins!
                   </button>
                 ) : (

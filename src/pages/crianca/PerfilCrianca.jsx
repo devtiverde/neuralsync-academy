@@ -105,7 +105,7 @@ export default function PerfilCrianca() {
   const badges = BADGES.map(b => ({ ...b, desbloqueado: verificarBadge(b, child, historico) }))
 
   return (
-    <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
+    <div style={{background: 'var(--color-bg)', minHeight: '100vh'}}>
     <div className="page-wrapper" style={{paddingBottom: '90px'}}>
 
       <div className="header-gradient" style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
@@ -116,7 +116,7 @@ export default function PerfilCrianca() {
       <div style={{padding: '0 16px', marginTop: '-14px'}}>
 
         <div className="card-white" style={{padding: '20px', marginBottom: '12px', textAlign: 'center'}}>
-          <div style={{width: '72px', height: '72px', borderRadius: '20px', background: corPerfil, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 12px', boxShadow: '0 4px 16px ' + corPerfil + '44'}}>
+          <div style={{width: '72px', height: '72px', borderRadius: 'var(--r-lg)', background: corPerfil, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 12px', boxShadow: '0 4px 16px ' + corPerfil + '44'}}>
             {avatar}
           </div>
           <h3 style={{fontSize: '20px', fontWeight: '900', letterSpacing: '-0.5px', marginBottom: '3px'}}>{child.nome}</h3>
@@ -126,7 +126,7 @@ export default function PerfilCrianca() {
           {child.bio && <p style={{color: '#9ca3af', fontSize: '13px', marginBottom: '16px'}}>{child.bio}</p>}
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px'}}>
             {[['XP', child.xp, '#7C3AED'],['Coins', child.neural_coins, '#F07A20'],['Streak', child.streak_atual + ' 🔥', '#10b981']].map(([label, val, cor]) => (
-              <div key={label} style={{background: '#f9fafb', borderRadius: '10px', padding: '10px', border: '1px solid #f3f4f6'}}>
+              <div key={label} style={{background: 'var(--color-bg)', borderRadius: 'var(--r-sm)', padding: '10px', border: '1px solid var(--color-border)'}}>
                 <div style={{fontWeight: '900', fontSize: '16px', color: cor}}>{val}</div>
                 <div style={{fontSize: '11px', color: '#9ca3af', fontWeight: '500'}}>{label}</div>
               </div>
@@ -153,9 +153,9 @@ export default function PerfilCrianca() {
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px'}}>
             {badges.map((badge) => (
               <div key={badge.nome} title={badge.desc} style={{
-                background: badge.desbloqueado ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : '#f9fafb',
-                borderRadius: '12px', padding: '12px', textAlign: 'center',
-                border: badge.desbloqueado ? '1.5px solid #fcd34d' : '1.5px solid #f3f4f6',
+                background: badge.desbloqueado ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : 'var(--color-bg)',
+                borderRadius: 'var(--r-md)', padding: '12px', textAlign: 'center',
+                border: badge.desbloqueado ? '1.5px solid #fcd34d' : '1.5px solid var(--color-border)',
                 opacity: badge.desbloqueado ? 1 : 0.4,
               }}>
                 <div style={{fontSize: '22px', marginBottom: '3px'}}>{badge.desbloqueado ? badge.icone : '🔒'}</div>
