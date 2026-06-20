@@ -20,6 +20,12 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false)
   const [novoFilho, setNovoFilho] = useState({ nome: '', idade: '', faixa_etaria: 'construtores' })
   const [salvando, setSalvando] = useState(false)
+  const [childToDelete, setChildToDelete] = useState(null)
+  const [excluindo, setExcluindo] = useState(false)
+  const [childToEdit, setChildToEdit] = useState(null)
+  const [editForm, setEditForm] = useState({ nome: '', idade: '', faixa_etaria: 'construtores' })
+  const [editando, setEditando] = useState(false)
+  const [toast, setToast] = useState(null)
 
   const { loading: authLoading } = useAuth()
 
@@ -53,8 +59,47 @@ export default function Dashboard() {
     setShowModal(false)
     setNovoFilho({ nome: '', idade: '', faixa_etaria: 'construtores' })
     setSalvando(false)
-    if (data?.id) navigate(`/questionario/${data.id}`)
-    else await loadChildren()
+    if (data?.id) { showToast(`${novoFilho.nome} adicionado!`); navigate(`/questionario/${data.id}`) }
+    else { showToast(`${novoFilho.nome} adicionado!`); await loadChildren() }
+  }
+
+  const showToast = (msg, tipo = 'ok') => {
+    setToast({ msg, tipo })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  const excluirFilho = async () => {
+    if (!childToDelete) return
+    setExcluindo(true)
+    await supabase.from('children').delete().eq('id', childToDelete.id)
+    setExcluindo(false)
+    setChildToDelete(null)
+    showToast(`Perfil de ${childToDelete.nome} excluído.`, 'erro')
+    loadChildren()
+  }
+
+  const abrirEditar = (child) => {
+    setChildToEdit(child)
+    setEditForm({ nome: child.nome, idade: child.idade, faixa_etaria: normalizarFaixa(child.faixa_etaria, child.idade) })
+  }
+
+  const salvarEdicao = async () => {
+    if (!childToEdit || !editForm.nome || !editForm.idade) return
+    setEditando(true)
+    await supabase.from('children').update({
+      nome: editForm.nome,
+      idade: parseInt(editForm.idade),
+      faixa_etaria: editForm.faixa_etaria,
+    }).eq('id', childToEdit.id)
+    setEditando(false)
+    setChildToEdit(null)
+    showToast(`Perfil de ${editForm.nome} atualizado!`)
+    loadChildren()
+  }
+
+  const irParaHabilidades = (child) => {
+    localStorage.setItem('ns_active_child', JSON.stringify(child))
+    navigate('/perfil-crianca')
   }
 
   const menuItems = [
@@ -91,6 +136,13 @@ export default function Dashboard() {
 
   return (
     <div style={{background: '#f9fafb', minHeight: '100vh', color: '#0f0a1e'}}>
+
+      {/* TOAST */}
+      {toast && (
+        <div style={{position:'fixed',top:'20px',left:'50%',transform:'translateX(-50%)',zIndex:300,background: toast.tipo === 'erro' ? '#ef4444' : '#10b981',color:'white',borderRadius:'12px',padding:'12px 20px',fontWeight:'700',fontSize:'14px',boxShadow:'0 4px 20px rgba(0,0,0,0.15)',whiteSpace:'nowrap'}}>
+          {toast.tipo === 'erro' ? '🗑️' : '✅'} {toast.msg}
+        </div>
+      )}
 
       <header className="pai-header">
         <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
@@ -194,7 +246,10 @@ export default function Dashboard() {
                         <p style={{color: '#7C3AED', fontSize: '12px', fontWeight: '600'}}>{faixaLabel[normalizarFaixa(child.faixa_etaria, child.idade)]} • Nível {child.nivel}</p>
                       </div>
                     </div>
-                    <div style={{background: '#fff7ed', borderRadius: '999px', padding: '4px 10px', fontSize: '12px', color: '#ea580c', fontWeight: '700'}}>🔥 {child.streak_atual} dias</div>
+                    <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                      <button onClick={() => abrirEditar(child)} title="Editar filho" style={{background:'#f3f4f6',border:'none',borderRadius:'8px',width:'30px',height:'30px',cursor:'pointer',fontSize:'14px',display:'flex',alignItems:'center',justifyContent:'center'}}>✏️</button>
+                      <div style={{background: '#fff7ed', borderRadius: '999px', padding: '4px 10px', fontSize: '12px', color: '#ea580c', fontWeight: '700'}}>🔥 {child.streak_atual} dias</div>
+                    </div>
                   </div>
 
                   <div style={{marginBottom: '16px'}}>
@@ -248,12 +303,92 @@ export default function Dashboard() {
                   }}>
                     Ver área da {child.nome} →
                   </button>
+
+                  <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px', marginTop:'8px'}}>
+                    <button
+                      onClick={() => irParaHabilidades(child)}
+                      style={{padding:'8px', borderRadius:'10px', border:'1.5px solid #ddd6fe', background:'#faf5ff', color:'#7C3AED', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:'Plus Jakarta Sans, sans-serif'}}
+                    >
+                      📊 Habilidades
+                    </button>
+                    <button
+                      onClick={() => setChildToDelete(child)}
+                      style={{padding:'8px', borderRadius:'10px', border:'1.5px solid #fecaca', background:'transparent', color:'#ef4444', fontWeight:'600', fontSize:'12px', cursor:'pointer', fontFamily:'Plus Jakarta Sans, sans-serif'}}
+                    >
+                      🗑️ Excluir
+                    </button>
+                  </div>
                 </div>
               )
             })}
           </div>
         )}
       </div>
+
+      {/* MODAL EDITAR FILHO */}
+      {childToEdit && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.4)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',zIndex:200}}>
+          <div style={{background:'white',borderRadius:'24px',padding:'32px',width:'100%',maxWidth:'400px',boxShadow:'0 20px 60px rgba(0,0,0,0.15)'}}>
+            <h3 style={{fontWeight:'900',fontSize:'20px',marginBottom:'6px',color:'#0f0a1e'}}>Editar {childToEdit.nome}</h3>
+            <p style={{color:'#6b7280',fontSize:'14px',marginBottom:'24px'}}>Atualize os dados do perfil</p>
+
+            <div style={{display:'flex',flexDirection:'column',gap:'14px',marginBottom:'24px'}}>
+              <div>
+                <label style={{fontSize:'12px',fontWeight:'700',color:'#374151',marginBottom:'6px',display:'block'}}>Nome</label>
+                <input className="input-field" value={editForm.nome} onChange={e => setEditForm({...editForm, nome: e.target.value})} />
+              </div>
+              <div>
+                <label style={{fontSize:'12px',fontWeight:'700',color:'#374151',marginBottom:'6px',display:'block'}}>Idade</label>
+                <input className="input-field" type="number" min="3" max="17" value={editForm.idade} onChange={e => setEditForm({...editForm, idade: e.target.value})} />
+              </div>
+              <div>
+                <label style={{fontSize:'12px',fontWeight:'700',color:'#374151',marginBottom:'6px',display:'block'}}>Faixa etária</label>
+                <select className="input-field" value={editForm.faixa_etaria} onChange={e => setEditForm({...editForm, faixa_etaria: e.target.value})}>
+                  <option value="exploradores">🌱 Exploradores (3-5 anos)</option>
+                  <option value="construtores">🧩 Construtores (6-8 anos)</option>
+                  <option value="criadores">🎨 Criadores (9-11 anos)</option>
+                  <option value="inventores">🚀 Inventores (12-17 anos)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{display:'flex',gap:'10px'}}>
+              <button onClick={() => setChildToEdit(null)} style={{flex:1,background:'#f9fafb',border:'1.5px solid #e5e7eb',borderRadius:'12px',padding:'13px',color:'#0f0a1e',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}>Cancelar</button>
+              <button onClick={salvarEdicao} disabled={editando} className="btn-primary" style={{flex:1}}>
+                {editando ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL CONFIRMAR EXCLUSÃO */}
+      {childToDelete && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.5)',display:'flex',alignItems:'center',justifyContent:'center',padding:'24px',zIndex:200}}>
+          <div style={{background:'white',borderRadius:'24px',padding:'32px',width:'100%',maxWidth:'380px',boxShadow:'0 20px 60px rgba(0,0,0,0.2)'}}>
+            <div style={{fontSize:'40px',textAlign:'center',marginBottom:'12px'}}>⚠️</div>
+            <h3 style={{fontWeight:'900',fontSize:'18px',marginBottom:'8px',color:'#0f0a1e',textAlign:'center'}}>Excluir perfil de {childToDelete.nome}?</h3>
+            <p style={{color:'#6b7280',fontSize:'13px',marginBottom:'24px',textAlign:'center',lineHeight:1.6}}>
+              Essa ação é <strong>irreversível</strong>. Todo o histórico de atividades, XP, Coins e o perfil cognitivo de <strong>{childToDelete.nome}</strong> serão apagados permanentemente.
+            </p>
+            <div style={{display:'flex',gap:'10px'}}>
+              <button
+                onClick={() => setChildToDelete(null)}
+                style={{flex:1,background:'#f9fafb',border:'1.5px solid #e5e7eb',borderRadius:'12px',padding:'13px',color:'#0f0a1e',cursor:'pointer',fontWeight:'700',fontFamily:'Plus Jakarta Sans, sans-serif'}}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={excluirFilho}
+                disabled={excluindo}
+                style={{flex:1,background:'#ef4444',border:'none',borderRadius:'12px',padding:'13px',color:'white',cursor:excluindo?'not-allowed':'pointer',fontWeight:'700',fontSize:'14px',fontFamily:'Plus Jakarta Sans, sans-serif',opacity:excluindo?0.7:1}}
+              >
+                {excluindo ? 'Excluindo...' : 'Sim, excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL ADICIONAR FILHO */}
       {showModal && (
