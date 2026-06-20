@@ -40,6 +40,11 @@ export default function Agenda() {
   const update = (index, field, value) => setSchedule(prev => prev.map((item, i) => i === index ? {...item, [field]: value} : item))
 
   const salvar = async () => {
+    const invalido = schedule.find(s => s.ativo && s.inicio >= s.fim)
+    if (invalido) {
+      alert(`Horário inválido em ${invalido.dia}: o início deve ser antes do término.`)
+      return
+    }
     setSalvando(true)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(schedule))
     if (user) {

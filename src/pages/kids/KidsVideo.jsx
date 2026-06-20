@@ -36,6 +36,10 @@ export default function KidsVideo() {
     return () => clearInterval(timer)
   }, [loading, fase, videoId])
 
+  useEffect(() => {
+    if (fase === 'resultado') salvarCoins(coins + 30)
+  }, [fase])
+
   if (loading) return (
     <div style={{ background: '#0f0a1e', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ color: '#7C3AED', fontWeight: '700' }}>Carregando...</div>
@@ -167,7 +171,6 @@ export default function KidsVideo() {
   }
 
   const totalCoins = coins + 30
-  salvarCoins(totalCoins)
   return (
     <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
     <div className="page-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px', textAlign: 'center' }}>

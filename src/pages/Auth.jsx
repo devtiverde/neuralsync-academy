@@ -53,12 +53,14 @@ export default function Auth() {
     setError('')
     if (isLogin) {
       const { error } = await signIn(email, password)
-      if (error) setError(error.message)
+      if (error) setError('Email ou senha inválidos. Verifique seus dados.')
       else navigate('/dashboard')
     } else {
       const { error } = await signUp(email, password, nome)
-      if (error) setError(error.message)
-      else navigate('/dashboard')
+      if (error) {
+        if (error.message?.includes('already registered')) setError('Este email já está cadastrado. Tente fazer login.')
+        else setError('Não foi possível criar a conta. Verifique seus dados.')
+      } else navigate('/dashboard')
     }
     setLoading(false)
   }
@@ -127,7 +129,7 @@ export default function Auth() {
 
         <p style={{textAlign: 'center', marginTop: '28px', color: '#6b7280', fontSize: '14px'}}>
           {isLogin ? 'Não tem conta?' : 'Já tem conta?'}{' '}
-          <button onClick={() => setIsLogin(!isLogin)} style={{background: 'none', border: 'none', color: '#7C3AED', fontWeight: '700', cursor: 'pointer', fontSize: '14px'}}>
+          <button onClick={() => { setIsLogin(!isLogin); setError('') }} style={{background: 'none', border: 'none', color: '#7C3AED', fontWeight: '700', cursor: 'pointer', fontSize: '14px'}}>
             {isLogin ? 'Criar agora' : 'Entrar'}
           </button>
         </p>

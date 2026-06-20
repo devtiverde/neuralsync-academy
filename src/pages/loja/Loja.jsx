@@ -103,6 +103,7 @@ export default function Loja() {
     setComprados(prev => [...prev, modalItem.id])
     const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
     const isAvatar = modalItem.id.startsWith('av_')
+    const categoria = isAvatar ? 'avatar' : modalItem.id.startsWith('mo_') ? 'moldura' : modalItem.id.startsWith('tm_') ? 'tema' : 'brinde'
     const updates = { neural_coins: novoSaldo }
     if (isAvatar) updates.avatar = modalItem.emoji
     if (child) {
@@ -112,7 +113,7 @@ export default function Loja() {
       supabase.from('children').update(updates).eq('id', childId).then(() => {})
     }
     setModalItem(null)
-    setCompraOk(isAvatar ? 'avatar' : true)
+    setCompraOk(categoria)
     setTimeout(() => setCompraOk(false), 2500)
   }
 
@@ -171,7 +172,7 @@ export default function Loja() {
 
       {compraOk && (
         <div style={{ background: '#10b981', padding: '12px 20px', textAlign: 'center', color: 'white', fontWeight: '700', fontSize: '14px' }}>
-          {compraOk === 'avatar' ? '✅ Avatar equipado! Veja em Perfil →' : '✅ Compra realizada! Aproveite seu novo item!'}
+          {compraOk === 'avatar' ? '✅ Avatar equipado! Veja no seu Perfil →' : compraOk === 'moldura' ? '✅ Moldura adquirida!' : compraOk === 'tema' ? '✅ Tema adquirido! Personalize em Perfil →' : '✅ Brinde solicitado! Em breve você receberá.'}
         </div>
       )}
 

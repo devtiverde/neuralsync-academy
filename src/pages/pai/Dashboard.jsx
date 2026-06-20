@@ -46,7 +46,9 @@ export default function Dashboard() {
   const podeAdicionarFilho = children.length < limiteFilhos
 
   const adicionarFilho = async () => {
-    if (!novoFilho.nome || !novoFilho.idade) return
+    if (!novoFilho.nome.trim()) { showToast('Informe o nome do filho.', 'erro'); return }
+    const idadeNum = parseInt(novoFilho.idade)
+    if (isNaN(idadeNum) || idadeNum < 3 || idadeNum > 17) { showToast('A idade deve ser entre 3 e 17 anos.', 'erro'); return }
     if (!podeAdicionarFilho) return
     setSalvando(true)
     const { data, error } = await supabase.from('children').insert({
@@ -87,7 +89,10 @@ export default function Dashboard() {
   }
 
   const salvarEdicao = async () => {
-    if (!childToEdit || !editForm.nome || !editForm.idade) return
+    if (!childToEdit) return
+    if (!editForm.nome.trim()) { showToast('Informe o nome do filho.', 'erro'); return }
+    const idadeNum = parseInt(editForm.idade)
+    if (isNaN(idadeNum) || idadeNum < 3 || idadeNum > 17) { showToast('A idade deve ser entre 3 e 17 anos.', 'erro'); return }
     setEditando(true)
     const { error } = await supabase.from('children').update({
       nome: editForm.nome,

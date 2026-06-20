@@ -8,14 +8,14 @@ export default function Encerramento() {
   const { state } = useLocation()
   const [mostrarBadge, setMostrarBadge] = useState(false)
 
-  const xp = state?.xp ?? 100
-  const coins = state?.coins ?? 100
-  const titulo = state?.titulo ?? 'Atividade'
+  const xp = state?.xp ?? 0
+  const coins = state?.coins ?? 0
+  const titulo = state?.titulo ?? null
 
   useEffect(() => {
-    setTimeout(() => setMostrarBadge(true), 900)
+    if (!titulo) { navigate('/trilha', { replace: true }); return }
 
-    if (!state?.titulo) return
+    setTimeout(() => setMostrarBadge(true), 900)
 
     const entrada = {
       titulo: state.titulo,
@@ -31,6 +31,7 @@ export default function Encerramento() {
 
     const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
     if (child) {
+
       entrada.child_id = child.id
       const novoXP = (child.xp || 0) + (state.xp || 0)
       const novasCoins = (child.neural_coins || 0) + (state.coins || 0)
