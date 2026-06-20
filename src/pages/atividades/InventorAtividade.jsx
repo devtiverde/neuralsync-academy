@@ -34,8 +34,8 @@ export default function InventorAtividade() {
       const data = await avaliarInvento(ideia, faixa)
       setResultado(data)
       setFase('resultado')
-    } catch {
-      setErroAPI('Não foi possível avaliar sua invenção. Verifique sua conexão.')
+    } catch (e) {
+      setErroAPI(e.message || 'Não foi possível avaliar sua invenção. Verifique sua conexão e tente novamente.')
       setFase('escrevendo')
     }
   }

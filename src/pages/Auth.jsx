@@ -119,7 +119,14 @@ export default function Auth() {
             <input className="auth-input" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
           <div>
-            <label style={{fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px', display: 'block'}}>Senha</label>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px'}}>
+              <label style={{fontSize: '13px', fontWeight: '600', color: '#374151'}}>Senha</label>
+              {isLogin && (
+                <button type="button" onClick={() => navigate('/recuperar-senha')} style={{background: 'none', border: 'none', color: '#7C3AED', fontWeight: '600', cursor: 'pointer', fontSize: '12px'}}>
+                  Esqueci minha senha
+                </button>
+              )}
+            </div>
             <input className="auth-input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className="auth-btn" disabled={loading} style={{marginTop: '8px'}}>

@@ -40,8 +40,8 @@ export default function QuizIAAtividade() {
       setSelecionado(null)
       setAcertos(0)
       setFase('jogando')
-    } catch {
-      setErroAPI('Não foi possível gerar o quiz. Verifique sua conexão e a chave de API.')
+    } catch (e) {
+      setErroAPI(e.message || 'Não foi possível gerar o quiz. Verifique sua conexão e tente novamente.')
       setFase('temas')
     }
   }

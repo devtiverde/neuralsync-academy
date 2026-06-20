@@ -45,11 +45,18 @@ export default function Ranking() {
   const [faixaFiltro, setFaixaFiltro] = useState('todos')
   const [aba, setAba] = useState('coins')
 
-  useEffect(() => {
+  function carregarRanking() {
     supabase.from('children').select('id,nome,xp,neural_coins,nivel,faixa_etaria,streak_atual,avatar').then(({ data }) => {
       setCriancas(data || [])
       setLoading(false)
     })
+  }
+
+  useEffect(() => {
+    carregarRanking()
+    const onVisible = () => { if (document.visibilityState === 'visible') carregarRanking() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
   }, [])
 
   const activeChild = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()

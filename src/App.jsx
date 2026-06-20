@@ -25,6 +25,7 @@ import KidsVideo from './pages/kids/KidsVideo'
 import Loja from './pages/loja/Loja'
 import Ebook from './pages/ebook/Ebook'
 import EbookLeitura from './pages/ebook/EbookLeitura'
+import RecuperarSenha from './pages/RecuperarSenha'
 import Seeder from './pages/admin/Seeder'
 import QuizAtividade from './pages/atividades/QuizAtividade'
 import MemoriaAtividade from './pages/atividades/MemoriaAtividade'
@@ -75,6 +76,7 @@ function App() {
         <Route path="/atividade/quizia"   element={<QuizIAAtividade />} />
         <Route path="/atividade/inventor" element={<InventorAtividade />} />
         <Route path="/atividade/blocos"   element={<BlocosAtividade />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/admin/seed" element={<Seeder />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

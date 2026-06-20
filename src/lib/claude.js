@@ -24,7 +24,11 @@ async function callProxy(body) {
       body: JSON.stringify(body),
     }
   )
-  if (!res.ok) throw new Error('Atividade com IA indisponível no momento. Tente novamente em breve! 🤖')
+  if (!res.ok) {
+    const txt = await res.text().catch(() => '')
+    const detalhe = txt ? ` (${txt.slice(0, 120)})` : ''
+    throw new Error(`Atividade com IA indisponível. Verifique a Edge Function ai-proxy no Supabase.${detalhe}`)
+  }
   return res.json()
 }
 

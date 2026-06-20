@@ -7,6 +7,7 @@ export default function Encerramento() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const [mostrarBadge, setMostrarBadge] = useState(false)
+  const [levelUp, setLevelUp] = useState(null)
 
   const xp = state?.xp ?? 0
   const coins = state?.coins ?? 0
@@ -35,6 +36,11 @@ export default function Encerramento() {
       entrada.child_id = child.id
       const novoXP = (child.xp || 0) + (state.xp || 0)
       const novasCoins = (child.neural_coins || 0) + (state.coins || 0)
+      const nivelAtual = child.nivel || 1
+      const novoNivel = Math.max(nivelAtual, Math.floor(novoXP / 500) + 1)
+      if (novoNivel > nivelAtual) {
+        setTimeout(() => setLevelUp({ de: nivelAtual, para: novoNivel }), 600)
+      }
       const hoje = new Date().toDateString()
       const ultimoAtivoKey = 'ns_ultimo_ativo_' + child.id
       const ultimoAtivo = localStorage.getItem(ultimoAtivoKey)
@@ -45,10 +51,10 @@ export default function Encerramento() {
         localStorage.setItem(ultimoAtivoKey, hoje)
       }
       const novoStreakMax = Math.max(child.streak_maximo || 0, novoStreak)
-      const childAtualizado = { ...child, xp: novoXP, neural_coins: novasCoins, streak_atual: novoStreak, streak_maximo: novoStreakMax }
+      const childAtualizado = { ...child, xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }
       localStorage.setItem('ns_active_child', JSON.stringify(childAtualizado))
       supabase.from('children')
-        .update({ xp: novoXP, neural_coins: novasCoins, streak_atual: novoStreak, streak_maximo: novoStreakMax })
+        .update({ xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax })
         .eq('id', child.id)
         .then(() => {})
     }
@@ -95,6 +101,22 @@ export default function Encerramento() {
           </div>
         ))}
       </div>
+
+      {levelUp && (
+        <div style={{
+          background: 'linear-gradient(135deg, #7C3AED, #6d28d9)',
+          borderRadius: 'var(--r-lg)', padding: '18px 28px', marginBottom: '12px',
+          border: '2px solid #a78bfa', width: '100%',
+          animation: 'ns-pop 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+        }}>
+          <style>{`@keyframes ns-pop{0%{transform:scale(0.7);opacity:0}100%{transform:scale(1);opacity:1}}`}</style>
+          <div style={{fontSize: '36px', marginBottom: '6px'}}>🚀</div>
+          <div style={{fontWeight: '900', color: 'white', fontSize: '18px', letterSpacing: '-0.5px'}}>LEVEL UP!</div>
+          <div style={{color: 'rgba(255,255,255,0.8)', fontSize: '14px', marginTop: '4px'}}>
+            Nível {levelUp.de} → <strong style={{color: '#fde68a'}}>Nível {levelUp.para}</strong> 🎊
+          </div>
+        </div>
+      )}
 
       {mostrarBadge && (
         <div style={{
