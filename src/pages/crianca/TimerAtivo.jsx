@@ -27,7 +27,9 @@ export default function TimerAtivo() {
   }, [ativo, segundos])
 
   useEffect(() => {
-    if (segundos <= 0 && encerramentoAuto) navigate('/encerramento')
+    if (segundos <= 0 && encerramentoAuto) {
+      navigate('/encerramento', { state: { xp: Math.floor(coins * 2), coins: Math.floor(coins), titulo, tipo: 'timer' } })
+    }
   }, [segundos])
 
   const minutos = Math.floor(segundos / 60)
@@ -84,7 +86,7 @@ export default function TimerAtivo() {
           fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
         }}>{ativo ? '⏸ Pausar' : '▶ Continuar'}</button>
-        <button onClick={() => navigate('/encerramento')} style={{
+        <button onClick={() => navigate('/encerramento', { state: { xp: Math.floor(coins * 2), coins: Math.floor(coins), titulo, tipo: 'timer' } })} style={{
           background: 'linear-gradient(135deg, #ef4444, #dc2626)',
           border: 'none', borderRadius: '12px', padding: '13px 24px',
           color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px',

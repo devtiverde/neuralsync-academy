@@ -65,7 +65,18 @@ export default function HomeCrianca() {
       const { data } = await supabase.from('children').select('*')
       if (!data || data.length === 0) return
 
-      const c = (childId && data.find(ch => ch.id === childId)) || data[0]
+      let c = (childId && data.find(ch => ch.id === childId)) || data[0]
+
+      // Verifica se o streak deve ser resetado (não jogou ontem nem hoje)
+      const hoje = new Date().toDateString()
+      const ontem = new Date(Date.now() - 86400000).toDateString()
+      const ultimoAtivoKey = 'ns_ultimo_ativo_' + c.id
+      const ultimoAtivo = localStorage.getItem(ultimoAtivoKey)
+      if (ultimoAtivo && ultimoAtivo !== hoje && ultimoAtivo !== ontem && (c.streak_atual || 0) > 0) {
+        c = { ...c, streak_atual: 0 }
+        supabase.from('children').update({ streak_atual: 0 }).eq('id', c.id).then(() => {})
+      }
+
       setChild(c)
       localStorage.setItem('ns_active_child', JSON.stringify(c))
       setFaixa(c.faixa_etaria || 'construtores')
@@ -111,10 +122,10 @@ export default function HomeCrianca() {
                 Olá, {child.nome}! 🚀
               </h2>
             </div>
-            <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '12px', padding: '10px 14px', textAlign: 'right' }}>
+            <button onClick={() => navigate('/coins')} style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '12px', padding: '10px 14px', textAlign: 'right', border: 'none', cursor: 'pointer' }}>
               <div style={{ color: 'white', fontWeight: '900', fontSize: '16px' }}>💰 {child.neural_coins}</div>
               <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: '500' }}>NeuralCoins</div>
-            </div>
+            </button>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '12px', padding: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'rgba(255,255,255,0.75)', marginBottom: '7px', fontWeight: '500' }}>
