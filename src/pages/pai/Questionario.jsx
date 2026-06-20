@@ -116,9 +116,9 @@ export default function Questionario() {
   const [child, setChild] = useState(null)
   const [atual, setAtual] = useState(0)
   const [respostas, setRespostas] = useState({})
-  const [salvando, setSalvando] = useState(false)
   const [selecionado, setSelecionado] = useState(null)
   const [resultado, setResultado] = useState(null)
+  const [salvando, setSalvando] = useState(false)
 
   useEffect(() => {
     if (!childId) { navigate('/dashboard'); return }
@@ -137,16 +137,39 @@ export default function Questionario() {
       <header style={{ background: 'white', borderBottom: '1px solid #f3f4f6', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🧠</div>
-          <span style={{ fontWeight: '800', fontSize: '16px', color: '#0f0a1e' }}>Perfil concluído ✓</span>
+          <span style={{ fontWeight: '800', fontSize: '16px', color: '#0f0a1e' }}>Perfil de {child.nome} concluído</span>
         </div>
         <button onClick={() => navigate('/dashboard')} style={{ background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', border: 'none', borderRadius: '10px', padding: '9px 16px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-          Ir para o Dashboard →
+          Dashboard →
         </button>
       </header>
+
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '28px 24px' }}>
+
+        {/* CELEBRAÇÃO */}
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ fontSize: '52px', marginBottom: '10px' }}>🎉</div>
+          <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#0f0a1e', marginBottom: '8px' }}>
+            Perfil concluído!
+          </h2>
+          <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: 1.6 }}>
+            Com base nas suas respostas, criamos um perfil personalizado de <strong>{child.nome}</strong>.<br />
+            Veja abaixo o detalhamento completo de cada dimensão.
+          </p>
+          {salvando && (
+            <div style={{ marginTop: '10px', fontSize: '12px', color: '#a78bfa', fontWeight: '600' }}>
+              ⏳ Salvando perfil...
+            </div>
+          )}
+        </div>
+
         <PerfilCognitivoView perfil={resultado} nome={child.nome} />
-        <button onClick={() => navigate('/dashboard')} style={{ width: '100%', padding: '15px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', marginTop: '8px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-          Concluir e ver no Dashboard →
+
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ width: '100%', padding: '15px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', marginTop: '8px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+        >
+          Ver no Dashboard →
         </button>
       </div>
     </div>
@@ -170,22 +193,19 @@ export default function Questionario() {
     if (atual + 1 < total) {
       setAtual(a => a + 1)
     } else {
-      salvar(novas)
+      const perfil = { ...novas, respondido_em: new Date().toISOString() }
+      setResultado(perfil)
+      salvarBackground(perfil)
     }
   }
 
-  async function salvar(dados) {
+  async function salvarBackground(perfil) {
     setSalvando(true)
-    const perfil = { ...dados, respondido_em: new Date().toISOString() }
     const { error } = await supabase.from('children').update({
       perfil_cognitivo: perfil
     }).eq('id', childId)
     setSalvando(false)
-    if (error) {
-      alert('Não foi possível salvar o perfil agora. Tente novamente.\n\nDetalhe: ' + error.message)
-      return
-    }
-    setResultado(perfil)
+    if (error) console.error('Erro ao salvar perfil cognitivo:', error.message)
   }
 
   async function pular() {
@@ -278,7 +298,7 @@ export default function Questionario() {
         {/* BOTÃO AVANÇAR */}
         <button
           onClick={avancar}
-          disabled={!selecionado || salvando}
+          disabled={!selecionado}
           style={{
             width: '100%', padding: '15px', borderRadius: '14px', border: 'none',
             background: selecionado ? `linear-gradient(135deg, ${dim.cor}, ${dim.cor}cc)` : '#e5e7eb',
@@ -288,7 +308,7 @@ export default function Questionario() {
             transition: 'all 0.2s',
           }}
         >
-          {salvando ? 'Salvando perfil...' : atual + 1 < total ? 'Próxima →' : 'Concluir perfil ✓'}
+          {atual + 1 < total ? 'Próxima →' : 'Ver meu perfil ✓'}
         </button>
 
         {/* PONTOS DE PROGRESSO */}
