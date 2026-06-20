@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { kidsData } from '../../data/kidsData'
+import { useKids } from '../../hooks/useKids'
 import '../../styles/crianca.css'
 
 const menu = [
@@ -127,7 +127,15 @@ function MiniQuiz({ quiz, cor }) {
 export default function KidsCategoria() {
   const navigate = useNavigate()
   const { categoria } = useParams()
-  const dados = kidsData[categoria]
+  const { data: kidsData, loading } = useKids()
+
+  if (loading) return (
+    <div style={{ background: '#e5e7eb', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ color: '#7C3AED', fontWeight: '700' }}>Carregando...</div>
+    </div>
+  )
+
+  const dados = kidsData?.[categoria]
 
   if (!dados) {
     return (

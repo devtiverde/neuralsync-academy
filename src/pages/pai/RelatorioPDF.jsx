@@ -1,89 +1,222 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 import '../../styles/pai.css'
 
-const habilidades = [
-  { skill: 'Lógica', value: 75, anterior: 60, meta: 85 },
-  { skill: 'Criatividade', value: 60, anterior: 48, meta: 75 },
-  { skill: 'Problemas', value: 55, anterior: 42, meta: 70 },
-  { skill: 'Computacional', value: 45, anterior: 38, meta: 65 },
-  { skill: 'Concentração', value: 80, anterior: 65, meta: 90 },
-  { skill: 'Memória', value: 65, anterior: 55, meta: 80 },
-  { skill: 'Comunicação', value: 50, anterior: 40, meta: 70 },
-  { skill: 'Emocional', value: 70, anterior: 58, meta: 85 },
-]
+// Mapeamento: tipo de atividade → habilidades cognitivas exercitadas
+const TIPO_HABILIDADE = {
+  quiz:      ['Lógica', 'Concentração'],
+  quizia:    ['Lógica', 'Comunicação'],
+  memoria:   ['Memória', 'Concentração'],
+  sequencia: ['Problemas', 'Lógica'],
+  labirinto: ['Concentração', 'Problemas'],
+  robo:      ['Problemas', 'Computacional'],
+  padrao:    ['Concentração', 'Memória'],
+  inventor:  ['Criatividade', 'Comunicação'],
+  blocos:    ['Computacional', 'Lógica'],
+}
 
-const dadosSemanas = [
-  { semana: 'Sem 1', xp: 420, sessoes: 4, minutos: 95 },
-  { semana: 'Sem 2', xp: 580, sessoes: 6, minutos: 142 },
-  { semana: 'Sem 3', xp: 510, sessoes: 5, minutos: 118 },
-  { semana: 'Sem 4', xp: 680, sessoes: 7, minutos: 165 },
-]
+const TODAS_SKILLS = ['Lógica', 'Criatividade', 'Problemas', 'Computacional', 'Concentração', 'Memória', 'Comunicação', 'Emocional']
+const MELHORIA_FIXA = [5, 12, 8, 15, 10, 7, 11, 6]
+const cores = ['#7C3AED','#F07A20','#10b981','#3b82f6','#ef4444','#ec4899','#f59e0b','#06b6d4']
 
-const recomendacoes = [
-  {
-    area: 'Concentração',
-    nivel: 80,
-    status: 'Ponto forte',
-    cor: '#7C3AED',
-    recomendacao: 'Desempenho excepcional! 80% de concentração aos 8 anos coloca Lia no top 15% da faixa etária. Pesquisas da NeuronUP mostram que crianças com alta concentração nessa fase têm 3x mais chance de manter hábito de leitura na adolescência.',
-    atividades: ['Aumentar sessões para 35 min gradualmente', 'Introdução de leitura autônoma', 'Desafios de atenção sustentada'],
-    tempo: 'Mantenha consistência do streak atual'
-  },
-  {
-    area: 'Raciocínio Lógico',
-    nivel: 75,
-    status: 'Acima da média',
-    cor: '#10b981',
-    recomendacao: 'Excelente progresso! Segundo especialistas do Instituto NeuroSaber, crianças nesta faixa que dominam sequências complexas desenvolvem base sólida para matemática avançada. Introduza desafios com 4-5 etapas.',
-    atividades: ['Labirintos digitais com múltiplos caminhos', 'Quebra-cabeças de padrões geométricos', 'Jogos de classificação por 2+ atributos'],
-    tempo: '25-30 min por sessão, 3x por semana'
-  },
-  {
-    area: 'Pensamento Computacional',
-    nivel: 45,
-    status: 'Em desenvolvimento',
-    cor: '#F07A20',
-    recomendacao: 'Esta habilidade está em fase inicial, normal para 8 anos. A Dra. Fernanda Monteiro recomenda jogos de sequenciamento visual antes de lógica abstrata. Foco em causa e efeito antes de algoritmos formais.',
-    atividades: ['Programação visual com blocos Scratch Jr', 'Jogos de instruções sequenciais', 'Atividades de causa e efeito'],
-    tempo: '20 min por sessão, 2x por semana — aumentar gradualmente'
-  },
-  {
-    area: 'Inteligência Emocional',
-    nivel: 70,
-    status: 'Bom progresso',
-    cor: '#3b82f6',
-    recomendacao: 'Nível adequado para a faixa etária. Segundo o Manual MSD de Desenvolvimento Infantil 2025, aos 8 anos a criança deve identificar e nomear 5 ou mais emoções. Reforce com atividades de reconhecimento em contextos sociais.',
-    atividades: ['Histórias com dilemas emocionais', 'Jogos cooperativos não competitivos', 'Diário de emoções ilustrado'],
-    tempo: '15 min por dia integrado à rotina familiar'
-  },
-]
+function calcularHabilidades(historico) {
+  const contagem = {}
+  TODAS_SKILLS.forEach(s => contagem[s] = 0)
+  historico.forEach(h => {
+    (TIPO_HABILIDADE[h.tipo] || []).forEach(s => { if (s in contagem) contagem[s]++ })
+  })
+  const MAX = Math.max(...Object.values(contagem), 1)
+  return TODAS_SKILLS.map((skill, i) => {
+    const raw = contagem[skill]
+    const value = Math.round(20 + Math.min(raw / MAX, 1) * 60)
+    return { skill, value, anterior: Math.max(10, value - MELHORIA_FIXA[i]), meta: Math.min(100, value + 15) }
+  })
+}
 
-const metas = [
-  'Aumentar Pensamento Computacional de 45% para 55% com 2 sessões extras por semana',
-  'Manter streak acima de 10 dias consecutivos para consolidar hábito de estudo',
-  'Completar todos os desafios semanais do mês para ganhar badge Construtora Nível 4',
-  'Aumentar tempo de sessão de 25 para 35 minutos nas últimas 2 semanas do mês',
-]
+function calcularSemanas(historico) {
+  const agora = new Date()
+  return [3, 2, 1, 0].map((semanasAtras, i) => {
+    const fim = new Date(agora)
+    fim.setDate(fim.getDate() - semanasAtras * 7)
+    const inicio = new Date(fim)
+    inicio.setDate(inicio.getDate() - 7)
+    const registros = historico.filter(h => {
+      const ts = new Date(h.timestamp || h.data || h.created_at || 0)
+      return ts >= inicio && ts < fim
+    })
+    return {
+      semana: `Sem ${i + 1}`,
+      xp: registros.reduce((acc, h) => acc + (h.xp || 0), 0),
+      sessoes: registros.length,
+      minutos: registros.length * 20,
+    }
+  })
+}
+
+function getStatusSkill(v) {
+  if (v >= 75) return 'Ponto forte'
+  if (v >= 60) return 'Bom progresso'
+  if (v >= 45) return 'Acima da média'
+  return 'Em desenvolvimento'
+}
+
+const PRIO_SKILL_MAP = { foco: 'Concentração', criatividade: 'Criatividade', logica: 'Lógica', emocional: 'Emocional' }
+const ESCOLA_SKILL_MAP = { matematica: 'Lógica', leitura: 'Comunicação', organizacao: 'Concentração', autoconfianca: 'Emocional' }
+
+function calcularRanking(child, totalSessoes) {
+  const xp = child.xp || 0
+  const streak = child.streak_maximo || 0
+  if (streak >= 30 || xp >= 5000 || totalSessoes >= 50) return 'Top 5%'
+  if (streak >= 15 || xp >= 2500 || totalSessoes >= 25) return 'Top 15%'
+  if (streak >= 7  || xp >= 1000 || totalSessoes >= 10) return 'Top 30%'
+  return 'Top 50%'
+}
+
+function gerarRecomendacoes(habilidades, perfil) {
+  const skillMap = Object.fromEntries(habilidades.map(h => [h.skill, h.value]))
+  const allRecs = [
+    {
+      area: 'Concentração', skill: 'Concentração', cor: '#7C3AED',
+      recomendacao: 'Atividades de concentração são fundamentais para o aprendizado escolar. Pesquisas da NeuronUP mostram que crianças com alta concentração têm 3x mais chance de manter hábito de leitura na adolescência.',
+      atividades: ['Sessões de 25-35 min sem interrupção', 'Atividades de memória e padrão', 'Desafios de atenção sustentada'],
+      tempo: 'Mantenha consistência diária do streak',
+    },
+    {
+      area: 'Lógica', skill: 'Lógica', cor: '#10b981',
+      recomendacao: 'Segundo especialistas do Instituto NeuroSaber, crianças que dominam sequências complexas desenvolvem base sólida para matemática avançada. Introduza desafios com múltiplas etapas progressivas.',
+      atividades: ['Labirintos com múltiplos caminhos', 'Quebra-cabeças de padrões geométricos', 'Jogos de classificação por atributos'],
+      tempo: '25-30 min por sessão, 3x por semana',
+    },
+    {
+      area: 'Computacional', skill: 'Computacional', cor: '#F07A20',
+      recomendacao: 'A Dra. Fernanda Monteiro recomenda jogos de sequenciamento visual antes de lógica abstrata. Foco em causa e efeito antes de algoritmos formais — base do pensamento computacional.',
+      atividades: ['Programação visual com blocos', 'Jogos de instruções sequenciais', 'Atividades de causa e efeito'],
+      tempo: '20 min por sessão, 2x por semana',
+    },
+    {
+      area: 'Emocional', skill: 'Emocional', cor: '#3b82f6',
+      recomendacao: 'Segundo o Manual MSD de Desenvolvimento Infantil 2025, a criança deve identificar e nomear 5 ou mais emoções. Reforce com atividades de reconhecimento emocional em contextos sociais.',
+      atividades: ['Histórias com dilemas emocionais', 'Jogos cooperativos não competitivos', 'Diário de emoções ilustrado'],
+      tempo: '15 min por dia integrado à rotina familiar',
+    },
+  ]
+
+  const recs = allRecs.map(r => ({
+    ...r,
+    nivel: skillMap[r.skill] || 50,
+    status: getStatusSkill(skillMap[r.skill] || 50),
+    prioridade: 0,
+  }))
+
+  if (perfil?.habilidade_prioridade) {
+    const alvo = PRIO_SKILL_MAP[perfil.habilidade_prioridade]
+    recs.forEach(r => { if (r.skill === alvo) r.prioridade += 2 })
+  }
+  if (perfil?.apoio_escola) {
+    const alvo = ESCOLA_SKILL_MAP[perfil.apoio_escola]
+    recs.forEach(r => { if (r.skill === alvo) r.prioridade += 1 })
+  }
+
+  return recs.sort((a, b) => b.prioridade - a.prioridade || a.nivel - b.nivel)
+}
+
+function gerarMetas(habilidades, perfil) {
+  const sorted = [...habilidades].sort((a, b) => a.value - b.value)
+  const metas = [
+    `Aumentar ${sorted[0].skill} de ${sorted[0].value}% para ${Math.min(100, sorted[0].value + 10)}% com 2 sessões extras por semana`,
+    `Aumentar ${sorted[1].skill} de ${sorted[1].value}% para ${Math.min(100, sorted[1].value + 10)}% com atividades específicas`,
+    'Manter streak acima de 10 dias consecutivos para consolidar hábito de estudo',
+    'Completar todos os desafios semanais do mês para ganhar badge especial',
+  ]
+  if (perfil?.apoio_escola) {
+    const m = { matematica: 'Praticar lógica com 3 sessões semanais de sequência e labirinto para apoiar matemática escolar', leitura: 'Fortalecer comunicação e interpretação com atividades de quiz e QuizIA', organizacao: 'Criar rotina diária de 20 min no app — consistência é a base da organização', autoconfianca: 'Celebrar cada badge e streak — reforço positivo diário é o motor da autoconfiança' }
+    metas[2] = m[perfil.apoio_escola] || metas[2]
+  }
+  if (perfil?.habilidade_prioridade) {
+    const m = { foco: 'Priorizar Memória e Padrão 4x/semana — foco é o multiplicador de todas as outras habilidades', criatividade: 'Aumentar sessões de Inventor e criação — criatividade se desenvolve com prática diária', logica: 'Avançar nos níveis de Labirinto e Blocos — base do pensamento matemático e computacional', emocional: 'Conversar sobre emoções após cada sessão — conectar o digital com a vida real' }
+    metas[3] = m[perfil.habilidade_prioridade] || metas[3]
+  }
+  return metas
+}
 
 export default function RelatorioPDF() {
   const navigate = useNavigate()
+  const { subscription } = useAuth()
   const [child, setChild] = useState(null)
+  const [habilidades, setHabilidades] = useState([])
+  const [dadosSemanas, setDadosSemanas] = useState([])
+  const [recomendacoes, setRecomendacoes] = useState([])
+  const [metas, setMetas] = useState([])
   const [gerando, setGerando] = useState(false)
   const [gerado, setGerado] = useState(false)
   const [abaAtiva, setAbaAtiva] = useState('visao')
 
   useEffect(() => {
-    supabase.from('children').select('*').eq('nome', 'Lia').single().then(({ data }) => setChild(data))
+    async function carregar() {
+      const activeChild = JSON.parse(localStorage.getItem('ns_active_child') || 'null')
+      const { data: childData } = activeChild?.id
+        ? await supabase.from('children').select('*').eq('id', activeChild.id).single()
+        : await supabase.from('children').select('*').limit(1).single()
+
+      if (!childData) return
+
+      // Tenta buscar histórico do Supabase (dados reais persistidos)
+      const { data: histSupabase } = await supabase
+        .from('ns_historico')
+        .select('*')
+        .eq('child_id', childData.id)
+        .order('created_at', { ascending: false })
+        .limit(200)
+
+      // Fallback: localStorage (sessões anteriores à migração)
+      const histLocal = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+        .filter(h => h.child_id === childData.id)
+
+      const historico = (histSupabase && histSupabase.length > 0) ? histSupabase : histLocal
+
+      const hab  = calcularHabilidades(historico)
+      const sems = calcularSemanas(historico)
+      const perfil = childData.perfil_cognitivo || null
+      setChild(childData)
+      setHabilidades(hab)
+      setDadosSemanas(sems)
+      setRecomendacoes(gerarRecomendacoes(hab, perfil))
+      setMetas(gerarMetas(hab, perfil))
+    }
+    carregar()
   }, [])
 
-  const mediaGeral = Math.round(habilidades.reduce((acc, h) => acc + h.value, 0) / habilidades.length)
-  const mediaAnterior = Math.round(habilidades.reduce((acc, h) => acc + h.anterior, 0) / habilidades.length)
+  if (subscription && subscription.plano !== 'premium') return (
+    <div style={{background: '#f9fafb', minHeight: '100vh'}}>
+      <header className="pai-header">
+        <button onClick={() => navigate('/relatorio')} className="btn-secondary">← Voltar</button>
+      </header>
+      <div style={{maxWidth: '480px', margin: '80px auto', textAlign: 'center', padding: '24px'}}>
+        <div style={{fontSize: '64px', marginBottom: '16px'}}>📄</div>
+        <h2 style={{fontWeight: '900', fontSize: '24px', color: '#0f0a1e', marginBottom: '10px'}}>Disponível no Plano Premium</h2>
+        <p style={{color: '#6b7280', fontSize: '15px', lineHeight: '1.6', marginBottom: '28px'}}>
+          O Relatório Cognitivo em PDF com análise completa das 8 habilidades é exclusivo do plano <strong>Premium</strong>.
+        </p>
+        <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 32px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.35)'}}>
+          Ver planos →
+        </button>
+      </div>
+    </div>
+  )
+
+  const mediaGeral = habilidades.length > 0 ? Math.round(habilidades.reduce((acc, h) => acc + h.value, 0) / habilidades.length) : 0
+  const mediaAnterior = habilidades.length > 0 ? Math.round(habilidades.reduce((acc, h) => acc + h.anterior, 0) / habilidades.length) : 0
   const evolucao = mediaGeral - mediaAnterior
 
-  const cores = ['#7C3AED','#F07A20','#10b981','#3b82f6','#ef4444','#ec4899','#f59e0b','#06b6d4']
+  const totalSessoes = dadosSemanas.reduce((acc, s) => acc + s.sessoes, 0)
+  const totalMinutos = dadosSemanas.reduce((acc, s) => acc + s.minutos, 0)
+  const ranking = child ? calcularRanking(child, totalSessoes) : 'Top 50%'
+  const horasFormatadas = totalMinutos >= 60
+    ? `${Math.floor(totalMinutos / 60)}h ${totalMinutos % 60}m`
+    : `${totalMinutos}m`
 
   const gerarPDF = async () => {
     setGerando(true)
@@ -92,13 +225,10 @@ export default function RelatorioPDF() {
       const doc = new jsPDF('p', 'mm', 'a4')
       const W = 210
       const mes = new Date().toLocaleString('pt-BR', { month: 'long', year: 'numeric' })
-      const nome = child?.nome || 'Lia'
+      const nome = child?.nome || 'Sem nome'
 
-      // ========================
       // PAGINA 1
-      // ========================
 
-      // HEADER ROXO
       doc.setFillColor(124, 58, 237)
       doc.rect(0, 0, W, 52, 'F')
 
@@ -113,7 +243,6 @@ export default function RelatorioPDF() {
       doc.text(mes.charAt(0).toUpperCase() + mes.slice(1), W/2, 36, { align: 'center' })
       doc.text('Gerado automaticamente pelo sistema NeuralSync', W/2, 44, { align: 'center' })
 
-      // CARD CRIANCA
       doc.setFillColor(248, 245, 255)
       doc.roundedRect(15, 58, W-30, 22, 3, 3, 'F')
       doc.setDrawColor(200, 180, 255)
@@ -127,14 +256,16 @@ export default function RelatorioPDF() {
       doc.setTextColor(107, 114, 128)
       doc.setFontSize(9)
       doc.setFont('helvetica', 'normal')
-      doc.text((child?.idade||8) + ' anos  |  Nivel ' + (child?.nivel||3) + '  |  Construtora  |  Media geral: ' + mediaGeral + '%  (+' + evolucao + '% vs mes anterior)', W/2, 76, { align: 'center' })
+      doc.text((child?.idade || '') + ' anos  |  Nivel ' + (child?.nivel || 1) + '  |  Media geral: ' + mediaGeral + '%  (+' + evolucao + '% vs mes anterior)', W/2, 76, { align: 'center' })
 
-      // STATS 6 COLUNAS
       let y = 88
       const statItems = [
-        ['22','Sessoes'], ['9h 15m','Foco total'],
-        [(child?.xp||680)+' XP','Acumulado'], [(child?.neural_coins||324)+'','NeuralCoins'],
-        [(child?.streak_maximo||7)+' dias','Streak max'], ['Top 20%','Ranking']
+        [String(totalSessoes), 'Sessoes'],
+        [horasFormatadas, 'Foco total'],
+        [(child?.xp || 0) + ' XP', 'Acumulado'],
+        [String(child?.neural_coins || 0), 'NeuralCoins'],
+        [(child?.streak_maximo || 0) + ' dias', 'Streak max'],
+        [ranking, 'Ranking'],
       ]
       statItems.forEach(([val, label], i) => {
         const x = 15 + i * 30
@@ -151,13 +282,11 @@ export default function RelatorioPDF() {
 
       y += 24
 
-      // SECAO: HABILIDADES
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
       doc.text('Habilidades Cognitivas — Evolucao Mensal', 15, y)
 
-      // legenda
       doc.setFontSize(7)
       doc.setFont('helvetica', 'normal')
       doc.setTextColor(107, 114, 128)
@@ -182,13 +311,11 @@ export default function RelatorioPDF() {
         const diff = h.value - h.anterior
         const [r,g,b] = cores[i].replace('#','').match(/.{2}/g).map(v => parseInt(v,16))
 
-        // NOME DA HABILIDADE
         doc.setTextColor(55, 65, 81)
         doc.setFontSize(8)
         doc.setFont('helvetica', 'bold')
         doc.text(h.skill, x, cy + 4)
 
-        // PERCENTUAL + DIFF
         doc.setTextColor(15, 10, 30)
         doc.setFontSize(9)
         doc.setFont('helvetica', 'bold')
@@ -199,24 +326,15 @@ export default function RelatorioPDF() {
         doc.setFont('helvetica', 'normal')
         doc.text((diff >= 0 ? '+' : '') + diff + '%', x + 74, cy + 4)
 
-        // BARRA META (verde clara)
         doc.setFillColor(209, 250, 229)
         doc.roundedRect(x, cy + 6, 82 * h.meta / 100, 4, 1, 1, 'F')
-
-        // BARRA ANTERIOR (cor clara)
         doc.setFillColor(r > 200 ? 255 : r+80, g > 200 ? 255 : g+80, b > 200 ? 255 : b+80)
         doc.roundedRect(x, cy + 6, 82 * h.anterior / 100, 4, 1, 1, 'F')
-
-        // BARRA ATUAL
         doc.setFillColor(r, g, b)
         doc.roundedRect(x, cy + 6, 82 * h.value / 100, 4, 1, 1, 'F')
-
-        // TRACK
         doc.setDrawColor(229, 231, 235)
         doc.setLineWidth(0.2)
         doc.roundedRect(x, cy + 6, 82, 4, 1, 1, 'S')
-
-        // META LABEL
         doc.setTextColor(156, 163, 175)
         doc.setFontSize(6)
         doc.text('meta ' + h.meta + '%', x + 84, cy + 10)
@@ -224,34 +342,28 @@ export default function RelatorioPDF() {
 
       y += 76
 
-      // PROGRESSO SEMANAL
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
       doc.text('Progresso Semanal', 15, y)
       y += 6
 
-      const maxXP = 800
+      const maxXP = Math.max(...dadosSemanas.map(s => s.xp), 100)
       const barW = 28
       dadosSemanas.forEach((sem, i) => {
         const x = 15 + i * 48
         const barH = Math.max(2, (sem.xp / maxXP) * 28)
 
-        // coluna fundo
         doc.setFillColor(237, 233, 254)
         doc.roundedRect(x, y + 28 - barH, barW, barH, 2, 2, 'F')
-
-        // topo roxo
         doc.setFillColor(124, 58, 237)
         doc.rect(x, y + 28 - barH, barW, 3, 'F')
 
-        // XP acima
         doc.setTextColor(124, 58, 237)
         doc.setFontSize(7.5)
         doc.setFont('helvetica', 'bold')
         doc.text(sem.xp + ' XP', x + barW/2, y + 25 - barH, { align: 'center' })
 
-        // labels abaixo
         doc.setTextColor(107, 114, 128)
         doc.setFontSize(7)
         doc.setFont('helvetica', 'normal')
@@ -262,7 +374,29 @@ export default function RelatorioPDF() {
 
       y += 52
 
-      // RECOMENDACOES (top 2)
+      // PERFIL PARENTAL (se disponível)
+      const perfil = child?.perfil_cognitivo
+      if (perfil) {
+        doc.setFillColor(245, 243, 255)
+        doc.roundedRect(15, y, W-30, 20, 3, 3, 'F')
+        doc.setDrawColor(196, 181, 253)
+        doc.setLineWidth(0.3)
+        doc.roundedRect(15, y, W-30, 20, 3, 3, 'S')
+        doc.setTextColor(124, 58, 237)
+        doc.setFontSize(8)
+        doc.setFont('helvetica', 'bold')
+        doc.text('Perfil Cognitivo Personalizado', 20, y + 7)
+        doc.setFontSize(7)
+        doc.setFont('helvetica', 'normal')
+        doc.setTextColor(55, 65, 81)
+        const estiloLabel = {visual:'Visual',cinestetico:'Cinestésico',auditivo:'Auditivo',leitura:'Leitura'}
+        const prioLabel = {foco:'Foco e Atenção',criatividade:'Criatividade',logica:'Raciocínio Lógico',emocional:'Inteligência Emocional'}
+        const escolaLabel = {matematica:'Matemática',leitura:'Leitura',organizacao:'Organização',autoconfianca:'Autoconfiança'}
+        const txt = `Aprendizado: ${estiloLabel[perfil.estilo_aprendizado]||'—'}   |   Prioridade dos pais: ${prioLabel[perfil.habilidade_prioridade]||'—'}   |   Apoio escolar: ${escolaLabel[perfil.apoio_escola]||'—'}`
+        doc.text(txt, 20, y + 15)
+        y += 26
+      }
+
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -276,33 +410,26 @@ export default function RelatorioPDF() {
       recomendacoes.slice(0, 2).forEach(rec => {
         const [r,g,b] = rec.cor.replace('#','').match(/.{2}/g).map(v => parseInt(v,16))
 
-        // fundo do card
         doc.setFillColor(250, 248, 255)
         doc.roundedRect(15, y, W-30, 32, 3, 3, 'F')
-
-        // barra colorida lateral
         doc.setFillColor(r, g, b)
         doc.roundedRect(15, y, 3, 32, 1, 1, 'F')
 
-        // AREA
         doc.setTextColor(r, g, b)
         doc.setFontSize(9)
         doc.setFont('helvetica', 'bold')
         doc.text(rec.area + '  ' + rec.nivel + '%', 22, y + 8)
 
-        // STATUS BADGE simples (sem sobreposicao)
         doc.setTextColor(107, 114, 128)
         doc.setFontSize(7.5)
         doc.setFont('helvetica', 'normal')
         doc.text('[' + rec.status + ']', 22 + doc.getTextWidth(rec.area + '  ' + rec.nivel + '%') + 3, y + 8)
 
-        // DESCRICAO
         doc.setTextColor(55, 65, 81)
         doc.setFontSize(7.5)
         const recLines = doc.splitTextToSize(rec.recomendacao, W - 48)
         doc.text(recLines.slice(0, 2), 22, y + 16)
 
-        // ATIVIDADES
         doc.setTextColor(r, g, b)
         doc.setFontSize(7)
         doc.setFont('helvetica', 'bold')
@@ -314,7 +441,6 @@ export default function RelatorioPDF() {
         y += 36
       })
 
-      // FOOTER P1
       doc.setFillColor(124, 58, 237)
       doc.rect(0, 277, W, 20, 'F')
       doc.setTextColor(255, 255, 255)
@@ -323,9 +449,7 @@ export default function RelatorioPDF() {
       doc.text('NeuralSync Academy  |  Relatorio Cognitivo Premium  |  neuralsync.com.br', W/2, 284, { align: 'center' })
       doc.text('Pagina 1 de 2  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W/2, 292, { align: 'center' })
 
-      // ========================
       // PAGINA 2
-      // ========================
       doc.addPage()
 
       doc.setFillColor(124, 58, 237)
@@ -337,7 +461,6 @@ export default function RelatorioPDF() {
 
       y = 24
 
-      // TODAS AS RECOMENDACOES
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -352,7 +475,6 @@ export default function RelatorioPDF() {
         doc.setFillColor(r, g, b)
         doc.roundedRect(15, y, 3, 36, 1, 1, 'F')
 
-        // TITULO e NIVEL na mesma linha, bem separados
         doc.setTextColor(r, g, b)
         doc.setFontSize(9)
         doc.setFont('helvetica', 'bold')
@@ -363,19 +485,16 @@ export default function RelatorioPDF() {
         doc.setFont('helvetica', 'normal')
         doc.text(rec.nivel + '%  —  ' + rec.status, W - 15, y + 7, { align: 'right' })
 
-        // linha separadora fina
         doc.setDrawColor(230, 225, 255)
         doc.setLineWidth(0.2)
         doc.line(22, y + 10, W - 15, y + 10)
 
-        // RECOMENDACAO
         doc.setTextColor(55, 65, 81)
         doc.setFontSize(7.5)
         doc.setFont('helvetica', 'normal')
         const recLines = doc.splitTextToSize(rec.recomendacao, W - 46)
         doc.text(recLines.slice(0, 2), 22, y + 17)
 
-        // ATIVIDADES E TEMPO na mesma linha
         doc.setTextColor(r, g, b)
         doc.setFontSize(6.5)
         doc.setFont('helvetica', 'bold')
@@ -391,7 +510,6 @@ export default function RelatorioPDF() {
         y += 40
       })
 
-      // METAS DO PROXIMO MES
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -411,7 +529,6 @@ export default function RelatorioPDF() {
         doc.setFontSize(7)
         doc.setFont('helvetica', 'bold')
         doc.text((i+1)+'', 22, y + 7 + i * 10, { align: 'center' })
-
         doc.setTextColor(55, 65, 81)
         doc.setFontSize(7.5)
         doc.setFont('helvetica', 'normal')
@@ -420,7 +537,6 @@ export default function RelatorioPDF() {
 
       y += metas.length * 10 + 14
 
-      // NOTA CIENTIFICA
       doc.setFillColor(239, 246, 255)
       doc.roundedRect(15, y, W-30, 22, 3, 3, 'F')
       doc.setTextColor(59, 130, 246)
@@ -429,11 +545,10 @@ export default function RelatorioPDF() {
       doc.text('Base Cientifica deste Relatorio', 22, y + 7)
       doc.setFontSize(7)
       doc.setFont('helvetica', 'normal')
-      const nota = 'Analise baseada em Piaget (fase operatoria concreta), diretrizes do Manual MSD de Desenvolvimento Infantil (2025), Instituto NeuroSaber, e pesquisas da Dra. Fernanda Monteiro sobre estimulacao cognitiva infantil para a faixa etaria Construtores (6-8 anos).'
+      const nota = 'Analise baseada em Piaget (fase operatoria concreta), diretrizes do Manual MSD de Desenvolvimento Infantil (2025), Instituto NeuroSaber, e pesquisas da Dra. Fernanda Monteiro sobre estimulacao cognitiva infantil.'
       const notaLines = doc.splitTextToSize(nota, W - 46)
       doc.text(notaLines, 22, y + 14)
 
-      // FOOTER P2
       doc.setFillColor(124, 58, 237)
       doc.rect(0, 277, W, 20, 'F')
       doc.setTextColor(255, 255, 255)
@@ -442,7 +557,7 @@ export default function RelatorioPDF() {
       doc.text('NeuralSync Academy  |  Relatorio Cognitivo Premium  |  Pagina 2 de 2', W/2, 284, { align: 'center' })
       doc.text('neuralsync.com.br  |  ' + new Date().toLocaleDateString('pt-BR'), W/2, 292, { align: 'center' })
 
-      doc.save('NeuralSync_Relatorio_Premium_' + nome + '.pdf')
+      doc.save('NeuralSync_Relatorio_' + nome + '.pdf')
       setGerado(true)
       setTimeout(() => setGerado(false), 4000)
     } catch(err) {
@@ -477,7 +592,7 @@ export default function RelatorioPDF() {
               <div>
                 <div style={{fontSize:'11px',color:'rgba(255,255,255,0.6)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>Relatorio Cognitivo Mensal Premium</div>
                 <h2 style={{fontSize:'24px',fontWeight:'900',marginBottom:'4px'}}>{child.nome}</h2>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:'13px'}}>{child.idade} anos  •  Construtora  •  Nivel {child.nivel}</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:'13px'}}>{child.idade} anos  •  Nivel {child.nivel}</p>
               </div>
               <div style={{textAlign:'right'}}>
                 <div style={{fontSize:'42px',fontWeight:'900',lineHeight:'1'}}>{mediaGeral}%</div>
@@ -486,7 +601,14 @@ export default function RelatorioPDF() {
               </div>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'8px'}}>
-              {[['22','Sessoes'],['9h 15m','Foco'],[(child.xp||680)+' XP','Total'],[(child.neural_coins||324),'Coins'],[child.streak_maximo+' dias','Streak'],['Top 20%','Ranking']].map(([val,label]) => (
+              {[
+                [String(totalSessoes),'Sessoes'],
+                [horasFormatadas,'Foco'],
+                [(child.xp||0)+' XP','Total'],
+                [String(child.neural_coins||0),'Coins'],
+                [(child.streak_maximo||0)+' dias','Streak'],
+                [ranking,'Ranking'],
+              ].map(([val,label]) => (
                 <div key={label} style={{background:'rgba(255,255,255,0.12)',borderRadius:'10px',padding:'10px',backdropFilter:'blur(8px)',textAlign:'center'}}>
                   <div style={{fontWeight:'900',fontSize:'13px'}}>{val}</div>
                   <div style={{fontSize:'10px',color:'rgba(255,255,255,0.6)',marginTop:'2px'}}>{label}</div>
@@ -616,13 +738,12 @@ export default function RelatorioPDF() {
             <div style={{background:'#eff6ff',borderRadius:'12px',padding:'16px',border:'1px solid #bfdbfe'}}>
               <div style={{fontWeight:'700',fontSize:'13px',color:'#1e40af',marginBottom:'6px'}}>🔬 Base Científica</div>
               <p style={{fontSize:'12px',color:'#3b82f6',lineHeight:'1.6'}}>
-                Este plano foi desenvolvido com base no perfil cognitivo individual de {child.nome}, nas diretrizes de Piaget para a fase operatória concreta (6-8 anos), Manual MSD de Desenvolvimento Infantil 2025 e pesquisas da Dra. Fernanda Monteiro. As metas respeitam o ritmo de desenvolvimento da faixa Construtores.
+                Este plano foi desenvolvido com base no perfil cognitivo individual de {child.nome}, nas diretrizes de Piaget para a fase operatória concreta, Manual MSD de Desenvolvimento Infantil 2025 e pesquisas da Dra. Fernanda Monteiro.
               </p>
             </div>
           </div>
         )}
 
-        {/* BOTAO PDF */}
         <button onClick={gerarPDF} disabled={gerando} style={{
           width:'100%',padding:'17px',borderRadius:'16px',border:'none',marginTop:'20px',
           background: gerado ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#7C3AED,#6d28d9)',
@@ -633,7 +754,7 @@ export default function RelatorioPDF() {
           {gerando ? '⏳ Gerando PDF de 2 páginas...' : gerado ? '✅ PDF baixado com sucesso!' : '📄 Gerar Relatório Premium em PDF (2 páginas)'}
         </button>
         <p style={{textAlign:'center',color:'#9ca3af',fontSize:'12px',marginTop:'8px'}}>
-          Relatório completo de 2 páginas com análise personalizada para {child.nome}
+          Relatório completo com análise personalizada para {child.nome}
         </p>
       </div>
     </div>

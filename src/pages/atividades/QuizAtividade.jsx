@@ -30,14 +30,15 @@ export default function QuizAtividade() {
     if (selecionado !== null) return
     setSelecionado(idx)
     if (idx === pergunta.correta) setAcertos(a => a + 1)
-    setTimeout(() => {
-      if (atual + 1 < total) {
-        setAtual(a => a + 1)
-        setSelecionado(null)
-      } else {
-        setEncerrado(true)
-      }
-    }, 1300)
+  }
+
+  function avancar() {
+    if (atual + 1 < total) {
+      setAtual(a => a + 1)
+      setSelecionado(null)
+    } else {
+      setEncerrado(true)
+    }
   }
 
   function reiniciar() {
@@ -153,16 +154,24 @@ export default function QuizAtividade() {
               background: selecionado === pergunta.correta ? '#f0fdf4' : '#fef2f2',
               border: '1.5px solid ' + (selecionado === pergunta.correta ? '#10b981' : '#ef4444'),
             }}>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: selecionado === pergunta.correta ? '#065f46' : '#991b1b', marginBottom: pergunta.fato ? '8px' : 0 }}>
+              <div style={{ fontSize: '14px', fontWeight: '700', color: selecionado === pergunta.correta ? '#065f46' : '#991b1b', marginBottom: pergunta.fato ? '8px' : '12px' }}>
                 {selecionado === pergunta.correta
                   ? '✅ Correto! Continue assim!'
                   : '❌ Resposta certa: ' + pergunta.opcoes[pergunta.correta]}
               </div>
               {pergunta.fato && (
-                <div style={{ fontSize: '12px', color: '#374151', lineHeight: 1.5, background: 'rgba(0,0,0,0.04)', borderRadius: '8px', padding: '8px 10px' }}>
+                <div style={{ fontSize: '12px', color: '#374151', lineHeight: 1.5, background: 'rgba(0,0,0,0.04)', borderRadius: '8px', padding: '8px 10px', marginBottom: '12px' }}>
                   💡 {pergunta.fato}
                 </div>
               )}
+              <button onClick={avancar} style={{
+                width: '100%', padding: '11px', borderRadius: '10px', border: 'none',
+                background: selecionado === pergunta.correta ? '#10b981' : '#7C3AED',
+                color: 'white', fontWeight: '800', fontSize: '14px', cursor: 'pointer',
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+              }}>
+                {atual + 1 < total ? 'Próxima →' : 'Ver resultado →'}
+              </button>
             </div>
           )}
         </div>

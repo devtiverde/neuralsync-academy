@@ -3,6 +3,8 @@ import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Planos from './pages/Planos'
 import Dashboard from './pages/pai/Dashboard'
+import Questionario from './pages/pai/Questionario'
+import PerfilCognitivo from './pages/pai/PerfilCognitivo'
 import Timer from './pages/pai/Timer'
 import Agenda from './pages/pai/Agenda'
 import Relatorio from './pages/pai/Relatorio'
@@ -23,6 +25,7 @@ import KidsVideo from './pages/kids/KidsVideo'
 import Loja from './pages/loja/Loja'
 import Ebook from './pages/ebook/Ebook'
 import EbookLeitura from './pages/ebook/EbookLeitura'
+import Seeder from './pages/admin/Seeder'
 import QuizAtividade from './pages/atividades/QuizAtividade'
 import MemoriaAtividade from './pages/atividades/MemoriaAtividade'
 import SequenciaAtividade from './pages/atividades/SequenciaAtividade'
@@ -41,6 +44,8 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/planos" element={<Planos />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/questionario/:childId" element={<Questionario />} />
+        <Route path="/perfil-cognitivo/:childId" element={<PerfilCognitivo />} />
         <Route path="/timer" element={<Timer />} />
         <Route path="/agenda" element={<Agenda />} />
         <Route path="/relatorio" element={<Relatorio />} />
@@ -70,6 +75,7 @@ function App() {
         <Route path="/atividade/quizia"   element={<QuizIAAtividade />} />
         <Route path="/atividade/inventor" element={<InventorAtividade />} />
         <Route path="/atividade/blocos"   element={<BlocosAtividade />} />
+        <Route path="/admin/seed" element={<Seeder />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

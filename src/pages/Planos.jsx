@@ -1,6 +1,21 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const kiwifyLinks = {
+  starter: {
+    mensal: 'https://pay.kiwify.com.br/a6qaMFN',
+    anual:  'https://pay.kiwify.com.br/JXQgU9V',
+  },
+  familia: {
+    mensal: 'https://pay.kiwify.com.br/lRk8jxI',
+    anual:  'https://pay.kiwify.com.br/6fGqaVh',
+  },
+  premium: {
+    mensal: 'https://pay.kiwify.com.br/CapcmAU',
+    anual:  'https://pay.kiwify.com.br/4abmLbG',
+  },
+}
+
 const precos = {
   starter: { mensal: 29, anual: 19 },
   familia: { mensal: 47, anual: 32 },
@@ -100,7 +115,7 @@ const faq = [
 
 export default function Planos() {
   const navigate = useNavigate()
-  const [periodo, setPeriodo] = useState('anual')
+  const [periodo, setPeriodo] = useState('mensal')
 
   useEffect(() => {
     const link = document.createElement('link')
@@ -126,14 +141,14 @@ export default function Planos() {
         </div>
         <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
           <button onClick={() => navigate('/auth')} style={{background:'none',border:'none',color:'#6b7280',cursor:'pointer',fontWeight:'600',fontSize:'14px'}}>Entrar</button>
-          <button onClick={() => navigate('/auth')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'999px',padding:'10px 22px',color:'white',cursor:'pointer',fontSize:'14px',fontWeight:'700',boxShadow:'0 4px 14px rgba(124,58,237,0.3)'}}>Começar grátis</button>
+          <button onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'999px',padding:'10px 22px',color:'white',cursor:'pointer',fontSize:'14px',fontWeight:'700',boxShadow:'0 4px 14px rgba(124,58,237,0.3)'}}>Começar grátis</button>
         </div>
       </header>
 
       {/* HERO */}
       <section style={{textAlign:'center',padding:'72px 24px 56px',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 50%,#e0f2fe 100%)'}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'#d1fae5',border:'1px solid #6ee7b7',borderRadius:'999px',padding:'6px 14px',fontSize:'13px',color:'#065f46',marginBottom:'20px',fontWeight:'600'}}>
-          💳 Planos e preços
+        <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:'999px',padding:'6px 14px',fontSize:'13px',color:'#c2410c',marginBottom:'20px',fontWeight:'700'}}>
+          🔥 Preço de Lançamento Antecipado — por tempo limitado
         </div>
         <h1 style={{fontSize:'48px',fontWeight:'900',letterSpacing:'-2px',marginBottom:'14px',lineHeight:'1.05'}}>
           Invista no futuro<br /><span style={{color:'#7C3AED'}}>do seu filho</span>
@@ -143,24 +158,42 @@ export default function Planos() {
         </p>
 
         {/* TOGGLE */}
-        <div style={{display:'inline-flex',background:'white',borderRadius:'14px',padding:'4px',border:'1.5px solid #e5e7eb',boxShadow:'0 2px 8px rgba(0,0,0,0.06)'}}>
-          {[['mensal','Mensal'],['anual','Anual']].map(([id,label]) => (
-            <button key={id} onClick={() => setPeriodo(id)} style={{
-              padding:'10px 24px',borderRadius:'10px',border:'none',cursor:'pointer',
-              fontWeight:'700',fontSize:'14px',transition:'all 0.2s',
-              background: periodo === id ? '#7C3AED' : 'transparent',
-              color: periodo === id ? 'white' : '#6b7280',
-              display:'flex',alignItems:'center',gap:'6px'
-            }}>
-              {label}
-              {id === 'anual' && <span style={{background:'#d1fae5',color:'#065f46',borderRadius:'999px',padding:'2px 8px',fontSize:'11px',fontWeight:'700'}}>-35%</span>}
-            </button>
-          ))}
+        <div style={{marginBottom:'8px'}}>
+          <div style={{display:'inline-flex',background:'white',borderRadius:'14px',padding:'4px',border:'2px solid #7C3AED',boxShadow:'0 4px 16px rgba(124,58,237,0.2)'}}>
+            {[['mensal','Mensal'],['anual','Anual — Economize 35%']].map(([id,label]) => (
+              <button key={id} onClick={() => setPeriodo(id)} style={{
+                padding:'12px 28px',borderRadius:'10px',border:'none',cursor:'pointer',
+                fontWeight:'800',fontSize:'14px',transition:'all 0.2s',
+                background: periodo === id ? '#7C3AED' : 'transparent',
+                color: periodo === id ? 'white' : '#6b7280',
+                display:'flex',alignItems:'center',gap:'8px'
+              }}>
+                {label}
+                {id === 'anual' && periodo === 'anual' && (
+                  <span style={{background:'#d1fae5',color:'#065f46',borderRadius:'999px',padding:'2px 8px',fontSize:'11px',fontWeight:'700'}}>✓ Ativo</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
+        <p style={{color:'#9ca3af',fontSize:'13px',marginTop:'8px'}}>
+          {periodo === 'mensal' ? 'Cobrado mensalmente • Cancele quando quiser' : 'Cobrado anualmente • Equivale a 2 meses grátis'}
+        </p>
       </section>
 
       {/* CARDS */}
       <section style={{padding:'0 24px 72px',maxWidth:'1020px',margin:'-24px auto 0'}}>
+        <div style={{textAlign:'center',marginBottom:'20px'}}>
+          <span style={{
+            display:'inline-block',
+            background: periodo === 'mensal' ? '#ede9fe' : '#d1fae5',
+            color: periodo === 'mensal' ? '#6d28d9' : '#065f46',
+            borderRadius:'999px',padding:'6px 20px',
+            fontSize:'14px',fontWeight:'800',
+          }}>
+            {periodo === 'mensal' ? '📅 Cobrança mensal — cancele quando quiser' : '🎉 Cobrança anual — 2 meses grátis incluídos'}
+          </span>
+        </div>
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'20px',alignItems:'start'}}>
           {planosList.map(plano => (
             <div key={plano.id} style={{
@@ -207,7 +240,7 @@ export default function Planos() {
                 )}
               </div>
 
-              <button onClick={() => navigate('/auth')} style={{
+              <button onClick={() => window.open(kiwifyLinks[plano.id][periodo], '_blank')} style={{
                 width:'100%',padding:'13px',borderRadius:'12px',border:'none',
                 background: plano.destaque ? 'white' : 'linear-gradient(135deg,#7C3AED,#6d28d9)',
                 color: plano.destaque ? '#7C3AED' : 'white',
@@ -215,7 +248,7 @@ export default function Planos() {
                 boxShadow: plano.destaque ? '0 4px 16px rgba(0,0,0,0.15)' : '0 4px 14px rgba(124,58,237,0.3)',
                 marginBottom:'20px',transition:'all 0.2s'
               }}>
-                Começar 7 dias grátis →
+                {periodo === 'mensal' ? `Assinar mensalmente →` : `Assinar anualmente →`}
               </button>
 
               <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
@@ -245,7 +278,7 @@ export default function Planos() {
           ))}
         </div>
         <p style={{textAlign:'center',color:'#9ca3af',fontSize:'13px',marginTop:'20px'}}>
-          ✓ 7 dias grátis em qualquer plano  •  ✓ Cancele quando quiser  •  ✓ Sem fidelidade
+          ✓ 7 dias de garantia  •  ✓ Cancele quando quiser  •  ✓ Sem fidelidade
         </p>
       </section>
 
@@ -346,11 +379,11 @@ export default function Planos() {
       {/* CTA */}
       <section style={{padding:'72px 24px',textAlign:'center',background:'linear-gradient(145deg,#faf5ff,#ede9fe)'}}>
         <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',marginBottom:'14px',lineHeight:'1.1',color:'#0f0a1e'}}>
-          Comece hoje.<br /><span style={{color:'#7C3AED'}}>Sem cartão.</span>
+          Comece hoje.<br /><span style={{color:'#7C3AED'}}>7 dias de garantia.</span>
         </h2>
-        <p style={{color:'#6b7280',fontSize:'16px',marginBottom:'32px'}}>7 dias grátis em qualquer plano. Cancele quando quiser.</p>
-        <button onClick={() => navigate('/auth')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'14px',padding:'16px 40px',color:'white',cursor:'pointer',fontWeight:'800',fontSize:'18px',boxShadow:'0 8px 30px rgba(124,58,237,0.4)'}}>
-          Começar 7 dias grátis →
+        <p style={{color:'#6b7280',fontSize:'16px',marginBottom:'32px'}}>7 dias de garantia em qualquer plano. Cancele quando quiser.</p>
+        <button onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'14px',padding:'16px 40px',color:'white',cursor:'pointer',fontWeight:'800',fontSize:'18px',boxShadow:'0 8px 30px rgba(124,58,237,0.4)'}}>
+          Assinar agora →
         </button>
       </section>
 

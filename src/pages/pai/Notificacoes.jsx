@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/pai.css'
 
 const icones = {
-  atividade: '🎯',
-  conquista: '🏆',
-  sessao_inicio: '🟢',
-  sessao_fim: '🔵',
-  relatorio: '📊',
-  coins: '💰',
-  streak: '🔥',
+  atividade: '🎯', conquista: '🏆', sessao_inicio: '🟢',
+  sessao_fim: '🔵', relatorio: '📊', coins: '💰', streak: '🔥',
 }
 
 function tempoRelativo(ts) {
@@ -24,41 +21,71 @@ function tempoRelativo(ts) {
 
 export default function Notificacoes() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [notifs, setNotifs] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const hist = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
-    const staticNotifs = [
-      { id: 'rel', tipo: 'relatorio', titulo: 'Relatório disponível', mensagem: 'O relatório semanal está pronto para visualização', tempo: 'ontem', lida: true, ts: Date.now() - 86400000 },
-    ]
-    const histNotifs = hist.slice(0, 10).map((h, i) => ({
-      id: 'h_' + i,
-      tipo: 'atividade',
-      titulo: 'Atividade concluída',
-      mensagem: `"${h.titulo}" foi concluída com +${h.xp || 0} XP e +${h.coins || 0} 💰`,
-      tempo: tempoRelativo(h.timestamp),
-      lida: i > 1,
-      ts: h.timestamp || (Date.now() - i * 3600000),
-    }))
-    const coinsNotifs = hist.filter(h => (h.xp || 0) >= 100).slice(0, 2).map((h, i) => ({
-      id: 'coins_' + i,
-      tipo: 'conquista',
-      titulo: 'Desempenho excelente!',
-      mensagem: `Pontuação alta em "${h.titulo}" — ${h.xp} XP ganhos!`,
-      tempo: tempoRelativo(h.timestamp),
-      lida: true,
-      ts: (h.timestamp || Date.now()) - 1000,
-    }))
-    const allNotifs = [...histNotifs, ...coinsNotifs, ...staticNotifs]
-      .sort((a, b) => (b.ts || 0) - (a.ts || 0))
-    setNotifs(allNotifs.length > 0 ? allNotifs : [
-      { id: 1, tipo: 'sessao_inicio', titulo: 'Sessão iniciada', mensagem: 'Sua criança começou uma sessão de aprendizado', tempo: 'há 2 horas', lida: false, ts: Date.now() - 7200000 },
-      { id: 2, tipo: 'conquista', titulo: 'Nova conquista!', mensagem: '"Primeira Missão" desbloqueada!', tempo: 'há 2 horas', lida: false, ts: Date.now() - 7200000 },
-      { id: 3, tipo: 'sessao_fim', titulo: 'Sessão encerrada', mensagem: 'Sua criança completou a sessão de aprendizado', tempo: 'há 3 horas', lida: true, ts: Date.now() - 10800000 },
-      { id: 4, tipo: 'relatorio', titulo: 'Relatório disponível', mensagem: 'O relatório semanal está pronto', tempo: 'ontem', lida: true, ts: Date.now() - 86400000 },
-      { id: 5, tipo: 'streak', titulo: 'Streak! 🔥', mensagem: '7 dias seguidos de estudo!', tempo: 'ontem', lida: true, ts: Date.now() - 90000000 },
-    ])
-  }, [])
+    async function carregarNotifs() {
+      let hist = []
+
+      if (user) {
+        const { data: filhos } = await supabase.from('children').select('id,nome').eq('parent_id', user.id)
+        if (filhos && filhos.length > 0) {
+          const ids = filhos.map(f => f.id)
+          const { data } = await supabase
+            .from('ns_historico')
+            .select('titulo, xp, coins, tipo, timestamp, child_id')
+            .in('child_id', ids)
+            .order('timestamp', { ascending: false })
+            .limit(20)
+          if (data && data.length > 0) {
+            const nomeMap = Object.fromEntries(filhos.map(f => [f.id, f.nome]))
+            hist = data.map(h => ({ ...h, nome_filho: nomeMap[h.child_id] }))
+          }
+        }
+      }
+
+      if (hist.length === 0) {
+        const local = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
+        hist = local.slice(0, 10)
+      }
+
+      const histNotifs = hist.map((h, i) => ({
+        id: 'h_' + i,
+        tipo: 'atividade',
+        titulo: 'Atividade concluída' + (h.nome_filho ? ` — ${h.nome_filho}` : ''),
+        mensagem: `"${h.titulo}" foi concluída com +${h.xp || 0} XP e +${h.coins || 0} 💰`,
+        tempo: tempoRelativo(h.timestamp),
+        lida: i > 2,
+        ts: h.timestamp || (Date.now() - i * 3600000),
+      }))
+
+      const coinsNotifs = hist.filter(h => (h.xp || 0) >= 100).slice(0, 2).map((h, i) => ({
+        id: 'coins_' + i,
+        tipo: 'conquista',
+        titulo: '🏆 Desempenho excelente!',
+        mensagem: `Pontuação alta em "${h.titulo}" — ${h.xp} XP ganhos!`,
+        tempo: tempoRelativo(h.timestamp),
+        lida: true,
+        ts: (h.timestamp || Date.now()) - 1000,
+      }))
+
+      const staticNotifs = [
+        { id: 'rel', tipo: 'relatorio', titulo: 'Relatório disponível', mensagem: 'O relatório semanal está pronto para visualização', tempo: 'ontem', lida: true, ts: Date.now() - 86400000 },
+      ]
+
+      const allNotifs = [...histNotifs, ...coinsNotifs, ...staticNotifs]
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+
+      setNotifs(allNotifs.length > 0 ? allNotifs : [
+        { id: 1, tipo: 'relatorio', titulo: 'Relatório disponível', mensagem: 'O relatório semanal está pronto', tempo: 'ontem', lida: true, ts: Date.now() - 86400000 },
+      ])
+      setLoading(false)
+    }
+
+    carregarNotifs()
+  }, [user])
 
   const naoLidas = notifs.filter(n => !n.lida).length
   const marcarTodas = () => setNotifs(prev => prev.map(n => ({ ...n, lida: true })))
@@ -76,7 +103,11 @@ export default function Notificacoes() {
       </header>
 
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '32px 24px' }}>
-        {notifs.length === 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <div style={{ color: '#7C3AED', fontWeight: '700' }}>Carregando notificações...</div>
+          </div>
+        ) : notifs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔔</div>
             <p style={{ color: '#9ca3af', fontWeight: '600' }}>Nenhuma notificação ainda.</p>

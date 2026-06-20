@@ -24,7 +24,8 @@ const avatarPadrao = ['🦊', '👧', '👦', '🐱', '🐶', '🦁', '🐸', '�
 
 export default function Relatorio() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, subscription } = useAuth()
+  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
   const [aba, setAba] = useState('diario')
   const [filhos, setFilhos] = useState([])
   const [filhoIdx, setFilhoIdx] = useState(0)
@@ -41,12 +42,25 @@ export default function Relatorio() {
     })
   }, [user])
 
-  useEffect(() => {
-    const hist = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
-    setHistorico(hist)
-  }, [])
-
   const filho = filhos[filhoIdx]
+
+  useEffect(() => {
+    if (!filho) return
+    supabase
+      .from('ns_historico')
+      .select('*')
+      .eq('child_id', filho.id)
+      .order('timestamp', { ascending: false })
+      .limit(200)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setHistorico(data)
+        } else {
+          const local = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
+          setHistorico(local)
+        }
+      })
+  }, [filho?.id])
 
   const histFilho = useMemo(() => {
     if (!filho) return historico
@@ -96,6 +110,24 @@ export default function Relatorio() {
 
   const tipoColor = { quiz: '#F07A20', memoria: '#9C27B0', sequencia: '#3b82f6', labirinto: '#10b981', robo: '#7C3AED', padrao: '#ef4444', quizia: '#7C3AED', inventor: '#F07A20', blocos: '#10b981' }
   const tipoLabel = { quiz: 'Quiz', memoria: 'Memória', sequencia: 'Sequência', labirinto: 'Labirinto', robo: 'Robô', padrao: 'Padrão', quizia: 'Quiz IA', inventor: 'Inventor', blocos: 'Blocos' }
+
+  if (!temAcesso) return (
+    <div style={{background: '#f9fafb', minHeight: '100vh'}}>
+      <header className="pai-header">
+        <button onClick={() => navigate('/dashboard')} className="btn-secondary">← Voltar</button>
+      </header>
+      <div style={{maxWidth: '480px', margin: '80px auto', textAlign: 'center', padding: '24px'}}>
+        <div style={{fontSize: '64px', marginBottom: '16px'}}>📊</div>
+        <h2 style={{fontWeight: '900', fontSize: '24px', color: '#0f0a1e', marginBottom: '10px'}}>Disponível no Plano Família</h2>
+        <p style={{color: '#6b7280', fontSize: '15px', lineHeight: '1.6', marginBottom: '28px'}}>
+          O relatório semanal detalhado com gráficos e evolução cognitiva é exclusivo dos planos Família e Premium.
+        </p>
+        <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 32px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.35)'}}>
+          Ver planos →
+        </button>
+      </div>
+    </div>
+  )
 
   if (loadingFilhos) return (
     <div style={{ background: '#f9fafb', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

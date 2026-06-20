@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Auth() {
@@ -11,6 +11,9 @@ export default function Auth() {
   const [error, setError] = useState('')
   const { signIn, signUp } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const ativado = searchParams.get('ativado') === '1'
+  const planoParam = searchParams.get('plano')
 
   useEffect(() => {
     const link = document.createElement('link')
@@ -40,6 +43,10 @@ export default function Auth() {
     document.head.appendChild(style)
   }, [])
 
+  useEffect(() => {
+    if (ativado) setIsLogin(false)
+  }, [ativado])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -56,6 +63,10 @@ export default function Auth() {
     setLoading(false)
   }
 
+  const subtituloSignup = ativado
+    ? `Pagamento confirmado${planoParam ? ` — plano ${planoParam}` : ''}! Preencha seus dados para ativar o acesso.`
+    : 'Crie sua conta e comece com 7 dias de garantia.'
+
   return (
     <div style={{
       minHeight: '100vh', display: 'flex',
@@ -71,11 +82,21 @@ export default function Auth() {
           </span>
         </div>
 
+        {ativado && (
+          <div style={{background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px'}}>
+            <div style={{fontSize: '24px'}}>✅</div>
+            <div>
+              <div style={{fontWeight: '800', fontSize: '14px', color: '#166534'}}>Pagamento confirmado!</div>
+              <div style={{fontSize: '13px', color: '#15803d'}}>Crie sua conta abaixo para ativar o acesso imediatamente.</div>
+            </div>
+          </div>
+        )}
+
         <h1 style={{fontSize: '40px', fontWeight: '900', letterSpacing: '-1.5px', color: '#0f0a1e', marginBottom: '12px', lineHeight: '1.1'}}>
           {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
         </h1>
         <p style={{color: '#6b7280', fontSize: '16px', marginBottom: '40px'}}>
-          {isLogin ? 'Entre para acompanhar a evolução do seu filho.' : 'Comece grátis. Sem cartão de crédito.'}
+          {isLogin ? 'Entre para acompanhar a evolução do seu filho.' : subtituloSignup}
         </p>
 
         {error && (
@@ -100,7 +121,7 @@ export default function Auth() {
             <input className="auth-input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className="auth-btn" disabled={loading} style={{marginTop: '8px'}}>
-            {loading ? 'Carregando...' : isLogin ? 'Entrar →' : 'Criar conta →'}
+            {loading ? 'Carregando...' : isLogin ? 'Entrar →' : ativado ? 'Criar conta e ativar plano →' : 'Criar conta →'}
           </button>
         </form>
 
@@ -118,7 +139,6 @@ export default function Auth() {
         background: 'linear-gradient(135deg, #7C3AED 0%, #6d28d9 50%, #4c1d95 100%)',
         padding: '60px', position: 'relative', overflow: 'hidden'
       }}>
-        {/* Círculos decorativos */}
         <div style={{position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)'}} />
         <div style={{position: 'absolute', bottom: '-60px', left: '-60px', width: '250px', height: '250px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)'}} />
 
@@ -131,7 +151,6 @@ export default function Auth() {
             Mais de 50.000 crianças já desenvolvem habilidades cognitivas com a NeuralSync Academy.
           </p>
 
-          {/* Stats */}
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '40px'}}>
             {[['+50k','Crianças ativas'],['8','Habilidades'],['4.9★','Avaliação'],['200+','Atividades']].map(([num, label]) => (
               <div key={label} style={{background: 'rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', backdropFilter: 'blur(8px)'}}>
@@ -141,7 +160,6 @@ export default function Auth() {
             ))}
           </div>
 
-          {/* Depoimento */}
           <div style={{background: 'rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(8px)', textAlign: 'left'}}>
             <div style={{color: '#F07A20', fontSize: '14px', marginBottom: '10px'}}>★★★★★</div>
             <p style={{fontSize: '14px', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', fontStyle: 'italic', marginBottom: '14px'}}>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { atividadesPorFaixa, fase2PorFaixa, fase3PorFaixa, tipoConfig } from '../../data/atividadesData'
+import { tipoConfig } from '../../data/atividadesData'
+import { useAtividades } from '../../hooks/useAtividades'
 import '../../styles/crianca.css'
 
 const menu = [
@@ -20,32 +21,75 @@ const nomeFaixa = {
   inventores:   'Inventores 💡',
 }
 
+function semanaAtual() {
+  const d = new Date()
+  const start = new Date(d.getFullYear(), 0, 0)
+  const day = Math.floor((d - start) / 86400000)
+  return `${d.getFullYear()}-W${Math.floor(day / 7)}`
+}
+
 export default function Trilha() {
   const navigate = useNavigate()
   const { state: navState } = useLocation()
 
-  const [activities, setActivities] = useState([])
   const [faixa, setFaixa] = useState('construtores')
   const [concluidas, setConcluidas] = useState([])
   const [filtroTipo, setFiltroTipo] = useState(navState?.filtroTipo || 'todos')
+  const [child, setChild] = useState(null)
+  const [desafioReivindicado, setDesafioReivindicado] = useState(false)
+
+  const { atividades: activities } = useAtividades(faixa)
 
   useEffect(() => {
-    supabase.from('children').select('faixa_etaria').limit(1).then(({ data }) => {
-      const f = data?.[0]?.faixa_etaria || 'construtores'
-      setFaixa(f)
-      const fase1 = atividadesPorFaixa[f] || atividadesPorFaixa.construtores
-      const fase2 = fase2PorFaixa[f]     || fase2PorFaixa.construtores
-      const fase3 = fase3PorFaixa[f]     || []
-      setActivities([...fase1, ...fase2, ...fase3])
-    })
+    const c = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+    setChild(c)
+    if (c?.faixa_etaria) setFaixa(c.faixa_etaria)
+    else {
+      supabase.from('children').select('faixa_etaria').limit(1).then(({ data }) => {
+        const f = data?.[0]?.faixa_etaria || 'construtores'
+        setFaixa(f)
+      })
+    }
+    if (c?.id) {
+      const chave = `ns_desafio_${c.id}_${semanaAtual()}`
+      setDesafioReivindicado(!!localStorage.getItem(chave))
+    }
   }, [])
+
+  useEffect(() => {
+    try {
+      const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+      const c = JSON.parse(localStorage.getItem('ns_active_child') || 'null')
+      if (!c?.id) return
+      const registros = hist.filter(h => h.child_id === c.id)
+      const ids = new Set()
+      registros.forEach(h => {
+        if (h.atividade_id) ids.add(h.atividade_id)
+        if (h.tipo) ids.add(h.tipo)
+      })
+      setConcluidas([...ids])
+    } catch {}
+  }, [])
+
+  async function reivindicarDesafio() {
+    if (!child?.id || desafioReivindicado) return
+    const novoXp = (child.xp || 0) + 500
+    const novasCoins = (child.neural_coins || 0) + 500
+    await supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id)
+    const updated = { ...child, xp: novoXp, neural_coins: novasCoins }
+    setChild(updated)
+    localStorage.setItem('ns_active_child', JSON.stringify(updated))
+    const chave = `ns_desafio_${child.id}_${semanaAtual()}`
+    localStorage.setItem(chave, '1')
+    setDesafioReivindicado(true)
+  }
 
   const atividadesVisiveis = filtroTipo === 'todos'
     ? activities
     : activities.filter(a => a.tipo === filtroTipo)
 
   const getStatus = (act) => {
-    if (concluidas.includes(act.id)) return 'concluido'
+    if (concluidas.includes(act.id) || concluidas.includes(act.tipo)) return 'concluido'
     return 'andamento'
   }
 
@@ -55,7 +99,7 @@ export default function Trilha() {
     pendente:  { border: '#e5e7eb', bg: '#f9fafb', icon: '🔒' },
   }
 
-  const totalConcluidas = concluidas.length
+  const totalConcluidas = activities.filter(a => getStatus(a) === 'concluido').length
   const total = activities.length
   const pct = total > 0 ? Math.round((totalConcluidas / total) * 100) : 0
 
@@ -190,11 +234,19 @@ export default function Trilha() {
 
             {/* Desafio da semana */}
             {filtroTipo === 'todos' && (
-              <div style={{ background: '#fffbeb', borderRadius: '18px', padding: '18px', border: '1.5px solid #fcd34d' }}>
-                <div style={{ fontSize: '10px', color: '#d97706', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>⭐ Desafio da Semana</div>
+              <div style={{ background: desafioReivindicado ? '#f0fdf4' : '#fffbeb', borderRadius: '18px', padding: '18px', border: `1.5px solid ${desafioReivindicado ? '#86efac' : '#fcd34d'}` }}>
+                <div style={{ fontSize: '10px', color: desafioReivindicado ? '#15803d' : '#d97706', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>⭐ Desafio da Semana</div>
                 <div style={{ fontWeight: '800', fontSize: '16px', marginBottom: '4px', color: '#0f0a1e' }}>Completar todas as atividades</div>
                 <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '10px' }}>Complete todas as {total} atividades da sua trilha esta semana para ganhar o bônus máximo!</div>
-                <div style={{ fontSize: '13px', color: '#d97706', fontWeight: '800' }}>🏆 +500 XP • +500 NeuralCoins</div>
+                {desafioReivindicado ? (
+                  <div style={{ fontSize: '13px', color: '#15803d', fontWeight: '800' }}>✅ Bônus já resgatado esta semana!</div>
+                ) : totalConcluidas === total && total > 0 ? (
+                  <button onClick={reivindicarDesafio} style={{ background: 'linear-gradient(135deg, #F07A20, #ea580c)', border: 'none', borderRadius: '10px', padding: '10px 20px', color: 'white', fontWeight: '800', fontSize: '14px', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                    🏆 Resgatar +500 XP e +500 Coins!
+                  </button>
+                ) : (
+                  <div style={{ fontSize: '13px', color: '#d97706', fontWeight: '800' }}>🏆 +500 XP • +500 NeuralCoins — complete tudo! ({totalConcluidas}/{total})</div>
+                )}
               </div>
             )}
           </div>

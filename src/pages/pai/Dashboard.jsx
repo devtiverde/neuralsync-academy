@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/pai.css'
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, subscription } = useAuth()
   const navigate = useNavigate()
   const [children, setChildren] = useState([])
   const [loading, setLoading] = useState(true)
@@ -13,10 +13,14 @@ export default function Dashboard() {
   const [novoFilho, setNovoFilho] = useState({ nome: '', idade: '', faixa_etaria: 'construtores' })
   const [salvando, setSalvando] = useState(false)
 
+  const { loading: authLoading } = useAuth()
+
   useEffect(() => {
+    if (authLoading) return
     if (!user) { navigate('/auth'); return }
+    if (subscription && subscription.plano_status !== 'ativo') { navigate('/planos'); return }
     loadChildren()
-  }, [user])
+  }, [user, authLoading, subscription])
 
   const loadChildren = async () => {
     const { data } = await supabase.from('children').select('*').eq('parent_id', user.id)
@@ -24,20 +28,25 @@ export default function Dashboard() {
     setLoading(false)
   }
 
+  const limiteFilhos = subscription?.filhos_limite ?? 1
+  const podeAdicionarFilho = children.length < limiteFilhos
+
   const adicionarFilho = async () => {
     if (!novoFilho.nome || !novoFilho.idade) return
+    if (!podeAdicionarFilho) return
     setSalvando(true)
-    await supabase.from('children').insert({
+    const { data } = await supabase.from('children').insert({
       parent_id: user.id,
       nome: novoFilho.nome,
       idade: parseInt(novoFilho.idade),
       faixa_etaria: novoFilho.faixa_etaria,
       nivel: 1, xp: 0, neural_coins: 0, streak_atual: 0, streak_maximo: 0
-    })
-    await loadChildren()
+    }).select().single()
     setShowModal(false)
     setNovoFilho({ nome: '', idade: '', faixa_etaria: 'construtores' })
     setSalvando(false)
+    if (data?.id) navigate(`/questionario/${data.id}`)
+    else await loadChildren()
   }
 
   const menuItems = [
@@ -53,6 +62,23 @@ export default function Dashboard() {
     construtores: '🧩 Construtores 6-8 anos',
     criadores: '🎨 Criadores 9-11 anos',
     inventores: '🚀 Inventores 12+ anos'
+  }
+
+  // Normaliza qualquer valor de faixa para um dos 4 válidos. Aceita variações
+  // ('explorer', 'explorador', maiúsculas) e, se vier inválido/vazio, deduz
+  // pela idade. Garante que o card nunca mostre um valor cru/quebrado.
+  const normalizarFaixa = (faixa, idade) => {
+    const f = (faixa || '').toString().trim().toLowerCase()
+    if (f.startsWith('explor')) return 'exploradores'
+    if (f.startsWith('constr')) return 'construtores'
+    if (f.startsWith('criad'))  return 'criadores'
+    if (f.startsWith('invent')) return 'inventores'
+    const n = parseInt(idade)
+    if (n >= 3 && n <= 5)  return 'exploradores'
+    if (n >= 6 && n <= 8)  return 'construtores'
+    if (n >= 9 && n <= 11) return 'criadores'
+    if (n >= 12)           return 'inventores'
+    return 'construtores'
   }
 
   return (
@@ -74,6 +100,44 @@ export default function Dashboard() {
 
       <div style={{maxWidth: '1000px', margin: '0 auto', padding: '32px 24px'}}>
 
+        {/* BANNER DE ASSINATURA */}
+        {subscription && subscription.plano_status === 'ativo' && (
+          <div style={{background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <span style={{fontSize: '18px'}}>✅</span>
+              <div>
+                <span style={{fontWeight: '700', fontSize: '14px', color: '#166534'}}>Plano {subscription.plano?.charAt(0).toUpperCase() + subscription.plano?.slice(1)} ativo</span>
+                {subscription.plano_ativo_ate && (
+                  <span style={{fontSize: '12px', color: '#15803d', marginLeft: '8px'}}>• Renovação em {new Date(subscription.plano_ativo_ate).toLocaleDateString('pt-BR')}</span>
+                )}
+              </div>
+            </div>
+            <span style={{fontSize: '12px', color: '#15803d', fontWeight: '600'}}>{limiteFilhos === 999 ? 'Filhos ilimitados' : `Até ${limiteFilhos} filho${limiteFilhos > 1 ? 's' : ''}`}</span>
+          </div>
+        )}
+        {(!subscription || subscription.plano_status === 'pendente') && (
+          <div style={{background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <span style={{fontSize: '18px'}}>⚠️</span>
+              <span style={{fontWeight: '600', fontSize: '14px', color: '#92400e'}}>Você ainda não tem uma assinatura ativa.</span>
+            </div>
+            <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', color: 'white', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer'}}>
+              Assinar agora →
+            </button>
+          </div>
+        )}
+        {subscription?.plano_status === 'cancelado' && (
+          <div style={{background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '14px', padding: '12px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <span style={{fontSize: '18px'}}>❌</span>
+              <span style={{fontWeight: '600', fontSize: '14px', color: '#991b1b'}}>Sua assinatura foi cancelada.</span>
+            </div>
+            <button onClick={() => navigate('/planos')} style={{background: '#dc2626', color: 'white', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer'}}>
+              Renovar →
+            </button>
+          </div>
+        )}
+
         <div style={{marginBottom: '28px'}}>
           <h1 style={{fontSize: '26px', fontWeight: '900', letterSpacing: '-0.5px', marginBottom: '4px'}}>Olá! 👋 Bem-vindo ao painel</h1>
           <p style={{color: '#6b7280', fontSize: '14px'}}>Acompanhe a evolução cognitiva dos seus filhos em tempo real.</p>
@@ -92,7 +156,11 @@ export default function Dashboard() {
         {/* FILHOS */}
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
           <h2 style={{fontSize: '18px', fontWeight: '800'}}>Seus filhos</h2>
-          <button className="btn-primary" onClick={() => setShowModal(true)}>+ Adicionar filho</button>
+          <button className="btn-primary" onClick={() => podeAdicionarFilho ? setShowModal(true) : null}
+            title={!podeAdicionarFilho ? `Seu plano permite até ${limiteFilhos} filho${limiteFilhos > 1 ? 's' : ''}` : ''}
+            style={{opacity: podeAdicionarFilho ? 1 : 0.5, cursor: podeAdicionarFilho ? 'pointer' : 'not-allowed'}}>
+            + Adicionar filho
+          </button>
         </div>
 
         {loading ? (
@@ -112,10 +180,10 @@ export default function Dashboard() {
                 <div key={child.id} className="pai-card" style={{padding: '24px'}}>
                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px'}}>
                     <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <div style={{width: '48px', height: '48px', borderRadius: '14px', background: 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px'}}>🦊</div>
+                      <div style={{width: '48px', height: '48px', borderRadius: '14px', background: child.cor_perfil || 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px'}}>{child.avatar || '🦊'}</div>
                       <div>
                         <h3 style={{fontWeight: '800', fontSize: '16px', marginBottom: '2px'}}>{child.nome}</h3>
-                        <p style={{color: '#7C3AED', fontSize: '12px', fontWeight: '600'}}>{faixaLabel[child.faixa_etaria] || child.faixa_etaria} • Nível {child.nivel}</p>
+                        <p style={{color: '#7C3AED', fontSize: '12px', fontWeight: '600'}}>{faixaLabel[normalizarFaixa(child.faixa_etaria, child.idade)]} • Nível {child.nivel}</p>
                       </div>
                     </div>
                     <div style={{background: '#fff7ed', borderRadius: '999px', padding: '4px 10px', fontSize: '12px', color: '#ea580c', fontWeight: '700'}}>🔥 {child.streak_atual} dias</div>
@@ -140,7 +208,36 @@ export default function Dashboard() {
                     ))}
                   </div>
 
-                  <button className="btn-primary" style={{width: '100%', textAlign: 'center'}} onClick={() => navigate('/home-crianca')}>
+                  {child.perfil_cognitivo ? (
+                    <div style={{background:'#faf5ff',borderRadius:'12px',padding:'12px 14px',marginBottom:'12px',border:'1px solid #ede9fe'}}>
+                      <div style={{fontSize:'11px',fontWeight:'800',color:'#7C3AED',marginBottom:'8px'}}>🧠 Perfil Cognitivo</div>
+                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
+                        {[
+                          ['Aprendizado', {visual:'👀 Visual',cinestetico:'🙌 Cinestésico',auditivo:'👂 Auditivo',leitura:'📖 Leitura'}[child.perfil_cognitivo.estilo_aprendizado]],
+                          ['Foco', {alta:'🎯 Alto',media:'😤 Médio',baixa:'😔 Baixo',social:'🤝 Social'}[child.perfil_cognitivo.persistencia]],
+                          ['Prioridade', {foco:'🎯 Foco',criatividade:'🎨 Criatividade',logica:'🧩 Lógica',emocional:'💛 Emocional'}[child.perfil_cognitivo.habilidade_prioridade]],
+                          ['Regulação', {alta:'😊 Ótima',media:'🤔 Boa',baixa:'😤 Em dev.',muito_baixa:'😭 Atenção'}[child.perfil_cognitivo.regulacao_emocional]],
+                        ].map(([label, val]) => (
+                          <div key={label} style={{background:'white',borderRadius:'8px',padding:'7px 10px',border:'1px solid #ede9fe'}}>
+                            <div style={{fontSize:'9px',color:'#9ca3af',fontWeight:'700',marginBottom:'2px'}}>{label}</div>
+                            <div style={{fontSize:'12px',fontWeight:'800',color:'#374151'}}>{val || '—'}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <button onClick={() => navigate(`/perfil-cognitivo/${child.id}`)} style={{width:'100%',padding:'8px',borderRadius:'8px',border:'none',background:'#7C3AED',color:'white',fontWeight:'700',fontSize:'12px',cursor:'pointer',marginTop:'10px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
+                        Ver perfil completo →
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => navigate(`/questionario/${child.id}`)} style={{width:'100%',padding:'10px',borderRadius:'12px',border:'1.5px dashed #c4b5fd',background:'#faf5ff',color:'#7C3AED',fontWeight:'700',fontSize:'13px',cursor:'pointer',marginBottom:'12px',fontFamily:'Plus Jakarta Sans, sans-serif'}}>
+                      🧠 Criar Perfil Cognitivo →
+                    </button>
+                  )}
+
+                  <button className="btn-primary" style={{width: '100%', textAlign: 'center'}} onClick={() => {
+                    localStorage.setItem('ns_active_child', JSON.stringify(child))
+                    navigate('/home-crianca')
+                  }}>
                     Ver área da {child.nome} →
                   </button>
                 </div>

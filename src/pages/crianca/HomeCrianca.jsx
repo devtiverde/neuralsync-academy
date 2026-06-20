@@ -1,8 +1,22 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { atividadesPorFaixa, fase2PorFaixa, fase3PorFaixa, tipoConfig } from '../../data/atividadesData'
+import { useAuth } from '../../contexts/AuthContext'
+import { tipoConfig } from '../../data/atividadesData'
+import { useAtividades } from '../../hooks/useAtividades'
 import '../../styles/crianca.css'
+
+function dentroDoHorario(agenda) {
+  if (!agenda || !Array.isArray(agenda)) return true
+  const agora = new Date()
+  const diaIdx = agora.getDay()
+  const horaAtual = agora.getHours() * 60 + agora.getMinutes()
+  const slot = agenda[diaIdx]
+  if (!slot || !slot.ativo) return false
+  const [hIni, mIni] = (slot.inicio || '00:00').split(':').map(Number)
+  const [hFim, mFim] = (slot.fim || '23:59').split(':').map(Number)
+  return horaAtual >= hIni * 60 + mIni && horaAtual <= hFim * 60 + mFim
+}
 
 const menu = [
   { icon: '🏠', label: 'Início',  path: '/home-crianca' },
@@ -22,26 +36,49 @@ const nomeFaixa = {
 
 export default function HomeCrianca() {
   const navigate = useNavigate()
-  const [child, setChild] = useState(null)
-  const [atividades, setAtividades] = useState([])
+  const { user } = useAuth()
+  const [child, setChild]     = useState(null)
+  const [faixa, setFaixa]     = useState('construtores')
   const [historico, setHistorico] = useState([])
+  const [posicaoRanking, setPosicaoRanking] = useState(null)
+
+  const { atividades } = useAtividades(faixa)
 
   useEffect(() => {
-    supabase.from('children').select('*').limit(1).then(({ data }) => {
-      const c = data?.[0]
-      setChild(c)
-      if (c) {
-        localStorage.setItem('ns_active_child', JSON.stringify(c))
-        const f = c.faixa_etaria || 'construtores'
-        const fase1 = atividadesPorFaixa[f] || atividadesPorFaixa.construtores
-        const fase2 = fase2PorFaixa[f]     || fase2PorFaixa.construtores
-        const fase3 = fase3PorFaixa[f]     || []
-        setAtividades([...fase1, ...fase2, ...fase3])
+    async function init() {
+      const stored = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+      const childId = stored?.id
+
+      if (user) {
+        const { data: userData } = await supabase.from('users').select('agenda_config').eq('id', user.id).single()
+        const agendaConfig = userData?.agenda_config
+          || (() => { try { return JSON.parse(localStorage.getItem('ns_agenda_config') || 'null') } catch { return null } })()
+        if (agendaConfig) {
+          localStorage.setItem('ns_agenda_config', JSON.stringify(agendaConfig))
+          if (!dentroDoHorario(agendaConfig)) {
+            navigate('/bloqueio')
+            return
+          }
+        }
       }
-    })
-    const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
-    setHistorico(hist.slice(0, 4))
-  }, [])
+
+      const { data } = await supabase.from('children').select('*')
+      if (!data || data.length === 0) return
+
+      const c = (childId && data.find(ch => ch.id === childId)) || data[0]
+      setChild(c)
+      localStorage.setItem('ns_active_child', JSON.stringify(c))
+      setFaixa(c.faixa_etaria || 'construtores')
+
+      const sorted = [...data].sort((a, b) => (b.xp || 0) - (a.xp || 0))
+      const pos = sorted.findIndex(ch => ch.id === c.id) + 1
+      if (data.length > 1) setPosicaoRanking(pos)
+
+      const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+      setHistorico(hist.slice(0, 4))
+    }
+    init()
+  }, [user])
 
   const contsPorTipo = useMemo(() => {
     const c = {}
@@ -58,7 +95,6 @@ export default function HomeCrianca() {
   )
 
   const xpPercent = Math.min((child.xp / (child.nivel * 500)) * 100, 100)
-  const faixa = child.faixa_etaria || 'construtores'
 
   return (
     <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
@@ -233,8 +269,12 @@ export default function HomeCrianca() {
           {/* ── RANKING TEASER ── */}
           <div className="card-white" style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500', marginBottom: '3px' }}>🏆 Ranking da semana</div>
-              <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 2º lugar! 🥈</div>
+              <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500', marginBottom: '3px' }}>🏆 Ranking</div>
+              {posicaoRanking === 1 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 1º lugar! 🥇</div>}
+              {posicaoRanking === 2 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 2º lugar! 🥈</div>}
+              {posicaoRanking === 3 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 3º lugar! 🥉</div>}
+              {posicaoRanking > 3 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em {posicaoRanking}º lugar!</div>}
+              {!posicaoRanking && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Continue ganhando XP! 🚀</div>}
               <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '1px' }}>Continue ganhando NeuralCoins!</div>
             </div>
             <button onClick={() => navigate('/ranking')} style={{ background: '#faf5ff', border: '1px solid #ede9fe', borderRadius: '8px', padding: '7px 12px', color: '#7C3AED', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver →</button>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/crianca.css'
 
 const menu = [
@@ -18,26 +19,16 @@ const faixaLabel = { exploradores: 'Exploradores', construtores: 'Construtores',
 
 export default function Ranking() {
   const navigate = useNavigate()
+  const { subscription } = useAuth()
+  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
   const [criancas, setCriancas] = useState([])
   const [loading, setLoading] = useState(true)
   const [faixaFiltro, setFaixaFiltro] = useState('todos')
   const [aba, setAba] = useState('coins')
 
   useEffect(() => {
-    supabase.from('children').select('id,nome,xp,neural_coins,nivel,faixa_etaria,streak_atual').then(({ data }) => {
-      if (data && data.length > 0) {
-        setCriancas(data)
-      } else {
-        setCriancas([
-          { id: '1', nome: 'Ana', xp: 2400, neural_coins: 1050, nivel: 5, faixa_etaria: 'construtores', streak_atual: 10 },
-          { id: '2', nome: 'Lucas', xp: 1980, neural_coins: 890, nivel: 4, faixa_etaria: 'construtores', streak_atual: 7 },
-          { id: '3', nome: 'Lia', xp: 1240, neural_coins: 324, nivel: 3, faixa_etaria: 'construtores', streak_atual: 5 },
-          { id: '4', nome: 'Pedro', xp: 1100, neural_coins: 580, nivel: 3, faixa_etaria: 'criadores', streak_atual: 3 },
-          { id: '5', nome: 'Julia', xp: 860, neural_coins: 290, nivel: 2, faixa_etaria: 'exploradores', streak_atual: 2 },
-          { id: '6', nome: 'Mateus', xp: 730, neural_coins: 245, nivel: 2, faixa_etaria: 'construtores', streak_atual: 1 },
-          { id: '7', nome: 'Sofia', xp: 580, neural_coins: 198, nivel: 2, faixa_etaria: 'exploradores', streak_atual: 0 },
-        ])
-      }
+    supabase.from('children').select('id,nome,xp,neural_coins,nivel,faixa_etaria,streak_atual,avatar').then(({ data }) => {
+      setCriancas(data || [])
       setLoading(false)
     })
   }, [])
@@ -58,6 +49,19 @@ export default function Ranking() {
 
   const medalha = (pos) => ['🥇', '🥈', '🥉'][pos] || '#' + (pos + 1)
   const medalhaEmoji = (pos) => ['🥇', '🥈', '🥉'][pos]
+
+  if (!temAcesso) return (
+    <div style={{background: '#0f0a1e', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center'}}>
+      <div style={{fontSize: '72px', marginBottom: '16px'}}>🏆</div>
+      <div style={{background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', borderRadius: '999px', padding: '5px 14px', fontSize: '12px', color: '#a78bfa', fontWeight: '700', marginBottom: '16px'}}>Plano Família ou Premium</div>
+      <h2 style={{color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px'}}>Ranking disponível<br />no Plano Família</h2>
+      <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: '1.6', marginBottom: '28px', maxWidth: '280px'}}>Compare o desempenho com outras famílias e suba no ranking!</p>
+      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', marginBottom: '12px'}}>
+        Ver planos →
+      </button>
+      <button onClick={() => navigate('/home-crianca')} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: '13px'}}>← Voltar</button>
+    </div>
+  )
 
   if (loading) return (
     <div className="page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -116,7 +120,7 @@ export default function Ranking() {
                   boxShadow: isEu ? '0 4px 16px rgba(124,58,237,0.2)' : '0 2px 8px rgba(0,0,0,0.04)',
                 }}>
                   <div style={{ fontSize: podioIdx === 1 ? '22px' : '18px', marginBottom: '6px' }}>{medalhaEmoji(originalPos)}</div>
-                  <div style={{ fontSize: podioIdx === 1 ? '32px' : '26px', marginBottom: '6px' }}>{avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+                  <div style={{ fontSize: podioIdx === 1 ? '32px' : '26px', marginBottom: '6px' }}>{item.avatar || avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
                   <div style={{ fontWeight: '800', fontSize: '12px', color: isEu ? '#7C3AED' : '#0f0a1e', marginBottom: '4px' }}>{item.nome}{isEu ? ' (você)' : ''}</div>
                   <div style={{ fontSize: '11px', color: '#F07A20', fontWeight: '700' }}>
                     {aba === 'coins' ? '💰 ' + item.neural_coins : '⭐ ' + item.xp}
@@ -136,7 +140,7 @@ export default function Ranking() {
               return (
                 <div key={item.id} className="card-white" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', border: isEu ? '1.5px solid #7C3AED' : '1.5px solid #f3f4f6' }}>
                   <div style={{ width: '24px', fontWeight: '700', color: '#9ca3af', fontSize: '13px' }}>#{pos}</div>
-                  <div style={{ fontSize: '22px' }}>{avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+                  <div style={{ fontSize: '22px' }}>{item.avatar || avatarPadrao[item.nome.charCodeAt(0) % avatarPadrao.length]}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: '600', fontSize: '14px', color: isEu ? '#7C3AED' : '#0f0a1e' }}>{item.nome}{isEu ? ' (você)' : ''}</div>
                     <div style={{ fontSize: '11px', color: '#9ca3af' }}>{faixaLabel[item.faixa_etaria] || item.faixa_etaria} • Nível {item.nivel}</div>
@@ -156,7 +160,7 @@ export default function Ranking() {
             <div style={{ width: '24px', fontWeight: '800', color: '#7C3AED', fontSize: '13px' }}>
               {minhaPosicao <= 3 ? ['🥇','🥈','🥉'][minhaPosicao - 1] : '#' + minhaPosicao}
             </div>
-            <div style={{ fontSize: '22px' }}>{avatarPadrao[eu.nome.charCodeAt(0) % avatarPadrao.length]}</div>
+            <div style={{ fontSize: '22px' }}>{eu.avatar || avatarPadrao[eu.nome.charCodeAt(0) % avatarPadrao.length]}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '700', fontSize: '14px', color: '#7C3AED' }}>{eu.nome} (você)</div>
               <div style={{ fontSize: '11px', color: '#a78bfa' }}>🔥 {eu.streak_atual || 0} dias • Nível {eu.nivel}</div>

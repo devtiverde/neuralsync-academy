@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/crianca.css'
 
 const menu = [
@@ -48,11 +49,28 @@ const catalogoBrindes = [
 
 export default function Loja() {
   const navigate = useNavigate()
+  const { subscription } = useAuth()
+  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
+
+  if (!temAcesso) return (
+    <div style={{background: '#0f0a1e', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', textAlign: 'center'}}>
+      <div style={{fontSize: '72px', marginBottom: '16px'}}>🏪</div>
+      <div style={{background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', borderRadius: '999px', padding: '5px 14px', fontSize: '12px', color: '#a78bfa', fontWeight: '700', marginBottom: '16px'}}>Plano Família ou Premium</div>
+      <h2 style={{color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px'}}>A Loja fica disponível<br />no Plano Família</h2>
+      <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '14px', lineHeight: '1.6', marginBottom: '28px', maxWidth: '280px'}}>Troque NeuralCoins por avatares, molduras e brindes exclusivos!</p>
+      <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 28px', color: 'white', fontWeight: '700', fontSize: '15px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.4)', marginBottom: '12px'}}>
+        Ver planos →
+      </button>
+      <button onClick={() => navigate('/home-crianca')} style={{background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', fontSize: '13px'}}>← Voltar</button>
+    </div>
+  )
+
   const [aba, setAba] = useState('avatares')
   const [saldo, setSaldo] = useState(0)
   const [childId, setChildId] = useState(null)
   const [childNivel, setChildNivel] = useState(1)
   const [comprados, setComprados] = useState([])
+  const [avatarAtual, setAvatarAtual] = useState('🦊')
   const [modalItem, setModalItem] = useState(null)
   const [compraOk, setCompraOk] = useState(false)
 
@@ -62,13 +80,16 @@ export default function Loja() {
       setSaldo(child.neural_coins || 0)
       setChildId(child.id)
       setChildNivel(child.nivel || 1)
+      setAvatarAtual(child.avatar || '🧭')
     } else {
-      supabase.from('children').select('neural_coins,id,nivel').limit(1).then(({ data }) => {
-        if (data?.[0]) { setSaldo(data[0].neural_coins || 0); setChildId(data[0].id); setChildNivel(data[0].nivel || 1) }
+      supabase.from('children').select('neural_coins,id,nivel,avatar').limit(1).then(({ data }) => {
+        if (data?.[0]) {
+          setSaldo(data[0].neural_coins || 0); setChildId(data[0].id)
+          setChildNivel(data[0].nivel || 1); setAvatarAtual(data[0].avatar || '🧭')
+        }
       })
     }
     const purch = (() => { try { return JSON.parse(localStorage.getItem('ns_purchased') || '[]') } catch { return [] } })()
-    setComprados(purch.map(p => p.item_id))
     setComprados(['av_explorer', 'mo_basica', ...purch.map(p => p.item_id)])
   }, [])
 
@@ -81,24 +102,42 @@ export default function Loja() {
     localStorage.setItem('ns_purchased', JSON.stringify(purch))
     setComprados(prev => [...prev, modalItem.id])
     const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+    const isAvatar = modalItem.id.startsWith('av_')
+    const updates = { neural_coins: novoSaldo }
+    if (isAvatar) updates.avatar = modalItem.emoji
     if (child) {
-      const childAtualizado = { ...child, neural_coins: novoSaldo }
-      localStorage.setItem('ns_active_child', JSON.stringify(childAtualizado))
+      localStorage.setItem('ns_active_child', JSON.stringify({ ...child, ...updates }))
     }
     if (childId) {
-      supabase.from('children').update({ neural_coins: novoSaldo }).eq('id', childId).then(() => {})
+      supabase.from('children').update(updates).eq('id', childId).then(() => {})
     }
     setModalItem(null)
-    setCompraOk(true)
+    setCompraOk(isAvatar ? 'avatar' : true)
     setTimeout(() => setCompraOk(false), 2500)
   }
 
+  function equipar(item) {
+    if (!item.emoji) return
+    setAvatarAtual(item.emoji)
+    const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+    if (child) localStorage.setItem('ns_active_child', JSON.stringify({ ...child, avatar: item.emoji }))
+    if (childId) supabase.from('children').update({ avatar: item.emoji }).eq('id', childId).then(() => {})
+  }
+
   function renderBotao(item, isDesbloqueado, isLocked) {
-    if (isDesbloqueado) return <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#10b981', textAlign: 'center' }}>Equipado ✓</div>
+    const isAvatar = item.id?.startsWith('av_')
+    const isEquipado = isAvatar && item.emoji === avatarAtual
+    if (isEquipado) return <div style={{ background: '#f0fdf4', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#10b981', textAlign: 'center' }}>Equipado ✓</div>
+    if (isDesbloqueado || comprados.includes(item.id)) {
+      if (isAvatar) return (
+        <button onClick={() => equipar(item)} style={{ background: '#eff6ff', border: 'none', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#7C3AED', textAlign: 'center', cursor: 'pointer', width: '100%', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+          Equipar →
+        </button>
+      )
+      return <div style={{ background: '#eff6ff', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#3b82f6', textAlign: 'center' }}>Adquirido ✓</div>
+    }
     if (isLocked) return <div style={{ background: '#f9fafb', borderRadius: '8px', padding: '7px', fontSize: '12px', color: '#9ca3af', textAlign: 'center' }}>🔒 Nível {item.nivel}</div>
-    const podeComprar = saldo >= item.preco && !comprados.includes(item.id)
-    const jaComprado = comprados.includes(item.id) && !['av_explorer','mo_basica'].includes(item.id)
-    if (jaComprado) return <div style={{ background: '#eff6ff', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: '#3b82f6', textAlign: 'center' }}>Adquirido ✓</div>
+    const podeComprar = saldo >= item.preco
     return (
       <button onClick={() => podeComprar && setModalItem(item)} style={{
         background: podeComprar ? 'linear-gradient(135deg, #7C3AED, #6d28d9)' : '#f3f4f6',
@@ -132,7 +171,7 @@ export default function Loja() {
 
       {compraOk && (
         <div style={{ background: '#10b981', padding: '12px 20px', textAlign: 'center', color: 'white', fontWeight: '700', fontSize: '14px' }}>
-          ✅ Compra realizada! Aproveite seu novo item!
+          {compraOk === 'avatar' ? '✅ Avatar equipado! Veja em Perfil →' : '✅ Compra realizada! Aproveite seu novo item!'}
         </div>
       )}
 

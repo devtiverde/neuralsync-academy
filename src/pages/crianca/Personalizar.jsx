@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
 import '../../styles/crianca.css'
 
 const menu = [{"icon":"🏠","label":"Início","path":"/home-crianca"},{"icon":"🗺️","label":"Trilha","path":"/trilha"},{"icon":"🎬","label":"Kids","path":"/kids"},{"icon":"🏆","label":"Ranking","path":"/ranking"},{"icon":"🏪","label":"Loja","path":"/loja"},{"icon":"👤","label":"Perfil","path":"/perfil-crianca"}]
@@ -9,15 +10,41 @@ const cores = ['#7C3AED', '#F07A20', '#10b981', '#3b82f6', '#ef4444', '#ec4899',
 
 export default function Personalizar() {
   const navigate = useNavigate()
+  const [child, setChild] = useState(null)
   const [avatarSel, setAvatarSel] = useState(0)
   const [corSel, setCorSel] = useState('#7C3AED')
   const [bio, setBio] = useState('Adoro aprender coisas novas!')
   const [salvo, setSalvo] = useState(false)
+  const [salvando, setSalvando] = useState(false)
 
-  const salvar = () => {
+  useEffect(() => {
+    const cached = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+    if (cached) {
+      setChild(cached)
+      const idx = avatares.indexOf(cached.avatar)
+      setAvatarSel(idx >= 0 ? idx : 0)
+      setCorSel(cached.cor_perfil || '#7C3AED')
+      setBio(cached.bio || 'Adoro aprender coisas novas!')
+    }
+  }, [])
+
+  const salvar = async () => {
+    if (!child || salvando) return
+    setSalvando(true)
+    const avatar = avatares[avatarSel]
+    const atualizado = { ...child, avatar, cor_perfil: corSel, bio }
+    localStorage.setItem('ns_active_child', JSON.stringify(atualizado))
+    await supabase.from('children').update({ avatar, cor_perfil: corSel, bio }).eq('id', child.id)
+    setSalvando(false)
     setSalvo(true)
     setTimeout(() => { setSalvo(false); navigate('/perfil-crianca') }, 1500)
   }
+
+  if (!child) return (
+    <div className="page-wrapper" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh'}}>
+      <div style={{color: '#7C3AED', fontWeight: '700'}}>Carregando...</div>
+    </div>
+  )
 
   return (
     <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
@@ -35,7 +62,7 @@ export default function Personalizar() {
           <div style={{width: '72px', height: '72px', borderRadius: '20px', background: corSel, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', margin: '0 auto 10px', boxShadow: '0 4px 16px ' + corSel + '44'}}>
             {avatares[avatarSel]}
           </div>
-          <div style={{fontWeight: '800', fontSize: '16px', color: '#0f0a1e', marginBottom: '3px'}}>Lia</div>
+          <div style={{fontWeight: '800', fontSize: '16px', color: '#0f0a1e', marginBottom: '3px'}}>{child.nome}</div>
           <div style={{fontSize: '13px', color: '#9ca3af'}}>{bio}</div>
         </div>
 
@@ -83,18 +110,18 @@ export default function Personalizar() {
               width: '100%', padding: '12px 14px', borderRadius: '10px',
               border: '1.5px solid #e5e7eb', background: '#f9fafb',
               fontSize: '14px', color: '#0f0a1e', outline: 'none',
-              fontFamily: 'Plus Jakarta Sans, sans-serif',
-              transition: 'all 0.2s'
+              fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.2s'
             }}
             onFocus={e => { e.target.style.borderColor = '#7C3AED'; e.target.style.background = 'white' }}
             onBlur={e => { e.target.style.borderColor = '#e5e7eb'; e.target.style.background = '#f9fafb' }}
           />
         </div>
 
-        <button className="btn-purple" onClick={salvar} style={{
-          background: salvo ? 'linear-gradient(135deg, #10b981, #059669)' : undefined
+        <button className="btn-purple" onClick={salvar} disabled={salvando} style={{
+          background: salvo ? 'linear-gradient(135deg, #10b981, #059669)' : undefined,
+          opacity: salvando ? 0.7 : 1
         }}>
-          {salvo ? '✓ Perfil salvo!' : 'Salvar perfil'}
+          {salvo ? '✓ Perfil salvo!' : salvando ? 'Salvando...' : 'Salvar perfil'}
         </button>
       </div>
 

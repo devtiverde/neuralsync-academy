@@ -1,17 +1,54 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/pai.css'
+
+const STORAGE_KEY = 'ns_agenda_config'
+
+const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+
+const defaultSchedule = diasSemana.map((dia, i) => ({
+  dia, ativo: i >= 1 && i <= 5, inicio: '14:00', fim: '15:00'
+}))
 
 export default function Agenda() {
   const navigate = useNavigate()
-  const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-  const [schedule, setSchedule] = useState(dias.map((dia, i) => ({
-    dia, ativo: i >= 1 && i <= 5, inicio: '14:00', fim: '15:00'
-  })))
+  const { user } = useAuth()
+  const [schedule, setSchedule] = useState(defaultSchedule)
   const [salvo, setSalvo] = useState(false)
+  const [salvando, setSalvando] = useState(false)
+
+  useEffect(() => {
+    async function carregar() {
+      if (user) {
+        const { data } = await supabase.from('users').select('agenda_config').eq('id', user.id).single()
+        if (data?.agenda_config && Array.isArray(data.agenda_config)) {
+          setSchedule(data.agenda_config)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data.agenda_config))
+          return
+        }
+      }
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+        if (saved && Array.isArray(saved)) setSchedule(saved)
+      } catch {}
+    }
+    carregar()
+  }, [user])
 
   const update = (index, field, value) => setSchedule(prev => prev.map((item, i) => i === index ? {...item, [field]: value} : item))
-  const salvar = () => { setSalvo(true); setTimeout(() => setSalvo(false), 2000) }
+
+  const salvar = async () => {
+    setSalvando(true)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(schedule))
+    if (user) {
+      await supabase.from('users').update({ agenda_config: schedule }).eq('id', user.id)
+    }
+    setSalvando(false)
+    setSalvo(true)
+    setTimeout(() => setSalvo(false), 2000)
+  }
 
   return (
     <div style={{background: '#f9fafb', minHeight: '100vh'}}>
@@ -50,15 +87,16 @@ export default function Agenda() {
           </p>
         </div>
 
-        <button onClick={salvar} style={{
+        <button onClick={salvar} disabled={salvando} style={{
           background: salvo ? '#10b981' : 'linear-gradient(135deg, #7C3AED, #6d28d9)',
           border: 'none', borderRadius: '14px', padding: '15px',
-          color: 'white', cursor: 'pointer', fontWeight: '700',
+          color: 'white', cursor: salvando ? 'default' : 'pointer', fontWeight: '700',
           fontSize: '15px', width: '100%', transition: 'background 0.3s',
           fontFamily: 'Plus Jakarta Sans, sans-serif',
-          boxShadow: '0 4px 14px rgba(124,58,237,0.3)'
+          boxShadow: '0 4px 14px rgba(124,58,237,0.3)',
+          opacity: salvando ? 0.7 : 1
         }}>
-          {salvo ? '✓ Agenda salva!' : 'Salvar agenda'}
+          {salvo ? '✓ Agenda salva!' : salvando ? 'Salvando...' : 'Salvar agenda'}
         </button>
       </div>
     </div>

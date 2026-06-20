@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 
 const depoimentos = [
   ["Minha filha pediu para fazer mais um desafio do cérebro antes de dormir. Não acreditei!","🌸","Marina S.","Mãe da Sofia, 7 anos"],
@@ -9,6 +10,11 @@ const depoimentos = [
 
 export default function Landing() {
   const navigate = useNavigate()
+  const { user, loading } = useAuth()
+
+  useEffect(() => {
+    if (!loading && user) navigate('/dashboard')
+  }, [user, loading])
 
   useEffect(() => {
     const link = document.createElement('link')
@@ -326,14 +332,14 @@ export default function Landing() {
               </div>
             ))}
           </div>
-          <p style={{textAlign:'center',color:'#9ca3af',fontSize:'13px',marginTop:'20px'}}>7 dias grátis em qualquer plano. Sem cartão. Cancele quando quiser.</p>
+          <p style={{textAlign:'center',color:'#9ca3af',fontSize:'13px',marginTop:'20px'}}>7 dias de garantia. Cancele quando quiser.</p>
         </div>
       </section>
 
       <section style={{padding:'120px 40px',textAlign:'center',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 50%,#e0f2fe 100%)'}}>
         <div style={{maxWidth:'580px',margin:'0 auto'}}>
           <h2 style={{fontSize:'52px',fontWeight:'900',letterSpacing:'-2px',marginBottom:'18px',lineHeight:'1.05',color:'#0f0a1e'}}>
-            Comece hoje.<br /><span style={{color:'#7C3AED'}}>Sem cartão.</span>
+            Comece hoje.<br /><span style={{color:'#7C3AED'}}>7 dias de garantia.</span>
           </h2>
           <p style={{color:'#6b7280',fontSize:'17px',marginBottom:'40px',lineHeight:'1.6'}}>
             Crie o perfil do seu filho em menos de 1 minuto e veja a primeira missão.

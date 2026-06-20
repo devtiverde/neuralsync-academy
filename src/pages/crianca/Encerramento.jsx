@@ -54,6 +54,24 @@ export default function Encerramento() {
 
     hist.unshift(entrada)
     localStorage.setItem('ns_historico', JSON.stringify(hist.slice(0, 50)))
+
+    // Persiste no Supabase para o relatório PDF usar dados reais
+    if (child) {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (!user) return
+        supabase.from('ns_historico').insert({
+          child_id: child.id,
+          parent_id: user.id,
+          titulo: entrada.titulo,
+          xp: entrada.xp,
+          coins: entrada.coins,
+          emoji: entrada.emoji,
+          tipo: entrada.tipo,
+          data: entrada.data,
+          timestamp: entrada.timestamp,
+        }).then(() => {})
+      })
+    }
   }, [])
 
   return (

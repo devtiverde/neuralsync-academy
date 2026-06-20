@@ -1,40 +1,49 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import '../../styles/crianca.css'
 
 export default function TimerAtivo() {
   const navigate = useNavigate()
-  const [segundos, setSegundos] = useState(25 * 60)
+  const { state } = useLocation()
+
+  const config = (() => { try { return JSON.parse(localStorage.getItem('ns_timer_config') || 'null') } catch { return null } })()
+  const duracaoMin = config?.duracao ?? 30
+  const aviso5min = config?.aviso5min ?? true
+  const encerramentoAuto = config?.encerramentoAuto ?? true
+  const titulo = state?.titulo || 'Sessão de aprendizado'
+  const totalSeg = duracaoMin * 60
+
+  const [segundos, setSegundos] = useState(totalSeg)
   const [ativo, setAtivo] = useState(true)
   const [coins, setCoins] = useState(0)
-  const total = 25 * 60
 
   useEffect(() => {
     if (!ativo || segundos <= 0) return
     const interval = setInterval(() => {
       setSegundos(s => s - 1)
-      setCoins(c => c + 0.067)
+      setCoins(c => c + (duracaoMin >= 30 ? 0.1 : 0.067))
     }, 1000)
     return () => clearInterval(interval)
   }, [ativo, segundos])
 
   useEffect(() => {
-    if (segundos <= 0) navigate('/encerramento')
+    if (segundos <= 0 && encerramentoAuto) navigate('/encerramento')
   }, [segundos])
 
   const minutos = Math.floor(segundos / 60)
   const segs = segundos % 60
-  const progresso = ((total - segundos) / total) * 100
+  const progresso = ((totalSeg - segundos) / totalSeg) * 100
   const circunferencia = 2 * Math.PI * 90
   const dashoffset = circunferencia - (progresso / 100) * circunferencia
-  const alerta = segundos <= 300
+  const alerta = aviso5min && segundos <= 300 && segundos > 0
 
   return (
     <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
     <div className="page-wrapper" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px'}}>
 
       <h2 style={{fontSize: '14px', color: '#9ca3af', marginBottom: '6px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px'}}>Sessão em andamento</h2>
-      <h3 style={{fontSize: '18px', fontWeight: '800', marginBottom: '36px', color: '#7C3AED'}}>Labirinto Lógico</h3>
+      <h3 style={{fontSize: '18px', fontWeight: '800', marginBottom: '4px', color: '#7C3AED'}}>{titulo}</h3>
+      <p style={{fontSize: '12px', color: '#9ca3af', marginBottom: '28px'}}>{duracaoMin} minutos configurados pelo responsável</p>
 
       {/* CÍRCULO */}
       <div style={{position: 'relative', marginBottom: '32px'}}>

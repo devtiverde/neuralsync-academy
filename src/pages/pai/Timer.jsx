@@ -1,17 +1,37 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../../styles/pai.css'
 
+const STORAGE_KEY = 'ns_timer_config'
+
+const defaultConfig = { duracao: 30, aviso5min: true, permiteExtensao: true, encerramentoAuto: true }
+
 export default function Timer() {
   const navigate = useNavigate()
-  const [duracao, setDuracao] = useState(30)
-  const [aviso5min, setAviso5min] = useState(true)
-  const [permiteExtensao, setPermiteExtensao] = useState(true)
-  const [encerramentoAuto, setEncerramentoAuto] = useState(true)
+  const [duracao, setDuracao] = useState(defaultConfig.duracao)
+  const [aviso5min, setAviso5min] = useState(defaultConfig.aviso5min)
+  const [permiteExtensao, setPermiteExtensao] = useState(defaultConfig.permiteExtensao)
+  const [encerramentoAuto, setEncerramentoAuto] = useState(defaultConfig.encerramentoAuto)
   const [salvo, setSalvo] = useState(false)
   const opcoes = [15, 30, 45, 60, 90]
 
-  const salvar = () => { setSalvo(true); setTimeout(() => setSalvo(false), 2000) }
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+      if (saved) {
+        setDuracao(saved.duracao ?? defaultConfig.duracao)
+        setAviso5min(saved.aviso5min ?? defaultConfig.aviso5min)
+        setPermiteExtensao(saved.permiteExtensao ?? defaultConfig.permiteExtensao)
+        setEncerramentoAuto(saved.encerramentoAuto ?? defaultConfig.encerramentoAuto)
+      }
+    } catch {}
+  }, [])
+
+  const salvar = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ duracao, aviso5min, permiteExtensao, encerramentoAuto }))
+    setSalvo(true)
+    setTimeout(() => setSalvo(false), 2000)
+  }
 
   return (
     <div style={{background: '#f9fafb', minHeight: '100vh'}}>
