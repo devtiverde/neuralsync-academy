@@ -6723,3 +6723,43 @@ export const colorirExtraPorFaixa = {
     },
   ],
 }
+
+// ──────────────────────────────────────────────
+// SÍLABAS — MVP (1 atividade por faixa, 8 palavras cada, ordenadas por dificuldade)
+// ──────────────────────────────────────────────
+export const silabasExtraPorFaixa = {
+  exploradores: [
+    {
+      id: 'exp_silabas', tipo: 'silabas', titulo: 'Sílabas: Palavras Simples', descricao: 'Junte as sílabas e forme a palavra!',
+      emoji: '🔡', habilidade: 'Linguagem', xp_reward: 60, coins_reward: 60, tempo_estimado: 10,
+      historinha: 'As sílabas se espalharam e as palavras ficaram bagunçadas! 🔤 Toque nas sílabas na ordem certa para formar cada palavra.',
+      dados: { palavras: [
+        { id: 'bola', palavra: 'BOLA', silabas: ['BO', 'LA'], emoji: '⚽' },
+        { id: 'casa', palavra: 'CASA', silabas: ['CA', 'SA'], emoji: '🏠' },
+        { id: 'sapo', palavra: 'SAPO', silabas: ['SA', 'PO'], emoji: '🐸' },
+        { id: 'mesa', palavra: 'MESA', silabas: ['ME', 'SA'], emoji: '🪑' },
+        { id: 'pato', palavra: 'PATO', silabas: ['PA', 'TO'], emoji: '🦆' },
+        { id: 'dedo', palavra: 'DEDO', silabas: ['DE', 'DO'], emoji: '👆' },
+        { id: 'gato', palavra: 'GATO', silabas: ['GA', 'TO'], emoji: '🐱' },
+        { id: 'bode', palavra: 'BODE', silabas: ['BO', 'DE'], emoji: '🐐' },
+      ] },
+    },
+  ],
+  construtores: [
+    {
+      id: 'con_silabas', tipo: 'silabas', titulo: 'Sílabas: Palavras Compostas', descricao: 'Junte 3 ou mais sílabas e forme a palavra!',
+      emoji: '🔡', habilidade: 'Linguagem', xp_reward: 80, coins_reward: 80, tempo_estimado: 10,
+      historinha: 'Essas palavras são maiores e têm mais sílabas! 🔤 Toque nas sílabas na ordem certa para formar cada uma.',
+      dados: { palavras: [
+        { id: 'boneca',    palavra: 'BONECA',    silabas: ['BO', 'NE', 'CA'],       emoji: '🪆' },
+        { id: 'janela',    palavra: 'JANELA',    silabas: ['JA', 'NE', 'LA'],       emoji: '🪟' },
+        { id: 'cavalo',    palavra: 'CAVALO',    silabas: ['CA', 'VA', 'LO'],       emoji: '🐴' },
+        { id: 'banana',    palavra: 'BANANA',    silabas: ['BA', 'NA', 'NA'],       emoji: '🍌' },
+        { id: 'sorvete',   palavra: 'SORVETE',   silabas: ['SOR', 'VE', 'TE'],      emoji: '🍦' },
+        { id: 'cachorro',  palavra: 'CACHORRO',  silabas: ['CA', 'CHOR', 'RO'],     emoji: '🐕' },
+        { id: 'elefante',  palavra: 'ELEFANTE',  silabas: ['E', 'LE', 'FAN', 'TE'], emoji: '🐘' },
+        { id: 'bicicleta', palavra: 'BICICLETA', silabas: ['BI', 'CI', 'CLE', 'TA'],emoji: '🚲' },
+      ] },
+    },
+  ],
+}
