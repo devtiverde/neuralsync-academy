@@ -82,7 +82,7 @@ export default function Landing() {
           ))}
           <a onClick={() => navigate('/planos')} className="nav-link" style={{cursor:'pointer',color:'#7C3AED',fontWeight:'700'}}>Preços</a>
           <button onClick={() => navigate('/auth')} style={{background:'none',border:'none',color:'#0f0a1e',cursor:'pointer',fontSize:'14px',fontWeight:'600',padding:'8px 16px',borderRadius:'8px'}}>Entrar</button>
-          <button onClick={() => navigate('/planos')} className="btn-primary" style={{padding:'10px 22px',fontSize:'14px',borderRadius:'999px'}}>Começar grátis</button>
+          <button onClick={() => navigate('/planos')} className="btn-primary" style={{padding:'10px 22px',fontSize:'14px',borderRadius:'999px'}}>Assinar agora</button>
         </nav>
       </header>
 
@@ -100,7 +100,7 @@ export default function Landing() {
               Atividades gamificadas que desenvolvem lógica, criatividade, comunicação e pensamento computacional para crianças de 4 a 15 anos.
             </p>
             <div className="l-hero-btns" style={{display:'flex',gap:'14px',marginBottom:'48px',flexWrap:'wrap'}}>
-              <button onClick={() => navigate('/planos')} className="btn-primary" style={{fontSize:'16px',padding:'15px 32px'}}>Começar grátis</button>
+              <button onClick={() => navigate('/planos')} className="btn-primary" style={{fontSize:'16px',padding:'15px 32px'}}>Assinar com garantia de 7 dias</button>
               <a href="#como" className="btn-secondary">Como funciona</a>
             </div>
             <div style={{display:'flex',gap:'28px',flexWrap:'wrap'}}>
@@ -364,7 +364,7 @@ export default function Landing() {
             Crie o perfil do seu filho em menos de 1 minuto e veja a primeira missão.
           </p>
           <button onClick={() => navigate('/planos')} className="btn-primary" style={{fontSize:'18px',padding:'17px 44px',borderRadius:'14px'}}>
-            Começar grátis
+            Assinar agora
           </button>
         </div>
       </section>

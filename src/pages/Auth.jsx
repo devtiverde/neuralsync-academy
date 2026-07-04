@@ -180,7 +180,7 @@ export default function Auth() {
           </p>
 
           <div className="auth-stats">
-            {[['177+','Atividades'],['8','Habilidades'],['4','Faixas etárias'],['100%','Seguro']].map(([num, label]) => (
+            {[['300+','Atividades'],['8','Habilidades'],['4','Faixas etárias'],['100%','Seguro']].map(([num, label]) => (
               <div key={label} className="auth-stat">
                 <div className="auth-stat-num">{num}</div>
                 <div className="auth-stat-label">{label}</div>

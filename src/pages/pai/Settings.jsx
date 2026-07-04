@@ -53,8 +53,10 @@ function Toggle({ checked, onChange }) {
   )
 }
 
+const PLANO_LABEL = { starter: 'Starter', familia: 'Família', premium: 'Premium' }
+
 export default function Settings() {
-  const { user } = useAuth()
+  const { user, subscription } = useAuth()
   const navigate  = useNavigate()
 
   const [duracao,          setDuracao]          = useState(NEURALAI_CONFIG.sessionDurations[0])
@@ -228,6 +230,49 @@ export default function Settings() {
             >
               {salvando ? 'Salvando...' : 'Salvar configurações'}
             </button>
+
+            {/* ── Assinatura ──────────────────────────────── */}
+            <div className="pai-card" style={{ padding: '28px 32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>💳</div>
+                <div>
+                  <h2 style={{ fontWeight: 800, fontSize: 16, color: 'var(--color-text-primary)', margin: 0 }}>Assinatura</h2>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-muted)', margin: 0 }}>
+                    {subscription?.plano_status === 'ativo'
+                      ? `Plano ${PLANO_LABEL[subscription.plano] || subscription.plano} ativo`
+                      : 'Nenhum plano ativo no momento'}
+                  </p>
+                </div>
+              </div>
+
+              <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
+                O pagamento é processado pela Kiwify. Cancelamentos e pedidos de reembolso (garantia incondicional de 7 dias) são feitos direto com eles — sem burocracia e sem precisar falar com a gente, se não quiser.
+              </p>
+
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <a
+                  href="https://dashboard.kiwify.com.br/minhas-compras"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary"
+                  style={{ textDecoration: 'none', padding: '10px 20px', fontSize: 13, borderRadius: 10 }}
+                >
+                  Gerenciar ou cancelar assinatura →
+                </a>
+                <a
+                  href="https://reembolso.kiwify.com.br/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary"
+                  style={{ textDecoration: 'none', padding: '10px 20px', fontSize: 13, borderRadius: 10 }}
+                >
+                  Pedir reembolso (garantia de 7 dias) →
+                </a>
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 12 }}>
+                Dica: o e-mail de confirmação da compra também tem um botão direto para gerenciar a assinatura.
+              </p>
+            </div>
 
             {/* ── Zona de Perigo ──────────────────────────── */}
             <div className="pai-card" style={{ padding: '28px 32px', border: '1.5px solid #fecaca' }}>

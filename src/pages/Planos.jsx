@@ -42,7 +42,7 @@ const planos = [
     badge: null,
     badgeBg: null,
     ctaVariant: 'secondary',
-    ctaLabel: 'Começar grátis',
+    ctaLabel: 'Assinar com garantia',
   },
   {
     id: 'familia',
@@ -78,8 +78,8 @@ const planos = [
 ]
 
 const faq = [
-  ['Posso cancelar a qualquer momento?', 'Sim. Sem fidelidade. Cancele quando quiser diretamente pelo painel, sem burocracia.'],
-  ['Como funciona a garantia de 7 dias?', 'Se em 7 dias você não ficar satisfeito, devolvemos 100% do valor pago. Sem perguntas.'],
+  ['Posso cancelar a qualquer momento?', 'Sim. Sem fidelidade, sem multa. Cancele quando quiser pelo painel do Kiwify (dashboard.kiwify.com.br/minhas-compras) ou pelo link "Gerenciar assinatura" no e-mail de confirmação da compra.'],
+  ['Como funciona a garantia de 7 dias?', 'Se em até 7 dias você não ficar satisfeito, devolvemos 100% do valor pago — é só pedir o reembolso em reembolso.kiwify.com.br. Sem perguntas.'],
   ['Posso mudar de plano depois?', 'Sim, upgrade ou downgrade a qualquer momento. A diferença é cobrada proporcionalmente.'],
   ['Como funciona o plano anual?', 'Você paga 12 meses de uma vez com 35% de desconto em relação ao plano mensal — equivale a 2 meses grátis.'],
   ['O que é o Relatório Cognitivo Premium?', 'Relatório PDF com análise das 8 habilidades cognitivas do seu filho, comparativo mensal, recomendações de neurociência e plano de ação. Exclusivo do Premium.'],

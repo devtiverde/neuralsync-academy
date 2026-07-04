@@ -95,7 +95,7 @@ const planoInfo = {
 const FAIXA_SEL = ['exploradores','construtores','criadores','inventores']
 
 export default function Dashboard() {
-  const { user, subscription } = useAuth()
+  const { user, subscription, subscriptionLoaded } = useAuth()
   const { loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [children, setChildren] = useState([])
@@ -115,11 +115,11 @@ export default function Dashboard() {
   )
 
   useEffect(() => {
-    if (authLoading) return
+    if (authLoading || !subscriptionLoaded) return
     if (!user) { navigate('/auth'); return }
-    if (subscription && subscription.plano_status !== 'ativo') { navigate('/planos'); return }
+    if (!subscription || subscription.plano_status !== 'ativo') { navigate('/planos'); return }
     loadChildren()
-  }, [user, authLoading, subscription])
+  }, [user, authLoading, subscription, subscriptionLoaded])
 
   const loadChildren = async () => {
     try {

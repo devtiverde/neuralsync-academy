@@ -6,6 +6,7 @@ const AuthContext = createContext({})
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [subscription, setSubscription] = useState(null)
+  const [subscriptionLoaded, setSubscriptionLoaded] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const loadSubscription = async (userId) => {
@@ -16,6 +17,25 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single()
       if (data) setSubscription(data)
+    } catch {
+    } finally {
+      setSubscriptionLoaded(true)
+    }
+  }
+
+  // pending_subscriptions só é legível pelo service_role (RLS sem policy pública
+  // de propósito) — a ativação de plano pago pago-antes-de-cadastrar precisa
+  // passar por essa Edge Function, nunca por uma query direta do cliente.
+  const activatePendingPlan = async (accessToken) => {
+    if (!accessToken) return
+    try {
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-pending-plan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      })
     } catch {}
   }
 
@@ -23,6 +43,7 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) loadSubscription(session.user.id)
+      else setSubscriptionLoaded(true)
       setLoading(false)
     })
 
@@ -32,6 +53,7 @@ export function AuthProvider({ children }) {
         await loadSubscription(session.user.id)
       } else {
         setSubscription(null)
+        setSubscriptionLoaded(true)
       }
     })
 
@@ -41,22 +63,8 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (!error && data.user) {
-      const emailLower = email.toLowerCase()
-      const { data: pending } = await supabase
-        .from('pending_subscriptions')
-        .select('*')
-        .eq('email', emailLower)
-        .single()
-      if (pending) {
-        await supabase.from('users').update({
-          plano: pending.plano,
-          plano_status: 'ativo',
-          plano_ativo_ate: pending.plano_ativo_ate,
-          filhos_limite: pending.filhos_limite,
-          kiwify_subscriber_id: pending.kiwify_subscriber_id,
-        }).eq('id', data.user.id)
-        await supabase.from('pending_subscriptions').delete().eq('email', emailLower)
-      }
+      await activatePendingPlan(data.session?.access_token)
+      await loadSubscription(data.user.id)
     }
     return { error }
   }
@@ -65,28 +73,11 @@ export function AuthProvider({ children }) {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (!error && data.user) {
       const emailLower = email.toLowerCase()
-
-      const { data: pending } = await supabase
-        .from('pending_subscriptions')
-        .select('*')
-        .eq('email', emailLower)
-        .single()
-
-      if (pending) {
-        await supabase.from('users').insert({
-          id: data.user.id, email: emailLower, nome, tipo: 'pai',
-          plano: pending.plano,
-          plano_status: 'ativo',
-          plano_ativo_ate: pending.plano_ativo_ate,
-          filhos_limite: pending.filhos_limite,
-          kiwify_subscriber_id: pending.kiwify_subscriber_id,
-        })
-        await supabase.from('pending_subscriptions').delete().eq('email', emailLower)
-      } else {
-        await supabase.from('users').insert({
-          id: data.user.id, email: emailLower, nome, tipo: 'pai',
-        })
-      }
+      await supabase.from('users').insert({
+        id: data.user.id, email: emailLower, nome, tipo: 'pai',
+      })
+      await activatePendingPlan(data.session?.access_token)
+      await loadSubscription(data.user.id)
     }
     return { error }
   }
@@ -97,7 +88,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, subscription, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, subscription, subscriptionLoaded, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )
