@@ -74,6 +74,8 @@ const HistoriaInterativaAtividade = lazy(() => import('./pages/atividades/Histor
 const ClassificarObjetosAtividade = lazy(() => import('./pages/atividades/ClassificarObjetosAtividade'))
 const ConectarPontosAtividade     = lazy(() => import('./pages/atividades/ConectarPontosAtividade'))
 const InglesAtividade             = lazy(() => import('./pages/atividades/InglesAtividade'))
+const ColorirAtividade            = lazy(() => import('./pages/atividades/ColorirAtividade'))
+const SilabasAtividade            = lazy(() => import('./pages/atividades/SilabasAtividade'))
 const Seeder = lazy(() => import('./pages/admin/Seeder'))
 
 function PageLoader() {
@@ -175,6 +177,8 @@ function AppContent() {
           <Route path="/atividade/classificar-objetos" element={<ClassificarObjetosAtividade />} />
           <Route path="/atividade/conectar-pontos"     element={<ConectarPontosAtividade />} />
           <Route path="/atividade/ingles"              element={<InglesAtividade />} />
+          <Route path="/atividade/colorir"              element={<ColorirAtividade />} />
+          <Route path="/atividade/silabas"              element={<SilabasAtividade />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

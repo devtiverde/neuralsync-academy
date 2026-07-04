@@ -50,6 +50,8 @@ const tipoGradiente = {
   'caca-palavras':    'linear-gradient(135deg, #0369a1, #38bdf8)',
   'historia-interativa': 'linear-gradient(135deg, #5b21b6, #d946ef)',
   ingles:               'linear-gradient(135deg, #1e3a5f, #3B82F6)',
+  colorir:              'linear-gradient(135deg, #4d7c0f, #84CC16)',
+  silabas:              'linear-gradient(135deg, #0e7490, #06B6D4)',
 }
 
 const CATEGORIAS = [
@@ -150,6 +152,8 @@ export default function HomeCrianca() {
     { id: 'numeros',   label: 'Números',    icon: '🔢', cat: 'letras',     grad: tipoGradiente.numeros,   sub: contsPorTipo.numeros   ? contsPorTipo.numeros   + ' ativ.' : null, show: !!contsPorTipo.numeros,   nav: () => navigate('/trilha') },
     { id: 'formas',    label: 'Formas',     icon: '🔷', cat: 'letras',     grad: tipoGradiente.formas,    sub: contsPorTipo.formas    ? contsPorTipo.formas    + ' ativ.' : null, show: !!contsPorTipo.formas,    nav: () => navigate('/trilha') },
     { id: 'cores',     label: 'Cores',      icon: '🎨', cat: 'letras',     grad: tipoGradiente.cores,     sub: contsPorTipo.cores     ? contsPorTipo.cores     + ' ativ.' : null, show: !!contsPorTipo.cores,     nav: () => navigate('/trilha') },
+    { id: 'colorir',   label: 'Colorir',    icon: '🖍️', cat: 'letras',    grad: tipoGradiente.colorir,   sub: contsPorTipo.colorir   ? contsPorTipo.colorir   + ' ativ.' : null, show: !!contsPorTipo.colorir,   nav: () => navigate('/trilha') },
+    { id: 'silabas',   label: 'Sílabas',    icon: '🔡', cat: 'letras',     grad: tipoGradiente.silabas,   sub: contsPorTipo.silabas   ? contsPorTipo.silabas   + ' ativ.' : null, show: !!contsPorTipo.silabas,   nav: () => navigate('/trilha') },
     { id: 'digitacao', label: 'Digitação',  icon: '⌨️', cat: 'letras',     grad: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', sub: 'Jogo',    show: true, nav: () => navigate('/digitacao') },
     { id: 'diario',    label: 'Meu Diário', icon: '📔', cat: 'letras',     grad: 'linear-gradient(135deg, #5b21b6, #7C3AED)',  sub: 'Escreva', show: true, nav: () => navigate('/diario') },
     { id: 'kids',      label: 'Kids TV',    icon: '🎬', cat: 'conteudo',   grad: 'linear-gradient(135deg, #4338ca, #6366f1)',  sub: 'Artigos', show: true, nav: () => navigate('/kids') },

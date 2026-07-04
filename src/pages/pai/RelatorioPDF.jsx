@@ -17,6 +17,8 @@ const TIPO_HABILIDADE = {
   padrao:    ['Concentração', 'Memória'],
   inventor:  ['Criatividade', 'Comunicação'],
   blocos:    ['Computacional', 'Lógica'],
+  colorir:   ['Concentração', 'Criatividade'],
+  silabas:   ['Comunicação', 'Concentração'],
 }
 
 const TODAS_SKILLS = ['Lógica', 'Criatividade', 'Problemas', 'Computacional', 'Concentração', 'Memória', 'Comunicação', 'Emocional']

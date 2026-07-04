@@ -6539,3 +6539,227 @@ export const alfabetoExtraPorFaixa = {
     },
   ],
 }
+
+// ──────────────────────────────────────────────
+// COLORIR — MVP (3 desenhos por faixa, formas geométricas SVG simples)
+// ──────────────────────────────────────────────
+export const colorirExtraPorFaixa = {
+  exploradores: [
+    {
+      id: 'exp_colorir_sol', tipo: 'colorir', titulo: 'Colorir: Sol', descricao: 'Escolha as cores e pinte o sol sorridente!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 60, coins_reward: 60, tempo_estimado: 8,
+      historinha: 'O sol amanheceu sem nenhuma cor! ☀️ Escolha as cores que você quiser e toque em cada parte para deixar o dia mais bonito.',
+      dados: { desenho: { viewBox: 300, nome: 'Sol', regioes: [
+        { id: 'nucleo', tipo: 'circle', props: { cx: 150, cy: 150, r: 55 } },
+        { id: 'raios', tipo: 'radial', props: { cx: 150, cy: 150, rInner: 58, rOuter: 95, n: 8 } },
+        { id: 'olho_esquerdo', tipo: 'circle', props: { cx: 130, cy: 140, r: 8 } },
+        { id: 'olho_direito', tipo: 'circle', props: { cx: 170, cy: 140, r: 8 } },
+        { id: 'boca', tipo: 'rect', props: { x: 125, y: 165, width: 50, height: 10, rx: 5 } },
+      ] } },
+    },
+    {
+      id: 'exp_colorir_casa', tipo: 'colorir', titulo: 'Colorir: Casa', descricao: 'Pinte a casinha do jeito que você imaginar!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 60, coins_reward: 60, tempo_estimado: 8,
+      historinha: 'Essa casinha está esperando as cores! 🏠 Toque numa cor e depois numa parte da casa para pintar.',
+      dados: { desenho: { viewBox: 300, nome: 'Casa', regioes: [
+        { id: 'parede', tipo: 'rect', props: { x: 70, y: 150, width: 160, height: 100 } },
+        { id: 'telhado', tipo: 'polygon', props: { points: '60,150 150,80 240,150' } },
+        { id: 'chamine', tipo: 'rect', props: { x: 190, y: 95, width: 20, height: 40 } },
+        { id: 'porta', tipo: 'rect', props: { x: 135, y: 190, width: 30, height: 60 } },
+        { id: 'janela_esquerda', tipo: 'rect', props: { x: 90, y: 170, width: 30, height: 30 } },
+        { id: 'janela_direita', tipo: 'rect', props: { x: 180, y: 170, width: 30, height: 30 } },
+      ] } },
+    },
+    {
+      id: 'exp_colorir_flor', tipo: 'colorir', titulo: 'Colorir: Flor', descricao: 'Dê vida a essa flor com as cores que você quiser!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 60, coins_reward: 60, tempo_estimado: 8,
+      historinha: 'O jardim ganhou uma flor nova, mas ela ainda não tem cor! 🌸 Escolha as cores e pinte cada pedacinho.',
+      dados: { desenho: { viewBox: 300, nome: 'Flor', regioes: [
+        { id: 'caule', tipo: 'rect', props: { x: 145, y: 180, width: 10, height: 90 } },
+        { id: 'folha_esquerda', tipo: 'polygon', props: { points: '145,220 108,233 145,248' } },
+        { id: 'folha_direita', tipo: 'polygon', props: { points: '155,220 192,233 155,248' } },
+        { id: 'petalas', tipo: 'radial', props: { cx: 150, cy: 140, rInner: 26, rOuter: 58, n: 6 } },
+        { id: 'miolo', tipo: 'circle', props: { cx: 150, cy: 140, r: 25 } },
+      ] } },
+    },
+  ],
+  construtores: [
+    {
+      id: 'con_colorir_peixe', tipo: 'colorir', titulo: 'Colorir: Peixe', descricao: 'Pinte o peixinho e suas bolhas de ar!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 80, coins_reward: 80, tempo_estimado: 8,
+      historinha: 'No fundo do mar vive um peixinho sem cor nenhuma! 🐟 Escolha as cores e pinte cada parte dele.',
+      dados: { desenho: { viewBox: 300, nome: 'Peixe', regioes: [
+        { id: 'cauda', tipo: 'polygon', props: { points: '205,150 250,113 250,187' } },
+        { id: 'corpo', tipo: 'ellipse', props: { cx: 140, cy: 150, rx: 70, ry: 45 } },
+        { id: 'barbatana_superior', tipo: 'polygon', props: { points: '120,108 145,78 165,110' } },
+        { id: 'barbatana_inferior', tipo: 'polygon', props: { points: '120,192 145,222 165,190' } },
+        { id: 'olho', tipo: 'circle', props: { cx: 100, cy: 140, r: 8 } },
+        { id: 'bolha1', tipo: 'circle', props: { cx: 250, cy: 90, r: 6 } },
+        { id: 'bolha2', tipo: 'circle', props: { cx: 266, cy: 70, r: 4 } },
+      ] } },
+    },
+    {
+      id: 'con_colorir_foguete', tipo: 'colorir', titulo: 'Colorir: Foguete', descricao: 'Pinte o foguete antes da decolagem!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 80, coins_reward: 80, tempo_estimado: 8,
+      historinha: 'Esse foguete está pronto para decolar, só falta a pintura! 🚀 Escolha as cores e deixe ele com a sua cara.',
+      dados: { desenho: { viewBox: 300, nome: 'Foguete', regioes: [
+        { id: 'chama', tipo: 'polygon', props: { points: '138,200 150,242 162,200' } },
+        { id: 'aleta_esquerda', tipo: 'polygon', props: { points: '130,175 98,222 130,200' } },
+        { id: 'aleta_direita', tipo: 'polygon', props: { points: '170,175 202,222 170,200' } },
+        { id: 'corpo', tipo: 'rect', props: { x: 130, y: 90, width: 40, height: 110, rx: 20 } },
+        { id: 'ponta', tipo: 'polygon', props: { points: '130,90 170,90 150,38' } },
+        { id: 'janela', tipo: 'circle', props: { cx: 150, cy: 130, r: 14 } },
+      ] } },
+    },
+    {
+      id: 'con_colorir_borboleta', tipo: 'colorir', titulo: 'Colorir: Borboleta', descricao: 'Pinte as asas coloridas da borboleta!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 80, coins_reward: 80, tempo_estimado: 8,
+      historinha: 'Uma borboleta pousou no jardim, mas suas asas ainda não têm cor! 🦋 Escolha as cores e pinte cada asa.',
+      dados: { desenho: { viewBox: 300, nome: 'Borboleta', regioes: [
+        { id: 'asa_sup_esq', tipo: 'ellipse', props: { cx: 108, cy: 118, rx: 45, ry: 32 } },
+        { id: 'asa_sup_dir', tipo: 'ellipse', props: { cx: 192, cy: 118, rx: 45, ry: 32 } },
+        { id: 'asa_inf_esq', tipo: 'ellipse', props: { cx: 113, cy: 174, rx: 35, ry: 25 } },
+        { id: 'asa_inf_dir', tipo: 'ellipse', props: { cx: 187, cy: 174, rx: 35, ry: 25 } },
+        { id: 'corpo', tipo: 'rect', props: { x: 145, y: 100, width: 10, height: 110, rx: 5 } },
+        { id: 'cabeca', tipo: 'circle', props: { cx: 150, cy: 95, r: 10 } },
+      ] } },
+    },
+  ],
+  criadores: [
+    {
+      id: 'cri_colorir_robo', tipo: 'colorir', titulo: 'Colorir: Robô', descricao: 'Pinte o robô com botões e antena!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 100, coins_reward: 100, tempo_estimado: 9,
+      historinha: 'Esse robô acabou de sair da fábrica e ainda está sem nenhuma cor! 🤖 Escolha as cores e pinte cada peça dele.',
+      dados: { desenho: { viewBox: 300, nome: 'Robô', regioes: [
+        { id: 'braco_esquerdo', tipo: 'rect', props: { x: 55, y: 140, width: 30, height: 15, rx: 7 } },
+        { id: 'braco_direito', tipo: 'rect', props: { x: 215, y: 140, width: 30, height: 15, rx: 7 } },
+        { id: 'perna_esquerda', tipo: 'rect', props: { x: 105, y: 225, width: 25, height: 40, rx: 6 } },
+        { id: 'perna_direita', tipo: 'rect', props: { x: 170, y: 225, width: 25, height: 40, rx: 6 } },
+        { id: 'corpo', tipo: 'rect', props: { x: 90, y: 130, width: 120, height: 90, rx: 14 } },
+        { id: 'botao1', tipo: 'circle', props: { cx: 130, cy: 170, r: 10 } },
+        { id: 'botao2', tipo: 'circle', props: { cx: 170, cy: 170, r: 10 } },
+        { id: 'cabeca', tipo: 'rect', props: { x: 110, y: 60, width: 80, height: 60, rx: 10 } },
+        { id: 'antena', tipo: 'rect', props: { x: 145, y: 35, width: 10, height: 25, rx: 5 } },
+        { id: 'antena_bola', tipo: 'circle', props: { cx: 150, cy: 32, r: 8 } },
+        { id: 'olho_esquerdo', tipo: 'circle', props: { cx: 130, cy: 90, r: 10 } },
+        { id: 'olho_direito', tipo: 'circle', props: { cx: 170, cy: 90, r: 10 } },
+      ] } },
+    },
+    {
+      id: 'cri_colorir_arvore', tipo: 'colorir', titulo: 'Colorir: Árvore', descricao: 'Pinte a árvore frondosa e suas maçãs!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 100, coins_reward: 100, tempo_estimado: 9,
+      historinha: 'Essa árvore está cheia de maçãs, mas nem ela nem as frutas têm cor ainda! 🌳 Escolha as cores e pinte cada parte.',
+      dados: { desenho: { viewBox: 300, nome: 'Árvore', regioes: [
+        { id: 'tronco', tipo: 'rect', props: { x: 135, y: 180, width: 30, height: 90, rx: 6 } },
+        { id: 'copa_baixa', tipo: 'circle', props: { cx: 150, cy: 170, r: 60 } },
+        { id: 'copa_meio', tipo: 'circle', props: { cx: 150, cy: 120, r: 48 } },
+        { id: 'copa_topo', tipo: 'circle', props: { cx: 150, cy: 80, r: 35 } },
+        { id: 'maca1', tipo: 'circle', props: { cx: 115, cy: 150, r: 8 } },
+        { id: 'maca2', tipo: 'circle', props: { cx: 185, cy: 140, r: 8 } },
+        { id: 'maca3', tipo: 'circle', props: { cx: 150, cy: 100, r: 8 } },
+      ] } },
+    },
+    {
+      id: 'cri_colorir_carro', tipo: 'colorir', titulo: 'Colorir: Carro', descricao: 'Pinte o carro e suas rodas!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 100, coins_reward: 100, tempo_estimado: 9,
+      historinha: 'Esse carro saiu da concessionária sem nenhuma cor na lataria! 🚗 Escolha as cores e pinte cada parte.',
+      dados: { desenho: { viewBox: 300, nome: 'Carro', regioes: [
+        { id: 'carroceria', tipo: 'rect', props: { x: 60, y: 140, width: 180, height: 60, rx: 16 } },
+        { id: 'cabine', tipo: 'polygon', props: { points: '100,140 120,100 190,100 210,140' } },
+        { id: 'janela_esquerda', tipo: 'polygon', props: { points: '108,138 124,108 150,108 150,138' } },
+        { id: 'janela_direita', tipo: 'polygon', props: { points: '154,138 154,108 180,108 196,138' } },
+        { id: 'roda_esquerda', tipo: 'circle', props: { cx: 105, cy: 205, r: 25 } },
+        { id: 'roda_direita', tipo: 'circle', props: { cx: 205, cy: 205, r: 25 } },
+        { id: 'farol', tipo: 'circle', props: { cx: 235, cy: 160, r: 10 } },
+      ] } },
+    },
+  ],
+  inventores: [
+    {
+      id: 'inv_colorir_cidade', tipo: 'colorir', titulo: 'Colorir: Cidade', descricao: 'Pinte o horizonte da cidade ao entardecer!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 120, coins_reward: 120, tempo_estimado: 10,
+      historinha: 'Essa cidade acabou de ser construída e ainda não tem cor nenhuma! 🏙️ Escolha as cores e pinte cada prédio.',
+      dados: { desenho: { viewBox: 300, nome: 'Cidade', regioes: [
+        { id: 'ceu', tipo: 'rect', props: { x: 0, y: 0, width: 300, height: 300 } },
+        { id: 'sol_fundo', tipo: 'circle', props: { cx: 250, cy: 60, r: 25 } },
+        { id: 'predio1', tipo: 'rect', props: { x: 40, y: 140, width: 50, height: 130 } },
+        { id: 'predio3', tipo: 'rect', props: { x: 165, y: 120, width: 45, height: 150 } },
+        { id: 'predio4', tipo: 'rect', props: { x: 220, y: 160, width: 50, height: 110 } },
+        { id: 'predio2', tipo: 'rect', props: { x: 100, y: 90, width: 55, height: 180 } },
+        { id: 'janela_predio2_1', tipo: 'rect', props: { x: 112, y: 110, width: 12, height: 12 } },
+        { id: 'janela_predio2_2', tipo: 'rect', props: { x: 132, y: 110, width: 12, height: 12 } },
+      ] } },
+    },
+    {
+      id: 'inv_colorir_sistema_solar', tipo: 'colorir', titulo: 'Colorir: Sistema Solar', descricao: 'Pinte o Sol e os planetas!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 120, coins_reward: 120, tempo_estimado: 10,
+      historinha: 'O Sol e os planetas estão esperando suas cores reais! 🪐 Escolha as cores e pinte cada um.',
+      dados: { desenho: { viewBox: 300, nome: 'Sistema Solar', regioes: [
+        { id: 'fundo_espaco', tipo: 'rect', props: { x: 0, y: 0, width: 300, height: 300 } },
+        { id: 'sol', tipo: 'circle', props: { cx: 40, cy: 150, r: 28 } },
+        { id: 'planeta1', tipo: 'circle', props: { cx: 100, cy: 150, r: 12 } },
+        { id: 'planeta2', tipo: 'circle', props: { cx: 140, cy: 150, r: 16 } },
+        { id: 'planeta3', tipo: 'circle', props: { cx: 185, cy: 150, r: 14 } },
+        { id: 'anel_planeta4', tipo: 'ellipse', props: { cx: 230, cy: 150, rx: 38, ry: 9 } },
+        { id: 'planeta4', tipo: 'circle', props: { cx: 230, cy: 150, r: 20 } },
+        { id: 'planeta5', tipo: 'circle', props: { cx: 275, cy: 150, r: 10 } },
+      ] } },
+    },
+    {
+      id: 'inv_colorir_ponte', tipo: 'colorir', titulo: 'Colorir: Ponte', descricao: 'Pinte a ponte suspensa e a paisagem!',
+      emoji: '🖍️', habilidade: 'Coordenação', xp_reward: 120, coins_reward: 120, tempo_estimado: 10,
+      historinha: 'Essa ponte suspensa acabou de ser inaugurada, mas ainda está sem cor! 🌉 Escolha as cores e pinte cada parte.',
+      dados: { desenho: { viewBox: 300, nome: 'Ponte', regioes: [
+        { id: 'ceu', tipo: 'rect', props: { x: 0, y: 0, width: 300, height: 210 } },
+        { id: 'agua', tipo: 'rect', props: { x: 0, y: 210, width: 300, height: 90 } },
+        { id: 'cabo_esquerdo', tipo: 'polygon', props: { points: '67,60 150,130 73,130' } },
+        { id: 'cabo_direito', tipo: 'polygon', props: { points: '233,60 150,130 227,130' } },
+        { id: 'torre_esquerda', tipo: 'rect', props: { x: 60, y: 60, width: 14, height: 80 } },
+        { id: 'torre_direita', tipo: 'rect', props: { x: 226, y: 60, width: 14, height: 80 } },
+        { id: 'pilar_esquerdo', tipo: 'rect', props: { x: 70, y: 140, width: 18, height: 90 } },
+        { id: 'pilar_direito', tipo: 'rect', props: { x: 212, y: 140, width: 18, height: 90 } },
+        { id: 'tabuleiro', tipo: 'rect', props: { x: 40, y: 130, width: 220, height: 18, rx: 4 } },
+      ] } },
+    },
+  ],
+}
+
+// ──────────────────────────────────────────────
+// SÍLABAS — MVP (1 atividade por faixa, 8 palavras cada, ordenadas por dificuldade)
+// ──────────────────────────────────────────────
+export const silabasExtraPorFaixa = {
+  exploradores: [
+    {
+      id: 'exp_silabas', tipo: 'silabas', titulo: 'Sílabas: Palavras Simples', descricao: 'Junte as sílabas e forme a palavra!',
+      emoji: '🔡', habilidade: 'Linguagem', xp_reward: 60, coins_reward: 60, tempo_estimado: 10,
+      historinha: 'As sílabas se espalharam e as palavras ficaram bagunçadas! 🔤 Toque nas sílabas na ordem certa para formar cada palavra.',
+      dados: { palavras: [
+        { id: 'bola', palavra: 'BOLA', silabas: ['BO', 'LA'], emoji: '⚽' },
+        { id: 'casa', palavra: 'CASA', silabas: ['CA', 'SA'], emoji: '🏠' },
+        { id: 'sapo', palavra: 'SAPO', silabas: ['SA', 'PO'], emoji: '🐸' },
+        { id: 'mesa', palavra: 'MESA', silabas: ['ME', 'SA'], emoji: '🪑' },
+        { id: 'pato', palavra: 'PATO', silabas: ['PA', 'TO'], emoji: '🦆' },
+        { id: 'dedo', palavra: 'DEDO', silabas: ['DE', 'DO'], emoji: '👆' },
+        { id: 'gato', palavra: 'GATO', silabas: ['GA', 'TO'], emoji: '🐱' },
+        { id: 'bode', palavra: 'BODE', silabas: ['BO', 'DE'], emoji: '🐐' },
+      ] },
+    },
+  ],
+  construtores: [
+    {
+      id: 'con_silabas', tipo: 'silabas', titulo: 'Sílabas: Palavras Compostas', descricao: 'Junte 3 ou mais sílabas e forme a palavra!',
+      emoji: '🔡', habilidade: 'Linguagem', xp_reward: 80, coins_reward: 80, tempo_estimado: 10,
+      historinha: 'Essas palavras são maiores e têm mais sílabas! 🔤 Toque nas sílabas na ordem certa para formar cada uma.',
+      dados: { palavras: [
+        { id: 'boneca',    palavra: 'BONECA',    silabas: ['BO', 'NE', 'CA'],       emoji: '🪆' },
+        { id: 'janela',    palavra: 'JANELA',    silabas: ['JA', 'NE', 'LA'],       emoji: '🪟' },
+        { id: 'cavalo',    palavra: 'CAVALO',    silabas: ['CA', 'VA', 'LO'],       emoji: '🐴' },
+        { id: 'banana',    palavra: 'BANANA',    silabas: ['BA', 'NA', 'NA'],       emoji: '🍌' },
+        { id: 'sorvete',   palavra: 'SORVETE',   silabas: ['SOR', 'VE', 'TE'],      emoji: '🍦' },
+        { id: 'cachorro',  palavra: 'CACHORRO',  silabas: ['CA', 'CHOR', 'RO'],     emoji: '🐕' },
+        { id: 'elefante',  palavra: 'ELEFANTE',  silabas: ['E', 'LE', 'FAN', 'TE'], emoji: '🐘' },
+        { id: 'bicicleta', palavra: 'BICICLETA', silabas: ['BI', 'CI', 'CLE', 'TA'],emoji: '🚲' },
+      ] },
+    },
+  ],
+}
