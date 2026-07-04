@@ -1,11 +1,25 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/crianca.css'
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-function proximaSessao() {
+function dentroDoHorario(agenda) {
+  if (!agenda || !Array.isArray(agenda)) return true
+  const agora = new Date()
+  const diaIdx = agora.getDay()
+  const horaAtual = agora.getHours() * 60 + agora.getMinutes()
+  const slot = agenda[diaIdx]
+  if (!slot || !slot.ativo) return false
+  const [hIni, mIni] = (slot.inicio || '00:00').split(':').map(Number)
+  const [hFim, mFim] = (slot.fim || '23:59').split(':').map(Number)
+  return horaAtual >= hIni * 60 + mIni && horaAtual <= hFim * 60 + mFim
+}
+
+function proximaSessao(agenda) {
   try {
-    const agenda = JSON.parse(localStorage.getItem('ns_agenda_config') || 'null')
     if (!agenda || !Array.isArray(agenda)) return null
     const hoje = new Date()
     const diaHoje = hoje.getDay()
@@ -26,36 +40,119 @@ function proximaSessao() {
   }
 }
 
+function infoAgendaHoje(agenda) {
+  try {
+    if (!agenda || !Array.isArray(agenda)) return null
+    const agora = new Date()
+    const diaIdx = agora.getDay()
+    const slot = agenda[diaIdx]
+    if (!slot) return null
+    return {
+      dia: DIAS[diaIdx],
+      ativo: slot.ativo,
+      inicio: slot.inicio || '--',
+      fim: slot.fim || '--',
+      agora: `${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`,
+    }
+  } catch { return null }
+}
+
 export default function Bloqueio() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
   const nome = child?.nome || 'estudante'
-  const proxima = proximaSessao()
+
+  const [agenda, setAgenda] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('ns_agenda_config') || 'null') } catch { return null }
+  })
+
+  // Fallback: busca agenda do Supabase se não estiver no localStorage
+  useEffect(() => {
+    if (agenda || !user) return
+    supabase.from('users').select('agenda_config').eq('id', user.id).single().then(({ data }) => {
+      if (data?.agenda_config && Array.isArray(data.agenda_config)) {
+        localStorage.setItem('ns_agenda_config', JSON.stringify(data.agenda_config))
+        setAgenda(data.agenda_config)
+      }
+    })
+  }, [user, agenda])
+
+  const proxima = proximaSessao(agenda)
+  const info = infoAgendaHoje(agenda)
+
+  // Recheck automático a cada 30s — libera quando o horário configurado chegar
+  useEffect(() => {
+    const check = () => {
+      try {
+        const ag = JSON.parse(localStorage.getItem('ns_agenda_config') || 'null')
+        if (dentroDoHorario(ag)) navigate('/home-crianca', { replace: true })
+      } catch {}
+    }
+    const id = setInterval(check, 30000)
+    return () => clearInterval(id)
+  }, [navigate])
 
   return (
-    <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
-    <div className="page-wrapper" style={{
+    <div style={{
+      minHeight: '100vh', width: '100%',
+      background: 'linear-gradient(135deg, #7C3AED, #6d28d9)',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', minHeight: '100vh', padding: '24px', textAlign: 'center',
-      background: 'linear-gradient(135deg, #7C3AED, #6d28d9)'
+      justifyContent: 'center', padding: '24px', textAlign: 'center',
     }}>
-      <div style={{fontSize: '72px', marginBottom: '20px'}}>🌙</div>
-      <h2 style={{color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px'}}>Ei, {nome}!</h2>
-      <p style={{color: 'rgba(255,255,255,0.8)', fontSize: '16px', marginBottom: '6px'}}>Agora não é hora de usar a plataforma.</p>
+      <div style={{ fontSize: '72px', marginBottom: '20px' }}>🌙</div>
+      <h2 style={{ color: 'white', fontSize: '28px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px' }}>Ei, {nome}!</h2>
+      <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px', marginBottom: '6px' }}>Agora não é hora de usar a plataforma.</p>
       {proxima
-        ? <p style={{color: 'rgba(255,255,255,0.6)', marginBottom: '32px', fontSize: '14px'}}>Sua próxima sessão começa às {proxima} ⭐</p>
-        : <p style={{color: 'rgba(255,255,255,0.6)', marginBottom: '32px', fontSize: '14px'}}>Peça ao responsável para liberar o acesso ⭐</p>
+        ? <p style={{ color: 'rgba(255,255,255,0.55)', marginBottom: '36px', fontSize: '14px' }}>Sua próxima sessão começa às {proxima} ⭐</p>
+        : <p style={{ color: 'rgba(255,255,255,0.55)', marginBottom: '36px', fontSize: '14px' }}>Peça ao responsável para liberar o acesso ⭐</p>
       }
 
-      <div style={{background: 'rgba(255,255,255,0.1)', borderRadius: '18px', padding: '20px 28px', maxWidth: '300px', width: '100%', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)', marginBottom: '24px'}}>
-        <p style={{color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginBottom: '8px', fontWeight: '600'}}>Mensagem dos seus pais:</p>
-        <p style={{fontSize: '15px', color: 'white', fontStyle: 'italic'}}>Aproveite para brincar lá fora! 😊</p>
+      <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '20px', padding: '24px 32px', maxWidth: '360px', width: '100%', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', marginBottom: '28px' }}>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', marginBottom: '8px', fontWeight: '600' }}>Mensagem dos seus pais:</p>
+        <p style={{ fontSize: '16px', color: 'white', fontStyle: 'italic', fontWeight: '500' }}>Aproveite para brincar lá fora! 😊</p>
       </div>
 
-      <button onClick={() => navigate('/auth')} style={{background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '12px', padding: '12px 24px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>
-        Entrar como responsável
-      </button>
-    </div>
+      {info && (
+        <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '14px', padding: '14px 20px', maxWidth: '360px', width: '100%', marginBottom: '20px', textAlign: 'left' }}>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>📋 Configuração de hoje ({info.dia})</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
+            <span>Horário agora:</span>
+            <strong style={{ color: 'white' }}>{info.agora}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginTop: '6px' }}>
+            <span>Acesso hoje:</span>
+            <strong style={{ color: info.ativo ? '#34d399' : '#f87171' }}>{info.ativo ? `${info.inicio} – ${info.fim}` : 'Desativado'}</strong>
+          </div>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px' }}>
+        <button onClick={() => navigate('/atividades-offline')} style={{
+          background: 'linear-gradient(135deg, #10b981, #059669)',
+          border: 'none',
+          borderRadius: '14px', padding: '14px 28px', color: 'white', cursor: 'pointer',
+          fontWeight: '900', fontSize: '15px', fontFamily: 'Plus Jakarta Sans, sans-serif',
+          boxShadow: '0 4px 20px rgba(16,185,129,0.4)',
+        }}>
+          🌿 Ver o que fazer agora!
+        </button>
+        <button onClick={() => navigate('/home-crianca', { replace: true })} style={{
+          background: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.45)',
+          borderRadius: '14px', padding: '13px 28px', color: 'white', cursor: 'pointer',
+          fontWeight: '800', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif',
+          backdropFilter: 'blur(8px)',
+        }}>
+          🔄 Tentar entrar
+        </button>
+        <button onClick={() => navigate('/auth')} style={{
+          background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '14px', padding: '11px 28px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+          fontWeight: '600', fontSize: '13px', fontFamily: 'Plus Jakarta Sans, sans-serif',
+        }}>
+          Entrar como responsável
+        </button>
+      </div>
     </div>
   )
 }

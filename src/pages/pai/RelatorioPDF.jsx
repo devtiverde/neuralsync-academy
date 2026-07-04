@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
+import LayoutPai from '../../components/LayoutPai'
 import '../../styles/pai.css'
 
 // Mapeamento: tipo de atividade → habilidades cognitivas exercitadas
@@ -144,7 +145,7 @@ function gerarMetas(habilidades, perfil) {
 
 export default function RelatorioPDF() {
   const navigate = useNavigate()
-  const { subscription } = useAuth()
+  const { user, loading: authLoading, subscription } = useAuth()
   const [child, setChild] = useState(null)
   const [habilidades, setHabilidades] = useState([])
   const [dadosSemanas, setDadosSemanas] = useState([])
@@ -153,13 +154,14 @@ export default function RelatorioPDF() {
   const [gerando, setGerando] = useState(false)
   const [gerado, setGerado] = useState(false)
   const [abaAtiva, setAbaAtiva] = useState('visao')
+  const [pdfErro, setPdfErro] = useState(false)
 
   useEffect(() => {
     async function carregar() {
       const activeChild = JSON.parse(localStorage.getItem('ns_active_child') || 'null')
       const { data: childData } = activeChild?.id
-        ? await supabase.from('children').select('*').eq('id', activeChild.id).single()
-        : await supabase.from('children').select('*').limit(1).single()
+        ? await supabase.from('children').select('*').eq('id', activeChild.id).eq('parent_id', user.id).single()
+        : await supabase.from('children').select('*').eq('parent_id', user.id).limit(1).single()
 
       if (!childData) return
 
@@ -189,22 +191,27 @@ export default function RelatorioPDF() {
     carregar()
   }, [])
 
-  if (subscription && subscription.plano !== 'premium') return (
-    <div style={{background: '#f9fafb', minHeight: '100vh'}}>
-      <header className="pai-header">
-        <button onClick={() => navigate('/relatorio')} className="btn-secondary">← Voltar</button>
-      </header>
-      <div style={{maxWidth: '480px', margin: '80px auto', textAlign: 'center', padding: '24px'}}>
+  if (authLoading) return (
+    <div style={{background:'var(--color-bg-secondary)',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div style={{color:'var(--color-primary)',fontWeight:'700'}}>Verificando acesso...</div>
+    </div>
+  )
+
+  if (!user) { navigate('/auth'); return null }
+
+  if (!subscription || subscription.plano !== 'premium') return (
+    <LayoutPai>
+      <div className="pai-content" style={{textAlign: 'center', paddingTop: '60px'}}>
         <div style={{fontSize: '64px', marginBottom: '16px'}}>📄</div>
         <h2 style={{fontWeight: '900', fontSize: '24px', color: '#0f0a1e', marginBottom: '10px'}}>Disponível no Plano Premium</h2>
-        <p style={{color: '#6b7280', fontSize: '15px', lineHeight: '1.6', marginBottom: '28px'}}>
+        <p style={{color: '#6b7280', fontSize: '15px', lineHeight: '1.6', marginBottom: '28px', maxWidth: '420px', margin: '0 auto 28px'}}>
           O Relatório Cognitivo em PDF com análise completa das 8 habilidades é exclusivo do plano <strong>Premium</strong>.
         </p>
         <button onClick={() => navigate('/planos')} style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', border: 'none', borderRadius: '12px', padding: '14px 32px', color: 'white', fontWeight: '700', fontSize: '16px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(124,58,237,0.35)'}}>
           Ver planos →
         </button>
       </div>
-    </div>
+    </LayoutPai>
   )
 
   const mediaGeral = habilidades.length > 0 ? Math.round(habilidades.reduce((acc, h) => acc + h.value, 0) / habilidades.length) : 0
@@ -258,7 +265,28 @@ export default function RelatorioPDF() {
       doc.setFont('helvetica', 'normal')
       doc.text((child?.idade || '') + ' anos  |  Nivel ' + (child?.nivel || 1) + '  |  Media geral: ' + mediaGeral + '%  (+' + evolucao + '% vs mes anterior)', W/2, 76, { align: 'center' })
 
-      let y = 88
+      // RESUMO EXECUTIVO
+      const topSkill = habilidades.reduce((a, b) => a.value >= b.value ? a : b, habilidades[0] || { skill: '—', value: 0 })
+      const botSkill = habilidades.reduce((a, b) => a.value <= b.value ? a : b, habilidades[0] || { skill: '—', value: 0 })
+      const mesAtual = new Date().toLocaleString('pt-BR', { month: 'long' })
+      const resumoTxt = `${nome} completou ${totalSessoes} atividade${totalSessoes !== 1 ? 's' : ''} em ${mesAtual}, acumulando ${horasFormatadas} de foco cognitivo. Destaque para a habilidade de ${topSkill.skill} (${topSkill.value}%), demonstrando evolucao consistente. Recomendamos maior atencao a ${botSkill.skill} (${botSkill.value}%) para desenvolvimento equilibrado das competencias.`
+
+      doc.setFillColor(245, 243, 255)
+      doc.roundedRect(15, 82, W - 30, 24, 3, 3, 'F')
+      doc.setDrawColor(196, 181, 253)
+      doc.setLineWidth(0.3)
+      doc.roundedRect(15, 82, W - 30, 24, 3, 3, 'S')
+      doc.setTextColor(124, 58, 237)
+      doc.setFontSize(7.5)
+      doc.setFont('helvetica', 'bold')
+      doc.text('RESUMO EXECUTIVO', 20, 89)
+      doc.setTextColor(55, 65, 81)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7)
+      const resumoLines = doc.splitTextToSize(resumoTxt, W - 46)
+      doc.text(resumoLines.slice(0, 3), 20, 95)
+
+      let y = 110
       const statItems = [
         [String(totalSessoes), 'Sessoes'],
         [horasFormatadas, 'Foco total'],
@@ -446,7 +474,7 @@ export default function RelatorioPDF() {
       doc.setTextColor(255, 255, 255)
       doc.setFontSize(7.5)
       doc.setFont('helvetica', 'normal')
-      doc.text('NeuralSync Academy  |  Relatorio Cognitivo Premium  |  neuralsync.com.br', W/2, 284, { align: 'center' })
+      doc.text('NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia  |  neuralsync.com.br', W/2, 284, { align: 'center' })
       doc.text('Pagina 1 de 2  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W/2, 292, { align: 'center' })
 
       // PAGINA 2
@@ -554,35 +582,36 @@ export default function RelatorioPDF() {
       doc.setTextColor(255, 255, 255)
       doc.setFontSize(7.5)
       doc.setFont('helvetica', 'normal')
-      doc.text('NeuralSync Academy  |  Relatorio Cognitivo Premium  |  Pagina 2 de 2', W/2, 284, { align: 'center' })
-      doc.text('neuralsync.com.br  |  ' + new Date().toLocaleDateString('pt-BR'), W/2, 292, { align: 'center' })
+      doc.text('Gerado pelo NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia', W/2, 284, { align: 'center' })
+      doc.text('neuralsync.com.br  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Pagina 2 de 2', W/2, 292, { align: 'center' })
 
       doc.save('NeuralSync_Relatorio_' + nome + '.pdf')
       setGerado(true)
       setTimeout(() => setGerado(false), 4000)
     } catch(err) {
       console.error(err)
+      setPdfErro(true)
+      setTimeout(() => setPdfErro(false), 4000)
     }
     setGerando(false)
   }
 
   if (!child) return (
-    <div style={{background:'#f9fafb',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <div style={{color:'#7C3AED',fontWeight:'700'}}>Carregando relatorio...</div>
+    <div style={{background:'var(--color-bg-secondary)',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div style={{color:'var(--color-primary)',fontWeight:'700'}}>Carregando relatório...</div>
     </div>
   )
 
   return (
-    <div style={{background:'#f9fafb',minHeight:'100vh'}}>
-      <header className="pai-header">
-        <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-          <button onClick={() => navigate('/dashboard')} className="btn-secondary">← Voltar</button>
-          <h2 style={{fontWeight:'800',fontSize:'18px',color:'#0f0a1e'}}>📄 Relatorio Cognitivo Premium</h2>
-        </div>
-        <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'999px',padding:'5px 14px',fontSize:'12px',color:'white',fontWeight:'700'}}>⭐ Exclusivo Premium</div>
-      </header>
+    <LayoutPai>
+      <div className="pai-content">
 
-      <div style={{maxWidth:'860px',margin:'0 auto',padding:'28px 24px'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}>
+        <h2 style={{fontWeight:'900',fontSize:'22px',color:'#0f0a1e'}}>📄 Relatório Cognitivo Premium</h2>
+        <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'999px',padding:'5px 14px',fontSize:'12px',color:'white',fontWeight:'700'}}>⭐ Exclusivo Premium</div>
+      </div>
+
+      <div style={{maxWidth:'860px'}}>
 
         {/* HERO */}
         <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'24px',padding:'28px',marginBottom:'20px',color:'white',position:'relative',overflow:'hidden'}}>
@@ -619,27 +648,27 @@ export default function RelatorioPDF() {
         </div>
 
         {/* ABAS */}
-        <div style={{display:'flex',background:'white',borderRadius:'14px',padding:'4px',marginBottom:'16px',border:'1.5px solid #f3f4f6',gap:'4px'}}>
+        <div style={{display:'flex',background:'white',borderRadius:'14px',padding:'4px',marginBottom:'16px',border:'1.5px solid #f3f4f6',gap:'4px',overflowX:'auto',scrollbarWidth:'none',WebkitOverflowScrolling:'touch'}}>
           {[['visao','Visão Geral'],['habilidades','Habilidades'],['recomendacoes','Recomendações'],['plano','Plano do Mês']].map(([id,label]) => (
-            <button key={id} onClick={() => setAbaAtiva(id)} style={{flex:1,padding:'10px',borderRadius:'10px',border:'none',cursor:'pointer',fontWeight:'700',fontSize:'13px',transition:'all 0.2s',background: abaAtiva===id?'#7C3AED':'transparent',color: abaAtiva===id?'white':'#6b7280',fontFamily:'Plus Jakarta Sans,sans-serif'}}>{label}</button>
+            <button key={id} onClick={() => setAbaAtiva(id)} style={{flexShrink:0,whiteSpace:'nowrap',padding:'10px 14px',borderRadius:'10px',border:'none',cursor:'pointer',fontWeight:'700',fontSize:'13px',transition:'all 0.2s',background: abaAtiva===id?'var(--color-primary)':'transparent',color: abaAtiva===id?'white':'var(--color-text-muted)',fontFamily:'var(--font-sans)'}}>{label}</button>
           ))}
         </div>
 
         {abaAtiva === 'visao' && (
           <div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px',marginBottom:'14px'}}>
-              <div className="pai-card" style={{padding:'20px'}}>
+            <div className="pai-charts-grid" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'14px',marginBottom:'14px'}}>
+              <div className="pai-card" style={{padding:'20px',minWidth:0}}>
                 <h4 style={{fontWeight:'800',fontSize:'14px',marginBottom:'14px',color:'#0f0a1e'}}>Radar Cognitivo</h4>
                 <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart data={habilidades}>
+                  <RadarChart data={habilidades} outerRadius="52%" margin={{top:8,right:20,bottom:8,left:32}}>
                     <PolarGrid stroke="#e5e7eb" />
-                    <PolarAngleAxis dataKey="skill" tick={{fill:'#9ca3af',fontSize:10}} />
+                    <PolarAngleAxis dataKey="skill" tick={{fill:'#9ca3af',fontSize:9}} />
                     <Radar dataKey="value" stroke="#7C3AED" fill="#7C3AED" fillOpacity={0.3} strokeWidth={2} name="Atual" />
                     <Radar dataKey="anterior" stroke="#e5e7eb" fill="none" strokeWidth={1} strokeDasharray="3 3" name="Anterior" />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="pai-card" style={{padding:'20px'}}>
+              <div className="pai-card" style={{padding:'20px',minWidth:0}}>
                 <h4 style={{fontWeight:'800',fontSize:'14px',marginBottom:'14px',color:'#0f0a1e'}}>XP por Semana</h4>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={dadosSemanas}>
@@ -744,6 +773,11 @@ export default function RelatorioPDF() {
           </div>
         )}
 
+        {pdfErro && (
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '12px 16px', color: '#dc2626', fontSize: '14px', fontWeight: '600', textAlign: 'center', marginTop: '16px' }}>
+            ⚠️ Erro ao gerar o PDF. Tente novamente em instantes.
+          </div>
+        )}
         <button onClick={gerarPDF} disabled={gerando} style={{
           width:'100%',padding:'17px',borderRadius:'16px',border:'none',marginTop:'20px',
           background: gerado ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#7C3AED,#6d28d9)',
@@ -757,6 +791,8 @@ export default function RelatorioPDF() {
           Relatório completo com análise personalizada para {child.nome}
         </p>
       </div>
-    </div>
+
+      </div>
+    </LayoutPai>
   )
 }

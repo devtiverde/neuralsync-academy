@@ -1,0 +1,157 @@
+/* ═══════════════════════════════════════════════════
+   NeuralSync Academy — Design Tokens (v2)
+   Fonte única de verdade — importar ANTES de tudo.
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  /* ── Paleta principal ───────────────────────────── */
+  --color-primary:       #7C3AED;
+  --color-primary-light: #EDE9FE;
+  --color-primary-dark:  #5B21B6;
+
+  /* ── Semântica de gamificação ───────────────────── */
+  --color-reward:        #F59E0B;
+  --color-reward-light:  #FEF3C7;
+  --color-success:       #10B981;
+  --color-success-light: #D1FAE5;
+  --color-action:        #F97316;
+  --color-action-light:  #FFEDD5;
+  --color-ai:            #06B6D4;
+  --color-ai-light:      #CFFAFE;
+  --color-error:         #EF4444;
+  --color-error-light:   #FEE2E2;
+
+  /* ── Neutros ────────────────────────────────────── */
+  --color-bg:            #FFFFFF;
+  --color-bg-secondary:  #F8F7FF;
+  --color-bg-card:       #FFFFFF;
+  --color-border:        #EDE9FE;
+  --color-text-primary:  #1E1B4B;
+  --color-text-secondary:#6D28D9;
+  --color-text-muted:    #9CA3AF;
+
+  /* ── Tipografia ─────────────────────────────────── */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --text-xs:   12px;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   18px;
+  --text-xl:   22px;
+  --text-2xl:  28px;
+  --text-3xl:  36px;
+
+  /* ── Espaçamento (base 4px) ─────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Bordas ─────────────────────────────────────── */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* ── Sombras premium ────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(124,58,237,0.08), 0 1px 2px rgba(124,58,237,0.06);
+  --shadow-md: 0 4px 16px rgba(124,58,237,0.10), 0 2px 6px rgba(124,58,237,0.06);
+  --shadow-lg: 0 8px 32px rgba(124,58,237,0.12), 0 4px 12px rgba(124,58,237,0.08);
+
+  /* ── Transições ─────────────────────────────────── */
+  --transition:      150ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ── Bridge: nomes antigos → novos (retrocompat) ── */
+  --color-accent:         var(--color-action);
+  --color-accent-dark:    #ea6500;
+  --color-accent-ghost:   var(--color-action-light);
+  --color-success-ghost:  var(--color-success-light);
+  --color-error-ghost:    var(--color-error-light);
+  --color-primary-ghost:  var(--color-primary-light);
+  --color-primary-border: var(--color-border);
+  --color-text-1:  var(--color-text-primary);
+  --color-text-2:  #374151;
+  --color-text-3:  #6b7280;
+  --color-text-4:  var(--color-text-muted);
+  --color-surface: var(--color-bg-card);
+  --color-dark:    #0f0a1e;
+  --color-border-2: #e5e7eb;
+  --color-info:    #3b82f6;
+  --color-warning: #fcd34d;
+  --color-warning-ghost: #fffbeb;
+  --font: var(--font-sans);
+  --text-md:  var(--text-base);
+  --weight-normal: 500;
+  --weight-semi:   600;
+  --weight-bold:   700;
+  --weight-black:  900;
+  --sp-1: var(--space-1);
+  --sp-2: var(--space-2);
+  --sp-3: var(--space-3);
+  --sp-4: var(--space-4);
+  --sp-5: var(--space-5);
+  --sp-6: var(--space-6);
+  --sp-7: 28px;
+  --sp-8: var(--space-8);
+  --r-sm:   var(--radius-sm);
+  --r-md:   var(--radius-md);
+  --r-lg:   var(--radius-lg);
+  --r-xl:   var(--radius-xl);
+  --r-full: var(--radius-full);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-primary: 0 4px 14px rgba(124,58,237,0.30);
+  --shadow-primary-hover: 0 8px 24px rgba(124,58,237,0.40);
+  --shadow-accent: 0 4px 14px rgba(240,122,32,0.30);
+  --shadow-accent-hover: 0 8px 24px rgba(240,122,32,0.40);
+
+  /* ── Namespace NS v3 (brand guide oficial) ──────── */
+  --ns-violet:       #7C3AED;
+  --ns-violet-light: #EDE9FE;
+  --ns-violet-dark:  #5B21B6;
+  --ns-amber:        #F59E0B;
+  --ns-amber-light:  #FEF3C7;
+  --ns-orange:       #F97316;
+  --ns-orange-dark:  #F07A20;
+  --ns-teal:         #06B6D4;
+  --ns-teal-light:   #CFFAFE;
+  --ns-green:        #10B981;
+  --ns-green-light:  #D1FAE5;
+  --ns-error:        #EF4444;
+
+  --ns-bg:        #F8F7FF;
+  --ns-dark:      #0f0a1e;
+  --ns-dark-mid:  #1a0a3e;
+  --ns-dark-deep: #2d1b69;
+
+  --ns-text:      #1E1B4B;
+  --ns-text-muted:#6b7280;
+
+  --ns-font-display: 'Fredoka One', cursive;
+  --ns-font-body:    'Plus Jakarta Sans', sans-serif;
+  --ns-font-ui:      'Space Grotesk', sans-serif;
+
+  --ns-shadow-sm:         0 1px 3px rgba(124,58,237,0.08), 0 1px 2px rgba(124,58,237,0.06);
+  --ns-shadow-md:         0 4px 16px rgba(124,58,237,0.10), 0 2px 6px rgba(124,58,237,0.06);
+  --ns-shadow-lg:         0 8px 32px rgba(124,58,237,0.12), 0 4px 12px rgba(124,58,237,0.08);
+  --ns-shadow-glow-orange:0 4px 14px rgba(249,115,22,0.4);
+  --ns-shadow-glow-violet:0 4px 14px rgba(124,58,237,0.35);
+
+  --ns-radius-sm:  8px;
+  --ns-radius-md:  12px;
+  --ns-radius-lg:  20px;
+  --ns-radius-xl:  24px;
+  --ns-radius-pill:999px;
+
+  --ns-gap-xs: 4px;
+  --ns-gap-sm: 8px;
+  --ns-gap-md: 16px;
+  --ns-gap-lg: 24px;
+  --ns-gap-xl: 40px;
+}

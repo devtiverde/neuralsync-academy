@@ -1,21 +1,238 @@
-@import './design-tokens.css';
+@import './tokens.css';
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
 * { font-family: var(--font); box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body { overflow-x: hidden; }
+
+/* ── Pai app shell ───────────────────────────────── */
+.pai-app { display: flex; min-height: 100vh; background: #f8f7ff; }
+
+/* ── Topbar responsivo — menu hambúrguer no mobile ──── */
+.pai-menu-toggle { display: none; }
+.pai-mobile-menu { display: none; }
+
+@media (max-width: 860px) {
+  .pai-topbar-row { padding: 0 16px !important; }
+  .pai-nav-desktop { display: none !important; }
+  .pai-topbar-spacer { display: none !important; }
+  .pai-topbar-actions-desktop { display: none !important; }
+  .pai-menu-toggle { display: flex !important; margin-left: auto; }
+  .pai-mobile-menu {
+    display: flex; flex-direction: column;
+    position: absolute; top: 64px; left: 0; right: 0;
+    background: white; border-bottom: 1px solid #ede9fe;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+    max-height: calc(100vh - 64px); overflow-y: auto;
+  }
+}
+
+/* ── Dashboard: cards que quebram em coluna única no mobile ── */
+@media (max-width: 640px) {
+  .pai-recomendadas-grid { grid-template-columns: 1fr !important; }
+  .pai-stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .pai-promo-card { flex-direction: column !important; align-items: flex-start !important; }
+  .pai-promo-card > button { width: 100% !important; }
+}
+
+/* ── RelatorioPDF: gráficos empilham no mobile (radar precisa de largura) ── */
+@media (max-width: 640px) {
+  .pai-charts-grid { grid-template-columns: 1fr !important; }
+}
+
+.pai-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: white;
+  border-right: 1.5px solid #ede9fe;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  z-index: 50;
+  scrollbar-width: none;
+}
+
+.pai-main { flex: 1; min-width: 0; min-height: 100vh; overflow-y: auto; }
+.pai-content { max-width: 1100px; padding: 32px 36px; margin: 0 auto; width: 100%; }
+
+/* Legacy header kept for any pages not yet migrated */
 .pai-header { background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: var(--sp-4) var(--sp-8); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-xs); position: sticky; top: 0; z-index: 50; }
 
-.pai-card { background: var(--color-surface); border-radius: var(--r-lg); border: 1.5px solid var(--color-border); box-shadow: var(--shadow-sm); transition: var(--transition); }
-.pai-card:hover { box-shadow: 0 8px 24px rgba(124,58,237,0.08); border-color: var(--color-primary-border); }
+.pai-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-slow), transform var(--transition-slow);
+}
+.pai-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 
-.btn-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); border: none; border-radius: var(--r-md); padding: var(--sp-3) var(--sp-6); color: white; font-weight: var(--weight-bold); font-size: var(--text-base); cursor: pointer; box-shadow: var(--shadow-primary); transition: var(--transition); font-family: var(--font); }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-primary-hover); }
+/* ── Card padrão (alias moderno) ───────────────────── */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-slow), transform var(--transition-slow);
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
 
-.btn-secondary { background: var(--color-primary-ghost); border: 1.5px solid var(--color-primary-border); border-radius: var(--r-md); padding: var(--sp-2) var(--sp-4); color: var(--color-primary); font-weight: var(--weight-bold); font-size: 13px; cursor: pointer; transition: var(--transition); font-family: var(--font); }
-.btn-secondary:hover { background: var(--color-primary-border); }
+/* ── Badge de XP / recompensa ──────────────────────── */
+.badge-xp {
+  background: var(--color-reward-light);
+  color: #92400E;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
 
-.input-field { width: 100%; padding: var(--sp-3) var(--sp-4); border-radius: var(--r-md); border: 1.5px solid var(--color-border-2); background: var(--color-bg); font-size: var(--text-base); color: var(--color-text-1); outline: none; transition: var(--transition); font-family: var(--font); }
-.input-field:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
+.badge-ai {
+  background: var(--color-ai-light);
+  color: #0E7490;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+/* ── Barra de progresso / XP ───────────────────────── */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success), #34D399);
+  border-radius: var(--radius-full);
+  transition: width 600ms ease;
+}
+
+/* ── Botão primário (CTA principal, iniciar atividade) ── */
+.btn-primary {
+  background: var(--color-action);
+  color: #FFFFFF;
+  font-size: var(--text-base);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  min-height: 48px;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+}
+.btn-primary:hover  { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Botão secundário ──────────────────────────────── */
+.btn-secondary {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-primary);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-family: var(--font-sans);
+}
+.btn-secondary:hover { background: #DDD6FE; }
+
+/* ── Input de formulário ───────────────────────────── */
+.input-field {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  font-family: var(--font-sans);
+}
+.input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+.input-field::placeholder { color: var(--color-text-muted); }
+
+/* Alias semântico */
+.input { }
+.input { height: 48px; padding: 0 var(--space-4); border: 1.5px solid var(--color-border); border-radius: var(--radius-md); font-size: var(--text-base); color: var(--color-text-primary); background: var(--color-bg); transition: border-color var(--transition), box-shadow var(--transition); outline: none; width: 100%; font-family: var(--font-sans); }
+.input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+.input::placeholder { color: var(--color-text-muted); }
 
 .toggle-track { width: 46px; height: 26px; border-radius: var(--r-full); cursor: pointer; position: relative; transition: background 0.2s; }
 .toggle-thumb { position: absolute; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: var(--shadow-xs); }
+
+/* ── Hover utilities — área pai ──────────────────── */
+
+/* Topbar nav item — light theme */
+.pai-nav-item:hover:not(:disabled) {
+  background: #f0ecff !important;
+  color: #6d28d9 !important;
+}
+
+/* Botão "Ver área da criança" no topbar pai */
+.pai-btn-crianca {
+  transition: filter 0.15s, transform 0.15s !important;
+}
+.pai-btn-crianca:hover {
+  filter: brightness(1.15) !important;
+  transform: translateY(-1px) !important;
+}
+.pai-btn-crianca:active { transform: scale(0.97) !important; }
+
+/* ── Animações área pai ──────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pai-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pai-fade-in { animation: pai-fadeIn 0.3s ease forwards; }
+
+/* Barra de progresso violet — substitui a verde */
+.pai-prog-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ns-violet-light);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.pai-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ns-violet), #a78bfa);
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}

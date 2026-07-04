@@ -9,12 +9,14 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   const loadSubscription = async (userId) => {
-    const { data } = await supabase
-      .from('users')
-      .select('plano, plano_status, plano_ativo_ate, filhos_limite, kiwify_subscriber_id')
-      .eq('id', userId)
-      .single()
-    setSubscription(data || null)
+    try {
+      const { data } = await supabase
+        .from('users')
+        .select('plano, plano_status, plano_ativo_ate, filhos_limite, kiwify_subscriber_id')
+        .eq('id', userId)
+        .single()
+      if (data) setSubscription(data)
+    } catch {}
   }
 
   useEffect(() => {
@@ -37,7 +39,25 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signIn = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (!error && data.user) {
+      const emailLower = email.toLowerCase()
+      const { data: pending } = await supabase
+        .from('pending_subscriptions')
+        .select('*')
+        .eq('email', emailLower)
+        .single()
+      if (pending) {
+        await supabase.from('users').update({
+          plano: pending.plano,
+          plano_status: 'ativo',
+          plano_ativo_ate: pending.plano_ativo_ate,
+          filhos_limite: pending.filhos_limite,
+          kiwify_subscriber_id: pending.kiwify_subscriber_id,
+        }).eq('id', data.user.id)
+        await supabase.from('pending_subscriptions').delete().eq('email', emailLower)
+      }
+    }
     return { error }
   }
 

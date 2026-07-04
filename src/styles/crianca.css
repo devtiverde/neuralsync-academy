@@ -1,12 +1,87 @@
-@import './design-tokens.css';
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import './tokens.css';
 
-* { font-family: var(--font); box-sizing: border-box; margin: 0; padding: 0; }
+/* ui-ux-pro-max: Baloo 2 for criança headings (kids educational — playful + readable) */
+* { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Global: cursor-pointer on all interactive elements (ui-ux-pro-max checklist) */
+button, [role="button"], a, label[for], [onClick] { cursor: pointer; }
 
 body { background: var(--color-bg); }
 
-@keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+/* ui-ux-pro-max: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
+/* ui-ux-pro-max: glow utilities for gamification elements */
+.ns-glow-purple { box-shadow: 0 0 20px rgba(124,58,237,0.35), 0 0 40px rgba(124,58,237,0.12); }
+.ns-glow-green  { box-shadow: 0 0 20px rgba(16,185,129,0.35), 0 0 40px rgba(16,185,129,0.12); }
+.ns-glow-amber  { box-shadow: 0 0 20px rgba(251,191,36,0.35), 0 0 40px rgba(251,191,36,0.12); }
+
+/* ui-ux-pro-max: glass card (dark mode — bg white/5 visible, border white/10) */
+.ns-glass {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+.ns-glass:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+/* ui-ux-pro-max: heading font for criança = Baloo 2 (playful, educational) */
+h1, h2, h3, .crianca-heading {
+  font-family: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+}
+
+@keyframes float1 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes ns-pop    { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+@keyframes ns-float  { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-12px)} }
+@keyframes ns-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.ns-icon-bounce:hover { animation: ns-bounce 0.4s ease; }
+@keyframes ns-spin   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes ns-slide-up { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes ns-shine  { 0%{left:-100%} 100%{left:200%} }
+@keyframes ns-fade-filter { from{opacity:0} to{opacity:1} }
+@keyframes ns-pulse  { 0%,100%{opacity:1} 50%{opacity:0.5} }
+@keyframes ns-stars  { 0%{transform:translateY(0) rotate(0)} 100%{transform:translateY(-20px) rotate(360deg)} }
+
+/* ── App shell ───────────────────────────────────── */
+.ns-app {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ── Sidebar criança ─────────────────────────────── */
+.ns-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: linear-gradient(170deg, #1a0a3e 0%, #0c0520 100%);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  z-index: 50;
+  scrollbar-width: none;
+}
+
+/* ── Main content ────────────────────────────────── */
+.ns-main { flex: 1; min-width: 0; min-height: 100vh; }
+
+/* ── Page wrapper (mobile compat) ────────────────── */
 .page-wrapper {
   max-width: 430px;
   margin: 0 auto;
@@ -15,12 +90,23 @@ body { background: var(--color-bg); }
   position: relative;
 }
 
+/* ── Header gradient ─────────────────────────────── */
 .header-gradient {
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   padding: var(--sp-7) var(--sp-5) var(--sp-8);
-  max-width: 430px;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+/* ── Responsive grids ────────────────────────────── */
+.ns-two-col {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+.ns-three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.ns-pad { padding: 28px 32px; }
 
 /* ── Menu inferior ────────────────────────────────── */
 .menu-bottom {
@@ -33,10 +119,33 @@ body { background: var(--color-bg); }
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   display: flex;
-  justify-content: space-around;
-  padding: var(--sp-2) 0 var(--sp-4);
+  justify-content: flex-start;
+  padding: var(--sp-2) var(--sp-2) var(--sp-4);
   box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
   z-index: 100;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.menu-bottom::-webkit-scrollbar { display: none; }
+
+/* ── Responsive breakpoints ──────────────────────── */
+@media (min-width: 768px) {
+  .menu-bottom { display: none !important; }
+  .page-wrapper { max-width: none; padding-bottom: 32px; }
+}
+@media (max-width: 767px) {
+  .ns-sidebar { display: none !important; }
+  .ns-two-col { grid-template-columns: 1fr; }
+  .ns-three-col { grid-template-columns: repeat(2,1fr); }
+  .ns-pad { padding: 16px; }
+}
+
+/* ── PerfilCrianca — hero empilha no mobile ────────── */
+@media (max-width: 640px) {
+  .ns-perfil-hero { flex-direction: column !important; text-align: center; }
+  .ns-perfil-stats { justify-content: center !important; width: 100%; }
 }
 
 .menu-bottom-btn {
@@ -54,7 +163,9 @@ body { background: var(--color-bg); }
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-md);
   min-height: 44px;
-  min-width: 44px;
+  min-width: 56px;
+  flex-shrink: 0;
+  white-space: nowrap;
   justify-content: center;
 }
 .menu-bottom-btn:hover { background: rgba(124,58,237,0.08); }
@@ -104,9 +215,238 @@ body { background: var(--color-bg); }
 }
 .btn-purple:hover { transform: translateY(-2px); box-shadow: var(--shadow-primary-hover); }
 
-/* ── Atividades ──────────────────────────────────── */
-.activity-card { transition: var(--transition); }
-.activity-card:hover { transform: translateY(-2px); }
+/* ── Botão primário (CTA principal) ──────────────── */
+.btn-primary {
+  background: var(--color-action);
+  color: #FFFFFF;
+  font-size: var(--text-base);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  min-height: 48px;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+}
+.btn-primary:hover  { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── Botão secundário ───────────────────────────── */
+.btn-secondary {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-primary);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-family: var(--font-sans);
+}
+.btn-secondary:hover { background: #DDD6FE; }
+
+/* ── Card padrão ─────────────────────────────────── */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-slow), transform var(--transition-slow);
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+/* ── Card de atividade ───────────────────────────── */
+.activity-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--color-border);
+  padding: var(--space-6);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-slow);
+  position: relative;
+}
+.activity-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px) scale(1.01);
+}
+.activity-card .icon {
+  font-size: 48px;
+  margin-bottom: var(--space-3);
+  display: block;
+}
+.activity-card h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+/* ── Badge de XP / recompensa ────────────────────── */
+.badge-xp {
+  background: var(--color-reward-light);
+  color: #92400E;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge-ai {
+  background: var(--color-ai-light);
+  color: #0E7490;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+/* ── Barra de progresso / XP ─────────────────────── */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success), #34D399);
+  border-radius: var(--radius-full);
+  transition: width 600ms ease;
+}
+
+/* ── Input de formulário ─────────────────────────── */
+.input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  font-family: var(--font-sans);
+}
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+.input::placeholder { color: var(--color-text-muted); }
+
+/* ── Game shell ──────────────────────────────────── */
+.game-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--game-bg, #0f0a1e);
+}
+.game-sidebar-left {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 20px;
+  background: rgba(255,255,255,0.04);
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+.game-sidebar-right {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px;
+  background: rgba(255,255,255,0.03);
+  border-left: 1px solid rgba(255,255,255,0.07);
+}
+.game-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.game-topbar {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.game-content {
+  flex: 1;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+}
+.game-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  overflow: hidden;
+  flex: 1;
+}
+.game-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+  background: linear-gradient(90deg, #a78bfa, #f0abfc);
+}
+
+/* Opt btn answer */
+.quiz-option {
+  border-radius: 16px;
+  padding: 16px 20px;
+  border: 2px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: Plus Jakarta Sans, sans-serif;
+  text-align: left;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.quiz-option:hover:not(:disabled) {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+  transform: translateX(4px);
+}
+.quiz-option.correct  { background: rgba(16,185,129,0.2); border-color: #10b981; color: #a7f3d0; }
+.quiz-option.wrong    { background: rgba(239,68,68,0.2);  border-color: #ef4444; color: #fca5a5; }
+.quiz-option.dimmed   { opacity: 0.35; }
+
+@media (max-width: 767px) {
+  .game-sidebar-left  { display: none !important; }
+  .game-sidebar-right { display: none !important; }
+  .game-content       { padding: 16px; }
+  .game-topbar        { padding: 12px 16px; }
+}
 
 /* ── Stat pill ───────────────────────────────────── */
 .stat-pill {
@@ -116,3 +456,124 @@ body { background: var(--color-bg); }
   text-align: center;
   border: 1px solid var(--color-primary-border);
 }
+
+/* ── Hover utilities ─────────────────────────────── */
+
+/* Topbar nav item — dark theme */
+.ns-nav-item:hover:not(:disabled) {
+  background: rgba(124,58,237,0.22) !important;
+  color: rgba(255,255,255,0.92) !important;
+}
+
+/* Hub card (HomeCrianca) — shine sweep on hover */
+.ns-hub-card {
+  overflow: hidden !important;
+}
+.ns-hub-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.16), transparent);
+  pointer-events: none;
+}
+.ns-hub-card:hover::after {
+  animation: ns-shine-sweep 0.55s ease forwards;
+}
+
+@keyframes ns-shine-sweep {
+  from { left: -80%; }
+  to   { left: 140%; }
+}
+
+/* Stat card (hero section) */
+.ns-stat-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+.ns-stat-card:hover {
+  transform: translateY(-3px) scale(1.04) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.45) !important;
+}
+.ns-stat-card:active {
+  transform: scale(0.97) !important;
+}
+
+/* Dark secondary button */
+.ns-btn-dark {
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s !important;
+}
+.ns-btn-dark:hover {
+  background: rgba(255,255,255,0.13) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
+}
+.ns-btn-dark:active { transform: scale(0.97) !important; }
+
+/* Sidebar nav item — dark theme (sidebar lateral mobile) */
+.ns-sidebar-item:hover {
+  background: rgba(255,255,255,0.07) !important;
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* ── Digitação — game animations ─────────────────────────────────────── */
+@keyframes ns-dt-arena-hit  {
+  0%   { box-shadow: 0 0 0 transparent; }
+  35%  { box-shadow: inset 0 0 60px rgba(16,185,129,0.28), 0 0 40px rgba(16,185,129,0.22); }
+  100% { box-shadow: 0 0 0 transparent; }
+}
+@keyframes ns-dt-arena-miss {
+  0%   { box-shadow: 0 0 0 transparent; }
+  35%  { box-shadow: inset 0 0 60px rgba(239,68,68,0.28), 0 0 40px rgba(239,68,68,0.22); }
+  100% { box-shadow: 0 0 0 transparent; }
+}
+@keyframes ns-dt-shake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(-10px); }
+  30%     { transform: translateX(10px); }
+  45%     { transform: translateX(-8px); }
+  60%     { transform: translateX(8px); }
+  75%     { transform: translateX(-4px); }
+  90%     { transform: translateX(4px); }
+}
+@keyframes ns-dt-particula {
+  0%   { transform: translateY(-8px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-90px) scale(0);  opacity: 0; }
+}
+@keyframes ns-dt-cursor {
+  0%,100% { background: rgba(124,58,237,0.4);  }
+  50%     { background: rgba(124,58,237,0.88); }
+}
+@keyframes ns-dt-vitoria {
+  0%   { transform: scale(0.82) translateY(18px); opacity: 0; }
+  65%  { transform: scale(1.04) translateY(-3px); opacity: 1; }
+  100% { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+@keyframes ns-dt-gameover {
+  0%   { transform: scale(1.08); opacity: 0; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+@keyframes ns-dt-urgente {
+  0%,100% { opacity: 1; }
+  50%     { opacity: 0.45; }
+}
+@keyframes ns-dt-letra-wait {
+  0%,100% { text-shadow: 0 0 25px rgba(124,58,237,0.5); }
+  50%     { text-shadow: 0 0 55px rgba(124,58,237,0.85), 0 0 90px rgba(124,58,237,0.3); }
+}
+
+.ns-dt-arena-hit   { animation: ns-dt-arena-hit  0.48s ease; }
+.ns-dt-arena-miss  { animation: ns-dt-arena-miss 0.48s ease; }
+.ns-dt-shake       { animation: ns-dt-shake 0.34s ease !important; transform: translateX(0) !important; }
+.ns-dt-vitoria-wrap{ animation: ns-dt-vitoria 0.48s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.ns-dt-gameover-wrap { animation: ns-dt-gameover 0.38s ease forwards; }
+.ns-dt-cursor-char { animation: ns-dt-cursor 0.85s ease-in-out infinite; border-radius: 2px; }
+.ns-dt-urgente     { animation: ns-dt-urgente 0.45s ease-in-out infinite; }
+
+/* ── PerfilCrianca — anel de moldura pulsante ─────────────────────────── */
+@keyframes ns-ring-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%       { opacity: 1;    transform: scale(1.05); }
+}
+

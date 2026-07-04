@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { atividadesPorFaixa, fase2PorFaixa, fase3PorFaixa } from '../data/atividadesData'
+import { atividadesExtraPorFaixa, fase2ExtraPorFaixa, fase3ExtraPorFaixa, fase4ExtraPorFaixa, fase5ExtraPorFaixa, inglesExtraPorFaixa, formasExtraPorFaixa, numerosExtraPorFaixa, coresExtraPorFaixa, alfabetoExtraPorFaixa } from '../data/atividadesExtra'
 
 export function useAtividades(faixaEtaria) {
   const [atividades, setAtividades] = useState([])
@@ -8,6 +9,23 @@ export function useAtividades(faixaEtaria) {
 
   useEffect(() => {
     if (!faixaEtaria) return
+
+    const f = faixaEtaria
+    const base = [
+      ...(atividadesPorFaixa[f]       || atividadesPorFaixa.construtores),
+      ...(atividadesExtraPorFaixa[f]  || []),
+      ...(fase2PorFaixa[f]            || fase2PorFaixa.construtores),
+      ...(fase2ExtraPorFaixa[f]       || []),
+      ...(fase3PorFaixa[f]            || []),
+      ...(fase3ExtraPorFaixa[f]       || []),
+      ...(fase4ExtraPorFaixa[f]       || []),
+      ...(fase5ExtraPorFaixa[f]       || []),
+      ...(inglesExtraPorFaixa[f]      || []),
+      ...(formasExtraPorFaixa[f]      || []),
+      ...(numerosExtraPorFaixa[f]     || []),
+      ...(coresExtraPorFaixa[f]       || []),
+      ...(alfabetoExtraPorFaixa[f]    || []),
+    ]
 
     supabase
       .from('ns_atividades')
@@ -18,27 +36,26 @@ export function useAtividades(faixaEtaria) {
       .order('ordem', { ascending: true })
       .then(({ data }) => {
         if (data && data.length > 0) {
-          setAtividades(data.map(row => ({
-            id:             row.id,
-            tipo:           row.tipo,
-            titulo:         row.titulo,
-            descricao:      row.descricao,
-            emoji:          row.emoji,
-            habilidade:     row.habilidade,
-            xp_reward:      row.xp_reward,
-            coins_reward:   row.coins_reward,
-            tempo_estimado: row.tempo_estimado,
-            historinha:     row.historinha,
-            ...row.dados,
-          })))
+          // Adiciona do Supabase apenas atividades que não existem nos arquivos JS
+          const baseIds = new Set(base.map(a => a.id))
+          const extras = data
+            .filter(row => !baseIds.has(row.id))
+            .map(row => ({
+              id:             row.id,
+              tipo:           row.tipo,
+              titulo:         row.titulo,
+              descricao:      row.descricao,
+              emoji:          row.emoji,
+              habilidade:     row.habilidade,
+              xp_reward:      row.xp_reward,
+              coins_reward:   row.coins_reward,
+              tempo_estimado: row.tempo_estimado,
+              historinha:     row.historinha,
+              ...row.dados,
+            }))
+          setAtividades([...base, ...extras])
         } else {
-          // fallback para arquivos JS enquanto banco estiver vazio
-          const f = faixaEtaria
-          setAtividades([
-            ...(atividadesPorFaixa[f] || atividadesPorFaixa.construtores),
-            ...(fase2PorFaixa[f]     || fase2PorFaixa.construtores),
-            ...(fase3PorFaixa[f]     || []),
-          ])
+          setAtividades(base)
         }
         setLoading(false)
       })

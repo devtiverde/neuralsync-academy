@@ -1,10 +1,24 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import GameShell from '../../components/GameShell'
+import { playSound } from '../../lib/sounds'
+import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
 
 const DIRS = {
-  '↑': [-1, 0], '↓': [1, 0], '←': [0, -1], '→': [0, 1],
+  'â†‘': [-1, 0], 'â†“': [1, 0], 'â†': [0, -1], 'â†’': [0, 1],
+}
+
+function cmdBtn(cor) {
+  return {
+    width: '52px', height: '52px', borderRadius: '12px',
+    background: cor, border: 'none', color: 'white',
+    fontSize: '20px', cursor: 'pointer', fontWeight: '700',
+    boxShadow: '0 3px 8px rgba(99,102,241,0.4)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'transform 0.1s ease', fontFamily: 'Plus Jakarta Sans, sans-serif',
+  }
 }
 
 export default function RoboAtividade() {
@@ -23,7 +37,7 @@ export default function RoboAtividade() {
   const [nivelsConcluidos, setNiveisConcluidos] = useState(0)
 
   useEffect(() => {
-    if (!atividade) navigate('/trilha')
+    if (!atividade) navigate(-1)
   }, [])
 
   useEffect(() => {
@@ -32,13 +46,9 @@ export default function RoboAtividade() {
     if (nivel) setPosRobo([...nivel.inicio])
   }, [nivelIdx, atividade])
 
-  // Animation effect: advance robot step by step
   useEffect(() => {
     if (!animando) return
-    if (animIdx >= animPath.length) {
-      setAnimando(false)
-      return
-    }
+    if (animIdx >= animPath.length) { setAnimando(false); return }
     const timer = setTimeout(() => {
       const step = animPath[animIdx]
       if (step.pos) setPosRobo([...step.pos])
@@ -53,14 +63,21 @@ export default function RoboAtividade() {
     return () => clearTimeout(timer)
   }, [animando, animIdx, animPath])
 
+  useEffect(() => {
+    if (!resultado) return
+    if (resultado === 'sucesso') playSound('correct')
+    else if (resultado === 'falhou') playSound('wrong')
+  }, [resultado])
+
   if (!atividade) return null
-  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate('/trilha')} />
+  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate(-1)} refazendo={state?.refazendo} kidsLink={getKidsLink(atividade.id)} />
 
   const nivel = atividade.niveis[nivelIdx]
   if (!nivel || posRobo === null) return null
 
   const { grade, inicio, fim, paredes, passos_max } = nivel
-  const celSize = Math.max(40, Math.floor(280 / grade))
+  const celSize = Math.max(48, Math.floor(360 / grade))
+  const progresso = Math.round((nivelsConcluidos / atividade.niveis.length) * 100)
 
   function isParede(r, c) {
     return paredes.some(([pr, pc]) => pr === r && pc === c)
@@ -71,33 +88,25 @@ export default function RoboAtividade() {
     const path = []
     let pos = [...inicio]
     let terminouCom = null
-
     for (let i = 0; i < programa.length; i++) {
       const [dr, dc] = DIRS[programa[i]]
       const nr = pos[0] + dr
       const nc = pos[1] + dc
-
       if (nr < 0 || nr >= grade || nc < 0 || nc >= grade || isParede(nr, nc)) {
         path.push({ pos: [...pos] })
         path.push({ pos: [...pos], fim: 'falhou' })
         terminouCom = 'falhou'
         break
       }
-
       pos = [nr, nc]
       path.push({ pos: [...pos] })
-
       if (pos[0] === fim[0] && pos[1] === fim[1]) {
         path.push({ pos: [...pos], fim: 'sucesso' })
         terminouCom = 'sucesso'
         break
       }
     }
-
-    if (!terminouCom) {
-      path.push({ pos: [...pos], fim: 'incompleto' })
-    }
-
+    if (!terminouCom) path.push({ pos: [...pos], fim: 'incompleto' })
     setResultado(null)
     setAnimPath(path)
     setAnimIdx(0)
@@ -115,34 +124,41 @@ export default function RoboAtividade() {
 
   function proximoNivel() {
     if (nivelIdx + 1 < atividade.niveis.length) {
+      playSound('click')
       setNivelIdx(n => n + 1)
       setPrograma([])
       setResultado(null)
       setAnimando(false)
     } else {
-      navigate('/encerramento', { state: { xp: atividade.xp_reward, coins: atividade.coins_reward, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo } })
+      playSound('complete')
+      navigate('/encerramento', { state: { xp: atividade.xp_reward, coins: atividade.coins_reward, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })
     }
   }
 
   const hasMoreNiveis = nivelIdx + 1 < atividade.niveis.length
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
-      <div className="page-wrapper" style={{ paddingBottom: '24px' }}>
+    <GameShell
+      atividade={atividade}
+      tipo={atividade.tipo}
+      progresso={progresso}
+      labelProgresso={`NÃ­vel ${nivelIdx + 1}/${atividade.niveis.length}`}
+      onVoltar={() => navigate(-1)}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', maxWidth: '700px', width: '100%', margin: '0 auto', animation: 'ns-slide-up 0.3s ease' }}>
 
-        <div className="header-gradient" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => navigate('/trilha')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '10px', width: '34px', height: '34px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>←</button>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ color: 'white', fontSize: '16px', fontWeight: '900' }}>{atividade.titulo}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>Nível {nivelIdx + 1} de {atividade.niveis.length} • Grade {grade}×{grade}</p>
+        {/* Level info */}
+        <div style={{ width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '12px 18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '20px' }}>ðŸ¤–</span>
+          <div>
+            <div style={{ color: 'white', fontWeight: '800', fontSize: '14px' }}>Grade {grade}Ã—{grade} â€¢ MÃ¡x. {passos_max} comandos</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Programe o robÃ´ para chegar ao ðŸ†</div>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '4px 10px', color: 'white', fontSize: '12px', fontWeight: '700' }}>+{atividade.xp_reward} XP</div>
         </div>
 
-        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-
-          {/* Grid do robô */}
-          <div className="card-white" style={{ padding: '14px', display: 'inline-block' }}>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+          {/* Grid */}
+          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '18px', padding: '16px', border: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
             {Array.from({ length: grade }, (_, r) => (
               <div key={r} style={{ display: 'flex' }}>
                 {Array.from({ length: grade }, (_, c) => {
@@ -153,14 +169,18 @@ export default function RoboAtividade() {
                   return (
                     <div key={c} style={{
                       width: celSize, height: celSize,
-                      background: isPar ? '#1e1b4b' : isRobo ? '#ede9fe' : isFim ? '#fef9c3' : isInicio && !isRobo ? '#f0fdf4' : '#f9fafb',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px', margin: '1px',
+                      background: isPar
+                        ? 'rgba(99,102,241,0.6)'
+                        : isRobo ? 'rgba(99,102,241,0.3)'
+                        : isFim ? 'rgba(245,158,11,0.25)'
+                        : isInicio && !isRobo ? 'rgba(16,185,129,0.15)'
+                        : 'rgba(255,255,255,0.04)',
+                      border: '1px solid rgba(255,255,255,0.07)',
+                      borderRadius: '8px', margin: '2px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: celSize * 0.5,
-                      transition: 'background 0.2s ease',
+                      fontSize: celSize * 0.55, transition: 'background 0.2s ease',
                     }}>
-                      {isRobo ? (resultado === 'falhou' ? '💥' : '🤖') : isFim ? '🏆' : isPar ? '' : ''}
+                      {isRobo ? (resultado === 'falhou' ? 'ðŸ’¥' : 'ðŸ¤–') : isFim ? 'ðŸ†' : ''}
                     </div>
                   )
                 })}
@@ -168,87 +188,76 @@ export default function RoboAtividade() {
             ))}
           </div>
 
-          {/* Programa atual */}
-          <div className="card-white" style={{ padding: '12px', width: '100%' }}>
-            <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
-              Programa ({programa.length}/{passos_max})
+          {/* Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, minWidth: '200px' }}>
+            {/* Program display */}
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                Programa ({programa.length}/{passos_max})
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', minHeight: '40px', alignItems: 'center' }}>
+                {programa.length === 0
+                  ? <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '13px', fontStyle: 'italic' }}>Adicione comandos...</span>
+                  : programa.map((cmd, i) => (
+                    <div key={i} style={{
+                      background: i < animIdx && animando ? 'rgba(99,102,241,0.5)' : '#6366f1',
+                      color: 'white', borderRadius: '8px', padding: '5px 10px',
+                      fontSize: '16px', fontWeight: '700', opacity: i < animIdx && animando ? 0.5 : 1,
+                    }}>{cmd}</div>
+                  ))
+                }
+              </div>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', minHeight: '40px', alignItems: 'center' }}>
-              {programa.length === 0
-                ? <span style={{ color: '#9ca3af', fontSize: '13px', fontStyle: 'italic' }}>Adicione comandos abaixo...</span>
-                : programa.map((cmd, i) => (
-                  <div key={i} style={{
-                    background: i < animIdx && animando ? '#c4b5fd' : '#7C3AED',
-                    color: 'white', borderRadius: '8px', padding: '4px 10px',
-                    fontSize: '16px', fontWeight: '700',
-                    opacity: i < animIdx && animando ? 0.6 : 1,
-                    transition: 'all 0.2s',
-                  }}>{cmd}</div>
-                ))
-              }
-            </div>
-          </div>
 
-          {/* Resultado */}
-          {resultado && (
-            <div style={{
-              width: '100%', padding: '14px 16px', borderRadius: '14px', textAlign: 'center',
-              background: resultado === 'sucesso' ? '#f0fdf4' : resultado === 'falhou' ? '#fef2f2' : '#fefce8',
-              border: '2px solid ' + (resultado === 'sucesso' ? '#10b981' : resultado === 'falhou' ? '#ef4444' : '#fbbf24'),
-              fontSize: '15px', fontWeight: '700',
-              color: resultado === 'sucesso' ? '#065f46' : resultado === 'falhou' ? '#991b1b' : '#78350f',
-            }}>
-              {resultado === 'sucesso' && '🎉 Chegou ao destino! Nível concluído!'}
-              {resultado === 'falhou' && '💥 O robô bateu em um obstáculo! Tente de novo.'}
-              {resultado === 'incompleto' && '🤔 O programa terminou mas o robô não chegou ao destino.'}
-            </div>
-          )}
+            {/* Result */}
+            {resultado && (
+              <div style={{
+                padding: '14px 16px', borderRadius: '14px', textAlign: 'center',
+                background: resultado === 'sucesso' ? 'rgba(16,185,129,0.15)' : resultado === 'falhou' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)',
+                border: '1.5px solid ' + (resultado === 'sucesso' ? 'rgba(16,185,129,0.4)' : resultado === 'falhou' ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'),
+                fontSize: '14px', fontWeight: '700',
+                color: resultado === 'sucesso' ? '#6ee7b7' : resultado === 'falhou' ? '#fca5a5' : '#fde68a',
+              }}>
+                {resultado === 'sucesso' && 'ðŸŽ‰ Chegou ao destino!'}
+                {resultado === 'falhou' && 'ðŸ’¥ O robÃ´ bateu! Tente de novo.'}
+                {resultado === 'incompleto' && 'ðŸ¤” O programa terminou antes de chegar.'}
+              </div>
+            )}
 
-          {/* Botões de controle */}
-          {!resultado ? (
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {/* Arrow buttons */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', marginBottom: '2px' }}>Adicionar comando:</div>
-                <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '↑'])} style={cmdBtn('#7C3AED')}>↑</button>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '←'])} style={cmdBtn('#7C3AED')}>←</button>
-                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '↓'])} style={cmdBtn('#7C3AED')}>↓</button>
-                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '→'])} style={cmdBtn('#7C3AED')}>→</button>
+            {/* D-pad input */}
+            {!resultado ? (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: '700', marginBottom: '4px' }}>ADICIONAR COMANDO</div>
+                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†‘'])} style={cmdBtn('#6366f1')}>â†‘</button>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†'])} style={cmdBtn('#6366f1')}>â†</button>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†“'])} style={cmdBtn('#6366f1')}>â†“</button>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†’'])} style={cmdBtn('#6366f1')}>â†’</button>
+                  </div>
                 </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setPrograma(p => p.slice(0, -1))} disabled={programa.length === 0} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>âŒ« Apagar</button>
+                  <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>ðŸ”„ Reset</button>
+                  <button onClick={executar} disabled={programa.length === 0 || animando} style={{ flex: 1.5, background: 'linear-gradient(135deg,#6366f1,#818cf8)', border: 'none', borderRadius: '10px', padding: '10px', color: 'white', cursor: 'pointer', fontWeight: '900', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '14px', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}>
+                    {animando ? 'â–¶ ...' : 'â–¶ Executar'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>ðŸ”„ Tentar</button>
+                {resultado === 'sucesso' && (
+                  <button onClick={proximoNivel} style={{ flex: 1, background: 'linear-gradient(135deg,#6366f1,#818cf8)', border: 'none', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 16px rgba(99,102,241,0.4)' }}>
+                    {hasMoreNiveis ? 'PrÃ³ximo â†’' : 'Concluir âœ“'}
+                  </button>
+                )}
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={() => setPrograma(p => p.slice(0, -1))} disabled={programa.length === 0} style={{ flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '10px', color: '#6b7280', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>⌫ Apagar</button>
-                <button onClick={resetar} style={{ flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '10px', padding: '10px', color: '#6b7280', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>🔄 Resetar</button>
-                <button onClick={executar} disabled={programa.length === 0 || animando} className="btn-purple" style={{ flex: 1.5, padding: '10px', fontSize: '14px' }}>
-                  {animando ? '▶ ...' : '▶ Executar'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-              <button onClick={resetar} style={{ flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '12px', padding: '13px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>🔄 Tentar de novo</button>
-              {resultado === 'sucesso' && (
-                <button onClick={proximoNivel} className="btn-purple" style={{ flex: 1 }}>
-                  {hasMoreNiveis ? 'Próximo nível →' : 'Concluir ✓'}
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </GameShell>
   )
 }
 
-function cmdBtn(cor) {
-  return {
-    width: '52px', height: '52px', borderRadius: '12px',
-    background: cor, border: 'none',
-    color: 'white', fontSize: '20px', cursor: 'pointer',
-    fontWeight: '700', boxShadow: '0 3px 8px rgba(124,58,237,0.35)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    transition: 'transform 0.1s ease',
-    fontFamily: 'Plus Jakarta Sans, sans-serif',
-  }
-}

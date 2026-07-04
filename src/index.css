@@ -1,1 +1,72 @@
+@import "./styles/tokens.css";
 @import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════
+   NeuralSync Academy — Global Layout & Typography
+   ═══════════════════════════════════════════════════ */
+
+/* ── Rede de segurança contra overflow horizontal (mobile) ── */
+html, body { overflow-x: hidden; max-width: 100vw; }
+
+/* ── Tipografia global ───────────────────────────── */
+h1 { font-size: var(--text-3xl); font-weight: 800; color: var(--color-text-primary); line-height: 1.2; }
+h2 { font-size: var(--text-2xl); font-weight: 700; color: var(--color-text-primary); line-height: 1.3; }
+h3 { font-size: var(--text-xl);  font-weight: 700; color: var(--color-text-primary); line-height: 1.4; }
+h4 { font-size: var(--text-lg);  font-weight: 600; color: var(--color-text-primary); }
+p  { font-size: var(--text-base); font-weight: 400; color: var(--color-text-primary); line-height: 1.7; }
+small, .text-muted { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+/* ── Container padrão ────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .container { padding: 0 var(--space-4); }
+}
+
+/* ── Planos.jsx — cards empilham no mobile ─────────── */
+@media (max-width: 780px) {
+  .planos-pricing-grid { grid-template-columns: 1fr !important; }
+  .planos-promo-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── FAQButton flutuante — sobe acima do menu-bottom da área criança ── */
+@media (max-width: 767px) {
+  .faq-float-btn { bottom: 88px !important; }
+}
+
+/* ── Centralização vertical (login, cadastro, 404) ── */
+.screen-center {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-8) var(--space-6);
+}
+
+/* ── Grid do dashboard dos pais ──────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-6);
+}
+
+/* ── Layout sidebar + conteúdo ───────────────────── */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}

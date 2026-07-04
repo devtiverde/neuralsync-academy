@@ -13,10 +13,12 @@ export function useKids() {
       .eq('ativo', true)
       .order('ordem', { ascending: true })
       .then(({ data: rows }) => {
+        // Start with local kidsData so categories not yet in Supabase remain accessible.
+        // Supabase rows override local entries when the id matches.
+        const merged = { ...kidsData }
         if (rows && rows.length > 0) {
-          const obj = {}
           rows.forEach(row => {
-            obj[row.id] = {
+            merged[row.id] = {
               titulo:     row.titulo,
               emoji:      row.emoji,
               cor:        row.cor,
@@ -27,10 +29,8 @@ export function useKids() {
               video_id:   row.video_id || null,
             }
           })
-          setData(obj)
-        } else {
-          setData(kidsData) // fallback
         }
+        setData(merged)
         setLoading(false)
       })
   }, [])

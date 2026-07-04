@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import '../styles/auth.css'
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [nome, setNome] = useState('')
+  const [consentido, setConsentido] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signIn, signUp } = useAuth()
@@ -16,34 +18,6 @@ export default function Auth() {
   const planoParam = searchParams.get('plano')
 
   useEffect(() => {
-    const link = document.createElement('link')
-    link.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap'
-    link.rel = 'stylesheet'
-    document.head.appendChild(link)
-    const style = document.createElement('style')
-    style.textContent = `
-      * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
-      .auth-input {
-        width: 100%; padding: 14px 16px; border-radius: 12px;
-        border: 1.5px solid #e5e7eb; background: #f9fafb;
-        font-size: 15px; color: #0f0a1e; outline: none;
-        transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
-      }
-      .auth-input:focus { border-color: #7C3AED; background: white; box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
-      .auth-btn {
-        width: 100%; padding: 15px; border-radius: 12px; border: none;
-        background: linear-gradient(135deg, #7C3AED, #6d28d9);
-        color: white; font-weight: 700; font-size: 16px; cursor: pointer;
-        box-shadow: 0 4px 20px rgba(124,58,237,0.35);
-        transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
-      }
-      .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,0.5); }
-      .auth-btn:disabled { opacity: 0.7; transform: none; }
-    `
-    document.head.appendChild(style)
-  }, [])
-
-  useEffect(() => {
     if (ativado) setIsLogin(false)
   }, [ativado])
 
@@ -51,6 +25,16 @@ export default function Auth() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    if (!isLogin && password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.')
+      setLoading(false)
+      return
+    }
+    if (!isLogin && !consentido) {
+      setError('Você precisa aceitar os termos e o consentimento de dados para continuar.')
+      setLoading(false)
+      return
+    }
     if (isLogin) {
       const { error } = await signIn(email, password)
       if (error) setError('Email ou senha inválidos. Verifique seus dados.')
@@ -70,115 +54,150 @@ export default function Auth() {
     : 'Crie sua conta e comece com 7 dias de garantia.'
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex',
-      background: 'linear-gradient(145deg, #faf5ff 0%, #ede9fe 30%, #e0f2fe 65%, #d1fae5 100%)'
-    }}>
-      {/* LADO ESQUERDO */}
-      <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '60px 80px'}}>
-        <div onClick={() => navigate('/')} style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '60px', cursor: 'pointer'}}>
-          <div style={{width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'}}>🧠</div>
-          <span style={{fontWeight: '800', fontSize: '18px'}}>
-            <span style={{color: '#0f0a1e'}}>NeuralSync </span>
-            <span style={{color: '#7C3AED'}}>Academy</span>
+    <div className="auth-page">
+      {/* LADO ESQUERDO — formulário */}
+      <div className="auth-left">
+        <div className="auth-logo" onClick={() => navigate('/')}>
+          <div className="auth-logo-icon">🧠</div>
+          <span className="auth-logo-text">
+            NeuralSync <span>Academy</span>
           </span>
         </div>
 
         {ativado && (
-          <div style={{background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px'}}>
-            <div style={{fontSize: '24px'}}>✅</div>
+          <div className="auth-success-banner">
+            <div className="auth-success-icon">✅</div>
             <div>
-              <div style={{fontWeight: '800', fontSize: '14px', color: '#166534'}}>Pagamento confirmado!</div>
-              <div style={{fontSize: '13px', color: '#15803d'}}>Crie sua conta abaixo para ativar o acesso imediatamente.</div>
+              <div className="auth-success-title">Pagamento confirmado!</div>
+              <div className="auth-success-sub">Crie sua conta abaixo para ativar o acesso imediatamente.</div>
             </div>
           </div>
         )}
 
-        <h1 style={{fontSize: '40px', fontWeight: '900', letterSpacing: '-1.5px', color: '#0f0a1e', marginBottom: '12px', lineHeight: '1.1'}}>
+        <h1 className="auth-heading">
           {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
         </h1>
-        <p style={{color: '#6b7280', fontSize: '16px', marginBottom: '40px'}}>
+        <p className="auth-subheading">
           {isLogin ? 'Entre para acompanhar a evolução do seu filho.' : subtituloSignup}
         </p>
 
         {error && (
-          <div style={{background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '12px 16px', color: '#dc2626', fontSize: '14px', marginBottom: '20px'}}>
-            {error}
-          </div>
+          <div className="auth-error">{error}</div>
         )}
 
-        <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
+        <form onSubmit={handleSubmit} className="auth-form">
           {!isLogin && (
-            <div>
-              <label style={{fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px', display: 'block'}}>Seu nome</label>
-              <input className="auth-input" type="text" placeholder="Como podemos te chamar?" value={nome} onChange={e => setNome(e.target.value)} required />
+            <div className="auth-field">
+              <label className="auth-label">Seu nome</label>
+              <input
+                className="auth-input"
+                type="text"
+                placeholder="Como podemos te chamar?"
+                value={nome}
+                onChange={e => setNome(e.target.value)}
+                required
+              />
             </div>
           )}
-          <div>
-            <label style={{fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px', display: 'block'}}>Email</label>
-            <input className="auth-input" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
+          <div className="auth-field">
+            <label className="auth-label">Email</label>
+            <input
+              className="auth-input"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
           </div>
-          <div>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px'}}>
-              <label style={{fontSize: '13px', fontWeight: '600', color: '#374151'}}>Senha</label>
+          <div className="auth-field">
+            <div className="auth-label-row">
+              <label className="auth-label">Senha</label>
               {isLogin && (
-                <button type="button" onClick={() => navigate('/recuperar-senha')} style={{background: 'none', border: 'none', color: '#7C3AED', fontWeight: '600', cursor: 'pointer', fontSize: '12px'}}>
+                <button
+                  type="button"
+                  className="auth-link"
+                  onClick={() => navigate('/recuperar-senha')}
+                >
                   Esqueci minha senha
                 </button>
               )}
             </div>
-            <input className="auth-input" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+            <input
+              className="auth-input"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
           </div>
-          <button type="submit" className="auth-btn" disabled={loading} style={{marginTop: '8px'}}>
+          {!isLogin && (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '12px 14px', background: '#f5f3ff', borderRadius: '10px', border: '1px solid #e0d9ff', marginTop: '4px' }}>
+              <input
+                id="consentimento"
+                type="checkbox"
+                checked={consentido}
+                onChange={e => setConsentido(e.target.checked)}
+                style={{ marginTop: '3px', accentColor: '#7C3AED', width: '16px', height: '16px', flexShrink: 0, cursor: 'pointer' }}
+              />
+              <label htmlFor="consentimento" style={{ fontSize: '12px', color: '#374151', lineHeight: '1.5', cursor: 'pointer' }}>
+                Sou o responsável legal pelas crianças que vou cadastrar e consinto com o tratamento de seus dados conforme a{' '}
+                <Link to="/privacidade" target="_blank" style={{ color: '#7C3AED', fontWeight: '700', textDecoration: 'underline' }}>Política de Privacidade</Link>.
+                Li e aceito os{' '}
+                <Link to="/termos" target="_blank" style={{ color: '#7C3AED', fontWeight: '700', textDecoration: 'underline' }}>Termos de Uso</Link>.
+              </label>
+            </div>
+          )}
+          <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Carregando...' : isLogin ? 'Entrar →' : ativado ? 'Criar conta e ativar plano →' : 'Criar conta →'}
           </button>
         </form>
 
-        <p style={{textAlign: 'center', marginTop: '28px', color: '#6b7280', fontSize: '14px'}}>
+        <p className="auth-switch">
           {isLogin ? 'Não tem conta?' : 'Já tem conta?'}{' '}
-          <button onClick={() => { setIsLogin(!isLogin); setError('') }} style={{background: 'none', border: 'none', color: '#7C3AED', fontWeight: '700', cursor: 'pointer', fontSize: '14px'}}>
+          <button
+            onClick={() => { setIsLogin(!isLogin); setError('') }}
+            className="auth-link"
+          >
             {isLogin ? 'Criar agora' : 'Entrar'}
           </button>
         </p>
       </div>
 
-      {/* LADO DIREITO */}
-      <div style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'linear-gradient(135deg, #7C3AED 0%, #6d28d9 50%, #4c1d95 100%)',
-        padding: '60px', position: 'relative', overflow: 'hidden'
-      }}>
-        <div style={{position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)'}} />
-        <div style={{position: 'absolute', bottom: '-60px', left: '-60px', width: '250px', height: '250px', borderRadius: '50%', background: 'rgba(255,255,255,0.04)'}} />
+      {/* LADO DIREITO — painel de marketing */}
+      <div className="auth-right">
+        <div className="auth-right-orb auth-right-orb--top" />
+        <div className="auth-right-orb auth-right-orb--bottom" />
 
-        <div style={{position: 'relative', zIndex: 1, textAlign: 'center', color: 'white', maxWidth: '360px'}}>
-          <div style={{fontSize: '64px', marginBottom: '24px'}}>🧠</div>
-          <h2 style={{fontSize: '28px', fontWeight: '900', letterSpacing: '-0.5px', marginBottom: '16px', lineHeight: '1.2'}}>
+        <div className="auth-right-content">
+          <div className="auth-right-icon">🧠</div>
+          <h2 className="auth-right-title">
             Transforme o tempo de tela em inteligência
           </h2>
-          <p style={{color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '1.7', marginBottom: '40px'}}>
-            Mais de 50.000 crianças já desenvolvem habilidades cognitivas com a NeuralSync Academy.
+          <p className="auth-right-sub">
+            Desenvolvida para crianças de 3 a 15 anos. Gamificação real, aprendizado que fica.
           </p>
 
-          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '40px'}}>
-            {[['+50k','Crianças ativas'],['8','Habilidades'],['4.9★','Avaliação'],['200+','Atividades']].map(([num, label]) => (
-              <div key={label} style={{background: 'rgba(255,255,255,0.1)', borderRadius: '14px', padding: '16px', backdropFilter: 'blur(8px)'}}>
-                <div style={{fontSize: '22px', fontWeight: '900', marginBottom: '4px'}}>{num}</div>
-                <div style={{fontSize: '12px', color: 'rgba(255,255,255,0.6)'}}>{label}</div>
+          <div className="auth-stats">
+            {[['177+','Atividades'],['8','Habilidades'],['4','Faixas etárias'],['100%','Seguro']].map(([num, label]) => (
+              <div key={label} className="auth-stat">
+                <div className="auth-stat-num">{num}</div>
+                <div className="auth-stat-label">{label}</div>
               </div>
             ))}
           </div>
 
-          <div style={{background: 'rgba(255,255,255,0.1)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(8px)', textAlign: 'left'}}>
-            <div style={{color: '#F07A20', fontSize: '14px', marginBottom: '10px'}}>★★★★★</div>
-            <p style={{fontSize: '14px', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', fontStyle: 'italic', marginBottom: '14px'}}>
-              Minha filha pediu para fazer mais um desafio antes de dormir. Não acreditei!
+          <div className="auth-testimonial">
+            <div className="auth-stars">★★★★★</div>
+            <p className="auth-testimonial-text">
+              "Minha filha pediu para fazer mais um desafio antes de dormir. Não acreditei!"
             </p>
-            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-              <div style={{width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>🌸</div>
+            <div className="auth-testimonial-author">
+              <div className="auth-testimonial-avatar">🌸</div>
               <div>
-                <div style={{fontSize: '13px', fontWeight: '700'}}>Marina S.</div>
-                <div style={{fontSize: '11px', color: 'rgba(255,255,255,0.6)'}}>Mãe da Sofia, 7 anos</div>
+                <div className="auth-testimonial-name">Marina S.</div>
+                <div className="auth-testimonial-role">Mãe da Sofia, 7 anos</div>
               </div>
             </div>
           </div>

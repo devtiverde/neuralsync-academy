@@ -1,6 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import GameShell from '../../components/GameShell'
+import { playSound } from '../../lib/sounds'
+import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
 
 function embaralhar(arr) {
@@ -35,7 +38,7 @@ export default function MemoriaAtividade() {
   const [ganhou, setGanhou] = useState(false)
 
   useEffect(() => {
-    if (!atividade) { navigate('/trilha'); return }
+    if (!atividade) { navigate(-1); return }
     setCartas(criarCartas(atividade.pares))
   }, [])
 
@@ -48,6 +51,7 @@ export default function MemoriaAtividade() {
   useEffect(() => {
     if (!atividade || paresEncontrados === 0) return
     if (paresEncontrados === atividade.pares.length) {
+      playSound('complete')
       setTimeout(() => setGanhou(true), 600)
     }
   }, [paresEncontrados])
@@ -69,6 +73,7 @@ export default function MemoriaAtividade() {
     setBloqueado(true)
 
     if (cartas[abertaIdx].emoji === cartas[idx].emoji) {
+      playSound('correct')
       setTimeout(() => {
         setCartas(prev => prev.map((c, i) =>
           i === idx || i === abertaIdx ? { ...c, virada: false, encontrada: true } : c
@@ -78,6 +83,7 @@ export default function MemoriaAtividade() {
         setBloqueado(false)
       }, 500)
     } else {
+      playSound('wrong')
       setTimeout(() => {
         setCartas(prev => prev.map((c, i) =>
           i === idx || i === abertaIdx ? { ...c, virada: false } : c
@@ -89,7 +95,7 @@ export default function MemoriaAtividade() {
   }, [cartas, abertaIdx, bloqueado])
 
   if (!atividade) return null
-  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate('/trilha')} />
+  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate(-1)} refazendo={state?.refazendo} kidsLink={getKidsLink(atividade.id)} />
 
   function reiniciar() {
     setCartas(criarCartas(atividade.pares))
@@ -107,132 +113,126 @@ export default function MemoriaAtividade() {
   const coinsGanho = Math.round((estrelas / 3) * atividade.coins_reward)
   const min = String(Math.floor(tempo / 60)).padStart(2, '0')
   const seg = String(tempo % 60).padStart(2, '0')
-
-  const cols = totalPares <= 4 ? 4 : totalPares <= 6 ? 4 : 4
+  const cols = totalPares <= 4 ? 4 : 4
+  const progresso = Math.round((paresEncontrados / totalPares) * 100)
 
   if (ganhou) {
     return (
-      <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
-        <div className="page-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px', textAlign: 'center' }}>
-          <div style={{ fontSize: '56px', marginBottom: '8px', letterSpacing: '4px' }}>{'⭐'.repeat(estrelas)}</div>
-          <h2 style={{ fontSize: '26px', fontWeight: '900', marginBottom: '6px', color: '#0f0a1e' }}>
-            {estrelas === 3 ? 'Perfeito! 🧠' : estrelas === 2 ? 'Muito bem! 👏' : 'Concluído! 💪'}
-          </h2>
-          <p style={{ color: '#6b7280', marginBottom: '28px', fontSize: '14px' }}>
-            Todos os pares encontrados!
-          </p>
+      <GameShell atividade={atividade} tipo={atividade.tipo} progresso={100} onVoltar={() => navigate(-1)}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: '24px', textAlign: 'center', gap: '20px' }}>
+          <div style={{ fontSize: '64px', letterSpacing: '6px', animation: 'ns-bounce 1.5s ease-in-out infinite' }}>{'⭐'.repeat(estrelas)}</div>
+          <div>
+            <h2 style={{ color: 'white', fontSize: '30px', fontWeight: '900', marginBottom: '6px' }}>
+              {estrelas === 3 ? 'Perfeito! 🧠' : estrelas === 2 ? 'Muito bem! 👏' : 'Concluído! 💪'}
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px' }}>Todos os pares encontrados!</p>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px', width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%', maxWidth: '420px' }}>
             {[
-              ['+' + xpGanho, 'XP ganho', '#7C3AED'],
-              ['+' + coinsGanho + ' 💰', 'Coins', '#F07A20'],
+              ['+' + xpGanho + ' XP', 'Experiência', '#3b82f6'],
+              ['+' + coinsGanho + ' 💰', 'Coins', '#f59e0b'],
               [movimentos, 'Movimentos', '#10b981'],
-              [min + ':' + seg, 'Tempo', '#3b82f6'],
+              [min + ':' + seg, 'Tempo', '#a855f7'],
             ].map(([val, label, cor]) => (
-              <div key={label} className="card-white" style={{ padding: '16px' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: cor }}>{val}</div>
-                <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500' }}>{label}</div>
+              <div key={label} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: cor, marginBottom: '4px' }}>{val}</div>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '600' }}>{label}</div>
               </div>
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-            <button onClick={reiniciar} style={{ flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '12px', padding: '13px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              🔁 Repetir
+          <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
+            <button onClick={reiniciar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              🔄 Repetir
             </button>
-            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo } })} className="btn-purple" style={{ flex: 1 }}>
+            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
+              style={{ flex: 1, background: 'linear-gradient(135deg,#3b82f6,#60a5fa)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(59,130,246,0.4)' }}>
               Concluir ✓
             </button>
           </div>
         </div>
-      </div>
+      </GameShell>
     )
   }
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
-      <div className="page-wrapper" style={{ paddingBottom: '24px' }}>
-
-        <div className="header-gradient" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => navigate('/trilha')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '10px', width: '34px', height: '34px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>←</button>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ color: 'white', fontSize: '16px', fontWeight: '900' }}>{atividade.titulo}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>{atividade.descricao}</p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: 'white', fontSize: '18px', fontWeight: '900', lineHeight: 1 }}>{min}:{seg}</div>
-            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '10px' }}>tempo</div>
-          </div>
+    <GameShell
+      atividade={atividade}
+      tipo={atividade.tipo}
+      progresso={progresso}
+      labelProgresso={`${paresEncontrados}/${totalPares} pares`}
+      onVoltar={() => navigate(-1)}
+      sidebarRight={
+        <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '14px', border: '1px solid rgba(255,255,255,0.07)', textAlign: 'center' }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '10px', fontWeight: '800', marginBottom: '8px' }}>⏱ TEMPO</div>
+          <div style={{ color: 'white', fontSize: '28px', fontWeight: '900', letterSpacing: '1px' }}>{min}:{seg}</div>
+        </div>
+      }
+    >
+      <div style={{ maxWidth: '700px', width: '100%', margin: '0 auto' }}>
+        {/* Stats row */}
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+          {[
+            [movimentos, 'Movimentos', '#3b82f6'],
+            [paresEncontrados + '/' + totalPares, 'Pares', '#10b981'],
+            ['+' + atividade.xp_reward + ' XP', 'Recompensa', '#a855f7'],
+          ].map(([val, lbl, cor]) => (
+            <div key={lbl} style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: '20px', fontWeight: '900', color: cor }}>{val}</div>
+              <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontWeight: '600', marginTop: '2px' }}>{lbl}</div>
+            </div>
+          ))}
         </div>
 
-        <div style={{ padding: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', gap: '10px' }}>
-            <div className="card-white" style={{ flex: 1, padding: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: '900', color: '#7C3AED' }}>{movimentos}</div>
-              <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '600' }}>MOVIMENTOS</div>
-            </div>
-            <div className="card-white" style={{ flex: 1, padding: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: '900', color: '#10b981' }}>{paresEncontrados}/{totalPares}</div>
-              <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '600' }}>PARES</div>
-            </div>
-            <div className="card-white" style={{ flex: 1, padding: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '20px', fontWeight: '900', color: '#F07A20' }}>+{atividade.xp_reward}</div>
-              <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '600' }}>XP</div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '10px' }}>
-            {cartas.map((carta, idx) => {
-              const mostrar = carta.virada || carta.encontrada
-              return (
-                <div key={carta.id} onClick={() => clicarCarta(idx)} style={{ perspective: '600px', cursor: carta.encontrada ? 'default' : 'pointer' }}>
+        {/* Card grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '12px' }}>
+          {cartas.map((carta, idx) => {
+            const mostrar = carta.virada || carta.encontrada
+            return (
+              <div key={carta.id} onClick={() => clicarCarta(idx)} style={{ perspective: '600px', cursor: carta.encontrada ? 'default' : 'pointer' }}>
+                <div style={{
+                  position: 'relative', width: '100%', paddingBottom: '100%',
+                  transformStyle: 'preserve-3d',
+                  transform: mostrar ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                  transition: 'transform 0.35s ease',
+                }}>
+                  {/* Face down */}
                   <div style={{
-                    position: 'relative',
-                    width: '100%',
-                    paddingBottom: '100%',
-                    transformStyle: 'preserve-3d',
-                    transform: mostrar ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                    transition: 'transform 0.35s ease',
+                    position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
+                    background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)',
+                    borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '24px', boxShadow: '0 4px 16px rgba(59,130,246,0.3)',
+                    border: '1px solid rgba(59,130,246,0.4)',
+                  }}>🧩</div>
+                  {/* Face up */}
+                  <div style={{
+                    position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)',
+                    background: carta.encontrada ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.1)',
+                    borderRadius: '14px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    border: '2px solid ' + (carta.encontrada ? '#10b981' : 'rgba(255,255,255,0.3)'),
+                    boxShadow: carta.encontrada ? '0 4px 16px rgba(16,185,129,0.3)' : '0 4px 16px rgba(255,255,255,0.05)',
+                    padding: '6px', gap: '3px',
                   }}>
-                    {/* Frente (face down) */}
-                    <div style={{
-                      position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
-                      background: 'linear-gradient(135deg, #7C3AED, #a855f7)',
-                      borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '22px', color: 'rgba(255,255,255,0.5)', fontWeight: '900',
-                      boxShadow: '0 2px 8px rgba(124,58,237,0.3)',
-                    }}>
-                      🧩
-                    </div>
-                    {/* Verso (face up) */}
-                    <div style={{
-                      position: 'absolute', inset: 0, backfaceVisibility: 'hidden',
-                      transform: 'rotateY(180deg)',
-                      background: carta.encontrada ? '#f0fdf4' : 'white',
-                      borderRadius: '12px',
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                      border: '2px solid ' + (carta.encontrada ? '#10b981' : '#7C3AED'),
-                      boxShadow: carta.encontrada ? '0 2px 8px rgba(16,185,129,0.2)' : '0 2px 8px rgba(124,58,237,0.2)',
-                      padding: '4px',
-                      gap: '2px',
-                    }}>
-                      <div style={{ fontSize: carta.nome ? '22px' : '28px', lineHeight: 1 }}>{carta.emoji}</div>
-                      {carta.nome && <div style={{ fontSize: '8px', fontWeight: '800', color: carta.encontrada ? '#065f46' : '#7C3AED', textAlign: 'center', lineHeight: 1.2 }}>{carta.nome}</div>}
-                      {carta.info && carta.encontrada && <div style={{ fontSize: '7px', color: '#9ca3af', textAlign: 'center', lineHeight: 1.2 }}>{carta.info}</div>}
-                    </div>
+                    <div style={{ fontSize: carta.nome ? '22px' : '30px', lineHeight: 1 }}>{carta.emoji}</div>
+                    {carta.nome && <div style={{ fontSize: '9px', fontWeight: '800', color: carta.encontrada ? '#6ee7b7' : 'rgba(255,255,255,0.7)', textAlign: 'center', lineHeight: 1.2 }}>{carta.nome}</div>}
+                    {carta.info && carta.encontrada && <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.4)', textAlign: 'center', lineHeight: 1.2 }}>{carta.info}</div>}
                   </div>
                 </div>
-              )
-            })}
-          </div>
-
-          {totalPares > 4 && (
-            <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: '12px', marginTop: '16px', fontWeight: '500' }}>
-              Toque nas cartas para virá-las e encontrar os pares! 🧠
-            </p>
-          )}
+              </div>
+            )
+          })}
         </div>
+
+        {totalPares > 4 && (
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '13px', marginTop: '20px', fontWeight: '500' }}>
+            Clique nas cartas para virá-las e encontrar os pares! 🧠
+          </p>
+        )}
       </div>
-    </div>
+    </GameShell>
   )
 }
+

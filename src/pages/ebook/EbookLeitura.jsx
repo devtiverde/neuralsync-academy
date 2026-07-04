@@ -48,7 +48,7 @@ Se as respostas forem positivas para a primeira e negativas para as outras duas,
     titulo: 'Capítulo 3 — Faixas Etárias e o Que Funciona em Cada Uma',
     conteudo: `Cada fase do desenvolvimento neurológico pede um tipo diferente de estímulo digital.
 
-EXPLORADORES (3 a 5 anos)
+EXPLORADORES (4 a 5 anos)
 Nessa fase, o cérebro está desenvolvendo a linguagem, a motricidade fina e a noção de causa e efeito. Conteúdos ideais: jogos de encaixe digital, livros interativos, vídeos de natureza com narração clara. Tempo máximo: 30 a 45 minutos por sessão, sempre acompanhado.
 
 CONSTRUTORES (6 a 8 anos)
@@ -57,8 +57,8 @@ A criança já lê, compreende regras e começa a pensar de forma lógica. É a 
 CRIADORES (9 a 11 anos)
 Pensamento abstrato começa a se desenvolver. Projetos de criação digital (stop motion, blog, podcast simples) estimulam criatividade e comunicação. Tempo máximo: 1 a 1h30.
 
-INVENTORES (12+ anos)
-Adolescentes beneficiam de desafios reais: programação, robótica, pesquisa científica online. O foco muda de consumo para produção. Tempo máximo: 1h30 a 2h, com pausas.`,
+INVENTORES (12 a 15 anos)
+Jovens se beneficiam de desafios reais: programação, inteligência artificial, robótica e pesquisa científica online. O foco muda de consumo para produção e criação. Tempo máximo: 1h30 a 2h, com pausas regulares.`,
   },
   {
     titulo: 'Capítulo 4 — Construindo Hábitos Digitais Saudáveis',

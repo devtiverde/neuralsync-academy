@@ -1,4 +1,4 @@
-const CACHE = 'neuralsync-v4'
+const CACHE = 'neuralsync-v5'
 const PRECACHE = ['/manifest.webmanifest']
 
 self.addEventListener('install', e => {

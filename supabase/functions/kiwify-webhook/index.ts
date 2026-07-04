@@ -26,9 +26,12 @@ serve(async (req) => {
   let body: Record<string, any>
   try { body = await req.json() } catch { return new Response('Invalid JSON', { status: 400 }) }
 
-  // Token de segurança configurável no painel da Kiwify
   const token = Deno.env.get('KIWIFY_WEBHOOK_TOKEN')
-  if (token && body.token !== token) return new Response('Unauthorized', { status: 401 })
+  if (!token) {
+    console.error('[kiwify-webhook] KIWIFY_WEBHOOK_TOKEN não configurado — requisição rejeitada')
+    return new Response('Webhook not configured', { status: 500 })
+  }
+  if (body.token !== token) return new Response('Unauthorized', { status: 401 })
 
   const status     = (body.order_status ?? body.status ?? '').toLowerCase()
   const email      = body.customer?.email?.toLowerCase()?.trim()

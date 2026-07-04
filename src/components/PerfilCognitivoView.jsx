@@ -1,11 +1,34 @@
 import { dimensoes, interpretacao, rotulosChave, gerarSintese } from '../data/perfilInterpretacao'
 
+// ── Tipo de aprendiz ─────────────────────────────────────────────────────────
+const TIPO_APRENDIZ = {
+  visual:      { tipo: 'Aprendiz Analítico',    emoji: '🔬', cor: '#7C3AED', descricao: 'Aprende melhor com diagramas, esquemas e representações visuais. Tem facilidade para identificar padrões e detalhes.' },
+  auditivo:    { tipo: 'Aprendiz Criativo',      emoji: '🎨', cor: '#F07A20', descricao: 'Aprende melhor ouvindo, explicando em voz alta e criando conexões livres entre ideias.' },
+  cinestetico: { tipo: 'Aprendiz Cinestésico',   emoji: '🏃', cor: '#10b981', descricao: 'Aprende fazendo, experimentando e com atividades práticas que envolvem movimento e exploração.' },
+  leitura:     { tipo: 'Aprendiz Lógico',        emoji: '📐', cor: '#3b82f6', descricao: 'Aprende melhor com leitura, escrita e raciocínio sequencial — ama entender o "porquê" de cada coisa.' },
+}
+
+const REFORCO_PRIO = {
+  foco:        { dica: 'Sessões curtas e focadas produzem mais do que sessões longas e fragmentadas.' },
+  criatividade:{ dica: 'Atividades abertas sem resposta única desenvolvem o pensamento divergente.' },
+  logica:      { dica: 'Desafios progressivos (mais difíceis a cada semana) constroem raciocínio sólido.' },
+  emocional:   { dica: 'Conversar sobre as emoções após as atividades potencializa o aprendizado.' },
+}
+
+function getTipoAprendiz(perfil) {
+  const estilo = perfil.estilo_aprendizado || 'visual'
+  return TIPO_APRENDIZ[estilo] || TIPO_APRENDIZ.visual
+}
+
 export default function PerfilCognitivoView({ perfil, nome }) {
   if (!perfil) return null
 
   const dataResposta = perfil.respondido_em
     ? new Date(perfil.respondido_em).toLocaleDateString('pt-BR')
     : null
+
+  const tipoAprendiz = getTipoAprendiz(perfil)
+  const reforcoPrio = REFORCO_PRIO[perfil.habilidade_prioridade] || null
 
   // Coleta os títulos principais de cada dimensão para o resumo
   const destaques = dimensoes.map(dim => {
@@ -27,6 +50,21 @@ export default function PerfilCognitivoView({ perfil, nome }) {
         {dataResposta && (
           <div style={{ fontSize: '12px', opacity: 0.7, marginTop: '12px' }}>Respondido em {dataResposta}</div>
         )}
+      </div>
+
+      {/* TIPO DE APRENDIZ */}
+      <div style={{ background: `${tipoAprendiz.cor}10`, border: `1.5px solid ${tipoAprendiz.cor}30`, borderRadius: '16px', padding: '18px 20px', marginBottom: '20px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+        <div style={{ fontSize: '32px', flexShrink: 0 }}>{tipoAprendiz.emoji}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Tipo de aprendiz</div>
+          <div style={{ fontSize: '16px', fontWeight: '900', color: tipoAprendiz.cor, marginBottom: '6px' }}>{tipoAprendiz.tipo}</div>
+          <p style={{ fontSize: '13px', color: '#374151', lineHeight: 1.55, margin: 0 }}>{tipoAprendiz.descricao}</p>
+          {reforcoPrio && (
+            <div style={{ marginTop: '10px', padding: '8px 12px', background: 'white', borderRadius: '10px', fontSize: '12px', color: '#6b7280', lineHeight: 1.5 }}>
+              💡 {reforcoPrio.dica}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* DESTAQUES RÁPIDOS */}

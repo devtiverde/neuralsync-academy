@@ -42,7 +42,7 @@ export default function RecuperarSenha() {
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/auth',
+      redirectTo: window.location.origin + '/nova-senha',
     })
     if (error) {
       setError('Não foi possível enviar o email. Verifique o endereço digitado.')

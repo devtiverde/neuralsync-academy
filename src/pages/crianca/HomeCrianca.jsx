@@ -4,6 +4,10 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
 import { useAtividades } from '../../hooks/useAtividades'
+import LayoutCrianca from '../../components/LayoutCrianca'
+import SplashScreen from '../../components/SplashScreen'
+import { StatCard, XPBar, Card, Button, Badge } from '../../components/ui'
+import { RocketLaunch, Target, Fire, Trophy } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
 
 function dentroDoHorario(agenda) {
@@ -18,15 +22,6 @@ function dentroDoHorario(agenda) {
   return horaAtual >= hIni * 60 + mIni && horaAtual <= hFim * 60 + mFim
 }
 
-const menu = [
-  { icon: '🏠', label: 'Início',  path: '/home-crianca' },
-  { icon: '🗺️', label: 'Trilha',  path: '/trilha' },
-  { icon: '🎬', label: 'Kids',    path: '/kids' },
-  { icon: '🏆', label: 'Ranking', path: '/ranking' },
-  { icon: '🏪', label: 'Loja',    path: '/loja' },
-  { icon: '👤', label: 'Perfil',  path: '/perfil-crianca' },
-]
-
 const nomeFaixa = {
   exploradores: 'Exploradores 🔍',
   construtores: 'Construtores 🔧',
@@ -34,13 +29,46 @@ const nomeFaixa = {
   inventores:   'Inventores 💡',
 }
 
+const tipoGradiente = {
+  quiz:               'linear-gradient(135deg, #4f46e5, #7C3AED)',
+  memoria:            'linear-gradient(135deg, #0284c7, #0ea5e9)',
+  sequencia:          'linear-gradient(135deg, #059669, #10b981)',
+  labirinto:          'linear-gradient(135deg, #dc2626, #ef4444)',
+  robo:               'linear-gradient(135deg, #4338ca, #6366f1)',
+  padrao:             'linear-gradient(135deg, #b45309, #f59e0b)',
+  quizia:             'linear-gradient(135deg, #7C3AED, #a855f7)',
+  inventor:           'linear-gradient(135deg, #c2410c, #f97316)',
+  blocos:             'linear-gradient(135deg, #065f46, #10b981)',
+  numeros:            'linear-gradient(135deg, #4c1d95, #7F77DD)',
+  formas:             'linear-gradient(135deg, #4c1d95, #7F77DD)',
+  cores:              'linear-gradient(135deg, #831843, #D4537E)',
+  alfabeto:           'linear-gradient(135deg, #064e3b, #1D9E75)',
+  'sequencia-magica': 'linear-gradient(135deg, #0891b2, #06b6d4)',
+  'conectar-pontos':  'linear-gradient(135deg, #7c3aed, #a78bfa)',
+  'classificar':      'linear-gradient(135deg, #047857, #34d399)',
+  'quebra-cabeca':    'linear-gradient(135deg, #b45309, #fbbf24)',
+  'caca-palavras':    'linear-gradient(135deg, #0369a1, #38bdf8)',
+  'historia-interativa': 'linear-gradient(135deg, #5b21b6, #d946ef)',
+  ingles:               'linear-gradient(135deg, #1e3a5f, #3B82F6)',
+}
+
+const CATEGORIAS = [
+  { id: 'tudo',       label: 'Tudo',       icon: '🌟' },
+  { id: 'raciocinio', label: 'Raciocínio', icon: '🧠' },
+  { id: 'tecnologia', label: 'Tecnologia', icon: '🤖' },
+  { id: 'letras',     label: 'Letras',     icon: '📖' },
+  { id: 'conteudo',   label: 'Conteúdo',   icon: '🎬' },
+  { id: 'offline',    label: 'Offline',    icon: '🌿' },
+]
+
 export default function HomeCrianca() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [child, setChild]     = useState(null)
-  const [faixa, setFaixa]     = useState('construtores')
+  const [child, setChild] = useState(null)
+  const [faixa, setFaixa] = useState('construtores')
   const [historico, setHistorico] = useState([])
   const [posicaoRanking, setPosicaoRanking] = useState(null)
+  const [filtro, setFiltro] = useState('tudo')
 
   const { atividades } = useAtividades(faixa)
 
@@ -50,28 +78,28 @@ export default function HomeCrianca() {
       const childId = stored?.id
 
       if (user) {
-        const { data: userData } = await supabase.from('users').select('agenda_config').eq('id', user.id).single()
-        const agendaConfig = userData?.agenda_config
-          || (() => { try { return JSON.parse(localStorage.getItem('ns_agenda_config') || 'null') } catch { return null } })()
-        if (agendaConfig) {
-          localStorage.setItem('ns_agenda_config', JSON.stringify(agendaConfig))
-          if (!dentroDoHorario(agendaConfig)) {
-            navigate('/bloqueio')
-            return
+        const localAgenda = (() => { try { return JSON.parse(localStorage.getItem('ns_agenda_config') || 'null') } catch { return null } })()
+        let agendaConfig = localAgenda
+        if (!localAgenda) {
+          const { data: userData } = await supabase.from('users').select('agenda_config').eq('id', user.id).single()
+          if (userData?.agenda_config && Array.isArray(userData.agenda_config)) {
+            agendaConfig = userData.agenda_config
+            localStorage.setItem('ns_agenda_config', JSON.stringify(agendaConfig))
           }
+        }
+        if (agendaConfig && Array.isArray(agendaConfig)) {
+          if (!dentroDoHorario(agendaConfig)) { navigate('/bloqueio'); return }
         }
       }
 
-      const { data } = await supabase.from('children').select('*')
-      if (!data || data.length === 0) return
+      const { data } = await supabase.from('children').select('*').eq('parent_id', user?.id)
+      if (!data || data.length === 0) { navigate('/dashboard'); return }
 
       let c = (childId && data.find(ch => ch.id === childId)) || data[0]
 
-      // Verifica se o streak deve ser resetado (não jogou ontem nem hoje)
       const hoje = new Date().toDateString()
       const ontem = new Date(Date.now() - 86400000).toDateString()
-      const ultimoAtivoKey = 'ns_ultimo_ativo_' + c.id
-      const ultimoAtivo = localStorage.getItem(ultimoAtivoKey)
+      const ultimoAtivo = localStorage.getItem('ns_ultimo_ativo_' + c.id)
       if (ultimoAtivo && ultimoAtivo !== hoje && ultimoAtivo !== ontem && (c.streak_atual || 0) > 0) {
         c = { ...c, streak_atual: 0 }
         supabase.from('children').update({ streak_atual: 0 }).eq('id', c.id).then(() => {})
@@ -81,12 +109,12 @@ export default function HomeCrianca() {
       localStorage.setItem('ns_active_child', JSON.stringify(c))
       setFaixa(c.faixa_etaria || 'construtores')
 
-      const sorted = [...data].sort((a, b) => (b.xp || 0) - (a.xp || 0))
+      const sorted = [...data].sort((a, b) => (b.neural_coins || 0) - (a.neural_coins || 0))
       const pos = sorted.findIndex(ch => ch.id === c.id) + 1
       if (data.length > 1) setPosicaoRanking(pos)
 
       const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
-      setHistorico(hist.slice(0, 4))
+      setHistorico(hist.slice(0, 5))
     }
     init()
   }, [user])
@@ -97,212 +125,330 @@ export default function HomeCrianca() {
     return c
   }, [atividades])
 
-  const missaoAtual = atividades[0]
+  const missaoAtual = useMemo(() => {
+    const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+    const idsRecentes = new Set(hist.slice(0, 10).map(h => h.atividade_id).filter(Boolean))
+    return atividades.find(a => !idsRecentes.has(a.id)) || atividades[0]
+  }, [atividades])
 
-  if (!child) return (
-    <div className="page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <div style={{ color: '#7C3AED', fontWeight: '700' }}>Carregando...</div>
-    </div>
-  )
+  if (!child) return <SplashScreen />
 
-  const xpPercent = Math.min((child.xp / (child.nivel * 500)) * 100, 100)
+  const xpMax = (child.nivel || 1) * 500
+
+  const hubItens = [
+    { id: 'quiz',      label: 'Quiz',       icon: '🧩', cat: 'raciocinio', grad: tipoGradiente.quiz,      sub: contsPorTipo.quiz      ? contsPorTipo.quiz      + ' ativ.' : null, show: !!contsPorTipo.quiz,      nav: () => navigate('/trilha') },
+    { id: 'memoria',   label: 'Memória',    icon: '🧠', cat: 'raciocinio', grad: tipoGradiente.memoria,   sub: contsPorTipo.memoria   ? contsPorTipo.memoria   + ' ativ.' : null, show: !!contsPorTipo.memoria,   nav: () => navigate('/trilha') },
+    { id: 'sequencia', label: 'Sequência',  icon: '🔗', cat: 'raciocinio', grad: tipoGradiente.sequencia, sub: contsPorTipo.sequencia ? contsPorTipo.sequencia + ' ativ.' : null, show: !!contsPorTipo.sequencia, nav: () => navigate('/trilha') },
+    { id: 'labirinto', label: 'Labirinto',  icon: '🌀', cat: 'raciocinio', grad: tipoGradiente.labirinto, sub: contsPorTipo.labirinto ? contsPorTipo.labirinto + ' ativ.' : null, show: !!contsPorTipo.labirinto, nav: () => navigate('/trilha') },
+    { id: 'padrao',    label: 'Padrão',     icon: '🔷', cat: 'raciocinio', grad: tipoGradiente.padrao,    sub: contsPorTipo.padrao    ? contsPorTipo.padrao    + ' ativ.' : null, show: !!contsPorTipo.padrao,    nav: () => navigate('/trilha') },
+    { id: 'blocos',    label: 'Blocos',     icon: '🧱', cat: 'raciocinio', grad: tipoGradiente.blocos,    badge: 'IA', sub: contsPorTipo.blocos ? contsPorTipo.blocos + ' ativ.' : null, show: !!contsPorTipo.blocos, nav: () => navigate('/trilha') },
+    { id: 'robo',      label: 'Robô',       icon: '🤖', cat: 'tecnologia', grad: tipoGradiente.robo,      sub: contsPorTipo.robo      ? contsPorTipo.robo      + ' ativ.' : null, show: !!contsPorTipo.robo,      nav: () => navigate('/trilha') },
+    { id: 'quizia',    label: 'Quiz IA',    icon: '🧩', cat: 'tecnologia', grad: tipoGradiente.quizia,    badge: 'IA', sub: 'Livre', show: true, nav: () => navigate('/quiz-ia') },
+    { id: 'inventor',  label: 'Inventor',   icon: '💡', cat: 'tecnologia', grad: tipoGradiente.inventor,  badge: 'IA', sub: contsPorTipo.inventor ? contsPorTipo.inventor + ' ativ.' : null, show: !!contsPorTipo.inventor, nav: () => navigate('/trilha') },
+    { id: 'neural-ai', label: 'NeuralAI',   icon: '🤖', cat: 'tecnologia', grad: 'linear-gradient(135deg, #0e7490, #0891b2, #7C3AED)', badge: 'IA', sub: 'Chat IA', show: faixa === 'inventores', nav: () => navigate('/neural-ai') },
+    { id: 'alfabeto',  label: 'Alfabeto',   icon: '🔤', cat: 'letras',     grad: tipoGradiente.alfabeto,  sub: contsPorTipo.alfabeto  ? contsPorTipo.alfabeto  + ' ativ.' : null, show: !!contsPorTipo.alfabeto,  nav: () => navigate('/trilha') },
+    { id: 'numeros',   label: 'Números',    icon: '🔢', cat: 'letras',     grad: tipoGradiente.numeros,   sub: contsPorTipo.numeros   ? contsPorTipo.numeros   + ' ativ.' : null, show: !!contsPorTipo.numeros,   nav: () => navigate('/trilha') },
+    { id: 'formas',    label: 'Formas',     icon: '🔷', cat: 'letras',     grad: tipoGradiente.formas,    sub: contsPorTipo.formas    ? contsPorTipo.formas    + ' ativ.' : null, show: !!contsPorTipo.formas,    nav: () => navigate('/trilha') },
+    { id: 'cores',     label: 'Cores',      icon: '🎨', cat: 'letras',     grad: tipoGradiente.cores,     sub: contsPorTipo.cores     ? contsPorTipo.cores     + ' ativ.' : null, show: !!contsPorTipo.cores,     nav: () => navigate('/trilha') },
+    { id: 'digitacao', label: 'Digitação',  icon: '⌨️', cat: 'letras',     grad: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', sub: 'Jogo',    show: true, nav: () => navigate('/digitacao') },
+    { id: 'diario',    label: 'Meu Diário', icon: '📔', cat: 'letras',     grad: 'linear-gradient(135deg, #5b21b6, #7C3AED)',  sub: 'Escreva', show: true, nav: () => navigate('/diario') },
+    { id: 'kids',      label: 'Kids TV',    icon: '🎬', cat: 'conteudo',   grad: 'linear-gradient(135deg, #4338ca, #6366f1)',  sub: 'Artigos', show: true, nav: () => navigate('/kids') },
+    { id: 'ebook',     label: 'Ebooks',     icon: '📚', cat: 'conteudo',   grad: 'linear-gradient(135deg, #065f46, #10b981)',  sub: 'Leitura', show: true, nav: () => navigate('/ebook') },
+    { id: 'offline',   label: 'Offline',    icon: '🌿', cat: 'offline',    grad: 'linear-gradient(135deg, #92400e, #f59e0b)',  sub: 'Sem tela', show: true, nav: () => navigate('/atividades-offline') },
+    // Jogos independentes (rota direta)
+    { id: 'sequencia-magica',    label: 'Sequência',   icon: '🌈', cat: 'raciocinio', grad: tipoGradiente['sequencia-magica'],    sub: 'Memória',   show: true, nav: () => navigate('/atividade/sequencia-magica') },
+    { id: 'quebra-cabeca',       label: 'Quebra-Cabeça',icon: '🧩', cat: 'raciocinio', grad: tipoGradiente['quebra-cabeca'],       sub: 'Puzzle',    show: true, nav: () => navigate('/atividade/quebra-cabeca') },
+    { id: 'conectar-pontos',     label: 'Conectar',    icon: '✏️', cat: 'raciocinio', grad: tipoGradiente['conectar-pontos'],     sub: 'Desenho',   show: true, nav: () => navigate('/atividade/conectar-pontos') },
+    { id: 'classificar-objetos', label: 'Classificar', icon: '📦', cat: 'raciocinio', grad: tipoGradiente['classificar'],         sub: 'Organizar', show: true, nav: () => navigate('/atividade/classificar-objetos') },
+    { id: 'ingles',              label: 'Inglês',       icon: '🇺🇸', cat: 'letras',    grad: tipoGradiente.ingles,                sub: contsPorTipo.ingles ? contsPorTipo.ingles + ' ativ.' : '4 ativ.', show: true, nav: () => navigate('/trilha') },
+    { id: 'caca-palavras',       label: 'Caça-Palavras',icon: '🔍', cat: 'letras',     grad: tipoGradiente['caca-palavras'],       sub: 'Palavras',  show: true, nav: () => navigate('/atividade/caca-palavras') },
+    { id: 'historia-interativa', label: 'História',    icon: '📖', cat: 'conteudo',   grad: tipoGradiente['historia-interativa'], sub: 'Aventura',  show: true, nav: () => navigate('/atividade/historia-interativa') },
+  ].filter(item => item.show)
+
+  const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => item.cat === filtro)
+
+  const statCards = [
+    { emoji: '💰', value: child.neural_coins || 0, label: 'NeuralCoins', color: '#fbbf24', onClick: () => navigate('/coins'), delay: 0 },
+    { emoji: '🔥', value: child.streak_atual || 0, label: 'Dias seguidos', color: '#fb923c', delay: 80 },
+    posicaoRanking ? { emoji: '🏆', value: `#${posicaoRanking}`, label: 'Ranking', color: '#fbbf24', delay: 160 } : null,
+  ].filter(Boolean)
 
   return (
-    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
-      <div className="page-wrapper" style={{ paddingBottom: '90px' }}>
+    <LayoutCrianca child={child}>
+      <div style={{ padding: '28px 32px', minHeight: '100vh', background: 'var(--ns-dark)' }}>
 
-        {/* ── HEADER ── */}
-        <div className="header-gradient">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <div>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginBottom: '3px', fontWeight: '600' }}>
-                {nomeFaixa[faixa]}
-              </p>
-              <h2 style={{ color: 'white', fontSize: '22px', fontWeight: '900', letterSpacing: '-0.5px' }}>
-                Olá, {child.nome}! 🚀
-              </h2>
+        {/* ── HERO BANNER ──────────────────────────────── */}
+        <div style={{
+          background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 40%, #7C3AED 100%)',
+          borderRadius: 'var(--ns-radius-xl)',
+          padding: '28px 32px',
+          marginBottom: 28,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: 'var(--ns-shadow-glow-violet)',
+        }}>
+          {/* decorative orbs */}
+          <div style={{ position: 'absolute', top: -40, right: 140, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -50, right: -20, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.04)', pointerEvents: 'none' }} />
+
+          {/* left: name + XP */}
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: 600, marginBottom: 6, fontFamily: 'var(--ns-font-ui)' }}>
+              {nomeFaixa[faixa]}
             </div>
-            <button onClick={() => navigate('/coins')} style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '12px', padding: '10px 14px', textAlign: 'right', border: 'none', cursor: 'pointer' }}>
-              <div style={{ color: 'white', fontWeight: '900', fontSize: '16px' }}>💰 {child.neural_coins}</div>
-              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', fontWeight: '500' }}>NeuralCoins</div>
-            </button>
+            <h1 style={{
+              color: 'white',
+              fontSize: 32,
+              fontFamily: "'Fredoka One', cursive",
+              fontWeight: 400,
+              letterSpacing: '0.5px',
+              marginBottom: 20,
+              lineHeight: 1.1,
+            }}>
+              Olá, {child.nome}! <RocketLaunch weight="duotone" size={20} color="#F97316" />
+            </h1>
+            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 14, padding: '14px 20px', display: 'inline-block', minWidth: 300 }}>
+              <XPBar current={child.xp || 0} max={xpMax} level={child.nivel || 1} dark />
+            </div>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '12px', padding: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'rgba(255,255,255,0.75)', marginBottom: '7px', fontWeight: '500' }}>
-              <span>Nível {child.nivel} → {child.nivel + 1}</span>
-              <span style={{ color: 'white', fontWeight: '700' }}>{child.xp} / {child.nivel * 500} XP</span>
-            </div>
-            <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '999px', height: '7px', overflow: 'hidden' }}>
-              <div style={{ background: 'white', width: xpPercent + '%', height: '100%', borderRadius: '999px', transition: 'width 0.5s ease' }} />
-            </div>
+
+          {/* right: staggered StatCards */}
+          <div style={{ display: 'flex', gap: 12, position: 'relative', zIndex: 1, flexShrink: 0 }}>
+            {statCards.map((s, idx) => (
+              <div
+                key={idx}
+                style={{
+                  animation: 'ns-slide-up 0.4s ease forwards',
+                  animationDelay: `${s.delay}ms`,
+                  opacity: 0,
+                }}
+              >
+                <StatCard emoji={s.emoji} value={s.value} label={s.label} color={s.color} onClick={s.onClick} />
+              </div>
+            ))}
           </div>
         </div>
 
-        <div style={{ padding: '16px 16px 0' }}>
+        {/* ── GRID PRINCIPAL ───────────────────────────── */}
+        <div className="ns-two-col" style={{ alignItems: 'start' }}>
 
-          {/* ── STREAK ── */}
-          <div style={{ background: 'linear-gradient(135deg, #fff7ed, #ffedd5)', borderRadius: 'var(--r-lg)', padding: '14px 16px', marginBottom: '12px', border: '1.5px solid #fed7aa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '16px', fontWeight: '900', color: '#ea580c' }}>🔥 {child.streak_atual} dias seguidos!</div>
-              <div style={{ fontSize: '12px', color: '#9a3412', marginTop: '2px' }}>Recorde: {child.streak_maximo} dias — não pare agora!</div>
-            </div>
-            <div style={{ fontSize: '28px' }}>⚡</div>
-          </div>
+          {/* ── COLUNA ESQUERDA ──────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
-          {/* ── MISSÃO DO DIA ── */}
-          {missaoAtual && (
-            <div style={{ background: 'white', borderRadius: 'var(--r-lg)', padding: '18px', marginBottom: '16px', border: '2px solid #F07A20', boxShadow: 'var(--shadow-accent)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F07A20' }} />
-                <span style={{ fontSize: '10px', color: '#F07A20', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Missão do Dia</span>
-                <span style={{ background: tipoConfig[missaoAtual.tipo]?.cor + '20', color: tipoConfig[missaoAtual.tipo]?.cor, fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: 'var(--r-full)', marginLeft: '4px' }}>
-                  {tipoConfig[missaoAtual.tipo]?.icon} {tipoConfig[missaoAtual.tipo]?.label}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: '44px', lineHeight: 1, flexShrink: 0 }}>{missaoAtual.emoji}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '900', fontSize: '16px', marginBottom: '4px', color: '#0f0a1e' }}>{missaoAtual.titulo}</div>
-                  <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '10px', lineHeight: 1.5 }}>
-                    {missaoAtual.historinha?.substring(0, 90)}...
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500' }}>
-                      ⏱ ~{missaoAtual.tempo_estimado}min • +{missaoAtual.xp_reward} XP
+            {/* Missão do Dia */}
+            {missaoAtual && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(240,122,32,0.18) 0%, rgba(10,6,24,0.6) 60%)',
+                border: '1.5px solid rgba(240,122,32,0.5)',
+                borderRadius: 'var(--ns-radius-lg)',
+                overflow: 'hidden',
+                boxShadow: '0 8px 32px rgba(240,122,32,0.2)',
+                position: 'relative',
+              }}>
+                <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(240,122,32,0.12)', pointerEvents: 'none' }} />
+
+                {/* missão header */}
+                <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(240,122,32,0.15)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Target weight="duotone" size={16} color="#F97316" />
+                    <span style={{ fontSize: 11, color: '#fb923c', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'var(--ns-font-ui)' }}>Missão do Dia</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Badge variant="tag" size="sm">
+                      {tipoConfig[missaoAtual.tipo]?.icon} {tipoConfig[missaoAtual.tipo]?.label}
+                    </Badge>
+                    <Badge variant="xp" size="sm">+{missaoAtual.xp_reward} XP</Badge>
+                  </div>
+                </div>
+
+                {/* missão body */}
+                <div style={{ padding: '18px 20px', display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <div style={{ fontSize: 56, lineHeight: 1, flexShrink: 0, filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.4))' }}>
+                    {missaoAtual.emoji}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontWeight: 400,
+                      fontSize: 20,
+                      color: 'white',
+                      fontFamily: "'Fredoka One', cursive",
+                      marginBottom: 6,
+                      lineHeight: 1.2,
+                    }}>
+                      {missaoAtual.titulo}
                     </div>
-                    <button onClick={() => navigate(`/atividade/${missaoAtual.tipo}`, { state: { atividade: missaoAtual } })} className="btn-orange" style={{ padding: '8px 16px', fontSize: '13px' }}>
-                      Jogar agora →
-                    </button>
+                    <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', marginBottom: 14, lineHeight: 1.6, margin: '0 0 14px' }}>
+                      {(missaoAtual.historinha || '').substring(0, 100)}{missaoAtual.historinha?.length > 100 ? '...' : ''}
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ background: 'rgba(255,255,255,0.07)', borderRadius: 8, padding: '4px 10px', fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
+                        ⏱ ~{missaoAtual.tempo_estimado}min
+                      </span>
+                      <Button
+                        variant="dark"
+                        size="sm"
+                        style={{ marginLeft: 'auto' }}
+                        onClick={() => navigate(`/atividade/${missaoAtual.tipo}`, { state: { atividade: missaoAtual } })}
+                      >
+                        Jogar agora →
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* ── EXPLORAR TODAS AS ATIVIDADES ── */}
-          <div style={{ marginBottom: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#0f0a1e' }}>Explorar atividades</h3>
-              <button onClick={() => navigate('/trilha')} style={{ background: 'none', border: 'none', color: '#7C3AED', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Ver trilha →</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-              {['quiz','memoria','sequencia','labirinto','robo','padrao','quizia','inventor','blocos'].map(tipo => {
-                const cfg = tipoConfig[tipo]
-                const qtd = contsPorTipo[tipo] || 0
-                if (!qtd) return null
-                const isIA = ['quizia','inventor','blocos'].includes(tipo)
-                return (
-                  <button key={tipo} onClick={() => navigate('/trilha', { state: { filtroTipo: tipo } })} style={{
-                    background: isIA ? 'linear-gradient(135deg, #faf5ff, #ede9fe)' : 'white',
-                    border: isIA ? '1.5px solid #c4b5fd' : '1.5px solid #f0eeff',
-                    borderRadius: 'var(--r-lg)', padding: '14px 8px',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                    cursor: 'pointer', boxShadow: isIA ? 'var(--shadow-primary)' : 'var(--shadow-sm)',
-                    position: 'relative',
-                  }}>
-                    {isIA && (
-                      <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'linear-gradient(135deg, #7C3AED, #a855f7)', color: 'white', fontSize: '8px', fontWeight: '800', padding: '1px 5px', borderRadius: 'var(--r-full)' }}>IA</span>
-                    )}
-                    <div style={{ fontSize: '26px', lineHeight: 1 }}>{cfg.icon}</div>
-                    <div style={{ fontSize: '10px', fontWeight: '800', color: cfg.cor, textAlign: 'center', lineHeight: 1.2 }}>{cfg.label}</div>
-                    <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '500' }}>{qtd} ativ.</div>
+            {/* Hub Unificado */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>Explorar</h3>
+                <Button variant="secondary" size="sm" onClick={() => navigate('/trilha')}>Ver trilha →</Button>
+              </div>
+
+              {/* filtros por categoria */}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+                {CATEGORIAS.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setFiltro(cat.id)}
+                    style={{
+                      background: filtro === cat.id ? 'rgba(124,58,237,0.85)' : 'rgba(255,255,255,0.07)',
+                      border: '1px solid ' + (filtro === cat.id ? 'rgba(124,58,237,0.9)' : 'rgba(255,255,255,0.12)'),
+                      borderRadius: 'var(--ns-radius-pill)', padding: '6px 14px',
+                      color: filtro === cat.id ? 'white' : 'rgba(255,255,255,0.5)',
+                      fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      fontFamily: 'var(--ns-font-body)',
+                      transition: 'all 0.15s', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {cat.icon} {cat.label}
                   </button>
-                )
-              })}
-            </div>
-          </div>
+                ))}
+              </div>
 
-          {/* ── CONTEÚDOS ── */}
-          <div style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#0f0a1e', marginBottom: '10px' }}>Conteúdos</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <button onClick={() => navigate('/kids')} style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81)', borderRadius: 'var(--r-lg)', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎬</div>
-                <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', marginBottom: '3px' }}>Kids TV</div>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Vídeos educativos</div>
-              </button>
-              <button onClick={() => navigate('/ebook')} style={{ background: 'linear-gradient(135deg, #064e3b, #065f46)', borderRadius: 'var(--r-lg)', padding: '18px 14px', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📚</div>
-                <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', marginBottom: '3px' }}>Ebooks</div>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '11px' }}>Leitura interativa</div>
-              </button>
-            </div>
-          </div>
-
-          {/* ── HISTÓRICO ── */}
-          {historico.length > 0 && (
-            <div style={{ marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#0f0a1e', marginBottom: '10px' }}>Últimas atividades</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {historico.map((item, i) => {
-                  const tc = tipoConfig[item.tipo]
-                  return (
-                    <div key={i} className="card-white" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ fontSize: '28px', lineHeight: 1 }}>{item.emoji || '⭐'}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '700', fontSize: '13px', color: '#0f0a1e' }}>{item.titulo}</div>
-                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>{item.data}</div>
-                      </div>
-                      {tc && (
-                        <div style={{ background: tc.cor + '20', color: tc.cor, fontSize: '10px', fontWeight: '700', padding: '3px 8px', borderRadius: 'var(--r-full)', whiteSpace: 'nowrap' }}>
-                          {tc.icon} {tc.label}
-                        </div>
-                      )}
-                      <div style={{ color: '#10b981', fontWeight: '800', fontSize: '13px', whiteSpace: 'nowrap' }}>+{item.xp} XP</div>
-                    </div>
-                  )
-                })}
+              {/* grid de atividades */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 10 }}>
+                {itensFiltrados.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={item.nav}
+                    className="ns-hub-card"
+                    style={{
+                      background: item.grad || 'rgba(255,255,255,0.06)',
+                      border: 'none', borderRadius: 'var(--ns-radius-md)',
+                      padding: '18px 10px', cursor: 'pointer',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
+                      position: 'relative', transition: 'transform 0.15s, box-shadow 0.15s',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+                      minHeight: 100, justifyContent: 'center',
+                    }}
+                    onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.4)' }}
+                    onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)' }}
+                  >
+                    {item.badge && (
+                      <span style={{ position: 'absolute', top: 7, right: 7 }}>
+                        <Badge variant="ai" size="sm">{item.badge}</Badge>
+                      </span>
+                    )}
+                    <div style={{ fontSize: 28, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.icon}</div>
+                    <div style={{
+                      fontSize: 12,
+                      fontFamily: "'Fredoka One', cursive",
+                      color: 'white', textAlign: 'center', lineHeight: 1.2,
+                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                    }}>{item.label}</div>
+                    {item.sub && (
+                      <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 99, padding: '2px 7px', fontSize: 10, color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>{item.sub}</div>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
-          )}
+          </div>
 
-          {/* ── PROGRESSO ── */}
-          <div style={{ marginBottom: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#0f0a1e' }}>Meu progresso</h3>
-              <button onClick={() => navigate('/trilha')} style={{ background: 'none', border: 'none', color: '#7C3AED', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Ver trilha →</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-              {[
-                [child.xp, 'XP Total', '#7C3AED', '⭐'],
-                [child.streak_maximo + '🔥', 'Maior streak', '#F07A20', ''],
-                [atividades.length, 'Atividades', '#10b981', '🗺️'],
-              ].map(([val, label, cor, icon]) => (
-                <div key={label} className="card-white" style={{ padding: '14px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '11px', marginBottom: '4px' }}>{icon}</div>
-                  <div style={{ fontSize: '20px', fontWeight: '900', color: cor }}>{val}</div>
-                  <div style={{ fontSize: '10px', color: '#9ca3af', fontWeight: '500', marginTop: '2px' }}>{label}</div>
+          {/* ── COLUNA DIREITA ────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            {/* Streak — mantém tint laranja */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(234,88,12,0.2), rgba(251,146,60,0.1))',
+              border: '1px solid rgba(251,146,60,0.3)',
+              borderRadius: 'var(--ns-radius-lg)',
+              padding: 20,
+              boxShadow: '0 4px 20px rgba(234,88,12,0.1)',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 20, fontFamily: "'Fredoka One', cursive", color: '#fb923c', marginBottom: 6 }}>
+                    <Fire weight="duotone" size={20} color="#F97316" className="ns-icon-bounce" /> {child.streak_atual || 0} dias seguidos!
+                  </div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+                    Recorde: <span style={{ fontFamily: 'var(--ns-font-ui)', fontWeight: 800, color: '#fb923c' }}>{child.streak_maximo || 0}</span> dias<br />Não pare agora!
+                  </div>
                 </div>
-              ))}
+                <div style={{ fontSize: 46, filter: 'drop-shadow(0 0 12px rgba(251,146,60,0.5))' }}>⚡</div>
+              </div>
             </div>
-          </div>
 
-          {/* ── RANKING TEASER ── */}
-          <div className="card-white" style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500', marginBottom: '3px' }}>🏆 Ranking</div>
-              {posicaoRanking === 1 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 1º lugar! 🥇</div>}
-              {posicaoRanking === 2 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 2º lugar! 🥈</div>}
-              {posicaoRanking === 3 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em 3º lugar! 🥉</div>}
-              {posicaoRanking > 3 && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Você está em {posicaoRanking}º lugar!</div>}
-              {!posicaoRanking && <div style={{ fontWeight: '800', fontSize: '15px', color: '#F07A20' }}>Continue ganhando XP! 🚀</div>}
-              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '1px' }}>Continue ganhando NeuralCoins!</div>
-            </div>
-            <button onClick={() => navigate('/ranking')} style={{ background: 'var(--color-primary-ghost)', border: '1px solid var(--color-primary-border)', borderRadius: 'var(--r-sm)', padding: '7px 12px', color: 'var(--color-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver →</button>
-          </div>
-        </div>
+            {/* Progresso */}
+            <Card variant="dark" style={{ padding: 20 }}>
+              <h4 style={{ fontSize: 11, fontWeight: 800, color: '#a78bfa', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'var(--ns-font-ui)' }}>Meu progresso</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                {[
+                  [child.xp || 0,            'XP Total',    '#a78bfa', '⭐'],
+                  [child.neural_coins || 0,  'NeuralCoins', '#fbbf24', '💰'],
+                  [child.streak_maximo || 0, 'Recorde',     '#fb923c', '🔥'],
+                  [atividades.length,         'Atividades',  '#34d399', '🗺️'],
+                ].map(([val, label, cor, icon]) => (
+                  <div key={label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, marginBottom: 4 }}>{icon}</div>
+                    <div style={{ fontSize: 20, fontFamily: 'var(--ns-font-ui)', fontWeight: 900, color: cor, marginBottom: 3 }}>{val}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
 
-        {/* ── BOTTOM MENU ── */}
-        <div className="menu-bottom">
-          {menu.map(item => (
-            <button key={item.path} className="menu-bottom-btn" onClick={() => navigate(item.path)}
-              style={{ color: item.path === '/home-crianca' ? '#7C3AED' : '#9ca3af' }}>
-              <span style={{ fontSize: '20px' }}>{item.icon}</span>
-              <span style={{ fontWeight: item.path === '/home-crianca' ? '700' : '500' }}>{item.label}</span>
-            </button>
-          ))}
+            {/* Ranking */}
+            <Card variant="dark" style={{ padding: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'var(--ns-font-ui)', display: 'flex', alignItems: 'center', gap: 4 }}><Trophy weight="duotone" size={16} color="#F59E0B" className="ns-icon-bounce" /> Ranking</div>
+              <div style={{ fontFamily: "'Fredoka One', cursive", fontSize: 20, color: '#fbbf24', marginBottom: 6 }}>
+                {posicaoRanking === 1 && '🥇 1º lugar!'}
+                {posicaoRanking === 2 && '🥈 2º lugar!'}
+                {posicaoRanking === 3 && '🥉 3º lugar!'}
+                {posicaoRanking > 3 && `${posicaoRanking}º lugar`}
+                {!posicaoRanking && 'Continue jogando! 🚀'}
+              </div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 16, lineHeight: 1.5 }}>Continue ganhando NeuralCoins!</p>
+              <Button variant="secondary" size="sm" style={{ width: '100%' }} onClick={() => navigate('/ranking')}>
+                Ver ranking completo →
+              </Button>
+            </Card>
+
+            {/* Histórico */}
+            {historico.length > 0 && (
+              <Card variant="dark" style={{ padding: 20 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.4)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'var(--ns-font-ui)' }}>Últimas atividades</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {historico.map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <div style={{ fontSize: 22, lineHeight: 1, flexShrink: 0 }}>{item.emoji || '⭐'}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.titulo}</div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, fontFamily: 'var(--ns-font-ui)' }}>{item.data}</div>
+                      </div>
+                      <Badge variant="xp" size="sm">+{item.xp}XP</Badge>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </LayoutCrianca>
   )
 }

@@ -1,0 +1,307 @@
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import LayoutCrianca from '../../components/LayoutCrianca'
+import '../../styles/crianca.css'
+
+const LS_KEY = 'ns_diario'
+const COR = '#7C3AED'
+
+const PROMPTS = [
+  'O que você aprendeu hoje que te surpreendeu?',
+  'Qual foi a parte mais legal do que você estudou?',
+  'Se você fosse ensinar alguém o que aprendeu, o que diria primeiro?',
+  'Qual palavra nova você descobriu hoje?',
+  'O que você quer aprender amanhã?',
+  'Faça uma pergunta sobre o que você estudou — tente responder depois!',
+  'Descreva como você se sentiu durante o aprendizado de hoje.',
+  'Qual conexão você fez entre o que aprendeu e a vida real?',
+]
+
+function getEntradas(childId) {
+  try {
+    const all = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
+    return (all[childId] || []).sort((a, b) => new Date(b.data) - new Date(a.data))
+  } catch { return [] }
+}
+
+function salvarEntrada(childId, entrada) {
+  try {
+    const all = JSON.parse(localStorage.getItem(LS_KEY) || '{}')
+    const entradas = all[childId] || []
+    entradas.unshift(entrada)
+    all[childId] = entradas.slice(0, 100) // Máximo 100 entradas
+    localStorage.setItem(LS_KEY, JSON.stringify(all))
+  } catch {}
+}
+
+function formatData(isoStr) {
+  const d = new Date(isoStr)
+  return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function contarPalavras(texto) {
+  return texto.trim() === '' ? 0 : texto.trim().split(/\s+/).length
+}
+
+export default function Diario() {
+  const navigate = useNavigate()
+  const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+  const childId = child?.id || 'guest'
+
+  const [texto, setTexto] = useState('')
+  const [titulo, setTitulo] = useState('')
+  const [entradas, setEntradas] = useState([])
+  const [tela, setTela] = useState('escrever') // 'escrever' | 'historico'
+  const [salvou, setSalvou] = useState(false)
+  const [entradaAberta, setEntradaAberta] = useState(null)
+  const [wpm, setWpm] = useState(0)
+  const [inicioDigitacao, setInicioDigitacao] = useState(null)
+  const promptRef = useRef(PROMPTS[Math.floor(Math.random() * PROMPTS.length)])
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    setEntradas(getEntradas(childId))
+  }, [childId])
+
+  useEffect(() => {
+    return () => clearInterval(intervalRef.current)
+  }, [])
+
+  function handleTexto(e) {
+    const val = e.target.value
+    setTexto(val)
+    setSalvou(false)
+
+    if (val.length === 1 && !inicioDigitacao) {
+      const inicio = Date.now()
+      setInicioDigitacao(inicio)
+      intervalRef.current = setInterval(() => {
+        const minutos = (Date.now() - inicio) / 60000
+        if (minutos > 0) {
+          const palavras = contarPalavras(val)
+          setWpm(Math.round(palavras / minutos))
+        }
+      }, 2000)
+    }
+
+    if (val.length > 1 && inicioDigitacao) {
+      const minutos = (Date.now() - inicioDigitacao) / 60000
+      if (minutos > 0) setWpm(Math.round(contarPalavras(val) / minutos))
+    }
+
+    if (val.length === 0) {
+      clearInterval(intervalRef.current)
+      setInicioDigitacao(null)
+      setWpm(0)
+    }
+  }
+
+  function salvar() {
+    if (texto.trim().length < 10) return
+    const entrada = {
+      id: Date.now(),
+      data: new Date().toISOString(),
+      titulo: titulo.trim() || `Entrada de ${new Date().toLocaleDateString('pt-BR')}`,
+      texto: texto.trim(),
+      palavras: contarPalavras(texto),
+      wpm,
+    }
+    salvarEntrada(childId, entrada)
+    setEntradas(getEntradas(childId))
+    setSalvou(true)
+    clearInterval(intervalRef.current)
+    setInicioDigitacao(null)
+    setWpm(0)
+    setTimeout(() => {
+      setTexto('')
+      setTitulo('')
+      setSalvou(false)
+      promptRef.current = PROMPTS[Math.floor(Math.random() * PROMPTS.length)]
+    }, 1800)
+  }
+
+  const palavrasAtual = contarPalavras(texto)
+
+  return (
+    <LayoutCrianca child={child}>
+      <div className="ns-pad">
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+          <button onClick={() => navigate('/home-crianca')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '10px', width: '36px', height: '36px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>←</button>
+          <div style={{ fontSize: '32px' }}>📔</div>
+          <div>
+            <h2 style={{ color: 'white', fontSize: '20px', fontWeight: '900', lineHeight: 1.2 }}>Meu Diário</h2>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>{child?.nome ? `Olá, ${child.nome}!` : ''} Escreva o que aprendeu</p>
+          </div>
+        </div>
+
+        {/* Abas */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+          {[{ id: 'escrever', label: '✏️ Escrever' }, { id: 'historico', label: `📚 Histórico (${entradas.length})` }].map(a => (
+            <button key={a.id} onClick={() => setTela(a.id)} style={{ background: tela === a.id ? COR : 'rgba(255,255,255,0.07)', border: tela === a.id ? 'none' : '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '8px 16px', color: tela === a.id ? 'white' : 'rgba(255,255,255,0.5)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+              {a.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ maxWidth: '720px', margin: '0 auto', width: '100%' }}>
+
+          {/* ── TELA ESCREVER ── */}
+          {tela === 'escrever' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+
+              {/* Prompt do dia */}
+              <div style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: '14px', padding: '14px 16px', display: 'flex', gap: '10px' }}>
+                <span style={{ fontSize: '18px' }}>💡</span>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: '800', color: COR, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '4px' }}>Sugestão para começar</div>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, fontStyle: 'italic' }}>{promptRef.current}</div>
+                </div>
+              </div>
+
+              {/* Título */}
+              <div>
+                <input
+                  value={titulo}
+                  onChange={e => setTitulo(e.target.value)}
+                  placeholder={`Entrada de ${new Date().toLocaleDateString('pt-BR')}`}
+                  maxLength={60}
+                  style={{
+                    width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '12px', padding: '12px 16px', color: 'white', fontSize: '14px',
+                    fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Textarea principal */}
+              <div style={{ position: 'relative' }}>
+                <textarea
+                  value={texto}
+                  onChange={handleTexto}
+                  placeholder="Escreva aqui o que você aprendeu, sentiu ou descobriu hoje..."
+                  rows={10}
+                  style={{
+                    width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '16px', padding: '18px', color: 'rgba(255,255,255,0.85)', fontSize: '15px',
+                    lineHeight: '1.75', fontFamily: 'Plus Jakarta Sans, sans-serif', outline: 'none',
+                    resize: 'vertical', minHeight: '220px', boxSizing: 'border-box',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => e.target.style.borderColor = COR + '80'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+              </div>
+
+              {/* Stats de digitação */}
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {[
+                  { label: 'Palavras', valor: palavrasAtual, cor: palavrasAtual > 0 ? '#10b981' : 'rgba(255,255,255,0.3)' },
+                  { label: 'Caracteres', valor: texto.length, cor: texto.length > 0 ? '#3b82f6' : 'rgba(255,255,255,0.3)' },
+                  { label: 'WPM', valor: wpm > 0 ? `${wpm}` : '—', cor: wpm > 0 ? COR : 'rgba(255,255,255,0.3)' },
+                ].map(s => (
+                  <div key={s.label} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '10px 16px', textAlign: 'center', flex: '1', minWidth: '80px' }}>
+                    <div style={{ fontSize: '18px', fontWeight: '900', color: s.cor, fontFamily: 'monospace' }}>{s.valor}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: '600', marginTop: '2px' }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Dicas de digitação */}
+              {palavrasAtual > 0 && palavrasAtual < 20 && (
+                <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '12px', padding: '12px 14px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                  <span>💡</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>Dica: Tente escrever pelo menos 30 palavras. Use os dois polegares no celular ou todos os dedos no teclado!</span>
+                </div>
+              )}
+
+              {wpm > 0 && wpm < 20 && (
+                <div style={{ background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: '12px', padding: '12px 14px', display: 'flex', gap: '8px' }}>
+                  <span>⌨️</span>
+                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>Dica de digitação: Posicione os dedos nas teclas ASDF (mão esquerda) e JKL; (mão direita). Esse é o ponto de partida da digitação de toque!</span>
+                </div>
+              )}
+
+              {wpm >= 30 && (
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '12px', padding: '12px 14px', display: 'flex', gap: '8px' }}>
+                  <span>🚀</span>
+                  <span style={{ fontSize: '12px', color: '#6ee7b7', lineHeight: 1.5 }}>Incrível! {wpm} WPM é uma ótima velocidade! Continue praticando no <strong>Jogo de Digitação</strong> para chegar a 60+ WPM!</span>
+                </div>
+              )}
+
+              {/* Botão salvar */}
+              <button
+                onClick={salvar}
+                disabled={texto.trim().length < 10}
+                style={{
+                  width: '100%', background: salvou ? '#10b981' : texto.trim().length >= 10 ? COR : 'rgba(255,255,255,0.1)',
+                  border: 'none', borderRadius: '14px', padding: '16px', color: 'white',
+                  fontWeight: '800', fontSize: '15px', cursor: texto.trim().length >= 10 ? 'pointer' : 'not-allowed',
+                  fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.25s',
+                }}
+              >
+                {salvou ? '✅ Salvo no diário!' : '💾 Salvar entrada'}
+              </button>
+
+              {texto.trim().length < 10 && texto.length > 0 && (
+                <p style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: '-6px 0 0' }}>
+                  Escreva pelo menos {10 - texto.trim().length} caractere(s) mais.
+                </p>
+              )}
+
+              {/* Link para digitação */}
+              <button onClick={() => navigate('/digitacao')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '14px', color: 'rgba(255,255,255,0.6)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                ⌨️ Ir para o Jogo de Digitação
+              </button>
+            </div>
+          )}
+
+          {/* ── TELA HISTÓRICO ── */}
+          {tela === 'historico' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {entradas.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '12px' }}>📝</div>
+                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'white', marginBottom: '8px' }}>Seu diário está vazio</div>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Escreva sua primeira entrada!</div>
+                  <button onClick={() => setTela('escrever')} style={{ marginTop: '16px', background: COR, color: 'white', border: 'none', borderRadius: '12px', padding: '12px 24px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' }}>✏️ Escrever agora</button>
+                </div>
+              ) : entradas.map((e, i) => (
+                <div
+                  key={e.id}
+                  onClick={() => setEntradaAberta(entradaAberta === i ? null : i)}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '18px', cursor: 'pointer', transition: 'all 0.2s' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '14px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>{e.titulo}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: '600' }}>{formatData(e.data)}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                      <span style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '20px', padding: '3px 8px', fontSize: '11px', color: 'rgba(255,255,255,0.45)', fontWeight: '700' }}>{e.palavras} palavras</span>
+                      {e.wpm > 0 && <span style={{ background: COR + '22', borderRadius: '20px', padding: '3px 8px', fontSize: '11px', color: COR, fontWeight: '700' }}>{e.wpm} WPM</span>}
+                    </div>
+                  </div>
+
+                  {entradaAberta === i && (
+                    <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                      <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>{e.texto}</p>
+                    </div>
+                  )}
+
+                  {entradaAberta !== i && (
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, margin: '8px 0 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {e.texto}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </LayoutCrianca>
+  )
+}

@@ -1,48 +1,105 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
+import LayoutPai from '../../components/LayoutPai'
 import '../../styles/pai.css'
 
 const STORAGE_KEY = 'ns_timer_config'
 
 const defaultConfig = { duracao: 30, aviso5min: true, permiteExtensao: true, encerramentoAuto: true }
 
+const FAIXA_ORDEM = ['exploradores', 'construtores', 'criadores', 'inventores']
+
+const DICA_FAIXA = {
+  exploradores: { label: 'Exploradores (4–5 anos)', rec: '30–45 min por sessão', opcaoIdeal: [30, 45] },
+  construtores: { label: 'Construtores (6–8 anos)', rec: '45 min a 1 hora', opcaoIdeal: [45, 60] },
+  criadores:    { label: 'Criadores (9–11 anos)',   rec: '1h a 1h30',          opcaoIdeal: [60, 90] },
+  inventores:   { label: 'Inventores (12+ anos)',   rec: '1h30 a 2h (com pausas)', opcaoIdeal: [90] },
+}
+
+function faixaMaisRestritiva(faixas) {
+  if (!faixas || faixas.length === 0) return null
+  return faixas.reduce((menor, atual) => {
+    const iAtual = FAIXA_ORDEM.indexOf(atual)
+    const iMenor = FAIXA_ORDEM.indexOf(menor)
+    return iAtual < iMenor ? atual : menor
+  })
+}
+
 export default function Timer() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [duracao, setDuracao] = useState(defaultConfig.duracao)
   const [aviso5min, setAviso5min] = useState(defaultConfig.aviso5min)
   const [permiteExtensao, setPermiteExtensao] = useState(defaultConfig.permiteExtensao)
   const [encerramentoAuto, setEncerramentoAuto] = useState(defaultConfig.encerramentoAuto)
   const [salvo, setSalvo] = useState(false)
+  const [faixaRec, setFaixaRec] = useState(null)
   const opcoes = [15, 30, 45, 60, 90]
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
-      if (saved) {
-        setDuracao(saved.duracao ?? defaultConfig.duracao)
-        setAviso5min(saved.aviso5min ?? defaultConfig.aviso5min)
-        setPermiteExtensao(saved.permiteExtensao ?? defaultConfig.permiteExtensao)
-        setEncerramentoAuto(saved.encerramentoAuto ?? defaultConfig.encerramentoAuto)
-      }
-    } catch {}
-  }, [])
+    async function load() {
+      if (user) {
+        const [{ data: userData }, { data: filhos }] = await Promise.all([
+          supabase.from('users').select('timer_config').eq('id', user.id).single(),
+          supabase.from('children').select('faixa_etaria').eq('parent_id', user.id),
+        ])
 
-  const salvar = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ duracao, aviso5min, permiteExtensao, encerramentoAuto }))
+        if (userData?.timer_config) {
+          const cfg = userData.timer_config
+          setDuracao(cfg.duracao ?? defaultConfig.duracao)
+          setAviso5min(cfg.aviso5min ?? defaultConfig.aviso5min)
+          setPermiteExtensao(cfg.permiteExtensao ?? defaultConfig.permiteExtensao)
+          setEncerramentoAuto(cfg.encerramentoAuto ?? defaultConfig.encerramentoAuto)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg))
+        } else {
+          try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+            if (saved) {
+              setDuracao(saved.duracao ?? defaultConfig.duracao)
+              setAviso5min(saved.aviso5min ?? defaultConfig.aviso5min)
+              setPermiteExtensao(saved.permiteExtensao ?? defaultConfig.permiteExtensao)
+              setEncerramentoAuto(saved.encerramentoAuto ?? defaultConfig.encerramentoAuto)
+            }
+          } catch {}
+        }
+
+        if (filhos && filhos.length > 0) {
+          const faixas = filhos.map(f => f.faixa_etaria).filter(Boolean)
+          setFaixaRec(faixaMaisRestritiva(faixas))
+        }
+        return
+      }
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+        if (saved) {
+          setDuracao(saved.duracao ?? defaultConfig.duracao)
+          setAviso5min(saved.aviso5min ?? defaultConfig.aviso5min)
+          setPermiteExtensao(saved.permiteExtensao ?? defaultConfig.permiteExtensao)
+          setEncerramentoAuto(saved.encerramentoAuto ?? defaultConfig.encerramentoAuto)
+        }
+      } catch {}
+    }
+    load()
+  }, [user])
+
+  const salvar = async () => {
+    const cfg = { duracao, aviso5min, permiteExtensao, encerramentoAuto }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg))
+    if (user) {
+      const { error } = await supabase.from('users').update({ timer_config: cfg }).eq('id', user.id)
+      if (error) console.error('[Timer] Erro ao salvar timer_config no Supabase:', error.message)
+    }
     setSalvo(true)
     setTimeout(() => setSalvo(false), 2000)
   }
 
   return (
-    <div style={{background: '#f9fafb', minHeight: '100vh'}}>
-      <header className="pai-header">
-        <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-          <button onClick={() => navigate('/dashboard')} className="btn-secondary">← Voltar</button>
-          <h2 style={{fontWeight: '800', fontSize: '18px', color: '#0f0a1e'}}>⏱️ Tempo de uso</h2>
-        </div>
-      </header>
-
-      <div style={{maxWidth: '520px', margin: '0 auto', padding: '32px 24px'}}>
+    <LayoutPai>
+      <div className="pai-content" style={{ maxWidth: '580px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#0f0a1e', marginBottom: '6px' }}>⏱️ Tempo de uso</h1>
+        <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '24px' }}>Configure a duração das sessões de estudo do seu filho.</p>
 
         <div className="pai-card" style={{padding: '24px', marginBottom: '16px'}}>
           <h3 style={{fontWeight: '800', fontSize: '15px', marginBottom: '16px', color: '#0f0a1e'}}>Duração da sessão</h3>
@@ -58,6 +115,24 @@ export default function Timer() {
             ))}
           </div>
         </div>
+
+        {faixaRec && DICA_FAIXA[faixaRec] && (() => {
+          const dica = DICA_FAIXA[faixaRec]
+          const dentroDaFaixa = dica.opcaoIdeal.includes(duracao)
+          return (
+            <div className="pai-card" style={{padding: '16px 20px', marginBottom: '16px', background: '#faf5ff', border: '1px solid #ede9fe', display: 'flex', gap: '12px', alignItems: 'flex-start'}}>
+              <span style={{fontSize: '22px', flexShrink: 0}}>⏱️</span>
+              <div>
+                <p style={{fontSize: '13px', fontWeight: '700', color: '#7C3AED', marginBottom: '2px'}}>{dica.label}</p>
+                <p style={{fontSize: '13px', color: '#6b7280'}}>
+                  Recomendado: <strong style={{color: '#374151'}}>{dica.rec}</strong>
+                  {!dentroDaFaixa && <span style={{color: '#f97316', marginLeft: '6px', fontSize: '12px', fontWeight: '600'}}>⚠ fora do ideal</span>}
+                  {dentroDaFaixa && <span style={{color: '#10b981', marginLeft: '6px', fontSize: '12px', fontWeight: '600'}}>✓ dentro do ideal</span>}
+                </p>
+              </div>
+            </div>
+          )
+        })()}
 
         <div className="pai-card" style={{padding: '24px', marginBottom: '16px'}}>
           <h3 style={{fontWeight: '800', fontSize: '15px', marginBottom: '20px', color: '#0f0a1e'}}>Configurações</h3>
@@ -93,6 +168,6 @@ export default function Timer() {
           {salvo ? '✓ Configuração salva!' : 'Salvar configuração'}
         </button>
       </div>
-    </div>
+    </LayoutPai>
   )
 }

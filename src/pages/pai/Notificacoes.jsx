@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import LayoutPai from '../../components/LayoutPai'
+import { Bell } from '@phosphor-icons/react'
 import '../../styles/pai.css'
 
 const icones = {
@@ -92,25 +94,23 @@ export default function Notificacoes() {
   const marcar = (id) => setNotifs(prev => prev.map(n => n.id === id ? { ...n, lida: true } : n))
 
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
-      <header className="pai-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button onClick={() => navigate('/dashboard')} className="btn-secondary">← Voltar</button>
-          <h2 style={{ fontWeight: '800', fontSize: '18px', color: '#0f0a1e' }}>🔔 Notificações</h2>
-          {naoLidas > 0 && <span style={{ background: '#7C3AED', color: 'white', borderRadius: '999px', padding: '2px 10px', fontSize: '12px', fontWeight: '700' }}>{naoLidas}</span>}
+    <LayoutPai>
+      <div className="pai-content" style={{ maxWidth: '680px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#0f0a1e', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: 8 }}><Bell weight="fill" size={22} color="#7C3AED" /> Notificações{naoLidas > 0 ? ` (${naoLidas})` : ''}</h1>
+            <p style={{ color: '#6b7280', fontSize: '14px' }}>Acompanhe a atividade do seu filho em tempo real.</p>
+          </div>
+          {naoLidas > 0 && <button className="btn-secondary" onClick={marcarTodas}>Marcar todas como lidas</button>}
         </div>
-        {naoLidas > 0 && <button className="btn-secondary" onClick={marcarTodas}>Marcar todas como lidas</button>}
-      </header>
-
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '32px 24px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <div style={{ color: '#7C3AED', fontWeight: '700' }}>Carregando notificações...</div>
           </div>
         ) : notifs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔔</div>
-            <p style={{ color: '#9ca3af', fontWeight: '600' }}>Nenhuma notificação ainda.</p>
+            <Bell weight="fill" size={48} color="#7C3AED" style={{ marginBottom: '12px' }} />
+            <p style={{ color: '#6b7280', fontWeight: '600' }}>Nenhuma notificação ainda.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -124,7 +124,7 @@ export default function Notificacoes() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '700', fontSize: '14px', marginBottom: '3px', color: '#0f0a1e' }}>{notif.titulo}</div>
                   <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '4px', lineHeight: 1.4 }}>{notif.mensagem}</div>
-                  <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500' }}>{notif.tempo}</div>
+                  <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: '500' }}>{notif.tempo}</div>
                 </div>
                 {!notif.lida && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7C3AED', flexShrink: 0, marginTop: '4px' }} />}
               </div>
@@ -132,6 +132,6 @@ export default function Notificacoes() {
           </div>
         )}
       </div>
-    </div>
+    </LayoutPai>
   )
 }

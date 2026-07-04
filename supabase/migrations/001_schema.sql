@@ -15,6 +15,7 @@ create table if not exists public.users (
   filhos_limite         integer default 1,
   kiwify_subscriber_id  text,
   agenda_config         jsonb,
+  timer_config          jsonb,
   created_at            timestamptz default now()
 );
 

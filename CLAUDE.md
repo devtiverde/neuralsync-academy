@@ -46,7 +46,7 @@ There's also `/kids` (educational video catalog), `/ebook`, and public routes (`
 - `src/lib/supabase.js` — exports a single `supabase` client instance
 - `src/contexts/AuthContext.jsx` — provides `{ user, loading, signIn, signUp, signOut }` via `useAuth()` hook
 - `src/main.jsx` — wraps `<App>` in `<AuthProvider>`
-- **There are no route guards.** Each page component checks `if (!user) { navigate('/auth') }` inside its own `useEffect`.
+- **Route guards via `PrivateRoute` in `src/App.jsx`** — wraps all authenticated routes; redirects to `/auth` when unauthenticated. A `NotFound` component handles `*` route with auth-aware redirect (logged in → `/dashboard`, logged out → `/auth`).
 
 ### Supabase tables (inferred from code)
 

@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import GameShell from '../../components/GameShell'
+import { playSound } from '../../lib/sounds'
+import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
 
 export default function QuizAtividade() {
@@ -13,15 +16,24 @@ export default function QuizAtividade() {
   const [selecionado, setSelecionado] = useState(null)
   const [acertos, setAcertos] = useState(0)
   const [encerrado, setEncerrado] = useState(false)
+  const [animIn, setAnimIn] = useState(true)
 
-  useEffect(() => {
-    if (!atividade) navigate('/trilha')
-  }, [])
-
+  useEffect(() => { if (!atividade) navigate(-1) }, [])
   if (!atividade) return null
-  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate('/trilha')} />
+
+  const kidsLink = getKidsLink(atividade.id)
+  if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate(-1)} refazendo={state?.refazendo} kidsLink={kidsLink} />
 
   const perguntas = atividade.perguntas
+  if (!perguntas || perguntas.length === 0) return (
+    <GameShell atividade={atividade} tipo={atividade.tipo} progresso={0} onVoltar={() => navigate(-1)}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', textAlign: 'center', gap: '16px' }}>
+        <div style={{ fontSize: '64px' }}>😕</div>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '16px' }}>Esta atividade está em manutenção.<br />Tente outra da trilha!</p>
+        <button onClick={() => navigate(-1)} style={{ background: '#7C3AED', border: 'none', borderRadius: '12px', padding: '12px 28px', color: 'white', fontWeight: '700', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>← Voltar à trilha</button>
+      </div>
+    </GameShell>
+  )
   const pergunta = perguntas[atual]
   const total = perguntas.length
   const progresso = (atual / total) * 100
@@ -29,153 +41,140 @@ export default function QuizAtividade() {
   function responder(idx) {
     if (selecionado !== null) return
     setSelecionado(idx)
-    if (idx === pergunta.correta) setAcertos(a => a + 1)
+    if (idx === pergunta.correta) { setAcertos(a => a + 1); playSound('correct') }
+    else playSound('wrong')
   }
 
   function avancar() {
     if (atual + 1 < total) {
-      setAtual(a => a + 1)
-      setSelecionado(null)
+      playSound('click')
+      setAnimIn(false)
+      setTimeout(() => { setAtual(a => a + 1); setSelecionado(null); setAnimIn(true) }, 200)
     } else {
+      playSound('complete')
       setEncerrado(true)
     }
   }
 
-  function reiniciar() {
-    setAtual(0)
-    setSelecionado(null)
-    setAcertos(0)
-    setEncerrado(false)
-  }
+  function reiniciar() { setAtual(0); setSelecionado(null); setAcertos(0); setEncerrado(false); setAnimIn(true) }
 
   if (encerrado) {
     const pctFinal = Math.round((acertos / total) * 100)
     const xpGanho = Math.round((acertos / total) * atividade.xp_reward)
     const coinsGanho = Math.round((acertos / total) * atividade.coins_reward)
     const estrelas = pctFinal >= 80 ? 3 : pctFinal >= 50 ? 2 : 1
+    const msg = pctFinal >= 80 ? 'Incrível! 🎉' : pctFinal >= 50 ? 'Bom trabalho! 👍' : 'Continue tentando! 💪'
 
     return (
-      <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
-        <div className="page-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px', textAlign: 'center' }}>
-          <div style={{ fontSize: '56px', marginBottom: '8px', letterSpacing: '4px' }}>{'⭐'.repeat(estrelas)}</div>
-          <h2 style={{ fontSize: '26px', fontWeight: '900', marginBottom: '6px', color: '#0f0a1e' }}>
-            {pctFinal >= 80 ? 'Incrível! 🎉' : pctFinal >= 50 ? 'Bom trabalho! 👍' : 'Continue tentando! 💪'}
-          </h2>
-          <p style={{ color: '#6b7280', marginBottom: '28px', fontSize: '14px' }}>
-            Você acertou {acertos} de {total} perguntas
-          </p>
+      <GameShell atividade={atividade} tipo={atividade.tipo} progresso={100} onVoltar={() => navigate(-1)}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', textAlign: 'center', gap: '24px', padding: '20px 0' }}>
+          <div style={{ fontSize: '72px', letterSpacing: '6px', animation: 'ns-bounce 1.5s ease-in-out infinite' }}>{'⭐'.repeat(estrelas)}</div>
+          <div>
+            <h2 style={{ color: 'white', fontSize: '32px', fontWeight: '900', letterSpacing: '-0.5px', marginBottom: '6px' }}>{msg}</h2>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px' }}>Você acertou {acertos} de {total} perguntas</p>
+          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px', width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '12px', width: '100%', maxWidth: '420px' }}>
             {[
-              ['+' + xpGanho, 'XP ganho', '#7C3AED'],
-              ['+' + coinsGanho + ' 💰', 'Coins', '#F07A20'],
+              ['+' + xpGanho + ' XP', 'Experiência', '#7C3AED'],
+              ['+' + coinsGanho + ' 💰', 'Coins', '#f59e0b'],
               [acertos + '/' + total, 'Acertos', '#10b981'],
               [pctFinal + '%', 'Pontuação', '#3b82f6'],
-            ].map(([val, label, cor]) => (
-              <div key={label} className="card-white" style={{ padding: '16px' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: cor }}>{val}</div>
-                <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '500' }}>{label}</div>
+            ].map(([val, lbl, cor]) => (
+              <div key={lbl} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: '22px', fontWeight: '900', color: cor, marginBottom: '4px' }}>{val}</div>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '600' }}>{lbl}</div>
               </div>
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-            <button onClick={reiniciar} style={{ flex: 1, background: 'white', border: '1.5px solid #e5e7eb', borderRadius: '12px', padding: '13px', color: '#0f0a1e', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              🔁 Repetir
+          <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
+            <button onClick={reiniciar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              🔄 Repetir
             </button>
-            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo } })} className="btn-purple" style={{ flex: 1 }}>
+            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
+              style={{ flex: 1, background: 'linear-gradient(135deg,#7C3AED,#a855f7)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(124,58,237,0.4)' }}>
               Concluir ✓
             </button>
           </div>
         </div>
-      </div>
+      </GameShell>
     )
   }
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
-      <div className="page-wrapper" style={{ paddingBottom: '24px' }}>
+    <GameShell
+      atividade={atividade}
+      tipo={atividade.tipo}
+      progresso={progresso}
+      labelProgresso={`${atual + 1} / ${total}`}
+      onVoltar={() => navigate(-1)}
+    >
+      <div style={{ maxWidth: '680px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', animation: animIn ? 'ns-slide-up 0.3s ease' : 'none' }}>
 
-        <div className="header-gradient" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button onClick={() => navigate('/trilha')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '10px', width: '34px', height: '34px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>←</button>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ color: 'white', fontSize: '16px', fontWeight: '900' }}>{atividade.titulo}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px' }}>Pergunta {atual + 1} de {total}</p>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '20px', padding: '4px 10px', color: 'white', fontSize: '12px', fontWeight: '700' }}>+{atividade.xp_reward} XP</div>
+        {/* Question card */}
+        <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '20px', padding: '32px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 40px rgba(0,0,0,0.3)' }}>
+          <div style={{ fontSize: '52px', marginBottom: '18px', lineHeight: 1 }}>{atividade.emoji}</div>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Pergunta {atual + 1} de {total}</div>
+          <p style={{ color: 'white', fontSize: '20px', fontWeight: '700', lineHeight: 1.5, margin: 0 }}>{pergunta.pergunta}</p>
         </div>
 
-        <div style={{ background: '#d1d5db', height: '5px' }}>
-          <div style={{ background: 'linear-gradient(90deg, #7C3AED, #a855f7)', height: '100%', width: progresso + '%', transition: 'width 0.4s ease', borderRadius: '0 4px 4px 0' }} />
-        </div>
-
-        <div style={{ padding: '20px' }}>
-          <div className="card-white" style={{ padding: '28px', marginBottom: '20px', textAlign: 'center', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontSize: '42px', marginBottom: '14px' }}>{atividade.emoji}</div>
-            <p style={{ fontSize: '17px', fontWeight: '700', color: '#0f0a1e', lineHeight: 1.45 }}>{pergunta.pergunta}</p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {pergunta.opcoes.map((op, idx) => {
-              let bg = 'white', border = '1.5px solid #e5e7eb', color = '#0f0a1e', scale = 'scale(1)'
-              if (selecionado !== null) {
-                if (idx === pergunta.correta) { bg = '#f0fdf4'; border = '2px solid #10b981'; color = '#065f46' }
-                else if (idx === selecionado && idx !== pergunta.correta) { bg = '#fef2f2'; border = '2px solid #ef4444'; color = '#991b1b' }
-                else { bg = '#f9fafb'; color = '#9ca3af' }
-              }
-              return (
-                <button key={idx} onClick={() => responder(idx)} style={{
-                  background: bg, border, borderRadius: '14px', padding: '15px 16px',
-                  color, cursor: selecionado !== null ? 'default' : 'pointer',
-                  fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif',
-                  textAlign: 'left', transition: 'all 0.2s ease',
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  transform: scale,
+        {/* Options */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {pergunta.opcoes.map((op, idx) => {
+            let cls = 'quiz-option'
+            if (selecionado !== null) {
+              if (idx === pergunta.correta) cls += ' correct'
+              else if (idx === selecionado) cls += ' wrong'
+              else cls += ' dimmed'
+            }
+            return (
+              <button key={idx} className={cls} onClick={() => responder(idx)} disabled={selecionado !== null}>
+                <span style={{
+                  background: selecionado === null ? 'rgba(255,255,255,0.1)' : 'transparent',
+                  color: selecionado === null ? 'rgba(255,255,255,0.7)' : 'inherit',
+                  borderRadius: '8px', padding: '4px 10px', fontSize: '13px',
+                  fontWeight: '900', minWidth: '28px', textAlign: 'center', flexShrink: 0,
                 }}>
-                  <span style={{
-                    background: selecionado !== null ? 'transparent' : '#f3f0ff',
-                    color: selecionado !== null ? 'inherit' : '#7C3AED',
-                    borderRadius: '8px', padding: '3px 8px', fontSize: '12px',
-                    fontWeight: '800', minWidth: '22px', textAlign: 'center', flexShrink: 0,
-                  }}>
-                    {['A', 'B', 'C', 'D'][idx]}
-                  </span>
-                  {op}
-                  {selecionado !== null && idx === pergunta.correta && <span style={{ marginLeft: 'auto' }}>✅</span>}
-                  {selecionado !== null && idx === selecionado && idx !== pergunta.correta && <span style={{ marginLeft: 'auto' }}>❌</span>}
-                </button>
-              )
-            })}
-          </div>
-
-          {selecionado !== null && (
-            <div style={{
-              marginTop: '16px', padding: '14px 16px', borderRadius: '14px',
-              background: selecionado === pergunta.correta ? '#f0fdf4' : '#fef2f2',
-              border: '1.5px solid ' + (selecionado === pergunta.correta ? '#10b981' : '#ef4444'),
-            }}>
-              <div style={{ fontSize: '14px', fontWeight: '700', color: selecionado === pergunta.correta ? '#065f46' : '#991b1b', marginBottom: pergunta.fato ? '8px' : '12px' }}>
-                {selecionado === pergunta.correta
-                  ? '✅ Correto! Continue assim!'
-                  : '❌ Resposta certa: ' + pergunta.opcoes[pergunta.correta]}
-              </div>
-              {pergunta.fato && (
-                <div style={{ fontSize: '12px', color: '#374151', lineHeight: 1.5, background: 'rgba(0,0,0,0.04)', borderRadius: '8px', padding: '8px 10px', marginBottom: '12px' }}>
-                  💡 {pergunta.fato}
-                </div>
-              )}
-              <button onClick={avancar} style={{
-                width: '100%', padding: '11px', borderRadius: '10px', border: 'none',
-                background: selecionado === pergunta.correta ? '#10b981' : '#7C3AED',
-                color: 'white', fontWeight: '800', fontSize: '14px', cursor: 'pointer',
-                fontFamily: 'Plus Jakarta Sans, sans-serif',
-              }}>
-                {atual + 1 < total ? 'Próxima →' : 'Ver resultado →'}
+                  {['A','B','C','D'][idx]}
+                </span>
+                <span style={{ flex: 1 }}>{op}</span>
+                {selecionado !== null && idx === pergunta.correta && <span>✅</span>}
+                {selecionado !== null && idx === selecionado && idx !== pergunta.correta && <span>❌</span>}
               </button>
-            </div>
-          )}
+            )
+          })}
         </div>
+
+        {/* Feedback */}
+        {selecionado !== null && (
+          <div style={{
+            borderRadius: '16px', padding: '18px 20px',
+            background: selecionado === pergunta.correta ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)',
+            border: '1.5px solid ' + (selecionado === pergunta.correta ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'),
+            animation: 'ns-slide-up 0.25s ease',
+          }}>
+            <div style={{ fontWeight: '800', fontSize: '15px', color: selecionado === pergunta.correta ? '#6ee7b7' : '#fca5a5', marginBottom: pergunta.fato ? '10px' : '14px' }}>
+              {selecionado === pergunta.correta ? '✅ Correto! Muito bem!' : `❌ A resposta certa era: ${pergunta.opcoes[pergunta.correta]}`}
+            </div>
+            {pergunta.fato && (
+              <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', lineHeight: 1.6, background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '10px 14px', marginBottom: '14px' }}>
+                💡 {pergunta.fato}
+              </div>
+            )}
+            <button onClick={avancar} style={{
+              width: '100%', padding: '13px', borderRadius: '12px', border: 'none',
+              background: selecionado === pergunta.correta ? '#10b981' : '#7C3AED',
+              color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              boxShadow: selecionado === pergunta.correta ? '0 6px 20px rgba(16,185,129,0.4)' : '0 6px 20px rgba(124,58,237,0.4)',
+            }}>
+              {atual + 1 < total ? 'Próxima pergunta →' : 'Ver resultado →'}
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </GameShell>
   )
 }
+

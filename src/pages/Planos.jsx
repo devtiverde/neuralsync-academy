@@ -1,401 +1,396 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Brain } from '@phosphor-icons/react'
 
 const kiwifyLinks = {
-  starter: {
-    mensal: 'https://pay.kiwify.com.br/a6qaMFN',
-    anual:  'https://pay.kiwify.com.br/JXQgU9V',
-  },
-  familia: {
-    mensal: 'https://pay.kiwify.com.br/lRk8jxI',
-    anual:  'https://pay.kiwify.com.br/6fGqaVh',
-  },
-  premium: {
-    mensal: 'https://pay.kiwify.com.br/CapcmAU',
-    anual:  'https://pay.kiwify.com.br/4abmLbG',
-  },
+  starter: { mensal: 'https://pay.kiwify.com.br/a6qaMFN', anual: 'https://pay.kiwify.com.br/JXQgU9V' },
+  familia: { mensal: 'https://pay.kiwify.com.br/lRk8jxI', anual: 'https://pay.kiwify.com.br/6fGqaVh' },
+  premium: { mensal: 'https://pay.kiwify.com.br/CapcmAU', anual: 'https://pay.kiwify.com.br/4abmLbG' },
 }
 
 const precos = {
-  starter: { mensal: 29, anual: 19 },
-  familia: { mensal: 47, anual: 32 },
-  premium: { mensal: 79, anual: 54 },
+  starter: { mensal: 29,  anual: 19 },
+  familia: { mensal: 47,  anual: 32 },
+  premium: { mensal: 79,  anual: 54 },
 }
 
-const planosList = [
+const FEATURES = [
+  'Trilha de atividades semanal',
+  'NeuralSync Kids — vídeos educativos',
+  'Timer e controle de uso',
+  'Agenda semanal',
+  'Relatório básico mensal',
+  'Loja de NeuralCoins',
+  'Relatório semanal detalhado',
+  'Ebook A Tela Certa + bônus',
+  'Ranking entre famílias',
+  'Relatório Cognitivo Premium PDF',
+  'Suporte prioritário',
+  'NeuralAI + Quiz IA',
+]
+
+const planos = [
   {
     id: 'starter',
     nome: 'Starter',
-    emoji: '🌱',
-    desc: 'Ideal para começar',
-    cor: '#10b981',
-    destaque: false,
     filhos: '1 filho',
-    beneficios: [
-      { label: 'Trilha de atividades semanal', ok: true },
-      { label: 'NeuralSync Kids — vídeos educativos', ok: true },
-      { label: 'Timer e controle de uso', ok: true },
-      { label: 'Agenda semanal', ok: true },
-      { label: 'Relatório básico mensal', ok: true },
-      { label: 'Loja de NeuralCoins', ok: false },
-      { label: 'Relatório semanal detalhado', ok: false },
-      { label: 'Ebook A Tela Certa + bônus', ok: false },
-      { label: 'Ranking entre famílias', ok: false },
-      { label: 'Relatório Cognitivo Premium PDF', ok: false },
-      { label: 'Suporte prioritário', ok: false },
-    ]
+    desc: 'Para começar com o pé direito',
+    ok: [true, true, true, true, true, false, false, false, false, false, false, false],
+    border: '1.5px solid #e5e7eb',
+    bg: 'white',
+    headerBg: '#f9fafb',
+    badge: null,
+    badgeBg: null,
+    ctaVariant: 'secondary',
+    ctaLabel: 'Começar grátis',
   },
   {
     id: 'familia',
     nome: 'Família',
-    emoji: '👨‍👧‍👦',
-    desc: 'O mais popular',
-    cor: '#7C3AED',
-    destaque: true,
     filhos: 'Até 3 filhos',
-    beneficios: [
-      { label: 'Trilha de atividades semanal', ok: true },
-      { label: 'NeuralSync Kids — vídeos educativos', ok: true },
-      { label: 'Timer e controle de uso', ok: true },
-      { label: 'Agenda semanal', ok: true },
-      { label: 'Relatório básico mensal', ok: true },
-      { label: 'Loja de NeuralCoins', ok: true },
-      { label: 'Relatório semanal detalhado', ok: true },
-      { label: 'Ebook A Tela Certa + bônus', ok: true },
-      { label: 'Ranking entre famílias', ok: true },
-      { label: 'Relatório Cognitivo Premium PDF', ok: false },
-      { label: 'Suporte prioritário', ok: false },
-    ]
+    desc: 'O preferido das famílias brasileiras',
+    ok: [true, true, true, true, true, true, true, true, true, false, false, false],
+    border: '2px solid #7C3AED',
+    bg: 'white',
+    headerBg: '#faf5ff',
+    badge: 'MAIS POPULAR',
+    badgeBg: '#7C3AED',
+    badgeCor: 'white',
+    ctaVariant: 'violet',
+    ctaLabel: 'Assinar Família',
   },
   {
     id: 'premium',
     nome: 'Premium',
-    emoji: '🚀',
-    desc: 'Experiência completa',
-    cor: '#F07A20',
-    destaque: false,
     filhos: 'Filhos ilimitados',
-    beneficios: [
-      { label: 'Trilha de atividades semanal', ok: true },
-      { label: 'NeuralSync Kids — vídeos educativos', ok: true },
-      { label: 'Timer e controle de uso', ok: true },
-      { label: 'Agenda semanal', ok: true },
-      { label: 'Relatório básico mensal', ok: true },
-      { label: 'Loja de NeuralCoins', ok: true },
-      { label: 'Relatório semanal detalhado', ok: true },
-      { label: 'Ebook A Tela Certa + bônus', ok: true },
-      { label: 'Ranking entre famílias', ok: true },
-      { label: 'Relatório Cognitivo Premium PDF', ok: true },
-      { label: 'Suporte prioritário', ok: true },
-    ]
+    desc: 'Experiência completa com IA',
+    ok: [true, true, true, true, true, true, true, true, true, true, true, true],
+    border: '2px solid transparent',
+    borderGrad: true,
+    bg: 'white',
+    headerBg: '#fff7ed',
+    badge: 'COMPLETO',
+    badgeBg: 'linear-gradient(135deg, #f59e0b, #f97316)',
+    badgeCor: 'white',
+    ctaVariant: 'orange',
+    ctaLabel: 'Assinar Premium',
   },
 ]
 
-const comparacao = [
-  { feature: 'Número de filhos', starter: '1', familia: 'Até 3', premium: 'Ilimitados' },
-  { feature: 'Trilha semanal personalizada', starter: '✓', familia: '✓', premium: '✓' },
-  { feature: 'NeuralSync Kids', starter: '✓', familia: '✓', premium: '✓' },
-  { feature: 'Timer e agenda', starter: '✓', familia: '✓', premium: '✓' },
-  { feature: 'Relatório básico mensal', starter: '✓', familia: '✓', premium: '✓' },
-  { feature: 'Loja de NeuralCoins', starter: '—', familia: '✓', premium: '✓' },
-  { feature: 'Relatório semanal detalhado', starter: '—', familia: '✓', premium: '✓' },
-  { feature: 'Ebook A Tela Certa + bônus', starter: '—', familia: '✓', premium: '✓' },
-  { feature: 'Ranking entre famílias', starter: '—', familia: '✓', premium: '✓' },
-  { feature: 'Relatório Cognitivo Premium PDF', starter: '—', familia: '—', premium: '✓' },
-  { feature: 'Suporte prioritário', starter: '—', familia: '—', premium: '✓' },
-]
-
 const faq = [
-  ['Posso cancelar a qualquer momento?', 'Sim! Não há fidelidade. Você pode cancelar quando quiser diretamente pelo painel, sem burocracia.'],
-  ['A garantia de 7 dias funciona como?', 'Se em 7 dias você não ficar satisfeito, devolvemos 100% do valor pago. Sem perguntas.'],
-  ['Posso mudar de plano depois?', 'Sim, você pode fazer upgrade ou downgrade a qualquer momento. A diferença é cobrada proporcionalmente.'],
-  ['Como funciona o plano anual?', 'Você paga 12 meses de uma vez com 35% de desconto em relação ao plano mensal.'],
-  ['O que é o Relatório Cognitivo Premium?', 'Um relatório em PDF gerado automaticamente com análise completa das 8 habilidades cognitivas do seu filho, comparativo com mês anterior, recomendações personalizadas baseadas em neurociência e plano de ação para o mês seguinte. Exclusivo do plano Premium.'],
+  ['Posso cancelar a qualquer momento?', 'Sim. Sem fidelidade. Cancele quando quiser diretamente pelo painel, sem burocracia.'],
+  ['Como funciona a garantia de 7 dias?', 'Se em 7 dias você não ficar satisfeito, devolvemos 100% do valor pago. Sem perguntas.'],
+  ['Posso mudar de plano depois?', 'Sim, upgrade ou downgrade a qualquer momento. A diferença é cobrada proporcionalmente.'],
+  ['Como funciona o plano anual?', 'Você paga 12 meses de uma vez com 35% de desconto em relação ao plano mensal — equivale a 2 meses grátis.'],
+  ['O que é o Relatório Cognitivo Premium?', 'Relatório PDF com análise das 8 habilidades cognitivas do seu filho, comparativo mensal, recomendações de neurociência e plano de ação. Exclusivo do Premium.'],
 ]
 
 export default function Planos() {
   const navigate = useNavigate()
   const [periodo, setPeriodo] = useState('mensal')
-
-  useEffect(() => {
-    const link = document.createElement('link')
-    link.href = 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap'
-    link.rel = 'stylesheet'
-    document.head.appendChild(link)
-    const style = document.createElement('style')
-    style.textContent = '* { font-family: "Plus Jakarta Sans", sans-serif; box-sizing: border-box; }'
-    document.head.appendChild(style)
-  }, [])
+  const [faqAberto, setFaqAberto] = useState(null)
 
   return (
-    <div style={{background:'#f9fafb',minHeight:'100vh',color:'#0f0a1e'}}>
+    <div style={{ background: '#f8f7ff', minHeight: '100vh', color: '#1E1B4B', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
 
-      {/* HEADER */}
-      <header style={{background:'white',borderBottom:'1px solid #f3f4f6',padding:'16px 40px',display:'flex',justifyContent:'space-between',alignItems:'center',position:'sticky',top:0,zIndex:50,boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
-        <div onClick={() => navigate('/')} style={{display:'flex',alignItems:'center',gap:'10px',cursor:'pointer'}}>
-          <div style={{width:'34px',height:'34px',borderRadius:'10px',background:'linear-gradient(135deg,#7C3AED,#a78bfa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px'}}>🧠</div>
-          <span style={{fontWeight:'800',fontSize:'18px'}}>
-            <span style={{color:'#0f0a1e'}}>NeuralSync </span>
-            <span style={{color:'#7C3AED'}}>Academy</span>
+      {/* ── HEADER ──────────────────────────────────── */}
+      <header style={{ background: 'white', borderBottom: '1px solid #ede9fe', padding: '0 clamp(16px, 4vw, 40px)', height: 64, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 1px 8px rgba(124,58,237,0.06)', gap: 8 }}>
+        <div onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Brain weight="fill" size={20} color="white" /></div>
+          <span style={{ fontWeight: 900, fontSize: 17 }}>
+            <span style={{ color: '#1E1B4B' }}>NeuralSync </span>
+            <span style={{ color: '#7C3AED' }}>Academy</span>
           </span>
         </div>
-        <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
-          <button onClick={() => navigate('/auth')} style={{background:'none',border:'none',color:'#6b7280',cursor:'pointer',fontWeight:'600',fontSize:'14px'}}>Entrar</button>
-          <button onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'999px',padding:'10px 22px',color:'white',cursor:'pointer',fontSize:'14px',fontWeight:'700',boxShadow:'0 4px 14px rgba(124,58,237,0.3)'}}>Começar grátis</button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button onClick={() => navigate('/auth')} style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontWeight: 600, fontSize: 14, fontFamily: 'inherit' }}>Entrar</button>
+          <button
+            onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')}
+            style={{ background: '#7C3AED', border: 'none', borderRadius: 999, padding: '10px 22px', color: 'white', cursor: 'pointer', fontSize: 14, fontWeight: 700, boxShadow: '0 4px 14px rgba(124,58,237,0.3)', fontFamily: 'inherit' }}
+          >
+            Começar agora →
+          </button>
         </div>
       </header>
 
-      {/* HERO */}
-      <section style={{textAlign:'center',padding:'72px 24px 56px',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 50%,#e0f2fe 100%)'}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:'999px',padding:'6px 14px',fontSize:'13px',color:'#c2410c',marginBottom:'20px',fontWeight:'700'}}>
-          🔥 Preço de Lançamento Antecipado — por tempo limitado
+      {/* ── HERO ─────────────────────────────────────── */}
+      <section style={{ textAlign: 'center', padding: '80px 24px 40px', background: 'linear-gradient(160deg, #faf5ff 0%, #ede9fe 60%, #e0f2fe 100%)' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 999, padding: '6px 16px', fontSize: 13, color: '#c2410c', marginBottom: 24, fontWeight: 700 }}>
+          🔥 Preço de Lançamento — por tempo limitado
         </div>
-        <h1 style={{fontSize:'48px',fontWeight:'900',letterSpacing:'-2px',marginBottom:'14px',lineHeight:'1.05'}}>
-          Invista no futuro<br /><span style={{color:'#7C3AED'}}>do seu filho</span>
+
+        <h1 style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-2px', marginBottom: 16, lineHeight: 1.05, color: '#1E1B4B' }}>
+          Cada minuto de tela<br />
+          <span style={{ color: '#7C3AED' }}>pode virar inteligência</span>
         </h1>
-        <p style={{color:'#6b7280',fontSize:'16px',marginBottom:'32px',maxWidth:'440px',margin:'0 auto 32px',lineHeight:'1.6'}}>
-          Menos que uma pizza por mês. Cancele quando quiser. Garantia de 7 dias.
+        <p style={{ color: '#6b7280', fontSize: 17, marginBottom: 14, maxWidth: 500, margin: '0 auto 14px', lineHeight: 1.7 }}>
+          Plataforma com neurociência aplicada que transforma o tempo de tela em desenvolvimento cognitivo real.
+        </p>
+        <p style={{ fontSize: 14, color: '#9ca3af', marginBottom: 40 }}>
+          ✓ 7 dias de garantia &nbsp;·&nbsp; ✓ Cancele quando quiser &nbsp;·&nbsp; ✓ Sem fidelidade
         </p>
 
-        {/* TOGGLE */}
-        <div style={{marginBottom:'8px'}}>
-          <div style={{display:'inline-flex',background:'white',borderRadius:'14px',padding:'4px',border:'2px solid #7C3AED',boxShadow:'0 4px 16px rgba(124,58,237,0.2)'}}>
-            {[['mensal','Mensal'],['anual','Anual — Economize 35%']].map(([id,label]) => (
-              <button key={id} onClick={() => setPeriodo(id)} style={{
-                padding:'12px 28px',borderRadius:'10px',border:'none',cursor:'pointer',
-                fontWeight:'800',fontSize:'14px',transition:'all 0.2s',
-                background: periodo === id ? '#7C3AED' : 'transparent',
-                color: periodo === id ? 'white' : '#6b7280',
-                display:'flex',alignItems:'center',gap:'8px'
-              }}>
-                {label}
-                {id === 'anual' && periodo === 'anual' && (
-                  <span style={{background:'#d1fae5',color:'#065f46',borderRadius:'999px',padding:'2px 8px',fontSize:'11px',fontWeight:'700'}}>✓ Ativo</span>
-                )}
-              </button>
-            ))}
-          </div>
+        {/* Toggle mensal/anual */}
+        <div style={{ display: 'inline-flex', background: 'white', borderRadius: 14, padding: 4, border: '2px solid #7C3AED', boxShadow: '0 4px 16px rgba(124,58,237,0.15)', marginBottom: 8 }}>
+          {[['mensal', 'Mensal'], ['anual', 'Anual — Economize 35%']].map(([id, label]) => (
+            <button key={id} onClick={() => setPeriodo(id)} style={{
+              padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer',
+              fontWeight: 800, fontSize: 14, transition: 'all 0.2s', fontFamily: 'inherit',
+              background: periodo === id ? '#7C3AED' : 'transparent',
+              color: periodo === id ? 'white' : '#6b7280',
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              {label}
+              {id === 'anual' && periodo === 'anual' && (
+                <span style={{ background: '#d1fae5', color: '#065f46', borderRadius: 999, padding: '2px 8px', fontSize: 11, fontWeight: 700 }}>✓ Ativo</span>
+              )}
+            </button>
+          ))}
         </div>
-        <p style={{color:'#9ca3af',fontSize:'13px',marginTop:'8px'}}>
+        <p style={{ color: '#9ca3af', fontSize: 13, marginTop: 8 }}>
           {periodo === 'mensal' ? 'Cobrado mensalmente • Cancele quando quiser' : 'Cobrado anualmente • Equivale a 2 meses grátis'}
         </p>
       </section>
 
-      {/* CARDS */}
-      <section style={{padding:'0 24px 72px',maxWidth:'1020px',margin:'-24px auto 0'}}>
-        <div style={{textAlign:'center',marginBottom:'20px'}}>
-          <span style={{
-            display:'inline-block',
-            background: periodo === 'mensal' ? '#ede9fe' : '#d1fae5',
-            color: periodo === 'mensal' ? '#6d28d9' : '#065f46',
-            borderRadius:'999px',padding:'6px 20px',
-            fontSize:'14px',fontWeight:'800',
-          }}>
-            {periodo === 'mensal' ? '📅 Cobrança mensal — cancele quando quiser' : '🎉 Cobrança anual — 2 meses grátis incluídos'}
-          </span>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'20px',alignItems:'start'}}>
-          {planosList.map(plano => (
-            <div key={plano.id} style={{
-              background: plano.destaque ? 'linear-gradient(135deg,#7C3AED,#6d28d9)' : 'white',
-              borderRadius:'24px',padding:'28px',
-              border: plano.destaque ? 'none' : '1.5px solid #f3f4f6',
-              boxShadow: plano.destaque ? '0 20px 60px rgba(124,58,237,0.3)' : '0 4px 16px rgba(0,0,0,0.06)',
-              position:'relative',
-              marginTop: plano.destaque ? '-16px' : '0'
-            }}>
-              {plano.destaque && (
-                <div style={{position:'absolute',top:'-14px',left:'50%',transform:'translateX(-50%)',background:'linear-gradient(135deg,#F07A20,#ea6500)',borderRadius:'999px',padding:'5px 18px',fontSize:'12px',fontWeight:'800',color:'white',whiteSpace:'nowrap',boxShadow:'0 4px 12px rgba(240,122,32,0.4)'}}>
-                  ⭐ MAIS POPULAR
-                </div>
-              )}
+      {/* ── PLANOS CARDS ────────────────────────────── */}
+      <section style={{ padding: '0 24px 80px', maxWidth: 1060, margin: '-20px auto 0' }}>
+        <div className="planos-pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, alignItems: 'start' }}>
+          {planos.map((p, idx) => {
+            const preco = precos[p.id][periodo]
+            const wrapStyle = {
+              background: p.bg,
+              borderRadius: 24,
+              overflow: 'hidden',
+              position: 'relative',
+              marginTop: idx === 1 ? -12 : 0,
+              // gradient border for premium via box-shadow hack
+              ...(p.borderGrad
+                ? { boxShadow: '0 0 0 2px transparent, 0 20px 48px rgba(249,115,22,0.18)', background: 'white', outline: '2px solid transparent' }
+                : { border: p.border, boxShadow: idx === 1 ? '0 16px 48px rgba(124,58,237,0.18)' : '0 4px 16px rgba(0,0,0,0.06)' }),
+            }
 
-              <div style={{marginBottom:'20px'}}>
-                <div style={{fontSize:'28px',marginBottom:'8px'}}>{plano.emoji}</div>
-                <h3 style={{fontSize:'20px',fontWeight:'900',marginBottom:'2px',color: plano.destaque ? 'white' : '#0f0a1e'}}>{plano.nome}</h3>
-                <p style={{fontSize:'12px',color: plano.destaque ? 'rgba(255,255,255,0.6)' : '#9ca3af',marginBottom:'8px'}}>{plano.desc}</p>
-                <div style={{
-                  display:'inline-flex',alignItems:'center',gap:'4px',
-                  background: plano.destaque ? 'rgba(255,255,255,0.15)' : plano.cor+'18',
-                  borderRadius:'999px',padding:'4px 10px',
-                  fontSize:'12px',fontWeight:'700',
-                  color: plano.destaque ? 'white' : plano.cor
-                }}>
-                  👤 {plano.filhos}
-                </div>
-              </div>
-
-              <div style={{marginBottom:'20px'}}>
-                <div style={{display:'flex',alignItems:'flex-end',gap:'2px',marginBottom:'4px'}}>
-                  <span style={{fontSize:'13px',color: plano.destaque ? 'rgba(255,255,255,0.6)' : '#9ca3af',fontWeight:'600',marginBottom:'6px'}}>R$</span>
-                  <span style={{fontSize:'46px',fontWeight:'900',letterSpacing:'-2px',color: plano.destaque ? 'white' : '#0f0a1e',lineHeight:'1'}}>
-                    {precos[plano.id][periodo]}
-                  </span>
-                  <span style={{fontSize:'13px',color: plano.destaque ? 'rgba(255,255,255,0.6)' : '#9ca3af',fontWeight:'600',marginBottom:'6px'}}>/mês</span>
-                </div>
-                {periodo === 'anual' && (
-                  <div style={{fontSize:'12px',color: plano.destaque ? 'rgba(255,255,255,0.5)' : '#9ca3af'}}>
-                    R$ {precos[plano.id][periodo] * 12}/ano — cobrado anualmente
+            // Premium gradient border via wrapper
+            const inner = (
+              <div style={{ background: p.bg, borderRadius: p.borderGrad ? 22 : 0, overflow: 'hidden', height: '100%' }}>
+                {/* Header */}
+                <div style={{ background: p.headerBg, padding: '28px 28px 20px', borderBottom: '1px solid #f3f4f6', position: 'relative' }}>
+                  {p.badge && (
+                    <div style={{ position: 'absolute', top: -1, right: 20, background: p.badgeBg, color: p.badgeCor, fontSize: 10, fontWeight: 800, padding: '5px 14px', borderRadius: '0 0 10px 10px', letterSpacing: '0.5px', boxShadow: idx === 2 ? '0 4px 12px rgba(249,115,22,0.35)' : '0 4px 12px rgba(124,58,237,0.25)' }}>
+                      {p.badge}
+                    </div>
+                  )}
+                  <div style={{ marginBottom: 14 }}>
+                    <h3 style={{ fontSize: 22, fontWeight: 900, color: '#1E1B4B', marginBottom: 3 }}>{p.nome}</h3>
+                    <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 10 }}>{p.desc}</p>
+                    <span style={{ background: idx === 1 ? '#ede9fe' : idx === 2 ? '#ffedd5' : '#f3f4f6', color: idx === 1 ? '#7C3AED' : idx === 2 ? '#f97316' : '#374151', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 999 }}>
+                      👤 {p.filhos}
+                    </span>
                   </div>
-                )}
-              </div>
 
-              <button onClick={() => window.open(kiwifyLinks[plano.id][periodo], '_blank')} style={{
-                width:'100%',padding:'13px',borderRadius:'12px',border:'none',
-                background: plano.destaque ? 'white' : 'linear-gradient(135deg,#7C3AED,#6d28d9)',
-                color: plano.destaque ? '#7C3AED' : 'white',
-                fontWeight:'800',fontSize:'14px',cursor:'pointer',
-                boxShadow: plano.destaque ? '0 4px 16px rgba(0,0,0,0.15)' : '0 4px 14px rgba(124,58,237,0.3)',
-                marginBottom:'20px',transition:'all 0.2s'
-              }}>
-                {periodo === 'mensal' ? `Assinar mensalmente →` : `Assinar anualmente →`}
-              </button>
-
-              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-                {plano.beneficios.map((b,i) => (
-                  <div key={i} style={{display:'flex',alignItems:'center',gap:'8px'}}>
-                    <div style={{
-                      width:'18px',height:'18px',borderRadius:'50%',flexShrink:0,
-                      display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',
-                      background: b.ok
-                        ? (plano.destaque ? 'rgba(255,255,255,0.2)' : '#f0fdf4')
-                        : (plano.destaque ? 'rgba(255,255,255,0.06)' : '#f9fafb'),
-                      color: b.ok
-                        ? (plano.destaque ? 'white' : '#10b981')
-                        : (plano.destaque ? 'rgba(255,255,255,0.25)' : '#d1d5db')
-                    }}>{b.ok ? '✓' : '—'}</div>
-                    <span style={{
-                      fontSize:'12px',
-                      color: b.ok
-                        ? (plano.destaque ? 'rgba(255,255,255,0.9)' : '#374151')
-                        : (plano.destaque ? 'rgba(255,255,255,0.3)' : '#d1d5db'),
-                      fontWeight: b.ok ? '500' : '400'
-                    }}>{b.label}</span>
+                  {/* Price */}
+                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, color: '#9ca3af', fontWeight: 600, marginBottom: 5 }}>R$</span>
+                    <span style={{ fontSize: 48, fontWeight: 900, letterSpacing: '-2px', color: '#1E1B4B', lineHeight: 1, fontFamily: '"Space Grotesk", sans-serif' }}>{preco}</span>
+                    <span style={{ fontSize: 14, color: '#9ca3af', fontWeight: 600, marginBottom: 5 }}>/mês</span>
                   </div>
-                ))}
+                  {periodo === 'anual' && (
+                    <p style={{ fontSize: 12, color: '#9ca3af' }}>R$ {preco * 12}/ano — cobrado anualmente</p>
+                  )}
+
+                  {/* CTA button */}
+                  <button
+                    onClick={() => window.open(kiwifyLinks[p.id][periodo], '_blank')}
+                    style={{
+                      width: '100%', marginTop: 18, padding: '13px', borderRadius: 12, border: 'none', fontFamily: 'inherit',
+                      fontWeight: 800, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s',
+                      ...(p.ctaVariant === 'violet'
+                        ? { background: '#7C3AED', color: 'white', boxShadow: '0 4px 14px rgba(124,58,237,0.3)' }
+                        : p.ctaVariant === 'orange'
+                        ? { background: 'linear-gradient(135deg, #f97316, #ea580c)', color: 'white', boxShadow: '0 4px 14px rgba(249,115,22,0.35)' }
+                        : { background: 'white', color: '#7C3AED', border: '1.5px solid #7C3AED' }),
+                    }}
+                    onMouseOver={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                    onMouseOut={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'none' }}
+                  >
+                    {p.ctaLabel} →
+                  </button>
+                </div>
+
+                {/* Features list */}
+                <div style={{ padding: '22px 28px 28px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 14 }}>O que está incluso</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {FEATURES.map((feat, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {p.ok[i] ? (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#d1fae5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: 11, color: '#10b981', fontWeight: 800 }}>✓</span>
+                          </div>
+                        ) : (
+                          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: 11, color: '#d1d5db' }}>—</span>
+                          </div>
+                        )}
+                        <span style={{ fontSize: 13, color: p.ok[i] ? '#374151' : '#d1d5db', fontWeight: p.ok[i] ? 500 : 400 }}>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+
+            return (
+              <div key={p.id} style={wrapStyle}>
+                {p.borderGrad ? (
+                  <div style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)', padding: 2, borderRadius: 24, boxShadow: '0 20px 48px rgba(249,115,22,0.18)' }}>
+                    {inner}
+                  </div>
+                ) : inner}
+              </div>
+            )
+          })}
         </div>
-        <p style={{textAlign:'center',color:'#9ca3af',fontSize:'13px',marginTop:'20px'}}>
-          ✓ 7 dias de garantia  •  ✓ Cancele quando quiser  •  ✓ Sem fidelidade
+
+        <p style={{ textAlign: 'center', color: '#9ca3af', fontSize: 13, marginTop: 24 }}>
+          ✓ 7 dias de garantia total &nbsp;·&nbsp; ✓ Cancele quando quiser &nbsp;·&nbsp; ✓ Sem fidelidade
         </p>
       </section>
 
-      {/* DESTAQUE RELATÓRIO PREMIUM */}
-      <section style={{padding:'0 24px 72px',maxWidth:'860px',margin:'0 auto'}}>
-        <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'24px',padding:'36px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'40px',alignItems:'center'}}>
+      {/* ── RELATÓRIO PREMIUM DESTAQUE ──────────────── */}
+      <section style={{ padding: '0 24px 80px', maxWidth: 900, margin: '0 auto' }}>
+        <div className="planos-promo-grid" style={{ background: 'linear-gradient(135deg, #7C3AED, #5b21b6)', borderRadius: 24, padding: '40px 44px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
           <div>
-            <div style={{display:'inline-flex',alignItems:'center',gap:'6px',background:'rgba(255,255,255,0.15)',borderRadius:'999px',padding:'5px 12px',fontSize:'12px',color:'white',fontWeight:'700',marginBottom:'16px'}}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.15)', borderRadius: 999, padding: '5px 14px', fontSize: 12, color: 'white', fontWeight: 700, marginBottom: 20 }}>
               ⭐ Exclusivo Premium
             </div>
-            <h3 style={{fontSize:'26px',fontWeight:'900',color:'white',marginBottom:'12px',letterSpacing:'-0.5px',lineHeight:'1.2'}}>
-              Relatório Cognitivo Premium em PDF
+            <h3 style={{ fontSize: 28, fontWeight: 800, color: 'white', marginBottom: 14, letterSpacing: '-0.5px', lineHeight: 1.25 }}>
+              Relatório Cognitivo<br />Premium em PDF
             </h3>
-            <p style={{color:'rgba(255,255,255,0.75)',fontSize:'14px',lineHeight:'1.7',marginBottom:'20px'}}>
-              Relatório completo de 2 páginas gerado automaticamente com análise das 8 habilidades cognitivas, comparativo mensal, recomendações baseadas em neurociência e plano de ação personalizado para o seu filho.
+            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, lineHeight: 1.8, marginBottom: 22 }}>
+              Análise completa gerada automaticamente com as 8 habilidades cognitivas do seu filho, comparativo mensal e plano de ação personalizado baseado em neurociência.
             </p>
-            {[
-              'Análise das 8 habilidades cognitivas',
-              'Comparativo com mês anterior',
-              'Recomendações de especialistas',
-              'Plano de ação para o próximo mês',
-              'Gerado automaticamente — sem intervenção humana'
-            ].map((item,i) => (
-              <div key={i} style={{display:'flex',alignItems:'center',gap:'8px',marginBottom:'8px',fontSize:'13px',color:'rgba(255,255,255,0.85)'}}>
-                <div style={{width:'18px',height:'18px',borderRadius:'50%',background:'rgba(255,255,255,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'white',flexShrink:0}}>✓</div>
+            {['Análise das 8 habilidades cognitivas', 'Comparativo com mês anterior', 'Recomendações de especialistas', 'Plano de ação para o próximo mês'].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, fontSize: 14, color: 'rgba(255,255,255,0.9)' }}>
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white', flexShrink: 0 }}>✓</div>
                 {item}
               </div>
             ))}
           </div>
-          <div style={{background:'white',borderRadius:'16px',padding:'24px',boxShadow:'0 8px 32px rgba(0,0,0,0.15)'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'16px'}}>
-              <div style={{fontWeight:'800',fontSize:'13px',color:'#0f0a1e'}}>Relatório — Lia</div>
-              <div style={{background:'#d1fae5',color:'#065f46',borderRadius:'999px',padding:'3px 8px',fontSize:'11px',fontWeight:'700'}}>+18% este mês</div>
+
+          {/* Mini PDF preview */}
+          <div style={{ background: 'white', borderRadius: 18, padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <div style={{ fontWeight: 800, fontSize: 13, color: '#1E1B4B' }}>Relatório — Sofia</div>
+              <div style={{ background: '#d1fae5', color: '#065f46', borderRadius: 999, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>+18% este mês</div>
             </div>
-            {[['Concentração',80,'#7C3AED'],['Lógica',75,'#10b981'],['Emocional',70,'#3b82f6'],['Memória',65,'#F07A20']].map(([label,val,cor]) => (
-              <div key={label} style={{marginBottom:'10px'}}>
-                <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'4px'}}>
-                  <span style={{color:'#374151',fontWeight:'600'}}>{label}</span>
-                  <span style={{color:cor,fontWeight:'800'}}>{val}%</span>
+            {[['Concentração', 80, '#7C3AED'], ['Lógica', 75, '#10b981'], ['Memória', 68, '#3b82f6'], ['Criatividade', 72, '#f97316']].map(([label, val, cor]) => (
+              <div key={label} style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 5 }}>
+                  <span style={{ color: '#374151', fontWeight: 600 }}>{label}</span>
+                  <span style={{ color: cor, fontWeight: 800, fontFamily: '"Space Grotesk", sans-serif' }}>{val}%</span>
                 </div>
-                <div style={{background:'#e5e7eb',borderRadius:'999px',height:'6px',overflow:'hidden'}}>
-                  <div style={{background:cor,width:val+'%',height:'100%',borderRadius:'999px'}} />
+                <div style={{ background: '#f3f4f6', borderRadius: 999, height: 7, overflow: 'hidden' }}>
+                  <div style={{ background: cor, width: val + '%', height: '100%', borderRadius: 999 }} />
                 </div>
               </div>
             ))}
-            <button onClick={() => navigate('/relatorio-pdf')} style={{width:'100%',marginTop:'12px',padding:'10px',borderRadius:'10px',border:'none',background:'linear-gradient(135deg,#7C3AED,#6d28d9)',color:'white',fontWeight:'700',fontSize:'13px',cursor:'pointer'}}>
-              Ver exemplo do relatório →
+            <button onClick={() => navigate('/relatorio-pdf')} style={{ width: '100%', marginTop: 14, padding: '10px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#7C3AED,#5b21b6)', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Ver exemplo completo →
             </button>
           </div>
         </div>
       </section>
 
-      {/* TABELA */}
-      <section style={{padding:'0 24px 72px',maxWidth:'860px',margin:'0 auto'}}>
-        <div style={{textAlign:'center',marginBottom:'40px'}}>
-          <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'2px'}}>Comparação completa</div>
-          <h2 style={{fontSize:'34px',fontWeight:'900',letterSpacing:'-1px',color:'#0f0a1e'}}>O que está incluso em cada plano</h2>
+      {/* ── TABELA COMPARATIVA ──────────────────────── */}
+      <section style={{ padding: '0 24px 80px', maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <div style={{ fontSize: 11, color: '#7C3AED', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2.5px', marginBottom: 12 }}>Comparação completa</div>
+          <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-1px', color: '#1E1B4B' }}>O que está incluso em cada plano</h2>
         </div>
-        <div style={{background:'white',borderRadius:'20px',overflow:'hidden',border:'1.5px solid #f3f4f6',boxShadow:'0 4px 16px rgba(0,0,0,0.06)'}}>
-          <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',background:'#faf5ff',borderBottom:'1.5px solid #ede9fe'}}>
-            <div style={{padding:'14px 20px',fontWeight:'700',fontSize:'13px',color:'#6b7280'}}>Funcionalidade</div>
-            {[['🌱','Starter'],['👨‍👧‍👦','Família'],['🚀','Premium']].map(([emoji,nome],i) => (
-              <div key={nome} style={{padding:'14px',textAlign:'center',fontWeight:'800',fontSize:'13px',color: i===1 ? '#7C3AED' : '#0f0a1e'}}>{emoji} {nome}</div>
-            ))}
-          </div>
-          {comparacao.map((row,i) => (
-            <div key={i} style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr 1fr',borderBottom: i < comparacao.length-1 ? '1px solid #f9fafb' : 'none',background: i%2===0 ? 'white' : '#fdfcff'}}>
-              <div style={{padding:'12px 20px',fontSize:'13px',color:'#374151',fontWeight:'500',display:'flex',alignItems:'center',gap:'6px'}}>
-                {row.feature}
-                {row.feature === 'Relatório Cognitivo Premium PDF' && (
-                  <span style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',color:'white',borderRadius:'999px',padding:'2px 6px',fontSize:'10px',fontWeight:'700'}}>NEW</span>
-                )}
-              </div>
-              {[row.starter,row.familia,row.premium].map((val,j) => (
-                <div key={j} style={{padding:'12px',textAlign:'center',fontSize:'13px',fontWeight: val==='✓'?'700':'400',color: val==='✓'?'#10b981': val==='—'?'#d1d5db': j===1?'#7C3AED':'#0f0a1e'}}>
-                  {val}
-                </div>
+        <div style={{ overflowX: 'auto', borderRadius: 20, border: '1.5px solid #ede9fe', boxShadow: '0 4px 16px rgba(124,58,237,0.06)' }}>
+          <div style={{ background: 'white', minWidth: 560 }}>
+            {/* Table header */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: '#faf5ff', borderBottom: '1.5px solid #ede9fe' }}>
+              <div style={{ padding: '16px 22px', fontWeight: 700, fontSize: 13, color: '#6b7280' }}>Funcionalidade</div>
+              {[['🌱', 'Starter', '#374151'], ['👨‍👧‍👦', 'Família', '#7C3AED'], ['🚀', 'Premium', '#f97316']].map(([emoji, nome, cor]) => (
+                <div key={nome} style={{ padding: 16, textAlign: 'center', fontWeight: 800, fontSize: 13, color: cor }}>{emoji} {nome}</div>
               ))}
             </div>
-          ))}
+
+            {FEATURES.map((feat, i) => {
+              const vals = [planos[0].ok[i], planos[1].ok[i], planos[2].ok[i]]
+              return (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: i < FEATURES.length - 1 ? '1px solid #f9fafb' : 'none', background: i % 2 === 0 ? 'white' : '#fdfcff' }}>
+                  <div style={{ padding: '13px 22px', fontSize: 13, color: '#374151', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {feat}
+                    {feat === 'NeuralAI + Quiz IA' && (
+                      <span style={{ background: 'linear-gradient(135deg,#06b6d4,#7C3AED)', color: 'white', borderRadius: 999, padding: '1px 7px', fontSize: 10, fontWeight: 700 }}>IA</span>
+                    )}
+                  </div>
+                  {vals.map((ok, j) => (
+                    <div key={j} style={{ padding: 13, textAlign: 'center' }}>
+                      {ok
+                        ? <span style={{ fontSize: 14, color: '#10b981', fontWeight: 800 }}>✓</span>
+                        : <span style={{ fontSize: 14, color: '#d1d5db' }}>—</span>}
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section style={{padding:'0 24px 72px',maxWidth:'640px',margin:'0 auto'}}>
-        <div style={{textAlign:'center',marginBottom:'40px'}}>
-          <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'2px'}}>Dúvidas</div>
-          <h2 style={{fontSize:'34px',fontWeight:'900',letterSpacing:'-1px',color:'#0f0a1e'}}>Perguntas frequentes</h2>
+      {/* ── FAQ ─────────────────────────────────────── */}
+      <section style={{ padding: '0 24px 80px', maxWidth: 680, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <div style={{ fontSize: 11, color: '#7C3AED', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2.5px', marginBottom: 12 }}>Dúvidas</div>
+          <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-1px', color: '#1E1B4B' }}>Perguntas frequentes</h2>
         </div>
-        {faq.map(([pergunta,resposta],i) => (
-          <div key={i} style={{background:'white',borderRadius:'14px',padding:'18px 20px',marginBottom:'10px',border:'1.5px solid #f3f4f6',boxShadow:'0 2px 8px rgba(0,0,0,0.04)'}}>
-            <h4 style={{fontWeight:'700',fontSize:'14px',color:'#0f0a1e',marginBottom:'6px'}}>{pergunta}</h4>
-            <p style={{color:'#6b7280',fontSize:'13px',lineHeight:'1.6'}}>{resposta}</p>
+        {faq.map(([pergunta, resposta], i) => (
+          <div key={i} style={{ background: 'white', borderRadius: 14, marginBottom: 10, border: '1.5px solid #ede9fe', boxShadow: '0 2px 8px rgba(124,58,237,0.04)', overflow: 'hidden' }}>
+            <button
+              onClick={() => setFaqAberto(faqAberto === i ? null : i)}
+              style={{ width: '100%', padding: '18px 22px', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, fontFamily: 'inherit' }}
+            >
+              <span style={{ fontWeight: 700, fontSize: 14, color: '#1E1B4B', textAlign: 'left', lineHeight: 1.4 }}>{pergunta}</span>
+              <span style={{ fontSize: 20, color: '#7C3AED', flexShrink: 0, transition: 'transform 0.2s', transform: faqAberto === i ? 'rotate(45deg)' : 'none' }}>+</span>
+            </button>
+            {faqAberto === i && (
+              <div style={{ padding: '0 22px 18px', fontSize: 14, color: '#6b7280', lineHeight: 1.7 }}>{resposta}</div>
+            )}
           </div>
         ))}
       </section>
 
-      {/* CTA */}
-      <section style={{padding:'72px 24px',textAlign:'center',background:'linear-gradient(145deg,#faf5ff,#ede9fe)'}}>
-        <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',marginBottom:'14px',lineHeight:'1.1',color:'#0f0a1e'}}>
-          Comece hoje.<br /><span style={{color:'#7C3AED'}}>7 dias de garantia.</span>
+      {/* ── CTA FINAL ───────────────────────────────── */}
+      <section style={{ padding: '80px 24px', textAlign: 'center', background: 'linear-gradient(160deg, #faf5ff, #ede9fe)' }}>
+        <h2 style={{ fontSize: 44, fontWeight: 800, letterSpacing: '-1.5px', marginBottom: 14, lineHeight: 1.1, color: '#1E1B4B' }}>
+          Comece hoje.<br />
+          <span style={{ color: '#7C3AED' }}>7 dias de garantia.</span>
         </h2>
-        <p style={{color:'#6b7280',fontSize:'16px',marginBottom:'32px'}}>7 dias de garantia em qualquer plano. Cancele quando quiser.</p>
-        <button onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')} style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',border:'none',borderRadius:'14px',padding:'16px 40px',color:'white',cursor:'pointer',fontWeight:'800',fontSize:'18px',boxShadow:'0 8px 30px rgba(124,58,237,0.4)'}}>
+        <p style={{ color: '#6b7280', fontSize: 16, marginBottom: 36 }}>Sem risco. Cancele quando quiser.</p>
+        <button
+          onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')}
+          style={{ background: 'linear-gradient(135deg,#7C3AED,#5b21b6)', border: 'none', borderRadius: 16, padding: '18px 44px', color: 'white', cursor: 'pointer', fontWeight: 800, fontSize: 18, boxShadow: '0 8px 30px rgba(124,58,237,0.35)', fontFamily: 'inherit', transition: 'all 0.2s' }}
+          onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.45)' }}
+          onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(124,58,237,0.35)' }}
+        >
           Assinar agora →
         </button>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{borderTop:'1px solid #e5e7eb',padding:'32px',textAlign:'center',background:'white'}}>
-        <div style={{fontWeight:'800',fontSize:'15px',color:'#0f0a1e',marginBottom:'6px'}}>NeuralSync Academy</div>
-        <div style={{display:'flex',justifyContent:'center',gap:'24px',marginBottom:'10px'}}>
-          {[['Home','/'],['Planos','/planos'],['Entrar','/auth']].map(([label,path]) => (
-            <a key={path} onClick={() => navigate(path)} style={{color:'#9ca3af',fontSize:'13px',cursor:'pointer',textDecoration:'none',fontWeight:'500'}}>{label}</a>
+      {/* ── FOOTER ──────────────────────────────────── */}
+      <footer style={{ borderTop: '1px solid #e5e7eb', padding: '32px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <div style={{ fontWeight: 900, fontSize: 15, color: '#1E1B4B', marginBottom: 4 }}>NeuralSync Academy</div>
+          <div style={{ color: '#9ca3af', fontSize: 13 }}>Tempo de tela que vira inteligência.</div>
+        </div>
+        <div style={{ display: 'flex', gap: 24 }}>
+          {[['Home', '/'], ['Planos', '/planos'], ['Termos', '/termos'], ['Privacidade', '/privacidade'], ['Entrar', '/auth']].map(([label, path]) => (
+            <button key={path} onClick={() => navigate(path)} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: 13, cursor: 'pointer', fontWeight: 500, fontFamily: 'inherit' }}>{label}</button>
           ))}
         </div>
-        <p style={{color:'#9ca3af',fontSize:'13px'}}>2026 NeuralSync Academy. Tempo de tela que vira inteligência.</p>
       </footer>
     </div>
   )

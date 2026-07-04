@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import LayoutCrianca from '../../components/LayoutCrianca'
+import { CoinVertical, Target } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
-
-const menu = [{"icon":"🏠","label":"Início","path":"/home-crianca"},{"icon":"🗺️","label":"Trilha","path":"/trilha"},{"icon":"🎬","label":"Kids","path":"/kids"},{"icon":"🏆","label":"Ranking","path":"/ranking"},{"icon":"🏪","label":"Loja","path":"/loja"},{"icon":"👤","label":"Perfil","path":"/perfil-crianca"}]
 
 const PROXIMOS_ALVOS = [200, 300, 400, 500, 600, 700, 900, 1200, 1800, 3000, 5000]
 
@@ -13,6 +13,8 @@ const nomeAlvo = {
   900: 'Moldura Arco-íris 🌈', 1200: 'Caderno de Missões 📓',
   1800: 'Caneca Espacial ☕', 3000: 'Camiseta NeuralSync 👕', 5000: 'Mochila NeuralSync 🎒',
 }
+
+const BRINDES_FISICOS = new Set([1200, 1800, 3000, 5000])
 
 function tempoRelativo(ts) {
   if (!ts) return ''
@@ -58,73 +60,77 @@ export default function Coins() {
   const progressoPct = proximoAlvo ? Math.round(((saldo - alvoAnterior) / (proximoAlvo - alvoAnterior)) * 100) : 100
 
   return (
-    <div style={{background: '#e5e7eb', minHeight: '100vh'}}>
-    <div className="page-wrapper" style={{paddingBottom: '90px'}}>
+    <LayoutCrianca child={child}>
+      <div className="ns-pad">
 
-      <div className="header-gradient" style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-        <button onClick={() => navigate('/home-crianca')} style={{background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: '10px', width: '34px', height: '34px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>←</button>
-        <h2 style={{color: 'white', fontSize: '18px', fontWeight: '900'}}>Carteira 💰</h2>
-      </div>
-
-      <div style={{padding: '0 16px', marginTop: '-14px'}}>
-
-        <div style={{background: 'linear-gradient(135deg, #fef3c7, #fde68a)', borderRadius: '18px', padding: '24px', textAlign: 'center', marginBottom: '12px', border: '1.5px solid #fcd34d', boxShadow: '0 4px 16px rgba(251,191,36,0.2)'}}>
-          <div style={{fontSize: '12px', color: '#92400e', fontWeight: '600', marginBottom: '6px'}}>Saldo atual</div>
-          <div style={{fontSize: '44px', fontWeight: '900', color: '#92400e', letterSpacing: '-2px'}}>💰 {saldo}</div>
-          <div style={{fontSize: '13px', color: '#78350f', fontWeight: '600'}}>NeuralCoins</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
+          <button onClick={() => navigate('/home-crianca')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '10px', width: '36px', height: '36px', color: 'white', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>←</button>
+          <h2 style={{ color: 'white', fontSize: '24px', fontWeight: '900', display: 'flex', alignItems: 'center', gap: 6 }}>Carteira <CoinVertical weight="duotone" size={20} color="#F59E0B" /></h2>
         </div>
 
-        {proximoAlvo && (
-          <div className="card-white" style={{padding: '16px', marginBottom: '12px'}}>
-            <div style={{fontSize: '12px', color: '#9ca3af', fontWeight: '500', marginBottom: '6px'}}>🎯 Próxima recompensa</div>
-            <div style={{fontWeight: '700', fontSize: '14px', color: '#0f0a1e', marginBottom: '8px'}}>{nomeAlvo[proximoAlvo]}</div>
-            <div style={{background: '#e5e7eb', borderRadius: '999px', height: '7px', overflow: 'hidden', marginBottom: '6px'}}>
-              <div style={{background: 'linear-gradient(90deg, #7C3AED, #a78bfa)', width: Math.max(progressoPct, 2) + '%', height: '100%', borderRadius: '999px', transition: 'width 0.5s'}} />
-            </div>
-            <div style={{fontSize: '12px', color: '#9ca3af', fontWeight: '500'}}>{saldo} de {proximoAlvo} coins • Faltam {proximoAlvo - saldo}</div>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+
+          <div style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.15))', borderRadius: '20px', padding: '28px', textAlign: 'center', marginBottom: '14px', border: '1.5px solid rgba(251,191,36,0.4)' }}>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: '600', marginBottom: '8px' }}>Saldo atual</div>
+            <div style={{ fontSize: '52px', fontWeight: '900', color: '#fbbf24', letterSpacing: '-2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><CoinVertical weight="duotone" size={52} color="#F59E0B" /> {saldo}</div>
+            <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>NeuralCoins</div>
           </div>
-        )}
 
-        <button className="btn-purple" style={{marginBottom: '20px'}} onClick={() => navigate('/loja')}>🏪 Ir para a Loja</button>
-
-        <h4 style={{fontWeight: '800', fontSize: '14px', marginBottom: '12px', color: '#0f0a1e'}}>Histórico</h4>
-
-        {loading ? (
-          <div style={{textAlign: 'center', padding: '24px', color: '#9ca3af', fontWeight: '600'}}>Carregando...</div>
-        ) : historico.length === 0 ? (
-          <div className="card-white" style={{padding: '24px', textAlign: 'center', color: '#9ca3af'}}>
-            <div style={{fontSize: '32px', marginBottom: '8px'}}>💰</div>
-            <div style={{fontWeight: '700'}}>Nenhuma atividade ainda</div>
-            <div style={{fontSize: '12px', marginTop: '4px'}}>Complete atividades para ganhar NeuralCoins!</div>
-          </div>
-        ) : (
-          <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-            {historico.map((item, i) => (
-              <div key={i} className="card-white" style={{padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  <div style={{width: '32px', height: '32px', borderRadius: '10px', background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px'}}>💚</div>
-                  <div>
-                    <div style={{fontWeight: '600', fontSize: '13px', color: '#0f0a1e'}}>{item.titulo}</div>
-                    <div style={{fontSize: '11px', color: '#9ca3af'}}>{item.data || tempoRelativo(item.timestamp)}</div>
-                  </div>
-                </div>
-                <div style={{fontWeight: '800', color: '#10b981', fontSize: '14px'}}>+{item.coins}</div>
+          {proximoAlvo && (
+            <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '18px', padding: '18px', marginBottom: '14px' }}>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: '500', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: 4 }}><Target weight="duotone" size={16} color="#F97316" /> Próxima recompensa</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ fontWeight: '700', fontSize: '15px', color: 'white' }}>{nomeAlvo[proximoAlvo]}</div>
+                {BRINDES_FISICOS.has(proximoAlvo) && (
+                  <div style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: '999px', padding: '2px 9px', fontSize: '10px', color: '#fbbf24', fontWeight: '700', whiteSpace: 'nowrap' }}>🎁 Brinde físico</div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '7px', overflow: 'hidden', marginBottom: '6px' }}>
+                <div style={{ background: 'linear-gradient(90deg, #7C3AED, #a78bfa)', width: Math.max(progressoPct, 2) + '%', height: '100%', borderRadius: '999px', transition: 'width 0.5s' }} />
+              </div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>{saldo} de {proximoAlvo} coins • Faltam {proximoAlvo - saldo}</div>
+            </div>
+          )}
 
-      <div className="menu-bottom">
-        {menu.map(item => (
-          <button key={item.path} className="menu-bottom-btn" onClick={() => navigate(item.path)}
-            style={{color: '#9ca3af'}}>
-            <span style={{fontSize: '20px'}}>{item.icon}</span>
-            <span>{item.label}</span>
-          </button>
-        ))}
+          <button onClick={() => navigate('/loja')} style={{
+            width: '100%', padding: '14px', borderRadius: '14px', border: 'none', marginBottom: '24px',
+            background: 'linear-gradient(135deg, #7C3AED, #6d28d9)',
+            color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
+            fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 16px rgba(124,58,237,0.35)',
+          }}>🏪 Ir para a Loja</button>
+
+          <h4 style={{ fontWeight: '800', fontSize: '15px', marginBottom: '12px', color: 'white' }}>Histórico</h4>
+
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '24px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Carregando...</div>
+          ) : historico.length === 0 ? (
+            <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '18px', padding: '32px', textAlign: 'center' }}>
+              <CoinVertical weight="duotone" size={36} color="#F59E0B" style={{ marginBottom: '10px' }} />
+              <div style={{ color: 'white', fontWeight: '700', marginBottom: '4px' }}>Nenhuma atividade ainda</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Complete atividades para ganhar NeuralCoins!</div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {historico.map((item, i) => (
+                <div key={i} style={{
+                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '14px', padding: '14px 16px',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>💚</div>
+                    <div>
+                      <div style={{ fontWeight: '600', fontSize: '14px', color: 'white' }}>{item.titulo}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{item.data || tempoRelativo(item.timestamp)}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: '800', color: '#10b981', fontSize: '15px' }}>+{item.coins}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-    </div>
+    </LayoutCrianca>
   )
 }

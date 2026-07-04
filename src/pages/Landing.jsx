@@ -43,6 +43,24 @@ export default function Landing() {
       '.nav-link{color:#555;text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s;font-family:Plus Jakarta Sans,sans-serif}',
       '.nav-link:hover{color:#7C3AED}',
       '*{font-family:Plus Jakarta Sans,sans-serif;box-sizing:border-box}',
+      '@media(max-width:768px){',
+        '.l-header{padding:12px 20px!important}',
+        '.l-nav{display:none!important}',
+        '.l-hero{padding:90px 20px 48px!important}',
+        '.l-hero-grid{display:block!important}',
+        '.l-hero-card{display:none!important}',
+        '.l-h1{font-size:40px!important;letter-spacing:-1px!important}',
+        '.l-hero-btns{flex-direction:column!important}',
+        '.l-stats{grid-template-columns:repeat(2,1fr)!important;gap:12px!important;padding:40px 20px!important}',
+        '.l-section{padding:60px 20px!important}',
+        '.l-section-alt{padding:60px 20px!important}',
+        '.l-grid3{grid-template-columns:1fr!important}',
+        '.l-grid4{grid-template-columns:repeat(2,1fr)!important}',
+        '.l-grid2{grid-template-columns:1fr!important;gap:32px!important}',
+        '.l-planos{grid-template-columns:1fr!important}',
+        '.l-panel{padding:64px 20px!important}',
+        '.l-footer{padding:32px 20px!important}',
+      '}',
     ].join(' ')
     document.head.appendChild(style)
   }, [])
@@ -50,7 +68,7 @@ export default function Landing() {
   return (
     <div style={{background:'#fff',color:'#0f0a1e',minHeight:'100vh'}}>
 
-      <header style={{position:'fixed',top:0,left:0,right:0,zIndex:50,background:'rgba(255,255,255,0.9)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'14px 48px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      <header className="l-header" style={{position:'fixed',top:0,left:0,right:0,zIndex:50,background:'rgba(255,255,255,0.9)',backdropFilter:'blur(16px)',borderBottom:'1px solid rgba(0,0,0,0.06)',padding:'14px 48px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
           <div style={{width:'34px',height:'34px',borderRadius:'10px',background:'linear-gradient(135deg,#7C3AED,#a78bfa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px'}}>🧠</div>
           <span style={{fontWeight:'800',fontSize:'18px'}}>
@@ -58,7 +76,7 @@ export default function Landing() {
             <span style={{color:'#7C3AED'}}>Academy</span>
           </span>
         </div>
-        <nav style={{display:'flex',gap:'32px',alignItems:'center'}}>
+        <nav className="l-nav" style={{display:'flex',gap:'32px',alignItems:'center'}}>
           {[['Como funciona','#como'],['Benefícios','#beneficios'],['Idades','#idades'],['Depoimentos','#depoimentos']].map(([label,href]) => (
             <a key={href} href={href} className="nav-link">{label}</a>
           ))}
@@ -68,38 +86,38 @@ export default function Landing() {
         </nav>
       </header>
 
-      <section style={{minHeight:'100vh',display:'flex',alignItems:'center',padding:'130px 80px 100px',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 30%,#e0f2fe 65%,#d1fae5 100%)'}}>
-        <div style={{maxWidth:'1200px',margin:'0 auto',display:'flex',gap:'80px',alignItems:'center',width:'100%'}}>
+      <section className="l-hero" style={{minHeight:'100vh',display:'flex',alignItems:'center',padding:'130px 80px 100px',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 30%,#e0f2fe 65%,#d1fae5 100%)'}}>
+        <div className="l-hero-grid" style={{maxWidth:'1200px',margin:'0 auto',display:'flex',gap:'80px',alignItems:'center',width:'100%'}}>
           <div style={{flex:1}} className="hero-text">
             <div style={{display:'inline-flex',alignItems:'center',gap:'8px',background:'#d1fae5',border:'1px solid #6ee7b7',borderRadius:'999px',padding:'7px 16px',fontSize:'13px',color:'#065f46',marginBottom:'32px',fontWeight:'600'}}>
               Nova era da educação infantil
             </div>
-            <h1 style={{fontSize:'72px',fontWeight:'900',lineHeight:'1.0',marginBottom:'28px',letterSpacing:'-2.5px',color:'#0f0a1e'}}>
+            <h1 className="l-h1" style={{fontSize:'72px',fontWeight:'900',lineHeight:'1.0',marginBottom:'28px',letterSpacing:'-2.5px',color:'#0f0a1e'}}>
               Tempo de tela<br />que vira<br />
               <span style={{color:'#7C3AED'}}>inteligência.</span>
             </h1>
             <p style={{fontSize:'18px',color:'#6b7280',lineHeight:'1.75',marginBottom:'40px',maxWidth:'460px'}}>
-              Atividades gamificadas que desenvolvem lógica, criatividade, comunicação e pensamento computacional para crianças de 3 a 17 anos.
+              Atividades gamificadas que desenvolvem lógica, criatividade, comunicação e pensamento computacional para crianças de 4 a 15 anos.
             </p>
-            <div style={{display:'flex',gap:'14px',marginBottom:'48px',flexWrap:'wrap'}}>
+            <div className="l-hero-btns" style={{display:'flex',gap:'14px',marginBottom:'48px',flexWrap:'wrap'}}>
               <button onClick={() => navigate('/planos')} className="btn-primary" style={{fontSize:'16px',padding:'15px 32px'}}>Começar grátis</button>
               <a href="#como" className="btn-secondary">Como funciona</a>
             </div>
             <div style={{display:'flex',gap:'28px',flexWrap:'wrap'}}>
               {[['Sem anúncios','🚫'],['Aprovado por pais','❤️'],['4.9/5 avaliação','⭐']].map(([label,icon]) => (
-                <div key={label} style={{display:'flex',alignItems:'center',gap:'6px',fontSize:'13px',color:'#9ca3af',fontWeight:'500'}}>
+                <div key={label} style={{display:'flex',alignItems:'center',gap:'6px',fontSize:'13px',color:'#6b7280',fontWeight:'500'}}>
                   <span>{icon}</span><span>{label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div style={{flex:1,display:'flex',justifyContent:'center',position:'relative',paddingTop:'40px',paddingBottom:'40px'}} className="hero-card">
+          <div style={{flex:1,display:'flex',justifyContent:'center',position:'relative',paddingTop:'40px',paddingBottom:'40px'}} className="hero-card l-hero-card">
             <div className="badge-float-1" style={{position:'absolute',top:'0px',left:'20px',zIndex:10,background:'white',borderRadius:'14px',padding:'10px 16px',boxShadow:'0 8px 32px rgba(0,0,0,0.12)',display:'flex',alignItems:'center',gap:'10px',fontSize:'13px',fontWeight:'700'}}>
               <div style={{width:'32px',height:'32px',borderRadius:'10px',background:'linear-gradient(135deg,#F07A20,#ff9500)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px'}}>🏆</div>
               <div>
                 <div style={{color:'#0f0a1e',fontSize:'13px'}}>+50 XP</div>
-                <div style={{color:'#9ca3af',fontWeight:'500',fontSize:'12px'}}>Quiz lógico</div>
+                <div style={{color:'#6b7280',fontWeight:'500',fontSize:'12px'}}>Quiz lógico</div>
               </div>
             </div>
 
@@ -116,7 +134,7 @@ export default function Landing() {
               </div>
 
               <div style={{background:'#f9fafb',borderRadius:'14px',padding:'16px',marginBottom:'14px'}}>
-                <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'#9ca3af',marginBottom:'10px',fontWeight:'500'}}>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',color:'#6b7280',marginBottom:'10px',fontWeight:'500'}}>
                   <span>XP para próximo nível</span>
                   <span style={{fontWeight:'700',color:'#0f0a1e'}}>680 / 800</span>
                 </div>
@@ -130,7 +148,7 @@ export default function Landing() {
                   <div key={label} style={{background:'#f9fafb',borderRadius:'14px',padding:'14px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'6px'}}>
                       <div style={{width:'26px',height:'26px',borderRadius:'8px',background:cor,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px'}}>{icon}</div>
-                      <span style={{fontSize:'12px',color:'#9ca3af',fontWeight:'500'}}>{label}</span>
+                      <span style={{fontSize:'12px',color:'#6b7280',fontWeight:'500'}}>{label}</span>
                     </div>
                     <div style={{fontWeight:'900',fontSize:'22px',color:'#0f0a1e'}}>{val}</div>
                   </div>
@@ -138,7 +156,7 @@ export default function Landing() {
               </div>
 
               <div style={{background:'#f9fafb',borderRadius:'14px',padding:'16px'}}>
-                <div style={{fontSize:'12px',color:'#9ca3af',marginBottom:'12px',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.5px'}}>Habilidades cognitivas</div>
+                <div style={{fontSize:'12px',color:'#6b7280',marginBottom:'12px',fontWeight:'600',textTransform:'uppercase',letterSpacing:'0.5px'}}>Habilidades cognitivas</div>
                 {[['Lógica',78,'#7C3AED'],['Criatividade',92,'#ef4444'],['Memória',64,'#3b82f6'],['Comunicação',71,'#10b981']].map(([label,val,cor]) => (
                   <div key={label} style={{marginBottom:'9px'}}>
                     <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'4px'}}>
@@ -157,7 +175,7 @@ export default function Landing() {
               <div style={{width:'32px',height:'32px',borderRadius:'10px',background:'linear-gradient(135deg,#7C3AED,#a78bfa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px'}}>🎯</div>
               <div>
                 <div style={{color:'#0f0a1e',fontSize:'13px'}}>Nova conquista!</div>
-                <div style={{color:'#9ca3af',fontWeight:'500',fontSize:'12px'}}>Pensador rápido</div>
+                <div style={{color:'#6b7280',fontWeight:'500',fontSize:'12px'}}>Pensador rápido</div>
               </div>
             </div>
           </div>
@@ -165,22 +183,22 @@ export default function Landing() {
       </section>
 
       <section style={{background:'#faf5ff',borderTop:'1px solid #ede9fe',borderBottom:'1px solid #ede9fe',padding:'52px 40px'}}>
-        <div style={{maxWidth:'900px',margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px',textAlign:'center'}}>
+        <div className="l-stats" style={{maxWidth:'900px',margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px',textAlign:'center'}}>
           {[['+50.000','Crianças ativas'],['8','Habilidades trabalhadas'],['200+','Atividades semanais'],['4.9','Avaliação dos pais']].map(([num,label]) => (
             <div key={label}>
               <div style={{fontSize:'38px',fontWeight:'900',color:'#7C3AED',marginBottom:'6px',letterSpacing:'-1px'}}>{num}</div>
-              <div style={{fontSize:'14px',color:'#9ca3af',fontWeight:'500'}}>{label}</div>
+              <div style={{fontSize:'14px',color:'#6b7280',fontWeight:'500'}}>{label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="como" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
+      <section id="como" className="l-section" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
         <div style={{textAlign:'center',marginBottom:'64px'}}>
           <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Como funciona</div>
           <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>Três passos para uma mente brilhante</h2>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
+        <div className="l-grid3" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
           {[
             ['1','Crie o perfil do seu filho','Personalize avatar, idade e nome em segundos.','👤'],
             ['2','Receba missões diárias','Atividades curtas que estimulam o cérebro de forma divertida.','🎯'],
@@ -196,13 +214,13 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="beneficios" style={{padding:'110px 40px',background:'#faf5ff'}}>
+      <section id="beneficios" className="l-section-alt" style={{padding:'110px 40px',background:'#faf5ff'}}>
         <div style={{maxWidth:'1000px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'64px'}}>
             <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Benefícios</div>
             <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>8 habilidades cognitivas em um único lugar</h2>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px'}}>
+          <div className="l-grid4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'16px'}}>
             {[
               ['🧠','Raciocínio lógico','Quebra-cabeças e desafios que treinam o pensamento estruturado.'],
               ['🎨','Criatividade','Atividades abertas que desenvolvem imaginação e originalidade.'],
@@ -223,17 +241,17 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="idades" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
+      <section id="idades" className="l-section" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
         <div style={{textAlign:'center',marginBottom:'64px'}}>
           <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Para todas as idades</div>
           <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>Conteúdo adaptado para cada fase</h2>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px'}}>
+        <div className="l-grid4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px'}}>
           {[
-            ['🌱','Exploradores','3 a 5 anos','Cores, sons, formas e primeiras conexões lógicas.','#4CAF50'],
+            ['🌱','Exploradores','4 a 5 anos','Cores, sons, formas e primeiras conexões lógicas.','#4CAF50'],
             ['🧩','Construtores','6 a 8 anos','Quebra-cabeças, sequências e introdução ao código.','#7C3AED'],
             ['🎨','Criadores','9 a 11 anos','Projetos abertos, lógica avançada e criatividade.','#F07A20'],
-            ['🚀','Inventores','12+ anos','Programação, pensamento crítico e desafios complexos.','#3b82f6']
+            ['🚀','Inventores','12 a 15 anos','Programação, IA, pensamento crítico e desafios avançados.','#3b82f6']
           ].map(([emoji,nome,idade,desc,cor]) => (
             <div key={nome} className="age-card" style={{borderTop:'3px solid '+cor}}>
               <div style={{fontSize:'44px',marginBottom:'18px'}}>{emoji}</div>
@@ -245,8 +263,8 @@ export default function Landing() {
         </div>
       </section>
 
-      <section style={{padding:'110px 40px',background:'#faf5ff'}}>
-        <div style={{maxWidth:'1000px',margin:'0 auto',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'72px',alignItems:'center'}}>
+      <section className="l-section-alt" style={{padding:'110px 40px',background:'#faf5ff'}}>
+        <div className="l-grid2" style={{maxWidth:'1000px',margin:'0 auto',display:'grid',gridTemplateColumns:'1fr 1fr',gap:'72px',alignItems:'center'}}>
           <div>
             <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Painel dos pais</div>
             <h2 style={{fontSize:'38px',fontWeight:'900',letterSpacing:'-1px',marginBottom:'20px',lineHeight:'1.15',color:'#0f0a1e'}}>Veja o cérebro do seu filho crescendo em tempo real</h2>
@@ -268,7 +286,7 @@ export default function Landing() {
                 <div key={label} style={{background:'#faf5ff',borderRadius:'14px',padding:'16px',textAlign:'center',border:'1px solid #ede9fe'}}>
                   <div style={{fontSize:'22px'}}>{icon}</div>
                   <div style={{fontWeight:'900',fontSize:'17px',marginTop:'6px',color:'#0f0a1e'}}>{val}</div>
-                  <div style={{fontSize:'11px',color:'#9ca3af',marginTop:'2px',fontWeight:'500'}}>{label}</div>
+                  <div style={{fontSize:'11px',color:'#6b7280',marginTop:'2px',fontWeight:'500'}}>{label}</div>
                 </div>
               ))}
             </div>
@@ -287,12 +305,12 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="depoimentos" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
+      <section id="depoimentos" className="l-section" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
         <div style={{textAlign:'center',marginBottom:'64px'}}>
           <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Histórias reais</div>
           <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>Pais que mudaram a relação dos filhos com a tela</h2>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
+        <div className="l-grid3" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
           {depoimentos.map(([texto,emoji,nome,cargo]) => (
             <div key={nome} className="dep-card">
               <div style={{color:'#F07A20',fontSize:'16px',marginBottom:'18px',letterSpacing:'2px'}}>★★★★★</div>
@@ -301,7 +319,7 @@ export default function Landing() {
                 <div style={{width:'46px',height:'46px',borderRadius:'14px',background:'linear-gradient(135deg,#7C3AED,#F07A20)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px'}}>{emoji}</div>
                 <div>
                   <div style={{fontWeight:'700',fontSize:'14px',color:'#0f0a1e'}}>{nome}</div>
-                  <div style={{color:'#9ca3af',fontSize:'12px',marginTop:'2px'}}>{cargo}</div>
+                  <div style={{color:'#6b7280',fontSize:'12px',marginTop:'2px'}}>{cargo}</div>
                 </div>
               </div>
             </div>
@@ -309,34 +327,35 @@ export default function Landing() {
         </div>
       </section>
 
-      <section style={{padding:'80px 40px',background:'#faf5ff'}}>
+      <section className="l-section-alt" style={{padding:'80px 40px',background:'#faf5ff'}}>
         <div style={{maxWidth:'1000px',margin:'0 auto'}}>
           <div style={{textAlign:'center',marginBottom:'40px'}}>
             <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'12px',textTransform:'uppercase',letterSpacing:'2px'}}>Planos e preços</div>
             <h2 style={{fontSize:'40px',fontWeight:'900',letterSpacing:'-1px',color:'#0f0a1e'}}>Escolha o plano ideal para sua família</h2>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'20px'}}>
+          <div className="l-planos" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'20px'}}>
             {[
-              ['🌱','Starter','R$ 19/mês','1 criança','#10b981',false],
-              ['👨‍👧‍👦','Família','R$ 32/mês','Até 3 crianças','#7C3AED',true],
-              ['🚀','Premium','R$ 54/mês','Ilimitado','#F07A20',false]
-            ].map(([emoji,nome,preco,desc,cor,destaque]) => (
+              ['🌱','Starter','R$ 29','R$ 19','1 criança','#10b981',false],
+              ['👨‍👧‍👦','Família','R$ 47','R$ 32','Até 3 crianças','#7C3AED',true],
+              ['🚀','Premium','R$ 79','R$ 54','Ilimitado','#F07A20',false]
+            ].map(([emoji,nome,precoMensal,precoAnual,desc,cor,destaque]) => (
               <div key={nome} onClick={() => navigate('/planos')} style={{background:'white',borderRadius:'20px',padding:'28px',border:destaque ? '2px solid #7C3AED' : '1.5px solid #f3f4f6',cursor:'pointer',boxShadow:destaque ? '0 8px 32px rgba(124,58,237,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',transition:'all 0.2s',textAlign:'center'}}>
                 <div style={{fontSize:'32px',marginBottom:'10px'}}>{emoji}</div>
                 <div style={{fontWeight:'900',fontSize:'18px',color:'#0f0a1e',marginBottom:'4px'}}>{nome}</div>
-                <div style={{fontWeight:'900',fontSize:'24px',color:cor,marginBottom:'4px'}}>{preco}</div>
-                <div style={{fontSize:'13px',color:'#9ca3af',marginBottom:'16px'}}>{desc}</div>
+                <div style={{fontWeight:'900',fontSize:'24px',color:cor,marginBottom:'2px'}}>{precoMensal}<span style={{fontSize:'13px',fontWeight:'600'}}>/mês</span></div>
+                <div style={{fontSize:'12px',color:'#10b981',fontWeight:'700',marginBottom:'12px'}}>ou {precoAnual}/mês no plano anual</div>
+                <div style={{fontSize:'13px',color:'#6b7280',marginBottom:'16px'}}>{desc}</div>
                 <button style={{background:destaque ? 'linear-gradient(135deg,#7C3AED,#6d28d9)' : '#f3f4f6',border:'none',borderRadius:'10px',padding:'10px 20px',color:destaque ? 'white' : '#374151',fontWeight:'700',fontSize:'13px',cursor:'pointer',width:'100%'}}>
                   Ver plano
                 </button>
               </div>
             ))}
           </div>
-          <p style={{textAlign:'center',color:'#9ca3af',fontSize:'13px',marginTop:'20px'}}>7 dias de garantia. Cancele quando quiser.</p>
+          <p style={{textAlign:'center',color:'#6b7280',fontSize:'13px',marginTop:'20px'}}>7 dias de garantia. Cancele quando quiser.</p>
         </div>
       </section>
 
-      <section style={{padding:'120px 40px',textAlign:'center',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 50%,#e0f2fe 100%)'}}>
+      <section className="l-panel" style={{padding:'120px 40px',textAlign:'center',background:'linear-gradient(145deg,#faf5ff 0%,#ede9fe 50%,#e0f2fe 100%)'}}>
         <div style={{maxWidth:'580px',margin:'0 auto'}}>
           <h2 style={{fontSize:'52px',fontWeight:'900',letterSpacing:'-2px',marginBottom:'18px',lineHeight:'1.05',color:'#0f0a1e'}}>
             Comece hoje.<br /><span style={{color:'#7C3AED'}}>7 dias de garantia.</span>
@@ -350,17 +369,17 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer style={{borderTop:'1px solid #e5e7eb',padding:'44px',textAlign:'center',background:'white'}}>
+      <footer className="l-footer" style={{borderTop:'1px solid #e5e7eb',padding:'44px',textAlign:'center',background:'white'}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',marginBottom:'10px'}}>
           <div style={{width:'28px',height:'28px',borderRadius:'8px',background:'linear-gradient(135deg,#7C3AED,#a78bfa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px'}}>🧠</div>
           <span style={{fontWeight:'800',fontSize:'15px',color:'#0f0a1e'}}>NeuralSync Academy</span>
         </div>
         <div style={{display:'flex',justifyContent:'center',gap:'24px',marginBottom:'12px'}}>
           {[['Home','/'],['Planos','/planos'],['Entrar','/auth']].map(([label,path]) => (
-            <a key={path} onClick={() => navigate(path)} style={{color:'#9ca3af',fontSize:'13px',cursor:'pointer',textDecoration:'none',fontWeight:'500'}}>{label}</a>
+            <a key={path} onClick={() => navigate(path)} style={{color:'#6b7280',fontSize:'13px',cursor:'pointer',textDecoration:'none',fontWeight:'500'}}>{label}</a>
           ))}
         </div>
-        <p style={{color:'#9ca3af',fontSize:'13px'}}>2026 NeuralSync Academy. Tempo de tela que vira inteligência.</p>
+        <p style={{color:'#6b7280',fontSize:'13px'}}>2026 NeuralSync Academy. Tempo de tela que vira inteligência.</p>
       </footer>
 
     </div>

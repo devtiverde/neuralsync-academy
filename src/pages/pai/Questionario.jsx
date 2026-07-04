@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 import PerfilCognitivoView from '../../components/PerfilCognitivoView'
+import LayoutPai from '../../components/LayoutPai'
 import '../../styles/pai.css'
 
 const perguntas = (nome) => [
@@ -113,6 +115,7 @@ const dimensoesConfig = {
 export default function Questionario() {
   const { childId } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [child, setChild] = useState(null)
   const [atual, setAtual] = useState(0)
   const [respostas, setRespostas] = useState({})
@@ -123,65 +126,54 @@ export default function Questionario() {
 
   useEffect(() => {
     if (!childId) { navigate('/dashboard'); return }
-    supabase.from('children').select('id, nome').eq('id', childId).single()
+    supabase.from('children').select('id, nome').eq('id', childId).eq('parent_id', user?.id).single()
       .then(({ data }) => { if (data) setChild(data); else navigate('/dashboard') })
-  }, [childId])
+  }, [childId, user])
 
   if (!child) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9fafb' }}>
-      <div style={{ color: '#9ca3af', fontSize: '14px' }}>Carregando...</div>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-secondary)' }}>
+      <div style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>Carregando...</div>
     </div>
   )
 
   if (resultado) return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
-      <header style={{ background: 'white', borderBottom: '1px solid #f3f4f6', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🧠</div>
-          <span style={{ fontWeight: '800', fontSize: '16px', color: '#0f0a1e' }}>Perfil de {child.nome} concluído</span>
-        </div>
-        <button onClick={() => navigate('/dashboard')} style={{ background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', border: 'none', borderRadius: '10px', padding: '9px 16px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
-          Dashboard →
-        </button>
-      </header>
-
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '28px 24px' }}>
-
-        {/* CELEBRAÇÃO */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ fontSize: '52px', marginBottom: '10px' }}>🎉</div>
-          <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#0f0a1e', marginBottom: '8px' }}>
-            Perfil concluído!
-          </h2>
-          <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: 1.6 }}>
-            Com base nas suas respostas, criamos um perfil personalizado de <strong>{child.nome}</strong>.<br />
-            Veja abaixo o detalhamento completo de cada dimensão.
-          </p>
-          {salvando && (
-            <div style={{ marginTop: '10px', fontSize: '12px', color: '#a78bfa', fontWeight: '600' }}>
-              ⏳ Salvando perfil...
-            </div>
-          )}
-          {erroSalvar && (
-            <div style={{ marginTop: '12px', background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center' }}>
-              <span style={{ fontSize: '13px', color: '#dc2626', fontWeight: '600' }}>⚠️ Não foi possível salvar o perfil no servidor.</span>
-              <button onClick={tentarSalvarNovamente} style={{ background: '#dc2626', border: 'none', borderRadius: '8px', padding: '5px 12px', color: 'white', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>
-                Tentar novamente
-              </button>
-            </div>
-          )}
+    <LayoutPai>
+      <div className="pai-content">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🧠</div>
+            <span style={{ fontWeight: '800', fontSize: '18px', color: '#0f0a1e' }}>Perfil de {child.nome} concluído</span>
+          </div>
+          <button onClick={() => navigate('/dashboard')} style={{ background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', border: 'none', borderRadius: '10px', padding: '9px 16px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+            Dashboard →
+          </button>
         </div>
 
-        <PerfilCognitivoView perfil={resultado} nome={child.nome} />
+        <div style={{ maxWidth: '560px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <div style={{ fontSize: '52px', marginBottom: '10px' }}>🎉</div>
+            <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#0f0a1e', marginBottom: '8px' }}>Perfil concluído!</h2>
+            <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: 1.6 }}>
+              Com base nas suas respostas, criamos um perfil personalizado de <strong>{child.nome}</strong>.<br />
+              Veja abaixo o detalhamento completo de cada dimensão.
+            </p>
+            {salvando && <div style={{ marginTop: '10px', fontSize: '12px', color: '#a78bfa', fontWeight: '600' }}>⏳ Salvando perfil...</div>}
+            {erroSalvar && (
+              <div style={{ marginTop: '12px', background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '10px', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center' }}>
+                <span style={{ fontSize: '13px', color: '#dc2626', fontWeight: '600' }}>⚠️ Não foi possível salvar o perfil no servidor.</span>
+                <button onClick={tentarSalvarNovamente} style={{ background: '#dc2626', border: 'none', borderRadius: '8px', padding: '5px 12px', color: 'white', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Tentar novamente</button>
+              </div>
+            )}
+          </div>
 
-        <button
-          onClick={() => navigate('/dashboard')}
-          style={{ width: '100%', padding: '15px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', marginTop: '8px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-        >
-          Ver no Dashboard →
-        </button>
+          <PerfilCognitivoView perfil={resultado} nome={child.nome} />
+
+          <button onClick={() => navigate('/dashboard')} style={{ width: '100%', padding: '15px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', marginTop: '8px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            Ver no Dashboard →
+          </button>
+        </div>
       </div>
-    </div>
+    </LayoutPai>
   )
 
   const lista = perguntas(child.nome)
@@ -190,9 +182,7 @@ export default function Questionario() {
   const progresso = ((atual) / total) * 100
   const dim = dimensoesConfig[pergunta.dimensao]
 
-  function selecionar(valor) {
-    setSelecionado(valor)
-  }
+  function selecionar(valor) { setSelecionado(valor) }
 
   function avancar() {
     if (!selecionado) return
@@ -211,136 +201,104 @@ export default function Questionario() {
   async function salvarBackground(perfil) {
     setSalvando(true)
     setErroSalvar(false)
-    const { error } = await supabase.from('children').update({
-      perfil_cognitivo: perfil
-    }).eq('id', childId)
+    const { error } = await supabase.from('children').update({ perfil_cognitivo: perfil }).eq('id', childId)
     setSalvando(false)
-    if (error) {
-      console.error('Erro ao salvar perfil cognitivo:', error.message)
-      setErroSalvar(true)
-    }
+    if (error) { console.error('Erro ao salvar perfil cognitivo:', error.message); setErroSalvar(true) }
   }
 
   async function tentarSalvarNovamente() {
     if (resultado) salvarBackground(resultado)
   }
 
-  async function pular() {
-    navigate('/dashboard')
-  }
-
   return (
-    <div style={{ background: '#f9fafb', minHeight: '100vh' }}>
-      {/* HEADER */}
-      <header style={{ background: 'white', borderBottom: '1px solid #f3f4f6', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🧠</div>
-          <span style={{ fontWeight: '800', fontSize: '16px' }}>
-            <span style={{ color: '#0f0a1e' }}>Perfil de </span>
-            <span style={{ color: '#7C3AED' }}>{child.nome}</span>
-          </span>
+    <LayoutPai>
+      <div className="pai-content">
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg,#7C3AED,#a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🧠</div>
+            <span style={{ fontWeight: '800', fontSize: '18px' }}>
+              <span style={{ color: '#0f0a1e' }}>Perfil de </span>
+              <span style={{ color: '#7C3AED' }}>{child.nome}</span>
+            </span>
+          </div>
+          <button onClick={() => navigate('/dashboard')} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>
+            Pular por agora
+          </button>
         </div>
-        <button onClick={pular} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}>
-          Pular por agora
-        </button>
-      </header>
 
-      {/* PROGRESSO */}
-      <div style={{ background: '#e5e7eb', height: '4px' }}>
-        <div style={{ background: `linear-gradient(90deg, ${dim.cor}, ${dim.cor}99)`, height: '100%', width: progresso + '%', transition: 'width 0.4s ease' }} />
-      </div>
+        {/* Barra de progresso */}
+        <div style={{ background: 'var(--color-border)', height: '4px', borderRadius: '999px', marginBottom: '32px', overflow: 'hidden' }}>
+          <div style={{ background: `linear-gradient(90deg, ${dim.cor}, ${dim.cor}99)`, height: '100%', width: progresso + '%', transition: 'width 0.4s ease', borderRadius: '999px' }} />
+        </div>
 
-      <div style={{ maxWidth: '520px', margin: '0 auto', padding: '32px 24px' }}>
+        <div style={{ maxWidth: '520px' }}>
 
-        {/* INTRO (só na primeira) */}
-        {atual === 0 && (
-          <div style={{ background: dim.bg, border: `1.5px solid ${dim.cor}30`, borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '22px' }}>💡</span>
-            <div>
-              <div style={{ fontWeight: '800', fontSize: '14px', color: dim.cor, marginBottom: '4px' }}>Perfil Cognitivo</div>
-              <div style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5 }}>
-                8 perguntas rápidas para personalizar a experiência de <strong>{child.nome}</strong>. Suas respostas tornam os relatórios e atividades muito mais precisos.
+          {atual === 0 && (
+            <div style={{ background: dim.bg, border: `1.5px solid ${dim.cor}30`, borderRadius: '16px', padding: '16px 20px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <span style={{ fontSize: '22px' }}>💡</span>
+              <div>
+                <div style={{ fontWeight: '800', fontSize: '14px', color: dim.cor, marginBottom: '4px' }}>Perfil Cognitivo</div>
+                <div style={{ fontSize: '13px', color: '#374151', lineHeight: 1.5 }}>
+                  8 perguntas rápidas para personalizar a experiência de <strong>{child.nome}</strong>. Suas respostas tornam os relatórios e atividades muito mais precisos.
+                </div>
               </div>
             </div>
+          )}
+
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: dim.bg, border: `1px solid ${dim.cor}30`, borderRadius: '999px', padding: '4px 12px', fontSize: '12px', fontWeight: '700', color: dim.cor, marginBottom: '16px' }}>
+            {pergunta.emoji} {pergunta.dimensao}
           </div>
-        )}
 
-        {/* DIMENSÃO */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: dim.bg, border: `1px solid ${dim.cor}30`, borderRadius: '999px', padding: '4px 12px', fontSize: '12px', fontWeight: '700', color: dim.cor, marginBottom: '16px' }}>
-          {pergunta.emoji} {pergunta.dimensao}
-        </div>
+          <div style={{ fontSize: '12px', color: '#9ca3af', fontWeight: '600', marginBottom: '8px' }}>Pergunta {atual + 1} de {total}</div>
 
-        {/* CONTADOR */}
-        <div style={{ fontSize: '12px', color: '#9ca3af', fontWeight: '600', marginBottom: '8px' }}>
-          Pergunta {atual + 1} de {total}
-        </div>
+          <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#0f0a1e', marginBottom: '24px', lineHeight: 1.35 }}>
+            {pergunta.texto}
+          </h2>
 
-        {/* PERGUNTA */}
-        <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#0f0a1e', marginBottom: '24px', lineHeight: 1.35 }}>
-          {pergunta.texto}
-        </h2>
-
-        {/* OPÇÕES */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-          {pergunta.opcoes.map(op => {
-            const ativo = selecionado === op.valor
-            return (
-              <button
-                key={op.valor}
-                onClick={() => selecionar(op.valor)}
-                style={{
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+            {pergunta.opcoes.map(op => {
+              const ativo = selecionado === op.valor
+              return (
+                <button key={op.valor} onClick={() => selecionar(op.valor)} style={{
                   background: ativo ? dim.bg : 'white',
                   border: `2px solid ${ativo ? dim.cor : '#e5e7eb'}`,
-                  borderRadius: '14px',
-                  padding: '15px 18px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'all 0.15s ease',
+                  borderRadius: '14px', padding: '15px 18px',
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease',
                   boxShadow: ativo ? `0 0 0 3px ${dim.cor}20` : 'none',
-                }}
-              >
-                <span style={{ fontSize: '22px', flexShrink: 0 }}>{op.emoji}</span>
-                <span style={{ fontWeight: '700', fontSize: '14px', color: ativo ? dim.cor : '#374151', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                  {op.label}
-                </span>
-                {ativo && <span style={{ marginLeft: 'auto', fontSize: '16px' }}>✓</span>}
-              </button>
-            )
-          })}
-        </div>
+                }}>
+                  <span style={{ fontSize: '22px', flexShrink: 0 }}>{op.emoji}</span>
+                  <span style={{ fontWeight: '700', fontSize: '14px', color: ativo ? dim.cor : '#374151', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                    {op.label}
+                  </span>
+                  {ativo && <span style={{ marginLeft: 'auto', fontSize: '16px' }}>✓</span>}
+                </button>
+              )
+            })}
+          </div>
 
-        {/* BOTÃO AVANÇAR */}
-        <button
-          onClick={avancar}
-          disabled={!selecionado}
-          style={{
+          <button onClick={avancar} disabled={!selecionado} style={{
             width: '100%', padding: '15px', borderRadius: '14px', border: 'none',
             background: selecionado ? `linear-gradient(135deg, ${dim.cor}, ${dim.cor}cc)` : '#e5e7eb',
             color: selecionado ? 'white' : '#9ca3af',
             fontWeight: '800', fontSize: '15px', cursor: selecionado ? 'pointer' : 'not-allowed',
-            fontFamily: 'Plus Jakarta Sans, sans-serif',
-            transition: 'all 0.2s',
-          }}
-        >
-          {atual + 1 < total ? 'Próxima →' : 'Ver meu perfil ✓'}
-        </button>
+            fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.2s',
+          }}>
+            {atual + 1 < total ? 'Próxima →' : 'Ver meu perfil ✓'}
+          </button>
 
-        {/* PONTOS DE PROGRESSO */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '20px' }}>
-          {lista.map((_, i) => (
-            <div key={i} style={{
-              width: i === atual ? '20px' : '7px',
-              height: '7px',
-              borderRadius: '999px',
-              background: i < atual ? dim.cor : i === atual ? dim.cor : '#e5e7eb',
-              transition: 'all 0.3s ease',
-            }} />
-          ))}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '20px' }}>
+            {lista.map((_, i) => (
+              <div key={i} style={{
+                width: i === atual ? '20px' : '7px', height: '7px', borderRadius: '999px',
+                background: i < atual ? dim.cor : i === atual ? dim.cor : '#e5e7eb',
+                transition: 'all 0.3s ease',
+              }} />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </LayoutPai>
   )
 }
