@@ -177,6 +177,8 @@ function AppContent() {
           <Route path="/atividade/classificar-objetos" element={<ClassificarObjetosAtividade />} />
           <Route path="/atividade/conectar-pontos"     element={<ConectarPontosAtividade />} />
           <Route path="/atividade/ingles"              element={<InglesAtividade />} />
+          <Route path="/atividade/colorir"              element={<ColorirAtividade />} />
+          <Route path="/atividade/silabas"              element={<SilabasAtividade />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
