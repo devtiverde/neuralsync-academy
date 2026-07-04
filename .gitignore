@@ -33,3 +33,5 @@ dist-ssr
 
 # Supabase local CLI state
 supabase/.temp
+
+.worktrees/
