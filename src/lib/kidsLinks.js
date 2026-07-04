@@ -426,6 +426,24 @@ const map = {
   inv_alfabeto_quimica:        'formas_cores',
   inv_alfabeto_politica:       'formas_cores',
   inv_alfabeto_medicina:       'formas_cores',
+
+  // ── COLORIR ────────────────────────────────────────
+  exp_colorir_sol:             'formas_cores',
+  exp_colorir_casa:            'formas_cores',
+  exp_colorir_flor:            'formas_cores',
+  con_colorir_peixe:           'formas_cores',
+  con_colorir_foguete:         'formas_cores',
+  con_colorir_borboleta:       'formas_cores',
+  cri_colorir_robo:            'formas_cores',
+  cri_colorir_arvore:          'formas_cores',
+  cri_colorir_carro:           'formas_cores',
+  inv_colorir_cidade:          'formas_cores',
+  inv_colorir_sistema_solar:   'formas_cores',
+  inv_colorir_ponte:           'formas_cores',
+
+  // ── SÍLABAS ────────────────────────────────────────
+  exp_silabas:                 'formas_cores',
+  con_silabas:                 'formas_cores',
 }
 
 export function getKidsLink(atividadeId) {

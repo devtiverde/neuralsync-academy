@@ -33,6 +33,8 @@ const tipoTheme = {
   cores:     { bg: 'linear-gradient(160deg,#1a0a14 0%,#3b0f2f 100%)', accent: '#D4537E', soft: '#f9a8d4' },
   alfabeto:  { bg: 'linear-gradient(160deg,#051a12 0%,#0d3320 100%)', accent: '#1D9E75', soft: '#6ee7b7' },
   ingles:    { bg: 'linear-gradient(160deg,#040e1f 0%,#0a2040 100%)', accent: '#3B82F6', soft: '#93C5FD' },
+  colorir:   { bg: 'linear-gradient(160deg,#0d1a05 0%,#1a3305 100%)', accent: '#84CC16', soft: '#bef264' },
+  silabas:   { bg: 'linear-gradient(160deg,#04181f 0%,#0a3040 100%)', accent: '#06B6D4', soft: '#67e8f9' },
 }
 
 export default function IntroAtividade({ atividade, onComecar, onVoltar, refazendo = false, kidsLink = null }) {

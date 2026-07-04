@@ -74,6 +74,8 @@ const HistoriaInterativaAtividade = lazy(() => import('./pages/atividades/Histor
 const ClassificarObjetosAtividade = lazy(() => import('./pages/atividades/ClassificarObjetosAtividade'))
 const ConectarPontosAtividade     = lazy(() => import('./pages/atividades/ConectarPontosAtividade'))
 const InglesAtividade             = lazy(() => import('./pages/atividades/InglesAtividade'))
+const ColorirAtividade            = lazy(() => import('./pages/atividades/ColorirAtividade'))
+const SilabasAtividade            = lazy(() => import('./pages/atividades/SilabasAtividade'))
 const Seeder = lazy(() => import('./pages/admin/Seeder'))
 
 function PageLoader() {

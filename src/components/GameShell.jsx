@@ -26,6 +26,8 @@ const tipoTheme = {
   formas:    { bg: 'linear-gradient(160deg,#0d0a20 0%,#1a1045 100%)', accent: '#7F77DD', glow: 'rgba(127,119,221,0.3)' },
   cores:     { bg: 'linear-gradient(160deg,#1a0a14 0%,#3b0f2f 100%)', accent: '#D4537E', glow: 'rgba(212,83,126,0.3)'  },
   alfabeto:  { bg: 'linear-gradient(160deg,#051a12 0%,#0d3320 100%)', accent: '#1D9E75', glow: 'rgba(29,158,117,0.3)'  },
+  colorir:   { bg: 'linear-gradient(160deg,#0d1a05 0%,#1a3305 100%)', accent: '#84CC16', glow: 'rgba(132,204,22,0.3)'  },
+  silabas:   { bg: 'linear-gradient(160deg,#04181f 0%,#0a3040 100%)', accent: '#06B6D4', glow: 'rgba(6,182,212,0.3)'   },
 }
 
 // Partículas CSS puras — posicionamento estático, animação via keyframes crianca.css

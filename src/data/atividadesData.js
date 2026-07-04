@@ -1024,6 +1024,8 @@ export const tipoConfig = {
   'classificar-objetos': { icon: '📦', label: 'Classificar',     cor: '#6366f1' },
   'conectar-pontos':   { icon: '✏️', label: 'Conectar Pontos',   cor: '#f43f5e' },
   ingles:            { icon: '🇺🇸', label: 'Inglês',            cor: '#3B82F6' },
+  colorir:           { icon: '🖍️', label: 'Colorir',           cor: '#84CC16' },
+  silabas:           { icon: '🔡', label: 'Sílabas',           cor: '#06B6D4' },
 }
 
 // ──────────────────────────────────────────────

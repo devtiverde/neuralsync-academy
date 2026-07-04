@@ -372,7 +372,7 @@ export default function Trilha() {
         {(() => {
           const tiposComAtiv = [...new Set(activities.map(a => a.tipo))]
           if (tiposComAtiv.length < 2) return null
-          const tipoOrder = ['quiz','memoria','sequencia','labirinto','robo','padrao','quizia','inventor','blocos','numeros','formas','cores','alfabeto','ingles']
+          const tipoOrder = ['quiz','memoria','sequencia','labirinto','robo','padrao','quizia','inventor','blocos','numeros','formas','cores','alfabeto','ingles','colorir','silabas']
           const tiposOrdenados = tipoOrder.filter(t => tiposComAtiv.includes(t))
           return (
             <div style={{
