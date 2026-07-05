@@ -38,7 +38,7 @@ const CENAS = [
   { texto: 'Você está deitado no sofá ouvindo uma música tranquila.',                                  ilustracao: '🎶', correta: 'calmo' },
   { texto: 'Você conseguiu terminar sozinho uma atividade difícil!',                                   ilustracao: '🏆', correta: 'feliz' },
   { texto: 'Seu amigo disse que não quer mais brincar com você hoje.',                                 ilustracao: '🙁', correta: 'triste' },
-  { texto: 'Alguém bagunçou seu quarto de propósito, depois que você tinha acabado de arrumar tudo.', ilustracao: '🧹', correta: 'bravo' },
+  { texto: 'Você arrumou todo o seu quarto, e alguém bagunçou tudo de novo.',                          ilustracao: '🧹', correta: 'bravo' },
 ]
 
 export default function ZonaEmocoesAtividade() {
@@ -201,7 +201,7 @@ export default function ZonaEmocoesAtividade() {
       {fase === 'emocao' ? (
         <>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, marginBottom: 14, fontWeight: 700 }}>
-            Como você acha que essa pessoa se sente?
+            Como você se sente nessa hora?
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', maxWidth: 560 }}>
             {EMOCOES.map(emo => {
