@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
+import { tipoConfig } from '../../data/atividadesData'
 import LayoutPai from '../../components/LayoutPai'
 import '../../styles/pai.css'
 
@@ -19,24 +20,53 @@ const TIPO_HABILIDADE = {
   blocos:    ['Computacional', 'Lógica'],
   colorir:   ['Concentração', 'Criatividade'],
   silabas:   ['Comunicação', 'Concentração'],
+  numeros:   ['Lógica', 'Memória'],
+  formas:    ['Problemas', 'Concentração'],
+  cores:     ['Concentração', 'Memória'],
+  alfabeto:  ['Comunicação', 'Memória'],
+  ingles:    ['Comunicação', 'Memória'],
+  digitacao: ['Concentração', 'Computacional'],
+  'sequencia-magica': ['Memória', 'Concentração'],
+  'conectar-pontos':  ['Problemas', 'Concentração'],
+  'classificar-objetos': ['Lógica', 'Problemas'],
+  'quebra-cabeca':    ['Problemas', 'Concentração'],
+  'caca-palavras':    ['Comunicação', 'Concentração'],
+  'historia-interativa': ['Comunicação', 'Emocional'],
 }
 
 const TODAS_SKILLS = ['Lógica', 'Criatividade', 'Problemas', 'Computacional', 'Concentração', 'Memória', 'Comunicação', 'Emocional']
-const MELHORIA_FIXA = [5, 12, 8, 15, 10, 7, 11, 6]
 const cores = ['#7C3AED','#F07A20','#10b981','#3b82f6','#ef4444','#ec4899','#f59e0b','#06b6d4']
 
-function calcularHabilidades(historico) {
+function contarSkills(historico) {
   const contagem = {}
   TODAS_SKILLS.forEach(s => contagem[s] = 0)
   historico.forEach(h => {
     (TIPO_HABILIDADE[h.tipo] || []).forEach(s => { if (s in contagem) contagem[s]++ })
   })
-  const MAX = Math.max(...Object.values(contagem), 1)
-  return TODAS_SKILLS.map((skill, i) => {
-    const raw = contagem[skill]
-    const value = Math.round(20 + Math.min(raw / MAX, 1) * 60)
-    return { skill, value, anterior: Math.max(10, value - MELHORIA_FIXA[i]), meta: Math.min(100, value + 15) }
+  return contagem
+}
+
+// Compara o mês atual (últimos 30 dias) com o mês anterior (30-60 dias atrás) de verdade,
+// em vez de aplicar um "ganho" fixo — a evolução mostrada reflete o que a criança realmente fez.
+function calcularHabilidades(historicoAtual, historicoAnterior) {
+  const contagemAtual = contarSkills(historicoAtual)
+  const contagemAnterior = contarSkills(historicoAnterior)
+  const MAX = Math.max(...Object.values(contagemAtual), ...Object.values(contagemAnterior), 1)
+  return TODAS_SKILLS.map(skill => {
+    const value = Math.round(20 + Math.min(contagemAtual[skill] / MAX, 1) * 60)
+    const anterior = Math.round(20 + Math.min(contagemAnterior[skill] / MAX, 1) * 60)
+    return { skill, value, anterior, meta: Math.min(100, value + 15) }
   })
+}
+
+// Top 3 tipos de atividade mais praticados no período — usado no resumo do mês
+function calcularTopAtividades(historico) {
+  const contagem = {}
+  historico.forEach(h => { contagem[h.tipo] = (contagem[h.tipo] || 0) + 1 })
+  return Object.entries(contagem)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([tipo, vezes]) => ({ tipo, vezes }))
 }
 
 function calcularSemanas(historico) {
@@ -151,6 +181,7 @@ export default function RelatorioPDF() {
   const [child, setChild] = useState(null)
   const [habilidades, setHabilidades] = useState([])
   const [dadosSemanas, setDadosSemanas] = useState([])
+  const [topAtividades, setTopAtividades] = useState([])
   const [recomendacoes, setRecomendacoes] = useState([])
   const [metas, setMetas] = useState([])
   const [gerando, setGerando] = useState(false)
@@ -181,12 +212,22 @@ export default function RelatorioPDF() {
 
       const historico = (histSupabase && histSupabase.length > 0) ? histSupabase : histLocal
 
-      const hab  = calcularHabilidades(historico)
+      // Mês atual (últimos 30 dias) vs mês anterior (30–60 dias atrás) — comparação real, não uma "melhoria" fixa
+      const agora = new Date()
+      const ha30 = new Date(agora); ha30.setDate(ha30.getDate() - 30)
+      const ha60 = new Date(agora); ha60.setDate(ha60.getDate() - 60)
+      const getData = h => new Date(h.timestamp || h.data || h.created_at || 0)
+      const historicoAtual = historico.filter(h => getData(h) >= ha30)
+      const historicoAnterior = historico.filter(h => { const d = getData(h); return d >= ha60 && d < ha30 })
+
+      const hab  = calcularHabilidades(historicoAtual, historicoAnterior)
       const sems = calcularSemanas(historico)
+      const topAtividades = calcularTopAtividades(historicoAtual)
       const perfil = childData.perfil_cognitivo || null
       setChild(childData)
       setHabilidades(hab)
       setDadosSemanas(sems)
+      setTopAtividades(topAtividades)
       setRecomendacoes(gerarRecomendacoes(hab, perfil))
       setMetas(gerarMetas(hab, perfil))
     }
@@ -271,7 +312,10 @@ export default function RelatorioPDF() {
       const topSkill = habilidades.reduce((a, b) => a.value >= b.value ? a : b, habilidades[0] || { skill: '—', value: 0 })
       const botSkill = habilidades.reduce((a, b) => a.value <= b.value ? a : b, habilidades[0] || { skill: '—', value: 0 })
       const mesAtual = new Date().toLocaleString('pt-BR', { month: 'long' })
-      const resumoTxt = `${nome} completou ${totalSessoes} atividade${totalSessoes !== 1 ? 's' : ''} em ${mesAtual}, acumulando ${horasFormatadas} de foco cognitivo. Destaque para a habilidade de ${topSkill.skill} (${topSkill.value}%), demonstrando evolucao consistente. Recomendamos maior atencao a ${botSkill.skill} (${botSkill.value}%) para desenvolvimento equilibrado das competencias.`
+      const topAtividadeTxt = topAtividades.length > 0
+        ? ` A atividade mais praticada foi ${tipoConfig[topAtividades[0].tipo]?.label || topAtividades[0].tipo} (${topAtividades[0].vezes}x).`
+        : ''
+      const resumoTxt = `${nome} completou ${totalSessoes} atividade${totalSessoes !== 1 ? 's' : ''} em ${mesAtual}, acumulando ${horasFormatadas} de foco cognitivo.${topAtividadeTxt} Destaque para a habilidade de ${topSkill.skill} (${topSkill.value}%), demonstrando evolucao consistente. Recomendamos maior atencao a ${botSkill.skill} (${botSkill.value}%) para desenvolvimento equilibrado das competencias.`
 
       doc.setFillColor(245, 243, 255)
       doc.roundedRect(15, 82, W - 30, 24, 3, 3, 'F')
@@ -692,6 +736,24 @@ export default function RelatorioPDF() {
                 </div>
               ))}
             </div>
+
+            {topAtividades.length > 0 && (
+              <div className="pai-card" style={{padding:'20px',marginTop:'14px'}}>
+                <h4 style={{fontWeight:'800',fontSize:'14px',marginBottom:'14px',color:'#0f0a1e'}}>Atividades mais praticadas no mês</h4>
+                <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+                  {topAtividades.map((a,i) => {
+                    const cfg = tipoConfig[a.tipo]
+                    return (
+                      <div key={i} style={{display:'flex',alignItems:'center',gap:'12px'}}>
+                        <div style={{width:'26px',height:'26px',borderRadius:'8px',background:(cfg?.cor||'#7C3AED')+'22',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'14px',flexShrink:0}}>{cfg?.icon||'⭐'}</div>
+                        <div style={{flex:1,fontSize:'13px',fontWeight:'700',color:'#0f0a1e'}}>{cfg?.label||a.tipo}</div>
+                        <div style={{fontSize:'12px',color:'#9ca3af',fontWeight:'600'}}>{a.vezes}x</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

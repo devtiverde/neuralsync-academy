@@ -18,9 +18,9 @@ const CATEGORIAS_COG = ['Memória', 'Atenção', 'Espacial', 'Linguagem', 'Lógi
 const TIPO_CATEGORIA = {
   memoria: 'Memória',   padrao: 'Memória',
   labirinto: 'Atenção', sequencia: 'Atenção',
-  'classif-objetos': 'Espacial', 'quebra-cabeca': 'Espacial', 'sequencia-magica': 'Espacial',
+  'classificar-objetos': 'Espacial', 'quebra-cabeca': 'Espacial', 'sequencia-magica': 'Espacial', 'conectar-pontos': 'Espacial',
   quiz: 'Linguagem', quizia: 'Linguagem', alfabeto: 'Linguagem', cores: 'Linguagem',
-  formas: 'Linguagem', 'historia-interativa': 'Linguagem', 'caca-palavras': 'Linguagem', silabas: 'Linguagem',
+  formas: 'Linguagem', 'historia-interativa': 'Linguagem', 'caca-palavras': 'Linguagem', silabas: 'Linguagem', ingles: 'Linguagem',
   blocos: 'Lógica', robo: 'Lógica', inventor: 'Lógica',
   numeros: 'Coordenação', digitacao: 'Coordenação', colorir: 'Coordenação',
 }
@@ -37,9 +37,9 @@ const tipoLabel = {
   robo: 'Robô', padrao: 'Padrão', quizia: 'Quiz IA', inventor: 'Inventor', blocos: 'Blocos',
   numeros: 'Números', formas: 'Formas', cores: 'Cores', alfabeto: 'Alfabeto',
   digitacao: 'Digitação', 'sequencia-magica': 'Seq. Mágica', 'conectar-pontos': 'Pontos',
-  'classif-objetos': 'Classificar', 'quebra-cabeca': 'Quebra-cabeça',
+  'classificar-objetos': 'Classificar', 'quebra-cabeca': 'Quebra-cabeça',
   'caca-palavras': 'Caça-palavras', 'historia-interativa': 'História',
-  colorir: 'Colorir', silabas: 'Sílabas',
+  colorir: 'Colorir', silabas: 'Sílabas', ingles: 'Inglês',
 }
 
 export default function Relatorio() {
@@ -100,6 +100,17 @@ export default function Relatorio() {
     })
   }, [histFilho])
 
+  // Semana anterior (8–14 dias atrás) — usada pra comparar com dados reais, não uma estimativa
+  const histSemanaAnterior = useMemo(() => {
+    const inicio = new Date(); inicio.setDate(inicio.getDate() - 14)
+    const fim = new Date(); fim.setDate(fim.getDate() - 7)
+    return histFilho.filter(h => {
+      if (!h.timestamp) return false
+      const t = new Date(h.timestamp)
+      return t >= inicio && t < fim
+    })
+  }, [histFilho])
+
   const dadosSemanal = useMemo(() => {
     const dias = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb']
     return Array.from({ length: 7 }, (_, i) => {
@@ -123,21 +134,32 @@ export default function Relatorio() {
     })
   }, [histFilho])
 
-  // Scores cognitivos por categoria
+  // Scores cognitivos por categoria — "anterior" agora vem da semana passada de verdade, não de uma fórmula inventada
   const scoresCognitivos = useMemo(() => {
-    const contagem = {}
-    CATEGORIAS_COG.forEach(c => { contagem[c] = 0 })
-    histSemana.forEach(h => {
-      const cat = TIPO_CATEGORIA[h.tipo]
-      if (cat) contagem[cat]++
-    })
-    const MAX = Math.max(...Object.values(contagem), 1)
-    return CATEGORIAS_COG.map((cat, i) => ({
+    const contagem = {}, contagemAnterior = {}
+    CATEGORIAS_COG.forEach(c => { contagem[c] = 0; contagemAnterior[c] = 0 })
+    histSemana.forEach(h => { const cat = TIPO_CATEGORIA[h.tipo]; if (cat) contagem[cat]++ })
+    histSemanaAnterior.forEach(h => { const cat = TIPO_CATEGORIA[h.tipo]; if (cat) contagemAnterior[cat]++ })
+    const MAX = Math.max(...Object.values(contagem), ...Object.values(contagemAnterior), 1)
+    return CATEGORIAS_COG.map(cat => ({
       skill: cat,
       atual: Math.min(95, Math.round(20 + (contagem[cat] / MAX) * 60)),
-      anterior: Math.max(0, Math.round(15 + (contagem[cat] / MAX) * 60) - 12),
+      anterior: Math.min(95, Math.round(20 + (contagemAnterior[cat] / MAX) * 60)),
     }))
+  }, [histSemana, histSemanaAnterior])
+
+  // Atividade mais praticada na semana + comparação real com a semana passada
+  const tipoFavoritoSemana = useMemo(() => {
+    const contagemTipo = {}
+    histSemana.forEach(h => { contagemTipo[h.tipo] = (contagemTipo[h.tipo] || 0) + 1 })
+    const entradas = Object.entries(contagemTipo).sort((a, b) => b[1] - a[1])
+    return entradas.length ? { tipo: entradas[0][0], vezes: entradas[0][1] } : null
   }, [histSemana])
+
+  const deltaAtividadesSemana = useMemo(() => {
+    if (histSemanaAnterior.length === 0) return histSemana.length > 0 ? null : 0
+    return Math.round(((histSemana.length - histSemanaAnterior.length) / histSemanaAnterior.length) * 100)
+  }, [histSemana, histSemanaAnterior])
 
   const totalXPHoje   = histHoje.reduce((s, h) => s + (h.xp || 0), 0)
   const totalXPSemana = histSemana.reduce((s, h) => s + (h.xp || 0), 0)
@@ -241,8 +263,19 @@ export default function Relatorio() {
             {filho && (
               <div style={{ background: '#fafbff', borderBottom: '1px solid #f3f4f6', padding: '16px 24px' }}>
                 <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-                  <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
-                    Esta semana
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Esta semana
+                    </div>
+                    {deltaAtividadesSemana !== null && (
+                      <span style={{
+                        fontSize: '11px', fontWeight: '700', padding: '2px 8px', borderRadius: '999px',
+                        background: deltaAtividadesSemana >= 0 ? '#ecfdf5' : '#fff7ed',
+                        color: deltaAtividadesSemana >= 0 ? '#059669' : '#c2410c',
+                      }}>
+                        {deltaAtividadesSemana >= 0 ? '▲' : '▼'} {Math.abs(deltaAtividadesSemana)}% vs semana passada
+                      </span>
+                    )}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                     {[
@@ -400,6 +433,19 @@ export default function Relatorio() {
                       </div>
                     )}
                   </div>
+
+                  {/* Atividade favorita da semana */}
+                  {tipoFavoritoSemana && (
+                    <div className="pai-card" style={{ padding: '14px 16px', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ fontSize: '22px' }}>🏆</div>
+                      <div>
+                        <div style={{ fontWeight: '800', fontSize: '13px', color: '#0f0a1e' }}>
+                          Atividade favorita da semana: <span style={{ color: tipoColor[tipoFavoritoSemana.tipo] || '#7C3AED' }}>{tipoLabel[tipoFavoritoSemana.tipo] || tipoFavoritoSemana.tipo}</span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#6b7280' }}>Praticada {tipoFavoritoSemana.vezes}x esta semana</div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Pontos fortes e oportunidades */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
