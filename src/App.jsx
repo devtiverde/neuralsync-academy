@@ -76,6 +76,7 @@ const ConectarPontosAtividade     = lazy(() => import('./pages/atividades/Conect
 const InglesAtividade             = lazy(() => import('./pages/atividades/InglesAtividade'))
 const ColorirAtividade            = lazy(() => import('./pages/atividades/ColorirAtividade'))
 const SilabasAtividade            = lazy(() => import('./pages/atividades/SilabasAtividade'))
+const ZonaEmocoesAtividade        = lazy(() => import('./pages/atividades/ZonaEmocoesAtividade'))
 const Seeder = lazy(() => import('./pages/admin/Seeder'))
 
 function PageLoader() {
@@ -179,6 +180,7 @@ function AppContent() {
           <Route path="/atividade/ingles"              element={<InglesAtividade />} />
           <Route path="/atividade/colorir"              element={<ColorirAtividade />} />
           <Route path="/atividade/silabas"              element={<SilabasAtividade />} />
+          <Route path="/atividade/zona-emocoes"          element={<ZonaEmocoesAtividade />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

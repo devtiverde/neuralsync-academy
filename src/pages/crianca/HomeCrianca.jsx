@@ -52,6 +52,7 @@ const tipoGradiente = {
   ingles:               'linear-gradient(135deg, #1e3a5f, #3B82F6)',
   colorir:              'linear-gradient(135deg, #4d7c0f, #84CC16)',
   silabas:              'linear-gradient(135deg, #0e7490, #06B6D4)',
+  'zona-emocoes':       'linear-gradient(135deg, #9d174d, #EC4899)',
 }
 
 const CATEGORIAS = [
@@ -59,6 +60,7 @@ const CATEGORIAS = [
   { id: 'raciocinio', label: 'Raciocínio', icon: '🧠' },
   { id: 'tecnologia', label: 'Tecnologia', icon: '🤖' },
   { id: 'letras',     label: 'Letras',     icon: '📖' },
+  { id: 'emocional',  label: 'Emoções',    icon: '💗' },
   { id: 'conteudo',   label: 'Conteúdo',   icon: '🎬' },
   { id: 'offline',    label: 'Offline',    icon: '🌿' },
 ]
@@ -167,6 +169,7 @@ export default function HomeCrianca() {
     { id: 'ingles',              label: 'Inglês',       icon: '🇺🇸', cat: 'letras',    grad: tipoGradiente.ingles,                sub: contsPorTipo.ingles ? contsPorTipo.ingles + ' ativ.' : '4 ativ.', show: true, nav: () => navigate('/trilha') },
     { id: 'caca-palavras',       label: 'Caça-Palavras',icon: '🔍', cat: 'letras',     grad: tipoGradiente['caca-palavras'],       sub: 'Palavras',  show: true, nav: () => navigate('/atividade/caca-palavras') },
     { id: 'historia-interativa', label: 'História',    icon: '📖', cat: 'conteudo',   grad: tipoGradiente['historia-interativa'], sub: 'Aventura',  show: true, nav: () => navigate('/atividade/historia-interativa') },
+    { id: 'zona-emocoes',        label: 'Emoções',     icon: '💗', cat: 'emocional',  grad: tipoGradiente['zona-emocoes'],         sub: 'Sentimentos', show: true, nav: () => navigate('/atividade/zona-emocoes') },
   ].filter(item => item.show)
 
   const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => item.cat === filtro)

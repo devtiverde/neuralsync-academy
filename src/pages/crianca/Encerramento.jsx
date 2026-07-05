@@ -23,6 +23,7 @@ const badgeMap = {
   alfabeto:  { emoji: '🔤', texto: 'Mestre das Letras!' },
   colorir:   { emoji: '🖍️', texto: 'Artista Colorido!' },
   silabas:   { emoji: '🔡', texto: 'Leitor em Formação!' },
+  'zona-emocoes': { emoji: '💗', texto: 'Detetive das Emoções!' },
 }
 
 const confettiColors = ['#7C3AED','#a78bfa','#f59e0b','#10b981','#f97316','#3b82f6','#ec4899','#fbbf24']

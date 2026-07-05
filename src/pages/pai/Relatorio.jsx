@@ -23,6 +23,7 @@ const TIPO_CATEGORIA = {
   formas: 'Linguagem', 'historia-interativa': 'Linguagem', 'caca-palavras': 'Linguagem', silabas: 'Linguagem', ingles: 'Linguagem',
   blocos: 'Lógica', robo: 'Lógica', inventor: 'Lógica',
   numeros: 'Coordenação', digitacao: 'Coordenação', colorir: 'Coordenação',
+  'zona-emocoes': 'Atenção',
 }
 
 const avatarPadrao = ['🦊', '👧', '👦', '🐱', '🐶', '🦁', '🐸', '🐧', '🦄', '🦉']
@@ -30,7 +31,7 @@ const avatarPadrao = ['🦊', '👧', '👦', '🐱', '🐶', '🦁', '🐸', '�
 const tipoColor = {
   quiz: '#F07A20', memoria: '#9C27B0', sequencia: '#3b82f6', labirinto: '#10b981',
   robo: '#7C3AED', padrao: '#ef4444', quizia: '#7C3AED', inventor: '#F07A20', blocos: '#10b981',
-  colorir: '#84CC16', silabas: '#06B6D4',
+  colorir: '#84CC16', silabas: '#06B6D4', 'zona-emocoes': '#EC4899',
 }
 const tipoLabel = {
   quiz: 'Quiz', memoria: 'Memória', sequencia: 'Sequência', labirinto: 'Labirinto',
@@ -39,7 +40,7 @@ const tipoLabel = {
   digitacao: 'Digitação', 'sequencia-magica': 'Seq. Mágica', 'conectar-pontos': 'Pontos',
   'classificar-objetos': 'Classificar', 'quebra-cabeca': 'Quebra-cabeça',
   'caca-palavras': 'Caça-palavras', 'historia-interativa': 'História',
-  colorir: 'Colorir', silabas: 'Sílabas', ingles: 'Inglês',
+  colorir: 'Colorir', silabas: 'Sílabas', ingles: 'Inglês', 'zona-emocoes': 'Zona das Emoções',
 }
 
 export default function Relatorio() {

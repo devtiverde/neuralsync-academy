@@ -32,6 +32,7 @@ const TIPO_HABILIDADE = {
   'quebra-cabeca':    ['Problemas', 'Concentração'],
   'caca-palavras':    ['Comunicação', 'Concentração'],
   'historia-interativa': ['Comunicação', 'Emocional'],
+  'zona-emocoes':     ['Emocional', 'Comunicação'],
 }
 
 const TODAS_SKILLS = ['Lógica', 'Criatividade', 'Problemas', 'Computacional', 'Concentração', 'Memória', 'Comunicação', 'Emocional']
