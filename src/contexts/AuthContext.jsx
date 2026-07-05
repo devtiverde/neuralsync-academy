@@ -63,8 +63,11 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (!error && data.user) {
-      await activatePendingPlan(data.session?.access_token)
-      await loadSubscription(data.user.id)
+      // Não aguarda: a Edge Function de ativação de plano pode demorar (cold
+      // start) e travaria o botão de login. onAuthStateChange já recarrega a
+      // assinatura sozinho; aqui só recarregamos de novo depois pra refletir
+      // um plano recém-ativado.
+      activatePendingPlan(data.session?.access_token).then(() => loadSubscription(data.user.id))
     }
     return { error }
   }
@@ -76,8 +79,7 @@ export function AuthProvider({ children }) {
       await supabase.from('users').insert({
         id: data.user.id, email: emailLower, nome, tipo: 'pai',
       })
-      await activatePendingPlan(data.session?.access_token)
-      await loadSubscription(data.user.id)
+      activatePendingPlan(data.session?.access_token).then(() => loadSubscription(data.user.id))
     }
     return { error }
   }
