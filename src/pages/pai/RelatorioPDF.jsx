@@ -278,6 +278,30 @@ export default function RelatorioPDF() {
       const mes = new Date().toLocaleString('pt-BR', { month: 'long', year: 'numeric' })
       const nome = child?.nome || 'Sem nome'
 
+      // Sistema de paginação: posição Y acumulativa com quebra automática.
+      // Nenhum bloco de conteúdo variável (recomendações, metas, habilidades) usa
+      // mais posições absolutas fixas — cada seção reserva sua altura estimada e
+      // pede uma nova página se não couber antes do rodapé (~270mm).
+      const LIMITE_CONTEUDO = 268
+      let y
+
+      function iniciarPaginaContinuacao(titulo) {
+        doc.addPage()
+        doc.setFillColor(124, 58, 237)
+        doc.rect(0, 0, W, 16, 'F')
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(9)
+        doc.setFont('helvetica', 'bold')
+        doc.text(titulo, W / 2, 10, { align: 'center' })
+        y = 24
+      }
+
+      function garantirEspaco(altura, tituloContinuacao) {
+        if (y + altura > LIMITE_CONTEUDO) {
+          iniciarPaginaContinuacao(tituloContinuacao || ('NeuralSync  |  Relatorio Cognitivo  |  ' + nome))
+        }
+      }
+
       // PAGINA 1
 
       doc.setFillColor(124, 58, 237)
@@ -333,7 +357,8 @@ export default function RelatorioPDF() {
       const resumoLines = doc.splitTextToSize(resumoTxt, W - 46)
       doc.text(resumoLines.slice(0, 3), 20, 95)
 
-      let y = 110
+      y = 110
+      garantirEspaco(40)
       const statItems = [
         [String(totalSessoes), 'Sessoes'],
         [horasFormatadas, 'Foco total'],
@@ -356,6 +381,10 @@ export default function RelatorioPDF() {
       })
 
       y += 24
+
+      const linhasHab = Math.ceil(habilidades.length / 2)
+      const alturaHab = 10 + linhasHab * 18
+      garantirEspaco(alturaHab)
 
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
@@ -415,8 +444,9 @@ export default function RelatorioPDF() {
         doc.text('meta ' + h.meta + '%', x + 84, cy + 10)
       })
 
-      y += 76
+      y += alturaHab
 
+      garantirEspaco(58)
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -452,6 +482,7 @@ export default function RelatorioPDF() {
       // PERFIL PARENTAL (se disponível)
       const perfil = child?.perfil_cognitivo
       if (perfil) {
+        garantirEspaco(26)
         doc.setFillColor(245, 243, 255)
         doc.roundedRect(15, y, W-30, 20, 3, 3, 'F')
         doc.setDrawColor(196, 181, 253)
@@ -472,6 +503,7 @@ export default function RelatorioPDF() {
         y += 26
       }
 
+      garantirEspaco(84)
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -483,6 +515,7 @@ export default function RelatorioPDF() {
       y += 12
 
       recomendacoes.slice(0, 2).forEach(rec => {
+        garantirEspaco(36)
         const [r,g,b] = rec.cor.replace('#','').match(/.{2}/g).map(v => parseInt(v,16))
 
         doc.setFillColor(250, 248, 255)
@@ -516,25 +549,9 @@ export default function RelatorioPDF() {
         y += 36
       })
 
-      doc.setFillColor(124, 58, 237)
-      doc.rect(0, 277, W, 20, 'F')
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(7.5)
-      doc.setFont('helvetica', 'normal')
-      doc.text('NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia  |  neuralsync.com.br', W/2, 284, { align: 'center' })
-      doc.text('Pagina 1 de 2  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W/2, 292, { align: 'center' })
-
-      // PAGINA 2
-      doc.addPage()
-
-      doc.setFillColor(124, 58, 237)
-      doc.rect(0, 0, W, 16, 'F')
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(9)
-      doc.setFont('helvetica', 'bold')
-      doc.text('NeuralSync  |  Plano de Acao Personalizado  |  ' + nome, W/2, 10, { align: 'center' })
-
-      y = 24
+      // PLANO DE ACAO — sempre inicia em página própria (separação de conteúdo)
+      const tituloContinuacao = 'NeuralSync  |  Plano de Acao Personalizado  |  ' + nome
+      iniciarPaginaContinuacao(tituloContinuacao)
 
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
@@ -543,6 +560,7 @@ export default function RelatorioPDF() {
       y += 8
 
       recomendacoes.forEach(rec => {
+        garantirEspaco(40, tituloContinuacao)
         const [r,g,b] = rec.cor.replace('#','').match(/.{2}/g).map(v => parseInt(v,16))
 
         doc.setFillColor(250, 248, 255)
@@ -585,6 +603,8 @@ export default function RelatorioPDF() {
         y += 40
       })
 
+      const alturaMetas = 6 + metas.length * 10 + 8
+      garantirEspaco(alturaMetas, tituloContinuacao)
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
@@ -612,6 +632,7 @@ export default function RelatorioPDF() {
 
       y += metas.length * 10 + 14
 
+      garantirEspaco(30, tituloContinuacao)
       doc.setFillColor(239, 246, 255)
       doc.roundedRect(15, y, W-30, 22, 3, 3, 'F')
       doc.setTextColor(59, 130, 246)
@@ -624,13 +645,25 @@ export default function RelatorioPDF() {
       const notaLines = doc.splitTextToSize(nota, W - 46)
       doc.text(notaLines, 22, y + 14)
 
-      doc.setFillColor(124, 58, 237)
-      doc.rect(0, 277, W, 20, 'F')
-      doc.setTextColor(255, 255, 255)
-      doc.setFontSize(7.5)
-      doc.setFont('helvetica', 'normal')
-      doc.text('Gerado pelo NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia', W/2, 284, { align: 'center' })
-      doc.text('neuralsync.com.br  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Pagina 2 de 2', W/2, 292, { align: 'center' })
+      // Rodapé com numeração real — desenhado por último, em todas as páginas
+      // que de fato existirem (evita "Pagina 1 de 2" incorreto quando o
+      // conteúdo transbordar para mais páginas no futuro).
+      const totalPaginas = doc.internal.getNumberOfPages()
+      for (let p = 1; p <= totalPaginas; p++) {
+        doc.setPage(p)
+        doc.setFillColor(124, 58, 237)
+        doc.rect(0, 277, W, 20, 'F')
+        doc.setTextColor(255, 255, 255)
+        doc.setFontSize(7.5)
+        doc.setFont('helvetica', 'normal')
+        doc.text(
+          p === 1
+            ? 'NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia  |  neuralsync.com.br'
+            : 'Gerado pelo NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia',
+          W / 2, 284, { align: 'center' }
+        )
+        doc.text('Pagina ' + p + ' de ' + totalPaginas + '  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W / 2, 292, { align: 'center' })
+      }
 
       doc.save('NeuralSync_Relatorio_' + nome + '.pdf')
       setGerado(true)
