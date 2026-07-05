@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import IntroAtividade from '../atividades/IntroAtividade'
+import { criarRastreadorDesempenho, ajustarVelocidade } from '../../lib/dificuldadeAdaptativa'
 import '../../styles/crianca.css'
 
 const COR = '#7C3AED'
@@ -170,6 +171,7 @@ function ModoSumir() {
   const serieRef = useRef(SERIES_LETRAS[0])
   const letrasRef = useRef([...SERIES_LETRAS[0].letras].sort(() => Math.random() - 0.5))
   const tickRef = useRef(null)
+  const rastreadorRef = useRef(criarRastreadorDesempenho())
 
   const letraAtual = letrasRef.current[letraIdxRef.current % letrasRef.current.length]
 
@@ -200,6 +202,8 @@ function ModoSumir() {
         setStatus('errou')
         setArenaClass('ns-dt-arena-miss')
         setTimeout(() => setArenaClass(''), 500)
+        rastreadorRef.current.registrar(false)
+        velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 1800, 4500)
         vidasRef.current -= 1
         setVidas(vidasRef.current)
         if (vidasRef.current <= 0) {
@@ -239,10 +243,10 @@ function ModoSumir() {
         setParticulas(novas)
         setArenaClass('ns-dt-arena-hit')
         setTimeout(() => { setParticulas([]); setArenaClass('') }, 750)
-        // Aumentar velocidade a cada 5 acertos (diminuir tempo disponível)
-        if (pontosRef.current % 5 === 0 && velocidadeRef.current > 1800) {
-          velocidadeRef.current = Math.max(1800, velocidadeRef.current - 350)
-        }
+        // Dificuldade adaptativa: ajusta o tempo disponível com base na taxa de
+        // acerto das últimas tentativas, não só numa contagem fixa de acertos.
+        rastreadorRef.current.registrar(true)
+        velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 1800, 4500)
         setTimeout(avancarRound, 550)
       }
     }
@@ -268,6 +272,7 @@ function ModoSumir() {
     vidasRef.current = MAX_VIDAS
     pontosRef.current = 0
     velocidadeRef.current = 4500
+    rastreadorRef.current.reiniciar()
     setSerieIdx(novoSerieIdx)
     setVidas(MAX_VIDAS)
     setPontos(0)
@@ -380,6 +385,7 @@ function ModoEsteira() {
   const palavraIdxRef = useRef(0)
   const palavrasRef = useRef([...SERIES_PALAVRAS[0].palavras].sort(() => Math.random() - 0.5))
   const typedRef = useRef('')
+  const rastreadorRef = useRef(criarRastreadorDesempenho())
 
   const palavraAtual = palavrasRef.current[palavraIdxRef.current % palavrasRef.current.length]
 
@@ -419,6 +425,8 @@ function ModoEsteira() {
   function errarPalavra() {
     statusRef.current = 'errou'
     setStatus('errou')
+    rastreadorRef.current.registrar(false)
+    velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 3200, 7000)
     vidasRef.current -= 1
     setVidas(vidasRef.current)
     if (vidasRef.current <= 0) {
@@ -448,9 +456,8 @@ function ModoEsteira() {
       clearInterval(tickRef.current)
       statusRef.current = 'acertou'; setStatus('acertou')
       pontosRef.current += 1; setPontos(pontosRef.current)
-      if (pontosRef.current % 3 === 0 && velocidadeRef.current > 3200) {
-        velocidadeRef.current = Math.max(3200, velocidadeRef.current - 500)
-      }
+      rastreadorRef.current.registrar(true)
+      velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 3200, 7000)
       setTimeout(avancarRound, 650)
     } else if (val.length > 0 && !alvo.startsWith(valLower)) {
       setShake(true); setTimeout(() => setShake(false), 280)
@@ -462,6 +469,7 @@ function ModoEsteira() {
     palavraIdxRef.current = 0
     vidasRef.current = MAX_VIDAS; pontosRef.current = 0
     velocidadeRef.current = 7000
+    rastreadorRef.current.reiniciar()
     setSerieIdx(novoSerieIdx); setVidas(MAX_VIDAS); setPontos(0)
     setRoundKey(k => k + 1)
   }
