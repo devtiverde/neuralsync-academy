@@ -39,7 +39,7 @@ export const atividadesExtraPorFaixa = {
       historinha: 'A feira de frutas chegou ao bairro! 🍓 A feirante Maria precisa de um ajudante esperto para atender os clientes. Mostre que você sabe tudo sobre frutas!',
       perguntas: [
         { pergunta: 'De que cor fica a banana quando está madura?', opcoes: ['Verde', 'Amarela', 'Vermelha', 'Azul'], correta: 1, fato: '🍌 A banana verde tem amido, que vira açúcar quando amadurece — por isso fica mais doce e amarela! O Brasil é um dos maiores produtores de banana do mundo.' },
-        { pergunta: 'Qual fruta tem sementinhas pretas na superfície?', opcoes: ['Maçã', 'Laranja', 'Morango', 'Uva'], correta: 2, fato: '🍓 O morango não é tecnicamente uma fruta — é um falso fruto! As sementinhas pretas na casca são as verdadeiras frutas. Cada morango tem em média 200 dessas!' },
+        { pergunta: 'Qual fruta tem sementinhas pretas na superfície?', opcoes: ['Maçã', 'Laranja', 'Morango', 'Uva'], correta: 2, fato: '🍓 O morango tem sementinhas pretas do lado de fora, bem diferente das outras frutas!' },
         { pergunta: 'Qual fruta usamos para fazer suco de laranja?', opcoes: ['Banana', 'Maçã', 'Laranja', 'Uva'], correta: 2, fato: '🍊 O Brasil é o maior exportador de suco de laranja do mundo! São Paulo produz mais de 80% das laranjas brasileiras. Uma laranja grande tem vitamina C para o dia todo.' },
         { pergunta: 'Qual fruta tem casca espinhuda por fora e é amarela por dentro?', opcoes: ['Maçã', 'Abacaxi', 'Banana', 'Coco'], correta: 1, fato: '🍍 Cada pé de abacaxi produz apenas 1 fruta por vez e leva até 2 anos para crescer! A enzima do abacaxi dissolve proteínas — por isso a língua fica sensível se comer demais.' },
         { pergunta: 'Qual fruta é quase toda feita de água?', opcoes: ['Banana', 'Melancia', 'Abacate', 'Coco'], correta: 1, fato: '🍉 A melancia é 92% água! Por isso é tão refrescante no verão. Pode pesar até 20 kg. No Brasil, julho é o mês de maior consumo de melancia.' },
@@ -59,7 +59,7 @@ export const atividadesExtraPorFaixa = {
       perguntas: [
         { pergunta: 'Com que parte do corpo ouvimos os sons?', opcoes: ['Nariz', 'Olhos', 'Ouvidos', 'Boca'], correta: 2, fato: '👂 Nossos ouvidos não dormem! Mesmo dormindo, eles captam sons — o cérebro é que decide ignorar os barulhos. Os ouvidos também nos ajudam a manter o equilíbrio.' },
         { pergunta: 'Para que servem os olhos?', opcoes: ['Para respirar', 'Para ver', 'Para ouvir', 'Para comer'], correta: 1, fato: '👁️ Nossos olhos distinguem até 10 milhões de cores diferentes! Piscamos 15 a 20 vezes por minuto automaticamente para manter os olhos limpos e úmidos.' },
-        { pergunta: 'Quantas mãos temos normalmente?', opcoes: ['1', '2', '3', '4'], correta: 1, fato: '🖐️ Cada mão tem 27 ossos, 29 articulações e mais de 120 ligamentos! São as partes mais complexas do nosso corpo — cada dedinho se move de forma independente.' },
+        { pergunta: 'Quantas mãos temos normalmente?', opcoes: ['1', '2', '3', '4'], correta: 1, fato: '🖐️ Cada mão tem 5 dedos, e cada um deles se mexe sozinho!' },
         { pergunta: 'O que o coração faz?', opcoes: ['Pensa', 'Digere comida', 'Bombeia sangue', 'Respira'], correta: 2, fato: '❤️ O coração bate 100.000 vezes por dia — mais de 35 milhões por ano! Em uma vida inteira, bombeia sangue suficiente para encher uma piscina olímpica várias vezes.' },
         { pergunta: 'Por onde respiramos?', opcoes: ['Pelos olhos', 'Pelo nariz e pela boca', 'Pelos ouvidos', 'Pelos pés'], correta: 1, fato: '👃 O nariz tem pelínhos que filtram o ar antes de entrar nos pulmões! Respiramos cerca de 20.000 vezes por dia sem nem perceber — o corpo faz isso automaticamente.' },
       ],
@@ -209,7 +209,7 @@ export const atividadesExtraPorFaixa = {
       xp_reward: 70,
       coins_reward: 70,
       tempo_estimado: 10,
-      historinha: 'O mundo está cheio de formas escondidas! 🔷 Você consegue encontrar um círculo no sol, um triângulo numa pizza e um hexágono numa colmeia de abelha? Clique em 🔊 e conheça cada forma pelo nome!',
+      historinha: 'O mundo está cheio de formas escondidas! 🔷 Clique em 🔊 e conheça cada forma pelo nome!',
     },
     {
       id: 'exp_cores',
@@ -221,7 +221,7 @@ export const atividadesExtraPorFaixa = {
       xp_reward: 70,
       coins_reward: 70,
       tempo_estimado: 10,
-      historinha: 'O mundo ficaria cinza sem as cores! 🌈 O vermelho de uma maçã, o azul do céu, o amarelo do sol... cada cor conta uma história. Vamos ouvir o nome de cada uma!',
+      historinha: 'O mundo ficaria cinza sem as cores! 🌈 Vamos ouvir o nome de cada uma!',
     },
     {
       id: 'exp_alfabeto',
@@ -233,7 +233,7 @@ export const atividadesExtraPorFaixa = {
       xp_reward: 80,
       coins_reward: 80,
       tempo_estimado: 15,
-      historinha: 'As 26 letras do alfabeto são os tijolos de todas as palavras! 🔤 Cada letra tem um som especial. Clique em 🔊 para ouvir a letra e descobrir a palavra que começa com ela!',
+      historinha: 'Vamos aprender as 26 letras do alfabeto! 🔤 Clique em 🔊 para ouvir a letra e descobrir a palavra que começa com ela!',
     },
   ],
 
@@ -252,7 +252,7 @@ export const atividadesExtraPorFaixa = {
       historinha: 'O laboratório científico abriu as portas para jovens pesquisadores! 🔬 Você foi selecionado para o teste de entrada. Responda corretamente e ganhe seu jaleco branco!',
       perguntas: [
         { pergunta: 'O que as plantas precisam para fazer fotossíntese?', opcoes: ['Luz, água e CO₂', 'Só água', 'Só luz solar', 'Terra e adubo'], correta: 0, fato: '🌱 Fotossíntese: luz + CO₂ + água → glicose + oxigênio. As plantas fazem seu próprio alimento! O oxigênio que liberamos é um "subproduto" — sem plantas, não haveria ar para respirar.' },
-        { pergunta: 'Em que estado fica a água quando está congelada?', opcoes: ['Líquido', 'Sólido', 'Gasoso', 'Plasma'], correta: 1, fato: '🧊 A água expande quando congela (fica 9% maior) — por isso o gelo flutua! Se fosse ao contrário, lagos congelariam de baixo para cima e peixes não sobreviveriam no inverno.' },
+        { pergunta: 'Em que estado fica a água quando está congelada?', opcoes: ['Líquido', 'Sólido', 'Gasoso', 'Plasma'], correta: 1, fato: '🧊 O gelo é mais leve que a água, por isso ele sempre flutua!' },
         { pergunta: 'O que causa os trovões?', opcoes: ['Nuvens batendo', 'O ar aquecendo rapidamente pelo raio', 'Ventos muito fortes', 'A Lua chegando perto'], correta: 1, fato: '⚡ O raio aquece o ar a 30.000°C — 5x mais que a superfície do Sol! O ar expande tão rápido que cria uma onda de choque: o trovão. Por isso vemos o raio antes de ouvir o trovão.' },
         { pergunta: 'Qual é o maior planeta do Sistema Solar?', opcoes: ['Terra', 'Saturno', 'Júpiter', 'Marte'], correta: 2, fato: '🪐 Júpiter é tão enorme que 1.300 Terras caberiam dentro dele! Sua "Grande Mancha Vermelha" é uma tempestade que dura há mais de 300 anos — maior que a Terra inteira.' },
         { pergunta: 'De que é feito principalmente nosso corpo?', opcoes: ['Ferro', 'Água', 'Cálcio', 'Açúcar'], correta: 1, fato: '💧 Nosso corpo é 60% água! O cérebro tem 75% de água. Por isso a desidratação causa dor de cabeça e dificulta o raciocínio. Beba pelo menos 6 copos de água por dia!' },
@@ -2386,9 +2386,9 @@ export const fase5ExtraPorFaixa = {
       perguntas: [
         { pergunta: 'Qual é o nosso planeta?', opcoes: ['Marte', 'Terra', 'Júpiter', 'Saturno'], correta: 1, fato: '🌍 A Terra é o único planeta que sabemos que tem vida! Ela tem 71% da superfície coberta de água — por isso parece azul vista do espaço.' },
         { pergunta: 'O que brilha no céu durante o dia e nos aquece?', opcoes: ['A Lua', 'Uma estrela cadente', 'O Sol', 'Saturno'], correta: 2, fato: '☀️ O Sol é uma enorme estrela! Ele é tão grande que caberiam 1 milhão de Terras dentro dele. A sua luz leva 8 minutos para chegar até nós.' },
-        { pergunta: 'O que vemos no céu à noite que parece mudar de formato?', opcoes: ['O Sol', 'A Lua', 'Uma nuvem', 'Um avião'], correta: 1, fato: '🌙 A Lua não muda de forma — o que muda é o ângulo da luz do Sol que vemos. Ela leva 30 dias para dar uma volta completa ao redor da Terra!' },
+        { pergunta: 'O que vemos no céu à noite que parece mudar de formato?', opcoes: ['O Sol', 'A Lua', 'Uma nuvem', 'Um avião'], correta: 1, fato: '🌙 A Lua muda de formato todos os dias — às vezes é redonda, às vezes é uma fatia!' },
         { pergunta: 'Qual planeta tem anéis famosos ao redor dele?', opcoes: ['Marte', 'Vênus', 'Saturno', 'Mercúrio'], correta: 2, fato: '🪐 Os anéis de Saturno são feitos de pedaços de gelo e rocha! Eles têm quase 300.000 km de largura — caberia a distância da Terra à Lua dentro deles.' },
-        { pergunta: 'Como chamamos as pessoas que viajam para o espaço?', opcoes: ['Pilotos', 'Astronautas', 'Mergulhadores', 'Escaladores'], correta: 1, fato: '👨‍🚀 Astronautas ficam meses na Estação Espacial Internacional, flutuando! No espaço não há gravidade, então eles prendem os pés para não flutuar enquanto dormem.' },
+        { pergunta: 'Como chamamos as pessoas que viajam para o espaço?', opcoes: ['Pilotos', 'Astronautas', 'Mergulhadores', 'Escaladores'], correta: 1, fato: '👨‍🚀 No espaço, os astronautas flutuam e dormem presos numa cama especial!' },
       ],
     },
     {
@@ -3324,7 +3324,7 @@ export const formasExtraPorFaixa = {
       xp_reward: 90,
       coins_reward: 90,
       tempo_estimado: 12,
-      historinha: 'Cada prédio famoso do mundo usa geometria de forma inteligente! 🏛️ A Torre Eiffel são triângulos, o Coliseu é um oval, e o Burj Khalifa tem espiral. Vamos explorar a arquitetura geométrica!',
+      historinha: 'Cada prédio famoso do mundo usa geometria de forma inteligente! 🏛️ A Torre Eiffel é feita de triângulos, o Coliseu tem formato oval, e o Burj Khalifa tem espiral. Vamos explorar a arquitetura geométrica!',
       dados: { formas: [
         { id: 'triangulo_arq', nome: 'Triângulo — Estabilidade',  cor: '#D85A30', svg: 'triangle', frase: 'O triângulo é a forma mais rígida!',     funfato: 'Torre Eiffel (1889): 18.000 peças de ferro, todas unidas em triângulos. Pontes são feitas de treliças triangulares. Um triângulo não pode ser deformado sem quebrar um lado — ao contrário do quadrado!', detalhe: 'Treliça: estrutura de triângulos | Rigidez máxima por unidade de peso | Base de pontes, torres e coberturas' },
         { id: 'arco_arq',      nome: 'Arco — Força sem Concreto', cor: '#4F8EE8', svg: 'oval',     frase: 'O arco distribui o peso pelas laterais!', funfato: 'O Coliseu de Roma (70 d.C.) usa 240 arcos de calcário — sem concreto armado. O arco converte pressão vertical em horizontal, que as paredes laterais absorvem. Existem há 6.000 anos!', detalhe: 'Voussoirs (pedras em cunha) | Clave no topo | Empuxo: força horizontal transmitida' },
