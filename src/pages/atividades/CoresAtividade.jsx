@@ -35,18 +35,14 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
-function falar(cor) {
+function falar(cor, atividadeId, temTema) {
   const texto = `${cor.nome}. ${cor.nome}, ${cor.exemplo}.`
-  // só usa a gravação quando id+exemplo batem com o padrão — sets temáticos
-  // (arco-íris, natureza etc.) usam ids próprios ou reaproveitam com texto diferente
-  const padrao = CORES.find(x => x.id === cor.id)
-  if (padrao && padrao.exemplo === cor.exemplo) {
-    const audio = new Audio(`/audio/cores/${cor.id}.mp3`)
-    audio.addEventListener('error', () => falarTTS(texto))
-    audio.play().catch(() => falarTTS(texto))
-    return
-  }
-  falarTTS(texto)
+  const caminho = temTema
+    ? `/audio/cores/_temas/${atividadeId}/${cor.id}.mp3`
+    : `/audio/cores/${cor.id}.mp3`
+  const audio = new Audio(caminho)
+  audio.addEventListener('error', () => falarTTS(texto))
+  audio.play().catch(() => falarTTS(texto))
 }
 
 export default function CoresAtividade() {
@@ -86,7 +82,7 @@ export default function CoresAtividade() {
     const idx = currentIndex
     setFalando(true)
     playSound('correct')
-    falar(cor)
+    falar(cor, atividade.id, !!atividade?.dados?.cores)
 
     if (!ouvidas.has(idx)) {
       const next = new Set(ouvidas)

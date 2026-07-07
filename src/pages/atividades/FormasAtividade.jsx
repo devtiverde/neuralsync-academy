@@ -98,18 +98,14 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
-function falar(forma) {
+function falar(forma, atividadeId, temTema) {
   const texto = `${forma.nome}. ${forma.frase}`
-  // só usa a gravação quando id+frase batem com o padrão (círculo, quadrado...) — sets
-  // temáticos (animais, alimentos etc.) reaproveitam o mesmo id com frase diferente
-  const padrao = FORMAS_DEFAULT.find(x => x.id === forma.id)
-  if (padrao && padrao.frase === forma.frase) {
-    const audio = new Audio(`/audio/formas/${forma.id}.mp3`)
-    audio.addEventListener('error', () => falarTTS(texto))
-    audio.play().catch(() => falarTTS(texto))
-    return
-  }
-  falarTTS(texto)
+  const caminho = temTema
+    ? `/audio/formas/_temas/${atividadeId}/${forma.id}.mp3`
+    : `/audio/formas/${forma.id}.mp3`
+  const audio = new Audio(caminho)
+  audio.addEventListener('error', () => falarTTS(texto))
+  audio.play().catch(() => falarTTS(texto))
 }
 
 export default function FormasAtividade() {
@@ -154,7 +150,7 @@ export default function FormasAtividade() {
     const idx = currentIndex
     setFalando(true)
     playSound('correct')
-    falar(forma)
+    falar(forma, atividade.id, !!atividade?.dados?.formas)
 
     if (!ouvidas.has(idx)) {
       const next = new Set(ouvidas)

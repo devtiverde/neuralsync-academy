@@ -5,6 +5,7 @@ import { playSound } from '../../lib/sounds'
 import { foiAssistido } from '../atividades/IntroAtividade'
 import { getMultipliers, hasEffect, consumePowerup } from '../../lib/powerups'
 import { Trophy, Star, CoinVertical, RocketLaunch } from '@phosphor-icons/react'
+import Nix from '../../components/Nix'
 import '../../styles/crianca.css'
 
 const badgeMap = {
@@ -287,6 +288,9 @@ export default function Encerramento() {
 
         {/* Trophy */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4px' }}>
+            <Nix pose="cheer" size={64} />
+          </div>
           <Trophy weight="duotone" size={90} color="#F59E0B" className="ns-icon-bounce" style={{ marginBottom: '8px', filter: 'drop-shadow(0 0 40px rgba(245,158,11,0.6))' }} />
           <h1 style={{ color: 'white', fontSize: '38px', fontWeight: '900', letterSpacing: '-1px', marginBottom: '6px', lineHeight: 1 }}>Incrível!</h1>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '16px' }}>Atividade concluída com sucesso</p>

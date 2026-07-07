@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LayoutCrianca from '../../components/LayoutCrianca'
-import { Planet } from '@phosphor-icons/react'
+import Nix from '../../components/Nix'
 import '../../styles/crianca.css'
 
 const LS_KEY = 'ns_diario'
@@ -522,7 +522,9 @@ export default function Diario() {
             <div>
               {entradas.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-                  <Planet weight="duotone" size={64} color="#7C3AED" style={{ marginBottom: '16px', filter: 'drop-shadow(0 0 20px rgba(124,58,237,0.5))' }} />
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+                    <Nix pose="sleep" size={64} />
+                  </div>
                   <div style={{ fontSize: '20px', fontWeight: '900', color: 'white', marginBottom: '10px' }}>Seu grimório está vazio</div>
                   <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', marginBottom: '24px', lineHeight: 1.6 }}>
                     Cada entrada que você escrever<br/>vira uma estrela aqui.

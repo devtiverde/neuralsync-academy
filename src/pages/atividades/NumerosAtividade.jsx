@@ -29,17 +29,15 @@ function falarTTS(palavra) {
   window.speechSynthesis.speak(utt)
 }
 
-function falar(numero) {
-  // só usa a gravação quando a palavra bate com o padrão 1–10 (Um..Dez) — atividades
-  // temáticas (romanos, negativos, potências) reaproveitam n mas falam outra coisa
-  const padrao = NUMEROS_DEFAULT.find(x => x.n === numero.n)
-  if (padrao && padrao.word === numero.word) {
-    const audio = new Audio(`/audio/numeros/${numero.n}.mp3`)
-    audio.addEventListener('error', () => falarTTS(numero.word))
-    audio.play().catch(() => falarTTS(numero.word))
-    return
-  }
-  falarTTS(numero.word)
+function falar(numero, atividadeId, temTema, indice) {
+  // atividades temáticas usam o índice como chave (não o "n") porque várias reaproveitam
+  // o mesmo n pra entradas diferentes (frações com numerador 1, negativos e positivos etc.)
+  const caminho = temTema
+    ? `/audio/numeros/_temas/${atividadeId}/${indice}.mp3`
+    : `/audio/numeros/${numero.n}.mp3`
+  const audio = new Audio(caminho)
+  audio.addEventListener('error', () => falarTTS(numero.word))
+  audio.play().catch(() => falarTTS(numero.word))
 }
 
 export default function NumerosAtividade() {
@@ -83,7 +81,7 @@ export default function NumerosAtividade() {
     const idx = currentIndex
     setFalando(true)
     playSound('correct')
-    falar(numero)
+    falar(numero, atividade.id, !!atividade?.dados?.numeros, currentIndex)
 
     if (!ouvidos.has(idx)) {
       const next = new Set(ouvidos)

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useNeuralAI } from '../../hooks/useNeuralAI'
 import SessionTimer from '../../components/SessionTimer'
 import ChatBubble from '../../components/ChatBubble'
+import Nix from '../../components/Nix'
 import '../../styles/crianca.css'
 
 const SUGESTOES_POR_TEMA = {
@@ -129,7 +130,7 @@ export default function NeuralAIChat() {
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center', gap: 16,
       }}>
-        <div style={{ fontSize: 48 }}>🤖</div>
+        <Nix pose="think" size={64} />
         <div style={{ color: 'var(--color-ai)', fontWeight: 700, fontSize: 16 }}>
           Iniciando sessão NeuralAI...
         </div>
@@ -204,13 +205,7 @@ export default function NeuralAIChat() {
           >
             ←
           </button>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, var(--color-ai) 0%, var(--color-primary) 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
-          }}>
-            🤖
-          </div>
+          <Nix pose="ask" size={36} glow={false} sparks={false} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ color: 'white', fontWeight: 800, fontSize: 16 }}>NeuralAI</span>
@@ -275,8 +270,8 @@ export default function NeuralAIChat() {
       }}>
         {/* Mensagem de boas-vindas enquanto IA ainda não respondeu */}
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', marginTop: 60, opacity: 0.35 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🤖</div>
+          <div style={{ textAlign: 'center', marginTop: 60, opacity: 0.35, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <Nix pose="ask" size={56} />
             <div style={{ color: 'white', fontSize: 14 }}>Iniciando conversa...</div>
           </div>
         )}

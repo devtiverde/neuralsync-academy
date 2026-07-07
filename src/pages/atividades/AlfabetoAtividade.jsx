@@ -53,18 +53,14 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
-function falar(letraData) {
+function falar(letraData, atividadeId, temTema) {
   const texto = `${letraData.letra}. ${letraData.palavra}.`
-  // só usa a gravação quando a palavra bate com o padrão A=Avião..Z=Zebra — sets
-  // temáticos (animais, profissões etc.) reaproveitam a letra mas falam outra palavra
-  const padrao = LETRAS.find(x => x.letra === letraData.letra)
-  if (padrao && padrao.palavra === letraData.palavra) {
-    const audio = new Audio(`/audio/alfabeto/${letraData.letra.toLowerCase()}.mp3`)
-    audio.addEventListener('error', () => falarTTS(texto))
-    audio.play().catch(() => falarTTS(texto))
-    return
-  }
-  falarTTS(texto)
+  const caminho = temTema
+    ? `/audio/alfabeto/_temas/${atividadeId}/${letraData.letra.toLowerCase()}.mp3`
+    : `/audio/alfabeto/${letraData.letra.toLowerCase()}.mp3`
+  const audio = new Audio(caminho)
+  audio.addEventListener('error', () => falarTTS(texto))
+  audio.play().catch(() => falarTTS(texto))
 }
 
 export default function AlfabetoAtividade() {
@@ -104,7 +100,7 @@ export default function AlfabetoAtividade() {
     const idx = currentIndex
     setFalando(true)
     playSound('correct')
-    falar(letraData)
+    falar(letraData, atividade.id, !!atividade?.dados?.letras)
 
     if (!visitadas.has(idx)) {
       const next = new Set(visitadas)

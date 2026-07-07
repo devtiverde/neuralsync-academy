@@ -2,6 +2,8 @@
 // role: 'user' | 'assistant'
 // typing: mostra indicador de "digitando..." quando true
 
+import Nix from './Nix'
+
 const TYPING_STYLE = `
 @keyframes chat-dot-bounce {
   0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -29,23 +31,8 @@ function TypingDots() {
 
 function RobotAvatar() {
   return (
-    <div
-      aria-hidden="true"
-      style={{
-        width: 36,
-        height: 36,
-        borderRadius: '50%',
-        background: 'linear-gradient(135deg, var(--color-ai) 0%, var(--color-primary) 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 18,
-        flexShrink: 0,
-        alignSelf: 'flex-end',
-        boxShadow: '0 2px 8px rgba(6,182,212,0.30)',
-      }}
-    >
-      🤖
+    <div aria-hidden="true" style={{ flexShrink: 0, alignSelf: 'flex-end' }}>
+      <Nix pose="ask" size={36} glow={false} sparks={false} />
     </div>
   )
 }
