@@ -65,6 +65,10 @@ const CATEGORIAS = [
   { id: 'offline',    label: 'Offline',    icon: '🌿' },
 ]
 
+function navTrilha(navigate, tipo) {
+  return () => navigate('/trilha?tipo=' + tipo)
+}
+
 export default function HomeCrianca() {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -140,22 +144,22 @@ export default function HomeCrianca() {
   const xpMax = (child.nivel || 1) * 500
 
   const hubItens = [
-    { id: 'quiz',      label: 'Quiz',       icon: '🧩', cat: 'raciocinio', grad: tipoGradiente.quiz,      sub: contsPorTipo.quiz      ? contsPorTipo.quiz      + ' ativ.' : null, show: !!contsPorTipo.quiz,      nav: () => navigate('/trilha') },
-    { id: 'memoria',   label: 'Memória',    icon: '🧠', cat: 'raciocinio', grad: tipoGradiente.memoria,   sub: contsPorTipo.memoria   ? contsPorTipo.memoria   + ' ativ.' : null, show: !!contsPorTipo.memoria,   nav: () => navigate('/trilha') },
-    { id: 'sequencia', label: 'Sequência',  icon: '🔗', cat: 'raciocinio', grad: tipoGradiente.sequencia, sub: contsPorTipo.sequencia ? contsPorTipo.sequencia + ' ativ.' : null, show: !!contsPorTipo.sequencia, nav: () => navigate('/trilha') },
-    { id: 'labirinto', label: 'Labirinto',  icon: '🌀', cat: 'raciocinio', grad: tipoGradiente.labirinto, sub: contsPorTipo.labirinto ? contsPorTipo.labirinto + ' ativ.' : null, show: !!contsPorTipo.labirinto, nav: () => navigate('/trilha') },
-    { id: 'padrao',    label: 'Padrão',     icon: '🔷', cat: 'raciocinio', grad: tipoGradiente.padrao,    sub: contsPorTipo.padrao    ? contsPorTipo.padrao    + ' ativ.' : null, show: !!contsPorTipo.padrao,    nav: () => navigate('/trilha') },
-    { id: 'blocos',    label: 'Blocos',     icon: '🧱', cat: 'raciocinio', grad: tipoGradiente.blocos,    badge: 'IA', sub: contsPorTipo.blocos ? contsPorTipo.blocos + ' ativ.' : null, show: !!contsPorTipo.blocos, nav: () => navigate('/trilha') },
-    { id: 'robo',      label: 'Robô',       icon: '🤖', cat: 'tecnologia', grad: tipoGradiente.robo,      sub: contsPorTipo.robo      ? contsPorTipo.robo      + ' ativ.' : null, show: !!contsPorTipo.robo,      nav: () => navigate('/trilha') },
+    { id: 'quiz',      label: 'Quiz',       icon: '🧩', cat: 'raciocinio', grad: tipoGradiente.quiz,      sub: contsPorTipo.quiz      ? contsPorTipo.quiz      + ' ativ.' : null, show: !!contsPorTipo.quiz,      nav: navTrilha(navigate, 'quiz') },
+    { id: 'memoria',   label: 'Memória',    icon: '🧠', cat: 'raciocinio', grad: tipoGradiente.memoria,   sub: contsPorTipo.memoria   ? contsPorTipo.memoria   + ' ativ.' : null, show: !!contsPorTipo.memoria,   nav: navTrilha(navigate, 'memoria') },
+    { id: 'sequencia', label: 'Sequência',  icon: '🔗', cat: 'raciocinio', grad: tipoGradiente.sequencia, sub: contsPorTipo.sequencia ? contsPorTipo.sequencia + ' ativ.' : null, show: !!contsPorTipo.sequencia, nav: navTrilha(navigate, 'sequencia') },
+    { id: 'labirinto', label: 'Labirinto',  icon: '🌀', cat: 'raciocinio', grad: tipoGradiente.labirinto, sub: contsPorTipo.labirinto ? contsPorTipo.labirinto + ' ativ.' : null, show: !!contsPorTipo.labirinto, nav: navTrilha(navigate, 'labirinto') },
+    { id: 'padrao',    label: 'Padrão',     icon: '🔷', cat: 'raciocinio', grad: tipoGradiente.padrao,    sub: contsPorTipo.padrao    ? contsPorTipo.padrao    + ' ativ.' : null, show: !!contsPorTipo.padrao,    nav: navTrilha(navigate, 'padrao') },
+    { id: 'blocos',    label: 'Blocos',     icon: '🧱', cat: 'raciocinio', grad: tipoGradiente.blocos,    badge: 'IA', sub: contsPorTipo.blocos ? contsPorTipo.blocos + ' ativ.' : null, show: !!contsPorTipo.blocos, nav: navTrilha(navigate, 'blocos') },
+    { id: 'robo',      label: 'Robô',       icon: '🤖', cat: 'tecnologia', grad: tipoGradiente.robo,      sub: contsPorTipo.robo      ? contsPorTipo.robo      + ' ativ.' : null, show: !!contsPorTipo.robo,      nav: navTrilha(navigate, 'robo') },
     { id: 'quizia',    label: 'Quiz IA',    icon: '🧩', cat: 'tecnologia', grad: tipoGradiente.quizia,    badge: 'IA', sub: 'Livre', show: true, nav: () => navigate('/quiz-ia') },
-    { id: 'inventor',  label: 'Inventor',   icon: '💡', cat: 'tecnologia', grad: tipoGradiente.inventor,  badge: 'IA', sub: contsPorTipo.inventor ? contsPorTipo.inventor + ' ativ.' : null, show: !!contsPorTipo.inventor, nav: () => navigate('/trilha') },
+    { id: 'inventor',  label: 'Inventor',   icon: '💡', cat: 'tecnologia', grad: tipoGradiente.inventor,  badge: 'IA', sub: contsPorTipo.inventor ? contsPorTipo.inventor + ' ativ.' : null, show: !!contsPorTipo.inventor, nav: navTrilha(navigate, 'inventor') },
     { id: 'neural-ai', label: 'NeuralAI',   icon: '🤖', cat: 'tecnologia', grad: 'linear-gradient(135deg, #0e7490, #0891b2, #7C3AED)', badge: 'IA', sub: 'Chat IA', show: faixa === 'inventores', nav: () => navigate('/neural-ai') },
-    { id: 'alfabeto',  label: 'Alfabeto',   icon: '🔤', cat: 'letras',     grad: tipoGradiente.alfabeto,  sub: contsPorTipo.alfabeto  ? contsPorTipo.alfabeto  + ' ativ.' : null, show: !!contsPorTipo.alfabeto,  nav: () => navigate('/trilha') },
-    { id: 'numeros',   label: 'Números',    icon: '🔢', cat: 'letras',     grad: tipoGradiente.numeros,   sub: contsPorTipo.numeros   ? contsPorTipo.numeros   + ' ativ.' : null, show: !!contsPorTipo.numeros,   nav: () => navigate('/trilha') },
-    { id: 'formas',    label: 'Formas',     icon: '🔷', cat: 'letras',     grad: tipoGradiente.formas,    sub: contsPorTipo.formas    ? contsPorTipo.formas    + ' ativ.' : null, show: !!contsPorTipo.formas,    nav: () => navigate('/trilha') },
-    { id: 'cores',     label: 'Cores',      icon: '🎨', cat: 'letras',     grad: tipoGradiente.cores,     sub: contsPorTipo.cores     ? contsPorTipo.cores     + ' ativ.' : null, show: !!contsPorTipo.cores,     nav: () => navigate('/trilha') },
-    { id: 'colorir',   label: 'Colorir',    icon: '🖍️', cat: 'letras',    grad: tipoGradiente.colorir,   sub: contsPorTipo.colorir   ? contsPorTipo.colorir   + ' ativ.' : null, show: !!contsPorTipo.colorir,   nav: () => navigate('/trilha') },
-    { id: 'silabas',   label: 'Sílabas',    icon: '🔡', cat: 'letras',     grad: tipoGradiente.silabas,   sub: contsPorTipo.silabas   ? contsPorTipo.silabas   + ' ativ.' : null, show: !!contsPorTipo.silabas,   nav: () => navigate('/trilha') },
+    { id: 'alfabeto',  label: 'Alfabeto',   icon: '🔤', cat: 'letras',     grad: tipoGradiente.alfabeto,  sub: contsPorTipo.alfabeto  ? contsPorTipo.alfabeto  + ' ativ.' : null, show: !!contsPorTipo.alfabeto,  nav: navTrilha(navigate, 'alfabeto') },
+    { id: 'numeros',   label: 'Números',    icon: '🔢', cat: 'letras',     grad: tipoGradiente.numeros,   sub: contsPorTipo.numeros   ? contsPorTipo.numeros   + ' ativ.' : null, show: !!contsPorTipo.numeros,   nav: navTrilha(navigate, 'numeros') },
+    { id: 'formas',    label: 'Formas',     icon: '🔷', cat: 'letras',     grad: tipoGradiente.formas,    sub: contsPorTipo.formas    ? contsPorTipo.formas    + ' ativ.' : null, show: !!contsPorTipo.formas,    nav: navTrilha(navigate, 'formas') },
+    { id: 'cores',     label: 'Cores',      icon: '🎨', cat: 'letras',     grad: tipoGradiente.cores,     sub: contsPorTipo.cores     ? contsPorTipo.cores     + ' ativ.' : null, show: !!contsPorTipo.cores,     nav: navTrilha(navigate, 'cores') },
+    { id: 'colorir',   label: 'Colorir',    icon: '🖍️', cat: 'letras',    grad: tipoGradiente.colorir,   sub: contsPorTipo.colorir   ? contsPorTipo.colorir   + ' ativ.' : null, show: !!contsPorTipo.colorir,   nav: navTrilha(navigate, 'colorir') },
+    { id: 'silabas',   label: 'Sílabas',    icon: '🔡', cat: 'letras',     grad: tipoGradiente.silabas,   sub: contsPorTipo.silabas   ? contsPorTipo.silabas   + ' ativ.' : null, show: !!contsPorTipo.silabas,   nav: navTrilha(navigate, 'silabas') },
     { id: 'digitacao', label: 'Digitação',  icon: '⌨️', cat: 'letras',     grad: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', sub: 'Jogo',    show: true, nav: () => navigate('/digitacao') },
     { id: 'diario',    label: 'Meu Diário', icon: '📔', cat: 'letras',     grad: 'linear-gradient(135deg, #5b21b6, #7C3AED)',  sub: 'Escreva', show: true, nav: () => navigate('/diario') },
     { id: 'kids',      label: 'Kids TV',    icon: '🎬', cat: 'conteudo',   grad: 'linear-gradient(135deg, #4338ca, #6366f1)',  sub: 'Artigos', show: true, nav: () => navigate('/kids') },
@@ -166,7 +170,7 @@ export default function HomeCrianca() {
     { id: 'quebra-cabeca',       label: 'Quebra-Cabeça',icon: '🧩', cat: 'raciocinio', grad: tipoGradiente['quebra-cabeca'],       sub: 'Puzzle',    show: true, nav: () => navigate('/atividade/quebra-cabeca') },
     { id: 'conectar-pontos',     label: 'Conectar',    icon: '✏️', cat: 'raciocinio', grad: tipoGradiente['conectar-pontos'],     sub: 'Desenho',   show: true, nav: () => navigate('/atividade/conectar-pontos') },
     { id: 'classificar-objetos', label: 'Classificar', icon: '📦', cat: 'raciocinio', grad: tipoGradiente['classificar'],         sub: 'Organizar', show: true, nav: () => navigate('/atividade/classificar-objetos') },
-    { id: 'ingles',              label: 'Inglês',       icon: '🇺🇸', cat: 'letras',    grad: tipoGradiente.ingles,                sub: contsPorTipo.ingles ? contsPorTipo.ingles + ' ativ.' : '4 ativ.', show: true, nav: () => navigate('/trilha') },
+    { id: 'ingles',              label: 'Inglês',       icon: '🇺🇸', cat: 'letras',    grad: tipoGradiente.ingles,                sub: contsPorTipo.ingles ? contsPorTipo.ingles + ' ativ.' : '4 ativ.', show: true, nav: navTrilha(navigate, 'ingles') },
     { id: 'caca-palavras',       label: 'Caça-Palavras',icon: '🔍', cat: 'letras',     grad: tipoGradiente['caca-palavras'],       sub: 'Palavras',  show: true, nav: () => navigate('/atividade/caca-palavras') },
     { id: 'historia-interativa', label: 'História',    icon: '📖', cat: 'conteudo',   grad: tipoGradiente['historia-interativa'], sub: 'Aventura',  show: true, nav: () => navigate('/atividade/historia-interativa') },
     { id: 'zona-emocoes',        label: 'Emoções',     icon: '💗', cat: 'emocional',  grad: tipoGradiente['zona-emocoes'],         sub: 'Sentimentos', show: true, nav: () => navigate('/atividade/zona-emocoes') },

@@ -1,6 +1,12 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import {
+  EMOCOES_BASE, FUNCAO_EMOCAO, EMOCOES_POR_FAIXA,
+  ESTRATEGIAS_NEGATIVAS_BASE, ESTRATEGIAS_POSITIVAS_BASE, ESTRATEGIAS_MISTAS_BASE,
+  ESTRATEGIAS_NEGATIVAS_POR_FAIXA, ESTRATEGIAS_POSITIVAS_POR_FAIXA,
+  CENAS_POR_FAIXA,
+} from '../../data/zonaEmocoesData'
 
 const ATIVIDADE = {
   id: 'zona-emocoes',
@@ -8,51 +14,49 @@ const ATIVIDADE = {
   emoji: '💗',
   titulo: 'Zona das Emoções',
   habilidade: 'Inteligência Emocional',
-  historinha: 'Cada emoção tem uma cor! Descubra como cada personagem se sente em cada cena e escolha o que ajuda a se sentir melhor.',
-  tempo_estimado: 5,
+  historinha: 'Cada emoção existe por um motivo! Descubra como cada cena te faz sentir, entenda pra que serve essa emoção e escolha o que ajuda a lidar bem com ela.',
+  tempo_estimado: 6,
   xp_reward: 75,
   coins_reward: 13,
 }
 
-const EMOCOES = [
-  { id: 'feliz',      emoji: '😊', label: 'Feliz',      cor: '#FBBF24' },
-  { id: 'triste',     emoji: '😢', label: 'Triste',     cor: '#3B82F6' },
-  { id: 'bravo',      emoji: '😠', label: 'Bravo',      cor: '#EF4444' },
-  { id: 'assustado',  emoji: '😨', label: 'Assustado',  cor: '#8B5CF6' },
-  { id: 'calmo',      emoji: '😌', label: 'Calmo',      cor: '#10B981' },
-]
-
-const ESTRATEGIAS = [
-  { id: 'respirar',   emoji: '🌬️', label: 'Respirar fundo',       afirmacao: 'Respirar fundo ajuda seu corpo a ficar mais calmo. Muito bem!' },
-  { id: 'contar',     emoji: '🔢', label: 'Contar até 10',         afirmacao: 'Contar devagar dá um tempinho pro seu cérebro pensar antes de agir. Ótima escolha!' },
-  { id: 'abracar',    emoji: '🤗', label: 'Pedir um abraço',       afirmacao: 'Um abraço de quem a gente ama sempre ajuda o coração. Que legal!' },
-  { id: 'conversar',  emoji: '💬', label: 'Conversar sobre isso',  afirmacao: 'Falar sobre o que sentimos ajuda a entender melhor as emoções. Excelente!' },
-  { id: 'desenhar',   emoji: '🎨', label: 'Desenhar o que sinto',  afirmacao: 'Desenhar é uma forma linda de colocar os sentimentos pra fora. Adorei!' },
-]
-
-const CENAS = [
-  { texto: 'Você ganhou de presente o brinquedo que mais queria!',                                  ilustracao: '🎁', correta: 'feliz' },
-  { texto: 'Seu brinquedo favorito quebrou sem querer.',                                             ilustracao: '🧸', correta: 'triste' },
-  { texto: 'Seu irmão pegou seu brinquedo sem pedir licença.',                                        ilustracao: '🚫', correta: 'bravo' },
-  { texto: 'Você ouviu um trovão bem forte lá fora.',                                                 ilustracao: '⛈️', correta: 'assustado' },
-  { texto: 'Você está deitado no sofá ouvindo uma música tranquila.',                                  ilustracao: '🎶', correta: 'calmo' },
-  { texto: 'Você conseguiu terminar sozinho uma atividade difícil!',                                   ilustracao: '🏆', correta: 'feliz' },
-  { texto: 'Seu amigo disse que não quer mais brincar com você hoje.',                                 ilustracao: '🙁', correta: 'triste' },
-  { texto: 'Você arrumou todo o seu quarto, e alguém bagunçou tudo de novo.',                          ilustracao: '🧹', correta: 'bravo' },
-]
+function getFaixaAtiva() {
+  try {
+    const c = JSON.parse(localStorage.getItem('ns_active_child') || 'null')
+    const faixa = c?.faixa_etaria
+    if (faixa && EMOCOES_POR_FAIXA[faixa]) return faixa
+  } catch { /* ignora */ }
+  return 'construtores'
+}
 
 export default function ZonaEmocoesAtividade() {
   const navigate  = useNavigate()
   const inicioRef = useRef(null)
 
+  const faixa = useMemo(getFaixaAtiva, [])
+  const CENAS = CENAS_POR_FAIXA[faixa]
+  const EMOCOES = useMemo(
+    () => EMOCOES_POR_FAIXA[faixa].map(id => ({ id, ...EMOCOES_BASE[id] })),
+    [faixa],
+  )
+
   const [iniciou,   setIniciou]   = useState(false)
   const [cenaIdx,   setCenaIdx]   = useState(0)
-  const [fase,      setFase]      = useState('emocao') // 'emocao' | 'estrategia' | 'fim'
+  const [fase,      setFase]      = useState('emocao') // 'emocao' | 'explicacao' | 'estrategia'
   const [tentativas, setTentativas] = useState(0)
   const [erroId,    setErroId]    = useState(null)
   const [acertosPrimeiraTentativa, setAcertosPrimeiraTentativa] = useState(0)
   const [estrategiaEscolhida, setEstrategiaEscolhida] = useState(null)
   const [concluido, setConcluido] = useState(false)
+
+  // Evita que um toque impreciso perto do topo da tela dispare o gesto nativo de
+  // "puxar para atualizar" do navegador mobile — escopado só a esta atividade
+  // (uma tentativa anterior fez isso globalmente e quebrou o scroll de outras páginas).
+  useEffect(() => {
+    const anterior = document.body.style.overscrollBehaviorY
+    document.body.style.overscrollBehaviorY = 'contain'
+    return () => { document.body.style.overscrollBehaviorY = anterior }
+  }, [])
 
   const handleComecar = useCallback(() => {
     setIniciou(true)
@@ -64,13 +68,15 @@ export default function ZonaEmocoesAtividade() {
   const escolherEmocao = useCallback((emocaoId) => {
     if (emocaoId === cena.correta) {
       if (tentativas === 0) setAcertosPrimeiraTentativa(prev => prev + 1)
-      setFase('estrategia')
+      setFase('explicacao')
     } else {
       setErroId(emocaoId)
       setTentativas(prev => prev + 1)
       setTimeout(() => setErroId(null), 450)
     }
   }, [cena, tentativas])
+
+  const irParaEstrategia = useCallback(() => setFase('estrategia'), [])
 
   const escolherEstrategia = useCallback((estrategiaId) => {
     setEstrategiaEscolhida(estrategiaId)
@@ -86,7 +92,7 @@ export default function ZonaEmocoesAtividade() {
     } else {
       setConcluido(true)
     }
-  }, [cenaIdx])
+  }, [cenaIdx, CENAS.length])
 
   const verResultado = useCallback(() => {
     const xp    = ATIVIDADE.xp_reward + acertosPrimeiraTentativa
@@ -137,7 +143,7 @@ export default function ZonaEmocoesAtividade() {
             Você conheceu todas as cenas!
           </h3>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, marginBottom: 12 }}>
-            Reconhecer o que sentimos é o primeiro passo para cuidar bem das nossas emoções.
+            Reconhecer o que sentimos — e entender por que sentimos — é o primeiro passo pra cuidar bem das nossas emoções.
           </p>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 28 }}>
             Você identificou {acertosPrimeiraTentativa} de {CENAS.length} emoções de primeira!
@@ -162,6 +168,24 @@ export default function ZonaEmocoesAtividade() {
       </div>
     )
   }
+
+  const emocaoCorreta = EMOCOES_BASE[cena.correta]
+  const valencia = emocaoCorreta.valencia
+
+  let poolEstrategias
+  if (cena.estrategiasOverride) {
+    poolEstrategias = cena.estrategiasOverride.map(id => ({ id, ...ESTRATEGIAS_MISTAS_BASE[id] }))
+  } else if (valencia === 'positiva') {
+    poolEstrategias = ESTRATEGIAS_POSITIVAS_POR_FAIXA[faixa].map(id => ({ id, ...ESTRATEGIAS_POSITIVAS_BASE[id] }))
+  } else {
+    poolEstrategias = ESTRATEGIAS_NEGATIVAS_POR_FAIXA[faixa].map(id => ({ id, ...ESTRATEGIAS_NEGATIVAS_BASE[id] }))
+  }
+
+  const perguntaEstrategia = valencia === 'positiva'
+    ? 'O que você pode fazer com esse sentimento bom?'
+    : valencia === 'mista'
+      ? 'Como lidar com dois sentimentos ao mesmo tempo?'
+      : 'O que ajuda a se sentir melhor nessa hora?'
 
   return (
     <div style={{
@@ -198,7 +222,7 @@ export default function ZonaEmocoesAtividade() {
         <p style={{ color: 'white', fontSize: 18, lineHeight: 1.5, margin: 0 }}>{cena.texto}</p>
       </div>
 
-      {fase === 'emocao' ? (
+      {fase === 'emocao' && (
         <>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, marginBottom: 14, fontWeight: 700 }}>
             Como você se sente nessa hora?
@@ -246,15 +270,53 @@ export default function ZonaEmocoesAtividade() {
             }
           `}</style>
         </>
-      ) : (
+      )}
+
+      {fase === 'explicacao' && (
+        <div style={{
+          background: `${emocaoCorreta.cor}14`,
+          border: `1px solid ${emocaoCorreta.cor}55`,
+          borderRadius: 20,
+          padding: '24px 28px',
+          maxWidth: 480,
+          width: '100%',
+          textAlign: 'center',
+        }}>
+          <div style={{ fontSize: 44, marginBottom: 10 }}>{emocaoCorreta.emoji}</div>
+          <p style={{ color: emocaoCorreta.cor, fontSize: 14, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>
+            {emocaoCorreta.label}
+          </p>
+          <p style={{ color: 'white', fontSize: 15.5, lineHeight: 1.6, marginBottom: 20 }}>
+            {FUNCAO_EMOCAO[cena.correta]?.[faixa]}
+          </p>
+          <button
+            onClick={irParaEstrategia}
+            style={{
+              background: emocaoCorreta.cor,
+              color: 'white',
+              border: 'none',
+              borderRadius: 12,
+              padding: '12px 28px',
+              fontSize: 15,
+              fontFamily: 'Nunito, sans-serif',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Entendi →
+          </button>
+        </div>
+      )}
+
+      {fase === 'estrategia' && (
         <>
           {!estrategiaEscolhida ? (
             <>
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, marginBottom: 14, fontWeight: 700 }}>
-                O que ajuda a se sentir melhor nessa hora?
+                {perguntaEstrategia}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', maxWidth: 560 }}>
-                {ESTRATEGIAS.map(estr => (
+                {poolEstrategias.map(estr => (
                   <button
                     key={estr.id}
                     onClick={() => escolherEstrategia(estr.id)}
@@ -291,10 +353,10 @@ export default function ZonaEmocoesAtividade() {
               textAlign: 'center',
             }}>
               <div style={{ fontSize: 40, marginBottom: 10 }}>
-                {ESTRATEGIAS.find(e => e.id === estrategiaEscolhida)?.emoji}
+                {poolEstrategias.find(e => e.id === estrategiaEscolhida)?.emoji}
               </div>
               <p style={{ color: 'white', fontSize: 15.5, lineHeight: 1.5, marginBottom: 20 }}>
-                {ESTRATEGIAS.find(e => e.id === estrategiaEscolhida)?.afirmacao}
+                {poolEstrategias.find(e => e.id === estrategiaEscolhida)?.afirmacao?.[faixa]}
               </p>
               <button
                 onClick={proximaCena}

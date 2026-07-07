@@ -98,6 +98,7 @@ export default function Trilha() {
   const [missaoBonusReivindicado, setMissaoBonusReivindicado] = useState(false)
   const [trilhaSemanal, setTrilhaSemanal] = useState(null)
   const [temaAtual, setTemaAtual] = useState(null)
+  const [tipoAberto, setTipoAberto] = useState(false)
 
   const { atividades: activities } = useAtividades(faixa)
 
@@ -368,54 +369,89 @@ export default function Trilha() {
           })}
         </div>
 
-        {/* ── FILTROS POR TIPO DE ATIVIDADE ────────────────────── */}
+        {/* ── FILTRO POR TIPO — painel suspenso animado ────────── */}
         {(() => {
           const tiposComAtiv = [...new Set(activities.map(a => a.tipo))]
           if (tiposComAtiv.length < 2) return null
           const tipoOrder = ['quiz','memoria','sequencia','labirinto','robo','padrao','quizia','inventor','blocos','numeros','formas','cores','alfabeto','ingles','colorir','silabas']
           const tiposOrdenados = tipoOrder.filter(t => tiposComAtiv.includes(t))
+          const tcAtivo = filtroTipo !== 'todos' ? tipoConfig[filtroTipo] : null
+          const selecionar = (t) => { changeTipo(t); setTipoAberto(false) }
           return (
-            <div style={{
-              background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)',
-              padding: '10px 28px', display: 'flex', gap: '8px', alignItems: 'center',
-              overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', flexShrink: 0,
-            }}>
-              <span style={{ fontSize: '10px', fontWeight: '800', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>Tipo:</span>
-              <button onClick={() => changeTipo('todos')} style={{
-                borderRadius: '99px', padding: '6px 14px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                background: filtroTipo === 'todos' ? '#7C3AED' : 'rgba(255,255,255,0.05)',
-                color: filtroTipo === 'todos' ? 'white' : 'rgba(255,255,255,0.4)',
-                border: filtroTipo === 'todos' ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                boxShadow: filtroTipo === 'todos' ? '0 3px 10px rgba(124,58,237,0.4)' : 'none',
-                transition: 'all 0.15s',
+            <div style={{ background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 28px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => setTipoAberto(v => !v)}
+                  aria-expanded={tipoAberto}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '7px', borderRadius: '99px',
+                    padding: '7px 16px', fontSize: '12px', fontWeight: '800', cursor: 'pointer',
+                    background: tipoAberto ? 'rgba(124,58,237,0.3)' : 'rgba(255,255,255,0.06)',
+                    border: '1px solid ' + (tipoAberto ? 'rgba(124,58,237,0.6)' : 'rgba(255,255,255,0.1)'),
+                    color: 'white', fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.2s',
+                  }}
+                >
+                  <MagnifyingGlass weight="duotone" size={14} color="#a78bfa" />
+                  Filtrar por tipo
+                  <span style={{ display: 'inline-block', fontSize: '10px', transition: 'transform 0.25s ease', transform: tipoAberto ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+                </button>
+                {tcAtivo && (
+                  <button onClick={() => changeTipo('todos')} style={{
+                    display: 'flex', alignItems: 'center', gap: '5px', borderRadius: '99px',
+                    padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                    background: tcAtivo.cor + '25', border: `1px solid ${tcAtivo.cor}55`,
+                    color: tcAtivo.cor, fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  }}>
+                    {tcAtivo.icon} {tcAtivo.label} ✕
+                  </button>
+                )}
+              </div>
+
+              <div style={{
+                overflow: 'hidden',
+                maxHeight: tipoAberto ? 240 : 0,
+                opacity: tipoAberto ? 1 : 0,
+                marginTop: tipoAberto ? 10 : 0,
+                transition: 'max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease',
               }}>
-                Todos
-              </button>
-              {tiposOrdenados.map(t => {
-                const tc = tipoConfig[t]
-                const qtd = activities.filter(a => a.tipo === t).length
-                const ativo = filtroTipo === t
-                return (
-                  <button key={t} onClick={() => changeTipo(t)} style={{
-                    borderRadius: '99px', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                    background: ativo ? tc.cor : 'rgba(255,255,255,0.05)',
-                    color: ativo ? 'white' : 'rgba(255,255,255,0.4)',
-                    border: ativo ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                    boxShadow: ativo ? `0 3px 10px ${tc.cor}50` : 'none',
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button onClick={() => selecionar('todos')} style={{
+                    borderRadius: '99px', padding: '6px 14px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                    background: filtroTipo === 'todos' ? '#7C3AED' : 'rgba(255,255,255,0.05)',
+                    color: filtroTipo === 'todos' ? 'white' : 'rgba(255,255,255,0.5)',
+                    border: filtroTipo === 'todos' ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                    fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    boxShadow: filtroTipo === 'todos' ? '0 3px 10px rgba(124,58,237,0.4)' : 'none',
                     transition: 'all 0.15s',
                   }}>
-                    {tc.icon} {tc.label}
-                    <span style={{
-                      background: ativo ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
-                      borderRadius: '99px', padding: '1px 6px', fontSize: '10px', fontWeight: '900',
-                      minWidth: '18px', textAlign: 'center',
-                    }}>{qtd}</span>
+                    🌟 Todos
                   </button>
-                )
-              })}
+                  {tiposOrdenados.map(t => {
+                    const tc = tipoConfig[t]
+                    const qtd = activities.filter(a => a.tipo === t).length
+                    const ativo = filtroTipo === t
+                    return (
+                      <button key={t} onClick={() => selecionar(t)} style={{
+                        borderRadius: '99px', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                        background: ativo ? tc.cor : 'rgba(255,255,255,0.05)',
+                        color: ativo ? 'white' : 'rgba(255,255,255,0.4)',
+                        border: ativo ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                        display: 'flex', alignItems: 'center', gap: '4px',
+                        fontFamily: 'Plus Jakarta Sans, sans-serif',
+                        boxShadow: ativo ? `0 3px 10px ${tc.cor}50` : 'none',
+                        transition: 'all 0.15s',
+                      }}>
+                        {tc.icon} {tc.label}
+                        <span style={{
+                          background: ativo ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
+                          borderRadius: '99px', padding: '1px 6px', fontSize: '10px', fontWeight: '900',
+                          minWidth: '18px', textAlign: 'center',
+                        }}>{qtd}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           )
         })()}
