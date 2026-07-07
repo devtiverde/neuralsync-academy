@@ -209,11 +209,26 @@ const HISTORIAS = {
 
 const CONFETTI_CORES = ['#7C3AED','#F97316','#06B6D4','#10B981','#F59E0B','#EF4444','#8B5CF6','#3B82F6']
 
-function falar(texto) {
+function falarTTS(texto) {
   window.speechSynthesis.cancel()
   const utt = new SpeechSynthesisUtterance(texto)
   utt.lang = 'pt-BR'; utt.rate = 0.85; utt.pitch = 1.1
   window.speechSynthesis.speak(utt)
+}
+
+// toca a narração gravada do nó atual; cai pro TTS se ainda não existir gravação
+// (protege contra história/nó novo adicionado depois sem áudio correspondente)
+let audioAtual = null
+function pararNarracao() {
+  window.speechSynthesis.cancel()
+  if (audioAtual) { audioAtual.pause(); audioAtual.currentTime = 0 }
+}
+function falar(historiaId, noId, texto) {
+  if (!historiaId || !noId) { falarTTS(texto); return }
+  const audio = new Audio(`/audio/historia-interativa/${historiaId}/${noId}.mp3`)
+  audioAtual = audio
+  audio.addEventListener('error', () => falarTTS(texto))
+  audio.play().catch(() => falarTTS(texto))
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -242,7 +257,7 @@ export default function HistoriaInterativaAtividade() {
   const noAtual  = historia  ? historia.nos[noId]     : null
 
   const escolher = useCallback((escolha) => {
-    window.speechSynthesis.cancel()
+    pararNarracao()
     setNarrando(false)
     setHistoricoEscolhas(prev => [...prev, { noId, escolhaTexto: escolha.texto }])
     setNoId(escolha.proximo)
@@ -343,7 +358,7 @@ export default function HistoriaInterativaAtividade() {
 
         {/* Narrate button */}
         <button
-          onClick={() => { falar(noAtual.texto); setNarrando(true) }}
+          onClick={() => { falar(historiaId, noId, noAtual.texto); setNarrando(true) }}
           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '8px 16px', fontSize: 13, cursor: 'pointer', marginBottom: 28, fontFamily: 'Nunito, sans-serif' }}
         >
           🔊 Ouvir narração
@@ -442,14 +457,14 @@ export default function HistoriaInterativaAtividade() {
         {/* Buttons */}
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', zIndex: 1 }}>
           <button
-            onClick={() => { window.speechSynthesis.cancel(); setNoId('inicio'); setHistoricoEscolhas([]); setFase('selecao') }}
+            onClick={() => { pararNarracao(); setNoId('inicio'); setHistoricoEscolhas([]); setFase('selecao') }}
             style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 14, padding: '14px 28px', fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}
           >
             🔄 Recomeçar
           </button>
           <button
             onClick={() => {
-              window.speechSynthesis.cancel()
+              pararNarracao()
               navigate('/encerramento', {
                 state: {
                   xp: ATIVIDADE.xp_reward,

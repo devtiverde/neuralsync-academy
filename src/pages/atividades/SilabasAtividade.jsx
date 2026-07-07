@@ -16,6 +16,15 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
+// toca a gravação da palavra completa quando existir; cai pro TTS caso contrário
+// ou quando a palavra não tem áudio gravado (ex: novas palavras temáticas futuras)
+function falarPalavra(id, texto) {
+  if (!id) { falarTTS(texto); return }
+  const audio = new Audio(`/audio/silabas/${id}.mp3`)
+  audio.addEventListener('error', () => falarTTS(texto))
+  audio.play().catch(() => falarTTS(texto))
+}
+
 function embaralhar(silabas) {
   const fichas = silabas.map((texto, fichaId) => ({ fichaId, texto }))
   for (let i = fichas.length - 1; i > 0; i--) {
@@ -91,7 +100,7 @@ export default function SilabasAtividade() {
       setTravado(true)
       const correta = novosSlots.every((s, i) => s === atual.silabas[i])
       if (correta) {
-        setTimeout(() => { playSound('correct'); falarTTS(atual.palavra) }, 300)
+        setTimeout(() => { playSound('correct'); falarPalavra(atual.id, atual.palavra) }, 300)
         setTimeout(() => {
           const novoAcertos = new Set(acertos)
           novoAcertos.add(currentIndex)
@@ -176,7 +185,7 @@ export default function SilabasAtividade() {
         <div style={{ fontSize: '80px', lineHeight: 1 }}>{atual.emoji}</div>
 
         <button
-          onClick={() => falarTTS(atual.palavra)}
+          onClick={() => falarPalavra(atual.id, atual.palavra)}
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
             background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.35)',

@@ -130,7 +130,7 @@ const TEXTOS_INV = [
 
 // ─── Utilidades ──────────────────────────────────────────────────────────────
 
-function falar(texto, lang = 'en-US') {
+function falarTTS(texto, lang = 'en-US') {
   if (!window.speechSynthesis) return
   window.speechSynthesis.cancel()
   const utt = new SpeechSynthesisUtterance(texto)
@@ -138,6 +138,18 @@ function falar(texto, lang = 'en-US') {
   utt.rate = 0.82
   utt.pitch = 1.0
   window.speechSynthesis.speak(utt)
+}
+
+function slug(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+}
+
+// toca a gravação em inglês quando existir (vocabulário/flashcards); cai pro TTS
+// pra frases/opções que ainda não têm áudio gravado (ex: quiz de gramática)
+function falar(texto, lang = 'en-US') {
+  const audio = new Audio(`/audio/ingles/${slug(texto)}.mp3`)
+  audio.addEventListener('error', () => falarTTS(texto, lang))
+  audio.play().catch(() => falarTTS(texto, lang))
 }
 
 function shuffle(arr) {
