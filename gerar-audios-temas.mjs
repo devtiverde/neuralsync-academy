@@ -26,14 +26,20 @@ for (const val of Object.values(all)) {
 
 const tarefas = []
 
-// ── Alfabeto: texto = "{Letra}. {Palavra}." ──────────────────────────────────
+// ── Alfabeto: letra e palavra em arquivos SEPARADOS (tocados em sequência com
+// pausa real via JS) ──────────────────────────────────────────────────────────
 for (const at of buckets.alfabeto) {
   if (!at.dados?.letras) continue // sem override -> já usa o arquivo padrão a-z.mp3
   for (const l of at.dados.letras) {
     tarefas.push({
       categoria: `alfabeto/_temas/${slug(at.id)}`,
       arquivo: l.letra.toLowerCase(),
-      texto: `${l.letra}. ${l.palavra}.`,
+      texto: `${l.letra}.`,
+    })
+    tarefas.push({
+      categoria: `alfabeto/_temas/${slug(at.id)}`,
+      arquivo: `${l.letra.toLowerCase()}-palavra`,
+      texto: `${l.palavra}.`,
     })
   }
 }

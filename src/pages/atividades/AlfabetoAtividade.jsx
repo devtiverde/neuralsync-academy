@@ -55,12 +55,23 @@ function falarTTS(texto) {
 
 function falar(letraData, atividadeId, temTema) {
   const texto = `${letraData.letra}. ${letraData.palavra}.`
-  const caminho = temTema
-    ? `/audio/alfabeto/_temas/${atividadeId}/${letraData.letra.toLowerCase()}.mp3`
-    : `/audio/alfabeto/${letraData.letra.toLowerCase()}.mp3`
-  const audio = new Audio(caminho)
-  audio.addEventListener('error', () => falarTTS(texto))
-  audio.play().catch(() => falarTTS(texto))
+  const letra = letraData.letra.toLowerCase()
+  const base = temTema ? `/audio/alfabeto/_temas/${atividadeId}` : '/audio/alfabeto'
+
+  // letra e palavra são arquivos separados — toca a letra, espera uma pausa real
+  // e só então toca a palavra (mais natural que confiar em pontuação dentro do TTS)
+  let jaCaiuNoTTS = false
+  const cairNoTTS = () => { if (!jaCaiuNoTTS) { jaCaiuNoTTS = true; falarTTS(texto) } }
+
+  const audioLetra = new Audio(`${base}/${letra}.mp3`)
+  const audioPalavra = new Audio(`${base}/${letra}-palavra.mp3`)
+  audioLetra.addEventListener('error', cairNoTTS)
+  audioPalavra.addEventListener('error', cairNoTTS)
+  audioLetra.addEventListener('ended', () => {
+    if (jaCaiuNoTTS) return
+    setTimeout(() => { if (!jaCaiuNoTTS) audioPalavra.play().catch(cairNoTTS) }, 380)
+  })
+  audioLetra.play().catch(cairNoTTS)
 }
 
 export default function AlfabetoAtividade() {

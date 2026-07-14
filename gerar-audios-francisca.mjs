@@ -67,7 +67,10 @@ const tarefas = [
   ...CORES.map(c => ({ categoria: 'cores', arquivo: c.id, texto: `${c.nome}. ${c.nome}, ${c.exemplo}.` })),
   ...FORMAS.map(f => ({ categoria: 'formas', arquivo: f.id, texto: `${f.nome}. ${f.frase}` })),
   ...NUMEROS.map(n => ({ categoria: 'numeros', arquivo: n.id, texto: n.word })),
-  ...ALFABETO.map(l => ({ categoria: 'alfabeto', arquivo: l.letra.toLowerCase(), texto: `${l.letra}. ${l.palavra}.` })),
+  // alfabeto: letra e palavra em arquivos SEPARADOS — tocados em sequência com pausa
+  // real via JS (setTimeout), não dá pra confiar em pontuação pra pausa dentro do TTS
+  ...ALFABETO.map(l => ({ categoria: 'alfabeto', arquivo: l.letra.toLowerCase(), texto: `${l.letra}.` })),
+  ...ALFABETO.map(l => ({ categoria: 'alfabeto', arquivo: `${l.letra.toLowerCase()}-palavra`, texto: `${l.palavra}.` })),
   ...SILABAS.map(s => ({ categoria: 'silabas', arquivo: s.id, texto: s.palavra })),
 ]
 
