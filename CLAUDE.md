@@ -19,8 +19,15 @@ Requires a `.env` file with:
 ```
 VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
-VITE_ANTHROPIC_API_KEY=...   # Required for QuizIA and Inventor (Phase 3)
 ```
+
+⚠️ **Never add the Anthropic API key to `.env`.** Anything prefixed with `VITE_` is inlined
+into the client bundle and becomes public. The AI features (QuizIA, Inventor, NeuralAI) call
+the `ai-proxy` and `neuralai-chat` Edge Functions instead — the key lives only in the Supabase
+Edge Function secrets as `ANTHROPIC_API_KEY`, never in this repo.
+
+This file used to instruct adding `VITE_ANTHROPIC_API_KEY` here. The code was migrated off it,
+but the instruction stayed behind and would lead a new dev to reintroduce the leak.
 
 ## Architecture
 

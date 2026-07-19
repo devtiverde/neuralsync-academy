@@ -1,0 +1,33 @@
+# Headers de segurança — Cloudflare Pages
+# Achado da auditoria de 2026-07-19: o projeto não tinha NENHUM header de segurança.
+# O token de sessão do Supabase fica em localStorage, então um XSS = takeover de conta.
+# CSP é a principal mitigação disso.
+#
+# ⚠️ A CSP está em REPORT-ONLY de propósito. Ela NÃO bloqueia nada ainda — só reporta
+# violação no console do navegador. Motivo: uma CSP errada quebra a produção inteira, e
+# esta não foi validada em navegador real ainda.
+#
+# PARA ATIVAR DE VERDADE (fazer depois de conferir):
+#   1. Navegue pelo app logado (área pai, área criança, um jogo, Kids TV com vídeo,
+#      Loja, e a tela de Planos) com o console aberto.
+#   2. Se não aparecer nenhum "[Report Only] Refused to...", troque a linha
+#      `Content-Security-Policy-Report-Only:` por `Content-Security-Policy:`.
+#   3. Se aparecer, ajuste a diretiva citada ANTES de trocar.
+#
+# O hash em script-src é do script inline de registro do Service Worker no index.html.
+# ⚠️ Se aquele script mudar, o hash muda — recalcular, senão o SW para de registrar.
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'sha256-5e9V94+BPvB4jwqEZZWPBIYg6qzV5b90BsbGbMMKo9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+# Os áudios e assets com hash no nome podem ser cacheados agressivamente
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/audio/*
+  Cache-Control: public, max-age=604800

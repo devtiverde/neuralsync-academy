@@ -120,7 +120,9 @@ h1, h2, h3, .crianca-heading {
   border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: flex-start;
-  padding: var(--sp-2) var(--sp-2) var(--sp-4);
+  /* o index.html usa viewport-fit=cover, então em iPhone com home indicator a barra
+     ficava por baixo dele. env() vale 0 em aparelho sem notch, então é seguro sempre. */
+  padding: var(--sp-2) var(--sp-2) calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
   box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
   z-index: 100;
   overflow-x: auto;
