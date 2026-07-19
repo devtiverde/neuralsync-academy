@@ -560,7 +560,7 @@ export default function Trilha() {
                       <div style={{ width: '80px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '99px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: (mConcluidas / mActs.length * 100) + '%', background: mcfg.cor, borderRadius: '99px', transition: 'width 0.5s' }} />
                       </div>
-                      <button onClick={() => setFiltroMateria(m)} style={{ background: mcfg.cor + '15', border: `1px solid ${mcfg.cor}30`, borderRadius: '99px', padding: '5px 14px', color: mcfg.cor, fontSize: '11px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', whiteSpace: 'nowrap' }}>
+                      <button onClick={() => changeTipo(m)} style={{ background: mcfg.cor + '15', border: `1px solid ${mcfg.cor}30`, borderRadius: '99px', padding: '5px 14px', color: mcfg.cor, fontSize: '11px', fontWeight: '700', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', whiteSpace: 'nowrap' }}>
                         Ver só →
                       </button>
                     </div>
