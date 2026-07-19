@@ -35,6 +35,7 @@ const tipoTheme = {
   ingles:    { bg: 'linear-gradient(160deg,#040e1f 0%,#0a2040 100%)', accent: '#3B82F6', soft: '#93C5FD' },
   colorir:   { bg: 'linear-gradient(160deg,#0d1a05 0%,#1a3305 100%)', accent: '#84CC16', soft: '#bef264' },
   silabas:   { bg: 'linear-gradient(160deg,#04181f 0%,#0a3040 100%)', accent: '#06B6D4', soft: '#67e8f9' },
+  musica:    { bg: 'linear-gradient(160deg,#150a26 0%,#2e1065 100%)', accent: '#a855f7', soft: '#d8b4fe' },
   'zona-emocoes': { bg: 'linear-gradient(160deg,#1a0a12 0%,#3b0f28 100%)', accent: '#EC4899', soft: '#f9a8d4' },
 }
 

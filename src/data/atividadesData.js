@@ -1026,6 +1026,7 @@ export const tipoConfig = {
   ingles:            { icon: '🇺🇸', label: 'Inglês',            cor: '#3B82F6' },
   colorir:           { icon: '🖍️', label: 'Colorir',           cor: '#84CC16' },
   silabas:           { icon: '🔡', label: 'Sílabas',           cor: '#06B6D4' },
+  musica:            { icon: '🎵', label: 'Música',            cor: '#a855f7' },
 }
 
 // ──────────────────────────────────────────────

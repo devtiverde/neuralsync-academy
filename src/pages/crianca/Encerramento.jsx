@@ -24,6 +24,7 @@ const badgeMap = {
   alfabeto:  { emoji: '🔤', texto: 'Mestre das Letras!' },
   colorir:   { emoji: '🖍️', texto: 'Artista Colorido!' },
   silabas:   { emoji: '🔡', texto: 'Leitor em Formação!' },
+  musica:    { emoji: '🎵', texto: 'Ouvido Musical!' },
   'zona-emocoes': { emoji: '💗', texto: 'Detetive das Emoções!' },
 }
 
