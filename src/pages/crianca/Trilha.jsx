@@ -298,6 +298,22 @@ export default function Trilha() {
           padding: '28px 32px', display: 'flex', alignItems: 'center', gap: '20px',
           boxShadow: '0 4px 24px rgba(124,58,237,0.3)',
         }}>
+          {/* Voltar pro início. A sidebar do LayoutCrianca some abaixo de 767px e a
+              criança ficava sem saída óbvia da Trilha no celular. */}
+          <button
+            onClick={() => navigate('/home-crianca')}
+            aria-label="Voltar para o início"
+            style={{
+              width: '48px', height: '48px', flexShrink: 0, borderRadius: '14px',
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              color: 'white', fontSize: '22px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: 'inherit', lineHeight: 1,
+            }}
+          >
+            ←
+          </button>
           <div style={{ flex: 1 }}>
             <h2 style={{ color: 'white', fontSize: '24px', fontWeight: '900', marginBottom: '4px' }}>Minha Trilha 🗺️</h2>
             <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px' }}>{nomeFaixa[faixa]}</p>

@@ -137,7 +137,10 @@ async function enviarEmailSessao(opts: {
   challenge: string | null
   engagement: string | null
 }) {
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+// ⚠️ O secret no projeto está cadastrado como `Resend`, não `RESEND_API_KEY`.
+// Ler só o nome canônico fazia o envio falhar em silêncio — foi o motivo de o
+// e-mail de resumo da NeuralAI nunca ter chegado. Aceita os dois nomes.
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? Deno.env.get('Resend')
   if (!RESEND_API_KEY) return
 
   const engagementLabel: Record<string, string> = { alto: '🔥 Alto', medio: '⚡ Médio', baixo: '💤 Baixo' }

@@ -46,12 +46,19 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
       enviado_em: new Date().toISOString(),
     }
 
-    const { error } = await supabase.from('ns_feedback').insert({
+    const { data, error } = await supabase.from('ns_feedback').insert({
       user_id: user?.id ?? null,
       tipo: tipoSel,
       mensagem: mensagem.trim().slice(0, 4000),
       contexto,
-    })
+    }).select('id').single()
+
+    // avisa por e-mail em segundo plano. Fire-and-forget de proposito: o que importa
+    // e o INSERT acima, que ja aconteceu. Se o e-mail falhar, o feedback nao se perde.
+    if (!error && data?.id) {
+      supabase.functions.invoke('feedback-notify', { body: { feedback_id: data.id } })
+        .catch(() => {})
+    }
 
     setEnviando(false)
     if (error) {
