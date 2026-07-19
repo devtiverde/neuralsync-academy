@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { activatePowerup, getActiveSummary } from '../../lib/powerups'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../../lib/lojaConfig'
@@ -118,7 +119,7 @@ function resolverAvatar(av) {
 
 export default function Loja() {
   const navigate = useNavigate()
-  const { subscription, loading: authLoading } = useAuth()
+  const { subscription, subscriptionLoaded, loading: authLoading } = useAuth()
 
   const [child] = useState(() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })
   const [aba, setAba] = useState('avatares')
@@ -136,8 +137,10 @@ export default function Loja() {
   const [molduraEquipada, setMolduraEquipada] = useState(null)
   const [temaEquipado, setTemaEquipado] = useState(null)
 
-  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
-  const subscriptionPendente = authLoading || subscription === null
+  const temAcesso = temPlano(subscription, PLANOS_PAGOS)
+  // `subscription === null` sozinho não distingue "carregando" de "sem plano":
+  // subscriptionLoaded é quem sabe se o fetch já terminou.
+  const subscriptionPendente = assinaturaCarregando(subscriptionLoaded, authLoading)
 
   useEffect(() => {
     if (child) {

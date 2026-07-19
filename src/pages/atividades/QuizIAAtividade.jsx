@@ -5,6 +5,7 @@ import GameShell from '../../components/GameShell'
 import UpgradePremium from '../../components/UpgradePremium'
 import { gerarQuizIA, getFaixa } from '../../lib/claude'
 import { playSound } from '../../lib/sounds'
+import { temPlano, assinaturaCarregando } from '../../lib/assinatura'
 import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/crianca.css'
 
@@ -19,7 +20,7 @@ export default function QuizIAAtividade() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const atividade = state?.atividade
-  const { subscription, loading: authLoading } = useAuth()
+  const { subscription, subscriptionLoaded, loading: authLoading } = useAuth()
 
   const [iniciou, setIniciou] = useState(false)
   const [fase, setFase] = useState('temas')
@@ -36,7 +37,7 @@ export default function QuizIAAtividade() {
 
   if (!atividade) return null
 
-  if (!authLoading && !(subscription?.plano === 'premium' && subscription?.plano_status === 'ativo')) {
+  if (!assinaturaCarregando(subscriptionLoaded, authLoading) && !temPlano(subscription, 'premium')) {
     return <UpgradePremium
       feature="Quiz IA — Perguntas geradas por IA"
       emoji="🤖"

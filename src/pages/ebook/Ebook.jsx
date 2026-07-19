@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import '../../styles/pai.css'
 
 const ferramentas = [
@@ -37,9 +38,18 @@ const checklist = [
 
 export default function Ebook() {
   const navigate = useNavigate()
-  const { subscription } = useAuth()
-  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
+  const { subscription, subscriptionLoaded, loading: authLoading } = useAuth()
+  const temAcesso = temPlano(subscription, PLANOS_PAGOS)
+  const carregando = assinaturaCarregando(subscriptionLoaded, authLoading)
   const [bonusAberto, setBonusAberto] = useState(null)
+
+  // Enquanto a assinatura não carregou, `subscription` é null — mostrar a tela de
+  // bloqueio aqui puniria cliente pagante. Estado de carregando primeiro.
+  if (carregando) return (
+    <div style={{background: '#f9fafb', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      <div style={{color: '#7C3AED', fontWeight: '700', fontSize: '15px'}}>Verificando seu acesso...</div>
+    </div>
+  )
 
   if (!temAcesso) return (
     <div style={{background: '#f9fafb', minHeight: '100vh'}}>

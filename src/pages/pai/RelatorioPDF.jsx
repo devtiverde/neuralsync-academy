@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando } from '../../lib/assinatura'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 import { tipoConfig } from '../../data/atividadesData'
 import LayoutPai from '../../components/LayoutPai'
@@ -178,7 +179,7 @@ function gerarMetas(habilidades, perfil) {
 
 export default function RelatorioPDF() {
   const navigate = useNavigate()
-  const { user, loading: authLoading, subscription } = useAuth()
+  const { user, loading: authLoading, subscription, subscriptionLoaded } = useAuth()
   const [child, setChild] = useState(null)
   const [habilidades, setHabilidades] = useState([])
   const [dadosSemanas, setDadosSemanas] = useState([])
@@ -235,7 +236,11 @@ export default function RelatorioPDF() {
     carregar()
   }, [])
 
-  if (authLoading) return (
+  // `authLoading` sozinho não bastava: ele vira false antes de a assinatura ser
+  // buscada, e o gate abaixo lia `subscription` ainda null como "não é Premium",
+  // bloqueando assinante Premium por uma fração de segundo. subscriptionLoaded
+  // é o flag que garante que o fetch terminou.
+  if (assinaturaCarregando(subscriptionLoaded, authLoading)) return (
     <div style={{background:'var(--color-bg-secondary)',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
       <div style={{color:'var(--color-primary)',fontWeight:'700'}}>Verificando acesso...</div>
     </div>
@@ -243,7 +248,7 @@ export default function RelatorioPDF() {
 
   if (!user) { navigate('/auth'); return null }
 
-  if (!subscription || subscription.plano !== 'premium') return (
+  if (!temPlano(subscription, 'premium')) return (
     <LayoutPai>
       <div className="pai-content" style={{textAlign: 'center', paddingTop: '60px'}}>
         <div style={{fontSize: '64px', marginBottom: '16px'}}>📄</div>

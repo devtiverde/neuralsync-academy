@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { categoriasOffline, atividadesOffline } from '../../data/atividadesOffline'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import '../../styles/crianca.css'
@@ -141,7 +142,7 @@ function CardAtividade({ atividade, feita, onFazer }) {
 
 export default function AtividadesOffline() {
   const navigate = useNavigate()
-  const { user, subscription } = useAuth()
+  const { user, subscription, subscriptionLoaded, loading: authLoading } = useAuth()
   const [child, setChild] = useState(null)
   const [categoriaAtiva, setCategoriaAtiva] = useState('natureza')
   const [filtroTempo, setFiltroTempo] = useState(0)
@@ -158,15 +159,20 @@ export default function AtividadesOffline() {
   }, [user])
 
   const LIMITE_FREE = 4
-  const temPlano = ['familia', 'premium'].includes(subscription?.plano)
+  const assinanteAtivo = temPlano(subscription, PLANOS_PAGOS)
+  const carregandoPlano = assinaturaCarregando(subscriptionLoaded, authLoading)
+  // Enquanto carrega, não cortamos a lista nem mostramos o aviso de bloqueio:
+  // cortar aqui faria a tela "piscar" o paywall para quem paga. Assim que
+  // subscriptionLoaded vira true o corte real é aplicado.
+  const liberado = assinanteAtivo || carregandoPlano
 
   const ativadasNaCategoria = atividadesOffline.filter(a => {
     if (a.categoria !== categoriaAtiva) return false
     if (filtroTempo === 0) return true
     return a.tempo <= filtroTempo
   })
-  const ativadasFiltradas = temPlano ? ativadasNaCategoria : ativadasNaCategoria.slice(0, LIMITE_FREE)
-  const qtdBloqueadas = temPlano ? 0 : Math.max(0, atividadesOffline.filter(a => a.categoria === categoriaAtiva).length - LIMITE_FREE)
+  const ativadasFiltradas = liberado ? ativadasNaCategoria : ativadasNaCategoria.slice(0, LIMITE_FREE)
+  const qtdBloqueadas = liberado ? 0 : Math.max(0, atividadesOffline.filter(a => a.categoria === categoriaAtiva).length - LIMITE_FREE)
 
   async function marcarFeita(atividadeId) {
     if (!child) return

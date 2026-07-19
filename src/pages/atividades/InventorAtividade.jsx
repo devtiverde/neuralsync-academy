@@ -6,6 +6,7 @@ import UpgradePremium from '../../components/UpgradePremium'
 import { avaliarInvento, getFaixa } from '../../lib/claude'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { temPlano, assinaturaCarregando } from '../../lib/assinatura'
 import { useAuth } from '../../contexts/AuthContext'
 import '../../styles/crianca.css'
 
@@ -13,7 +14,7 @@ export default function InventorAtividade() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const atividade = state?.atividade
-  const { subscription, loading: authLoading } = useAuth()
+  const { subscription, subscriptionLoaded, loading: authLoading } = useAuth()
 
   const [iniciou, setIniciou] = useState(false)
   const [fase, setFase] = useState('escrevendo')
@@ -27,9 +28,9 @@ export default function InventorAtividade() {
 
   if (!atividade) return null
 
-  if (!authLoading && !(subscription?.plano === 'premium' && subscription?.plano_status === 'ativo')) {
+  if (!assinaturaCarregando(subscriptionLoaded, authLoading) && !temPlano(subscription, 'premium')) {
     return <UpgradePremium
-      feature="Inventor â€” Avaliação de IA"
+      feature="Inventor — Avaliação de IA"
       emoji="💡"
       descricao="Descreva sua invenção e a IA avalia sua criatividade com feedback personalizado. Disponível exclusivamente no Plano Premium."
       onVoltar={() => navigate(-1)}

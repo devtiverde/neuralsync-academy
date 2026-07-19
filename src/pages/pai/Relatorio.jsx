@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, Radar,
@@ -43,10 +44,23 @@ const tipoLabel = {
   colorir: 'Colorir', silabas: 'Sílabas', ingles: 'Inglês', 'zona-emocoes': 'Zona das Emoções',
 }
 
+// Estado vazio honesto: sem histórico não existe medição, então não mostramos
+// gráficos zerados nem percentuais calculados sobre zero como se fossem reais.
+function SemDados({ titulo, descricao }) {
+  return (
+    <div className="pai-card" style={{ padding: '40px', textAlign: 'center' }}>
+      <ChartBar weight="fill" size={48} color="#7C3AED" style={{ marginBottom: '12px' }} />
+      <p style={{ color: '#0f0a1e', fontWeight: '800', fontSize: '15px', marginBottom: '6px' }}>{titulo}</p>
+      <p style={{ color: '#6b7280', fontSize: '13px', lineHeight: '1.6', maxWidth: '340px', margin: '0 auto' }}>{descricao}</p>
+    </div>
+  )
+}
+
 export default function Relatorio() {
   const navigate = useNavigate()
-  const { user, subscription } = useAuth()
-  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
+  const { user, subscription, subscriptionLoaded, loading: authLoading } = useAuth()
+  const temAcesso = temPlano(subscription, PLANOS_PAGOS)
+  const carregandoPlano = assinaturaCarregando(subscriptionLoaded, authLoading)
 
   const [aba, setAba] = useState('diario')
   const [filhos, setFilhos] = useState([])
@@ -173,6 +187,16 @@ export default function Relatorio() {
   const oportunidadesBot2 = [...scoresCognitivos].sort((a, b) => a.atual - b.atual).slice(0, 2)
 
   // ── Gate premium ──────────────────────────────────────────────────────────────
+  // Carregando vem ANTES do bloqueio: com `subscription` ainda null, cair no
+  // `!temAcesso` mostraria o paywall para um assinante Família/Premium.
+  if (carregandoPlano) return (
+    <LayoutPai>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div style={{ color: '#7C3AED', fontWeight: '700' }}>Verificando seu acesso...</div>
+      </div>
+    </LayoutPai>
+  )
+
   if (!temAcesso) return (
     <LayoutPai>
       <div className="pai-content" style={{ maxWidth: '480px', textAlign: 'center', paddingTop: '80px' }}>
@@ -374,7 +398,14 @@ export default function Relatorio() {
               )}
 
               {/* ══ SEMANAL ═════════════════════════════════════════════ */}
-              {aba === 'semanal' && (
+              {aba === 'semanal' && histFilho.length === 0 && (
+                <SemDados
+                  titulo="Ainda não há dados desta semana"
+                  descricao="Complete algumas atividades com a criança e o relatório semanal — gráficos, consistência e desempenho cognitivo — aparece aqui."
+                />
+              )}
+
+              {aba === 'semanal' && histFilho.length > 0 && (
                 <div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px', marginBottom: '16px' }}>
                     {[
@@ -448,7 +479,10 @@ export default function Relatorio() {
                     </div>
                   )}
 
-                  {/* Pontos fortes e oportunidades */}
+                  {/* Pontos fortes e oportunidades — só com atividades NESTA semana.
+                      Sem elas, `scoresCognitivos` devolve o piso de 20% para todas as
+                      categorias, o que apareceria como se fosse uma medição real. */}
+                  {histSemana.length > 0 && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
                     <div style={{ background: '#f0fdf4', borderRadius: '14px', padding: '14px', border: '1.5px solid #bbf7d0' }}>
                       <div style={{ fontWeight: '800', fontSize: '12px', color: '#10b981', marginBottom: '8px' }}>✅ Pontos fortes</div>
@@ -463,6 +497,7 @@ export default function Relatorio() {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
               )}
 
@@ -478,6 +513,16 @@ export default function Relatorio() {
                   const xp = hist30.filter(h => h.timestamp && new Date(h.timestamp).toDateString() === dStr).reduce((s, h) => s + (h.xp || 0), 0)
                   return { dia: d.getDate(), xp }
                 })
+
+                // Sem nenhum registro nos últimos 30 dias não há o que medir:
+                // os cards e o calendário mostrariam zeros como se fossem resultado.
+                if (hist30.length === 0) return (
+                  <SemDados
+                    titulo="Ainda não há dados deste mês"
+                    descricao="Complete algumas atividades com a criança e a evolução mensal — XP, dias ativos e calendário de atividade — aparece aqui."
+                  />
+                )
+
                 return (
                   <>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '16px' }}>

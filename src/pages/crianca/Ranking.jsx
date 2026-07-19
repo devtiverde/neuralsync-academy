@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import { AVATAR_MAP } from '../../lib/avatars'
 import { Trophy } from '@phosphor-icons/react'
@@ -24,8 +25,9 @@ const normalizarFaixa = f => {
 
 export default function Ranking() {
   const navigate = useNavigate()
-  const { subscription } = useAuth()
-  const temAcesso = subscription?.plano === 'familia' || subscription?.plano === 'premium'
+  const { subscription, subscriptionLoaded, loading: authLoading } = useAuth()
+  const temAcesso = temPlano(subscription, PLANOS_PAGOS)
+  const carregandoPlano = assinaturaCarregando(subscriptionLoaded, authLoading)
   const [criancas, setCriancas] = useState([])
   const [loading, setLoading] = useState(true)
   const [faixaFiltro, setFaixaFiltro] = useState('todos')
@@ -68,6 +70,16 @@ export default function Ranking() {
 
   const medals = ['🥇', '🥈', '🥉']
   const podioColors = ['#f59e0b', '#7C3AED', '#78716c']
+
+  // Antes do bloqueio: com a assinatura ainda carregando, `temAcesso` é false e
+  // um assinante Família/Premium veria o paywall indevidamente.
+  if (carregandoPlano) return (
+    <LayoutCrianca child={activeChild}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '70vh' }}>
+        <div style={{ color: '#a78bfa', fontWeight: '700', fontSize: '16px' }}>Verificando seu acesso...</div>
+      </div>
+    </LayoutCrianca>
+  )
 
   if (!temAcesso) return (
     <LayoutCrianca child={activeChild}>
@@ -137,6 +149,67 @@ export default function Ranking() {
 
         <div style={{ padding: '28px 32px' }}>
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+
+            {/* ── PARTICIPANTE ÚNICO ────────────────────────
+                Cenário do cliente novo do plano Starter (1 filho): o pódio exige
+                >=2, a lista do resto começa no 4º, "sua posição" exige >3 e o
+                estado vazio exige 0 — nenhuma condição batia e a tela ficava em
+                branco. Aqui damos destaque à própria criança. */}
+            {ranked.length === 1 && (() => {
+              const solo = ranked[0]
+              const souEu = solo.id === activeId
+              return (
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(245,158,11,0.10))',
+                  border: '1.5px solid rgba(124,58,237,0.4)', borderRadius: '24px',
+                  padding: '32px 24px', textAlign: 'center', marginBottom: '20px',
+                  boxShadow: '0 8px 32px rgba(124,58,237,0.15)',
+                }}>
+                  <div style={{
+                    width: '76px', height: '76px', borderRadius: '50%', margin: '0 auto 14px',
+                    background: 'rgba(245,158,11,0.15)', border: '2px solid rgba(245,158,11,0.45)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '42px',
+                    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
+                  }}>
+                    {resolverAvatar(solo.avatar, nomeExibido(solo))}
+                  </div>
+
+                  <div style={{ fontWeight: '900', fontSize: '19px', color: 'white', marginBottom: '4px' }}>
+                    {nomeExibido(solo)}{souEu ? ' 👑' : ''}
+                  </div>
+
+                  {souEu && meuTitulo && (
+                    <div style={{ fontSize: '12px', color: '#fbbf24', fontWeight: '700', marginBottom: '6px' }}>
+                      {meuTitulo.emoji} {meuTitulo.nome}
+                    </div>
+                  )}
+
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginBottom: '16px' }}>
+                    Nível {solo.nivel}
+                    {solo.streak_atual > 0 ? ` • 🔥 ${solo.streak_atual} dias` : ''}
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                    <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '14px', padding: '12px 20px' }}>
+                      <div style={{ fontSize: '19px', fontWeight: '900', color: '#fbbf24' }}>💰 {solo.neural_coins}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>NeuralCoins</div>
+                    </div>
+                    <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '14px', padding: '12px 20px' }}>
+                      <div style={{ fontSize: '19px', fontWeight: '900', color: '#a78bfa' }}>⭐ {solo.xp}</div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>XP total</div>
+                    </div>
+                  </div>
+
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', lineHeight: '1.7', maxWidth: '300px', margin: '0 auto' }}>
+                    {souEu
+                      ? (faixaFiltro === 'todos'
+                          ? 'Por enquanto você está sozinho no ranking! Continue completando atividades para acumular coins e XP — quando outros exploradores chegarem, você já vai estar na frente. 🚀'
+                          : 'Nenhum outro explorador nesta faixa ainda. Experimente o filtro "Todos" para ver mais gente!')
+                      : 'Só um explorador participa deste ranking por enquanto.'}
+                  </p>
+                </div>
+              )
+            })()}
 
             {/* ── PÓDIO ─────────────────────────────────── */}
             {top3.length >= 2 && (
