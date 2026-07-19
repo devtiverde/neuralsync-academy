@@ -32,7 +32,9 @@ export default function Ranking() {
   const [aba, setAba] = useState('coins')
 
   function carregarRanking() {
-    supabase.from('ranking_view').select('id,nome,xp,neural_coins,nivel,faixa_etaria,streak_atual,avatar').then(({ data, error }) => {
+    // a view nao expoe mais `nome` — so o `apelido` anonimo (ver migration 016).
+    // o nome real da propria crianca vem do localStorage, nunca do ranking.
+    supabase.from('ranking_view').select('id,apelido,xp,neural_coins,nivel,faixa_etaria,streak_atual,avatar').then(({ data, error }) => {
       if (!error) setCriancas(data || [])
       setLoading(false)
     })
@@ -48,6 +50,8 @@ export default function Ranking() {
 
   const activeChild = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
   const activeId = activeChild?.id
+  // so a propria crianca aparece pelo nome; as outras ficam como 'Explorador #NNN'
+  const nomeExibido = (item) => (item.id === activeId ? (activeChild?.nome || item.apelido) : item.apelido)
   const meuTitulo = (() => { try { return activeId ? JSON.parse(localStorage.getItem(`ns_titulo_${activeId}`) || 'null') : null } catch { return null } })()
 
   const rankeia = (arr) => [...arr]
@@ -162,10 +166,10 @@ export default function Ranking() {
                         fontSize: isFirst ? '34px' : '28px', marginBottom: '10px',
                         filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
                       }}>
-                        {resolverAvatar(item.avatar, item.nome)}
+                        {resolverAvatar(item.avatar, nomeExibido(item))}
                       </div>
                       <div style={{ fontWeight: '800', fontSize: isFirst ? '15px' : '13px', color: isEu ? '#a78bfa' : 'white', marginBottom: isEu && meuTitulo ? '3px' : '6px', textAlign: 'center', lineHeight: 1.2 }}>
-                        {item.nome}{isEu ? ' 👑' : ''}
+                        {nomeExibido(item)}{isEu ? ' 👑' : ''}
                       </div>
                       {isEu && meuTitulo && (
                         <div style={{ fontSize: '10px', color: '#fbbf24', fontWeight: '700', marginBottom: '5px', textAlign: 'center' }}>
@@ -193,9 +197,9 @@ export default function Ranking() {
                 boxShadow: '0 4px 20px rgba(124,58,237,0.12)',
               }}>
                 <div style={{ width: '36px', fontWeight: '800', color: '#a78bfa', fontSize: '16px', textAlign: 'center', flexShrink: 0 }}>#{minhaPosicao}</div>
-                <div style={{ fontSize: '28px', flexShrink: 0 }}>{resolverAvatar(eu.avatar, eu.nome)}</div>
+                <div style={{ fontSize: '28px', flexShrink: 0 }}>{resolverAvatar(eu.avatar, nomeExibido(eu))}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: '700', fontSize: '15px', color: '#a78bfa' }}>{eu.nome} (você)</div>
+                  <div style={{ fontWeight: '700', fontSize: '15px', color: '#a78bfa' }}>{nomeExibido(eu)} (você)</div>
                   {meuTitulo && <div style={{ fontSize: '11px', color: '#fbbf24', fontWeight: '700', marginTop: '1px' }}>{meuTitulo.emoji} {meuTitulo.nome}</div>}
                   <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>🔥 {eu.streak_atual || 0} streak • Nível {eu.nivel}</div>
                 </div>
@@ -223,10 +227,10 @@ export default function Ranking() {
                       onMouseOut={e => { e.currentTarget.style.background = isEu ? 'rgba(124,58,237,0.1)' : 'rgba(255,255,255,0.04)' }}
                     >
                       <div style={{ width: '32px', fontWeight: '700', color: 'rgba(255,255,255,0.3)', fontSize: '14px', textAlign: 'center', flexShrink: 0 }}>#{pos}</div>
-                      <div style={{ fontSize: '26px', flexShrink: 0 }}>{resolverAvatar(item.avatar, item.nome)}</div>
+                      <div style={{ fontSize: '26px', flexShrink: 0 }}>{resolverAvatar(item.avatar, nomeExibido(item))}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontWeight: '600', fontSize: '14px', color: isEu ? '#a78bfa' : 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {item.nome}{isEu ? ' (você)' : ''}
+                          {nomeExibido(item)}{isEu ? ' (você)' : ''}
                         </div>
                         <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.32)', marginTop: '2px' }}>
                           {faixaLabel[normalizarFaixa(item.faixa_etaria)] || item.faixa_etaria} • Nível {item.nivel}
