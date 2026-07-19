@@ -104,7 +104,7 @@ export default function Landing() {
               <a href="#como" className="btn-secondary">Como funciona</a>
             </div>
             <div style={{display:'flex',gap:'28px',flexWrap:'wrap'}}>
-              {[['Sem anúncios','🚫'],['Aprovado por pais','❤️'],['4.9/5 avaliação','⭐']].map(([label,icon]) => (
+              {[['Sem anúncios','🚫'],['Sem coleta de dados da criança','🔒'],['Garantia de 7 dias','↩️']].map(([label,icon]) => (
                 <div key={label} style={{display:'flex',alignItems:'center',gap:'6px',fontSize:'13px',color:'#6b7280',fontWeight:'500'}}>
                   <span>{icon}</span><span>{label}</span>
                 </div>
@@ -184,7 +184,7 @@ export default function Landing() {
 
       <section style={{background:'#faf5ff',borderTop:'1px solid #ede9fe',borderBottom:'1px solid #ede9fe',padding:'52px 40px'}}>
         <div className="l-stats" style={{maxWidth:'900px',margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px',textAlign:'center'}}>
-          {[['+50.000','Crianças ativas'],['8','Habilidades trabalhadas'],['200+','Atividades semanais'],['4.9','Avaliação dos pais']].map(([num,label]) => (
+          {[['420+','Atividades'],['20+','Tipos de jogo'],['8','Habilidades trabalhadas'],['4–15','Anos de idade']].map(([num,label]) => (
             <div key={label}>
               <div style={{fontSize:'38px',fontWeight:'900',color:'#7C3AED',marginBottom:'6px',letterSpacing:'-1px'}}>{num}</div>
               <div style={{fontSize:'14px',color:'#6b7280',fontWeight:'500'}}>{label}</div>

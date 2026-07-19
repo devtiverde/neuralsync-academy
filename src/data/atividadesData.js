@@ -1010,7 +1010,7 @@ export const tipoConfig = {
   labirinto: { icon: '🌀', label: 'Labirinto',     cor: '#3b82f6' },
   robo:      { icon: '🤖', label: 'Robô',          cor: '#8b5cf6' },
   padrao:    { icon: '🎯', label: 'Padrão',        cor: '#ec4899' },
-  quizia:    { icon: '🪄', label: 'Quiz IA',       cor: '#6d28d9' },
+  quizia:    { icon: '✨', label: 'Quiz IA',       cor: '#6d28d9' },
   inventor:  { icon: '💡', label: 'Inventor',      cor: '#d97706' },
   blocos:    { icon: '🔲', label: 'Blocos',        cor: '#0891b2' },
   numeros:   { icon: '🔢', label: 'Números',       cor: '#7F77DD' },
