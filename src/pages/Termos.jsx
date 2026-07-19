@@ -50,7 +50,8 @@ export default function Termos() {
         <p className="termos-p">NeuralCoins são pontos virtuais conquistados pelas crianças nas atividades. Não possuem valor monetário e não podem ser convertidos em dinheiro.</p>
 
         <h2 className="termos-h2">7. Itens da Loja</h2>
-        <p className="termos-p">Avatares, títulos, efeitos, molduras, temas visuais e power-ups comprados com NeuralCoins ficam associados à conta. Brindes físicos (cadernos, canecas, camisetas, mochilas) podem ser resgatados diretamente na Loja mediante saldo suficiente, com entrega coordenada via e-mail do responsável.</p>
+        <p className="termos-p">Avatares, títulos, efeitos, molduras, temas visuais e power-ups comprados com NeuralCoins ficam associados à conta e são itens exclusivamente digitais.</p>
+        <p className="termos-p"><strong>Brindes físicos ainda não estão disponíveis.</strong> A aba "Brindes" da Loja é apenas uma prévia do que pretendemos oferecer no futuro — não é possível resgatar nenhum item físico no momento, e a NeuralSync Academy não assume qualquer obrigação de entrega de produtos físicos. Caso esse programa seja lançado, as regras de resgate, os prazos e as condições de entrega serão anunciados previamente por e-mail e publicados nestes Termos.</p>
 
         <h2 className="termos-h2">8. Disponibilidade e modificações</h2>
         <p className="termos-p">A NeuralSync Academy pode passar por manutenções e atualizações. Podemos modificar estes termos com aviso prévio por e-mail. O uso continuado após a notificação implica aceite das alterações.</p>

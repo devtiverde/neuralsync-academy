@@ -25,7 +25,7 @@ const FEATURES = [
   'Ebook A Tela Certa + bônus',
   'Ranking entre famílias',
   'Relatório Cognitivo Premium PDF',
-  'Suporte prioritário',
+  'Inventor IA — feedback criativo',
   'NeuralAI + Quiz IA',
 ]
 
@@ -35,7 +35,7 @@ const planos = [
     nome: 'Starter',
     filhos: '1 filho',
     desc: 'Para começar com o pé direito',
-    ok: [true, true, true, true, true, false, false, false, false, false, false, false],
+    ok: [true, true, true, true, false, false, false, false, false, false, false, false],
     border: '1.5px solid #e5e7eb',
     bg: 'white',
     headerBg: '#f9fafb',
@@ -81,7 +81,7 @@ const faq = [
   ['Posso cancelar a qualquer momento?', 'Sim. Sem fidelidade, sem multa. Cancele quando quiser pelo painel do Kiwify (dashboard.kiwify.com.br/minhas-compras) ou pelo link "Gerenciar assinatura" no e-mail de confirmação da compra.'],
   ['Como funciona a garantia de 7 dias?', 'Se em até 7 dias você não ficar satisfeito, devolvemos 100% do valor pago — é só pedir o reembolso em reembolso.kiwify.com.br. Sem perguntas.'],
   ['Posso mudar de plano depois?', 'Sim, upgrade ou downgrade a qualquer momento. A diferença é cobrada proporcionalmente.'],
-  ['Como funciona o plano anual?', 'Você paga 12 meses de uma vez com 35% de desconto em relação ao plano mensal — equivale a 2 meses grátis.'],
+  ['Como funciona o plano anual?', 'Você paga 12 meses de uma vez e economiza até 35% em relação ao preço mensal. O desconto varia por plano: 34,5% no Starter, 31,9% no Família e 31,6% no Premium — o equivalente a cerca de 4 meses grátis por ano.'],
   ['O que é o Relatório Cognitivo Premium?', 'Relatório PDF com análise das 8 habilidades cognitivas do seu filho, comparativo mensal, recomendações de neurociência e plano de ação. Exclusivo do Premium.'],
 ]
 
@@ -132,7 +132,7 @@ export default function Planos() {
 
         {/* Toggle mensal/anual */}
         <div style={{ display: 'inline-flex', background: 'white', borderRadius: 14, padding: 4, border: '2px solid #7C3AED', boxShadow: '0 4px 16px rgba(124,58,237,0.15)', marginBottom: 8 }}>
-          {[['mensal', 'Mensal'], ['anual', 'Anual — Economize 35%']].map(([id, label]) => (
+          {[['mensal', 'Mensal'], ['anual', 'Anual — Economize até 35%']].map(([id, label]) => (
             <button key={id} onClick={() => setPeriodo(id)} style={{
               padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer',
               fontWeight: 800, fontSize: 14, transition: 'all 0.2s', fontFamily: 'inherit',
@@ -148,7 +148,7 @@ export default function Planos() {
           ))}
         </div>
         <p style={{ color: '#9ca3af', fontSize: 13, marginTop: 8 }}>
-          {periodo === 'mensal' ? 'Cobrado mensalmente • Cancele quando quiser' : 'Cobrado anualmente • Equivale a 2 meses grátis'}
+          {periodo === 'mensal' ? 'Cobrado mensalmente • Cancele quando quiser' : 'Cobrado anualmente • Economia de até 35% no ano'}
         </p>
       </section>
 
@@ -294,9 +294,9 @@ export default function Planos() {
                 </div>
               </div>
             ))}
-            <button onClick={() => navigate('/relatorio-pdf')} style={{ width: '100%', marginTop: 14, padding: '10px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#7C3AED,#5b21b6)', color: 'white', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
-              Ver exemplo completo →
-            </button>
+            <p style={{ marginTop: 14, fontSize: 11, color: '#9ca3af', textAlign: 'center', lineHeight: 1.5 }}>
+              Exemplo ilustrativo. O relatório real é gerado com os dados do seu filho.
+            </p>
           </div>
         </div>
       </section>

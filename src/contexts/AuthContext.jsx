@@ -8,6 +8,12 @@ export function AuthProvider({ children }) {
   const [subscription, setSubscription] = useState(null)
   const [subscriptionLoaded, setSubscriptionLoaded] = useState(false)
   const [loading, setLoading] = useState(true)
+  // 'ativando' evita a corrida: enquanto a Edge Function de ativação não respondeu,
+  // ninguém pode concluir que o usuário está sem plano.
+  const [ativando, setAtivando] = useState(false)
+  // guarda o e-mail quando NÃO se acha assinatura — quem comprou com outro e-mail
+  // precisa ver isso escrito, senão acha que o pagamento não passou e pede reembolso
+  const [ativacaoFalhou, setAtivacaoFalhou] = useState(null)
 
   const loadSubscription = async (userId) => {
     try {
@@ -27,16 +33,17 @@ export function AuthProvider({ children }) {
   // de propósito) — a ativação de plano pago pago-antes-de-cadastrar precisa
   // passar por essa Edge Function, nunca por uma query direta do cliente.
   const activatePendingPlan = async (accessToken) => {
-    if (!accessToken) return
+    if (!accessToken) return null
     try {
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-pending-plan`, {
+      const r = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-pending-plan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
         },
       })
-    } catch {}
+      return await r.json()
+    } catch { return null }
   }
 
   useEffect(() => {
@@ -67,7 +74,11 @@ export function AuthProvider({ children }) {
       // start) e travaria o botão de login. onAuthStateChange já recarrega a
       // assinatura sozinho; aqui só recarregamos de novo depois pra refletir
       // um plano recém-ativado.
-      activatePendingPlan(data.session?.access_token).then(() => loadSubscription(data.user.id))
+      setAtivando(true)
+      const r = await activatePendingPlan(data.session?.access_token)
+      if (r && r.activated === false) setAtivacaoFalhou(email.toLowerCase())
+      await loadSubscription(data.user.id)
+      setAtivando(false)
     }
     return { error }
   }
@@ -79,7 +90,11 @@ export function AuthProvider({ children }) {
       await supabase.from('users').insert({
         id: data.user.id, email: emailLower, nome, tipo: 'pai',
       })
-      activatePendingPlan(data.session?.access_token).then(() => loadSubscription(data.user.id))
+      setAtivando(true)
+      const r = await activatePendingPlan(data.session?.access_token)
+      if (r && r.activated === false) setAtivacaoFalhou(emailLower)
+      await loadSubscription(data.user.id)
+      setAtivando(false)
     }
     return { error }
   }
@@ -90,7 +105,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, subscription, subscriptionLoaded, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, subscription, subscriptionLoaded, ativando, ativacaoFalhou, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   )

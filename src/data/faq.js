@@ -75,7 +75,28 @@ export const faqPais = [
   },
   {
     pergunta: 'Como cancelar meu plano?',
-    resposta: 'Em Configurações, clique em "Plano" → "Cancelar assinatura". O acesso continua até o fim do período pago. Para dúvidas, fale com nosso suporte em suporte@neuralsync.com.br.',
+    resposta: 'Em "Configurações", vá até o bloco "Assinatura" e clique em "Gerenciar ou cancelar assinatura →". O link abre o painel da Kiwify (dashboard.kiwify.com.br/minhas-compras), onde o cancelamento é feito. O e-mail de confirmação da compra também traz um botão direto para gerenciar a assinatura. Para dúvidas, fale com nosso suporte em suporte@neuralsync.com.br.',
+  },
+  // ── Cobrança, garantia e reembolso
+  {
+    pergunta: 'Como funciona a garantia de 7 dias?',
+    resposta: 'Você tem 7 dias de garantia incondicional a partir da compra. Se não gostar, devolvemos 100% do valor pago, sem perguntas. Após esse prazo não há reembolso proporcional do período não utilizado.',
+  },
+  {
+    pergunta: 'Como peço o reembolso?',
+    resposta: 'O pagamento é processado pela Kiwify, e o pedido de reembolso é feito direto com eles em reembolso.kiwify.com.br — sem burocracia e sem precisar falar com a gente, se não quiser. Em "Configurações" → "Assinatura" há um botão "Pedir reembolso (garantia de 7 dias) →" que leva ao mesmo lugar.',
+  },
+  {
+    pergunta: 'Quando sou cobrado? A assinatura renova sozinha?',
+    resposta: 'Sim, a assinatura é recorrente e renova automaticamente. No plano mensal a cobrança acontece todo mês na data da compra; no plano anual, o valor dos 12 meses é cobrado de uma vez e a renovação é anual. Não há fidelidade nem multa de cancelamento.',
+  },
+  {
+    pergunta: 'Posso trocar de plano depois?',
+    resposta: 'Sim, você pode fazer upgrade ou downgrade a qualquer momento, e a diferença é cobrada proporcionalmente. A troca é feita no painel da Kiwify, pelo link "Gerenciar ou cancelar assinatura →" em "Configurações" → "Assinatura". Se tiver dúvida, é só chamar o suporte em suporte@neuralsync.com.br.',
+  },
+  {
+    pergunta: 'O que acontece quando eu cancelo?',
+    resposta: 'O acesso continua liberado normalmente até o fim do período já pago — não há cobrança nova depois disso. Passado esse prazo, a conta perde os recursos do plano, mas os dados dos seus filhos permanecem salvos caso você queira voltar. Para apagar tudo de vez, use "Excluir minha conta" em Configurações.',
   },
 ]
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import { SUPPORT } from '../../config/support'
 import LayoutPai from '../../components/LayoutPai'
 import { Button, Card } from '../../components/ui'
 import { CheckCircle, Brain, GearSix } from '@phosphor-icons/react'
@@ -95,7 +96,7 @@ const planoInfo = {
 const FAIXA_SEL = ['exploradores','construtores','criadores','inventores']
 
 export default function Dashboard() {
-  const { user, subscription, subscriptionLoaded } = useAuth()
+  const { user, subscription, subscriptionLoaded, ativando, ativacaoFalhou } = useAuth()
   const { loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [children, setChildren] = useState([])
@@ -115,11 +116,18 @@ export default function Dashboard() {
   )
 
   useEffect(() => {
-    if (authLoading || !subscriptionLoaded) return
+    // `ativando` é essencial: a Edge Function de ativação tem cold start, e sem esperar
+    // por ela quem ACABOU DE PAGAR era jogado na tabela de preços sem explicação nenhuma.
+    if (authLoading || !subscriptionLoaded || ativando) return
     if (!user) { navigate('/auth'); return }
-    if (!subscription || subscription.plano_status !== 'ativo') { navigate('/planos'); return }
+    if (!subscription || subscription.plano_status !== 'ativo') {
+      // se a ativação respondeu "não achei assinatura pra este e-mail", NÃO empurra pra
+      // /planos: a pessoa provavelmente pagou com outro e-mail e precisa ler isso.
+      if (!ativacaoFalhou) navigate('/planos')
+      return
+    }
     loadChildren()
-  }, [user, authLoading, subscription, subscriptionLoaded])
+  }, [user, authLoading, subscription, subscriptionLoaded, ativando, ativacaoFalhou])
 
   const loadChildren = async () => {
     try {
@@ -231,6 +239,39 @@ export default function Dashboard() {
     if (diff === 1) return 'Ontem'
     if (diff < 7) return `${diff} dias atrás`
     return new Date(d).toLocaleDateString('pt-BR')
+  }
+
+  // Comprou com um e-mail e cadastrou com outro é a armadilha clássica deste fluxo.
+  // Antes disto a Edge Function respondia {activated:false}, a resposta era descartada
+  // num catch vazio, e a pessoa era jogada em /planos sem UMA palavra de explicação —
+  // concluía que o pagamento não passou e pedia reembolso.
+  if (ativacaoFalhou) {
+    return (
+      <LayoutPai>
+        <div className="pai-content" style={{ maxWidth: 620, padding: '48px 24px' }}>
+          <div className="pai-card" style={{ padding: 28 }}>
+            <div style={{ fontSize: 44, marginBottom: 12 }}>🔎</div>
+            <h1 style={{ fontSize: 22, marginBottom: 10 }}>Não encontramos sua assinatura</h1>
+            <p style={{ color: '#6b7280', lineHeight: 1.65, marginBottom: 14 }}>
+              Você entrou como <strong>{ativacaoFalhou}</strong>, mas não há nenhuma
+              assinatura ativa nesse e-mail.
+            </p>
+            <p style={{ color: '#6b7280', lineHeight: 1.65, marginBottom: 20 }}>
+              Se você pagou usando <strong>outro e-mail</strong> (o do cônjuge, por exemplo),
+              é só nos avisar que transferimos a assinatura para esta conta. Se ainda não
+              assinou, escolha um plano abaixo.
+            </p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a className="btn-primary" style={{ textDecoration: 'none' }}
+                 href={`mailto:${SUPPORT.email}?subject=Assinatura%20nao%20encontrada&body=Paguei%20com%20o%20e-mail%20___%20e%20criei%20a%20conta%20como%20${encodeURIComponent(ativacaoFalhou)}.`}>
+                Falar com o suporte
+              </a>
+              <button className="btn-secondary" onClick={() => navigate('/planos')}>Ver planos</button>
+            </div>
+          </div>
+        </div>
+      </LayoutPai>
+    )
   }
 
   return (

@@ -11,6 +11,7 @@ const jakarta = b64('jakarta.woff2')
 const grotesk = b64('grotesk.woff2')
 
 const storias = JSON.parse(readFileSync('E:/DEV/kids_storias_export.json', 'utf8'))
+const prompts = JSON.parse(readFileSync('E:/DEV/prompts_video_export.json', 'utf8'))
 
 const LABEL = {
   dinossauros: 'Dinossauros', corpo_humano: 'Corpo Humano', animais: 'Animais',
@@ -31,14 +32,19 @@ const secoes = Object.entries(storias).map(([cat, h]) => {
     const id = `${cat}-${i + 1}`
     return `
       <div class="linha" data-id="${id}">
-        <input type="checkbox" class="chk" id="c-${id}" aria-label="Marcar ${esc(arquivo)} como gravado">
+        <input type="checkbox" class="chk" id="c-${id}" aria-label="Marcar ${esc(arquivo)} como pronto">
         <div class="linha-corpo">
           <div class="linha-topo">
             <code class="arquivo">${esc(arquivo)}</code>
             <span class="cena">${esc(c.emoji || '')} ${esc(c.scene || `Cena ${i + 1}`)} — ${esc(c.titulo || '')}</span>
           </div>
+          <p class="rotulo">🎙️ Narração — grave este texto</p>
           <p class="texto" id="t-${id}">${esc(c.texto)}</p>
-          <button class="copiar" data-alvo="t-${id}">Copiar texto</button>
+          <button class="copiar" data-alvo="t-${id}">Copiar narração</button>
+
+          <p class="rotulo rotulo-video">🎬 Imagem — cole este prompt na IA</p>
+          <p class="texto prompt" id="p-${id}">${esc((prompts[cat] || [])[i] || 'Sem prompt cadastrado para esta cena.')}</p>
+          <button class="copiar copiar-video" data-alvo="p-${id}">Copiar prompt</button>
         </div>
       </div>`
   }).join('')
@@ -54,7 +60,7 @@ const secoes = Object.entries(storias).map(([cat, h]) => {
     </section>`
 }).join('')
 
-const html = `<title>Guia de gravação — Narrações Kids TV | NeuralSync</title>
+const html = `<title>Guia de produção — Kids TV em vídeo | NeuralSync</title>
 <style>
   @font-face{font-family:'Fredoka';src:url(data:font/woff2;base64,${fredoka}) format('woff2');font-display:swap}
   @font-face{font-family:'Jakarta';src:url(data:font/woff2;base64,${jakarta}) format('woff2');font-display:swap}
@@ -130,6 +136,12 @@ const html = `<title>Guia de gravação — Narrações Kids TV | NeuralSync</ti
     background:var(--ground);padding:3px 8px;border-radius:6px}
   .cena{font-size:13px;color:var(--soft)}
   .texto{margin:0 0 10px;font-size:15.5px;max-width:64ch}
+  .rotulo{font-family:'Grotesk',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--violet);margin:14px 0 6px;font-weight:700}
+  .rotulo-video{color:var(--cyan)}
+  .prompt{font-size:14px;color:var(--soft);background:var(--ground);border-left:3px solid var(--cyan);
+    border-radius:0 8px 8px 0;padding:12px 14px;max-width:none}
+  .copiar-video:hover{border-color:var(--cyan);color:var(--cyan)}
   .copiar{background:none;border:1px solid var(--line);color:var(--soft);border-radius:8px;
     padding:5px 12px;font-size:12.5px;cursor:pointer;font-family:'Jakarta',sans-serif}
   .copiar:hover{border-color:var(--violet);color:var(--violet)}
@@ -143,9 +155,10 @@ const html = `<title>Guia de gravação — Narrações Kids TV | NeuralSync</ti
 <div class="wrap">
   <header class="topo">
     <p class="eyebrow">NeuralSync Academy · Produção de áudio</p>
-    <h1>Narrações das histórias do Kids TV</h1>
-    <p class="sub">São ${total} áudios, um para cada cena das 18 histórias. Cada bloco abaixo traz o
-    nome exato do arquivo e o texto que deve ser narrado. Seu progresso fica salvo neste navegador.</p>
+    <h1>Kids TV em vídeo: narração + imagens</h1>
+    <p class="sub">São ${total} cenas, de 18 histórias. Cada cena tem <strong>duas entregas</strong>: a
+    <strong>narração</strong> (áudio) e a <strong>imagem</strong> (gerada por IA com o prompt pronto).
+    Depois juntamos as duas e vira o vídeo do Kids TV. Seu progresso fica salvo neste navegador.</p>
   </header>
 
   <div class="barra">
@@ -154,28 +167,35 @@ const html = `<title>Guia de gravação — Narrações Kids TV | NeuralSync</ti
     <button class="reset" id="reset">Limpar progresso</button>
   </div>
 
-  <h2>Como gerar cada áudio</h2>
+  <h2>Como produzir cada cena</h2>
   <ol class="passos">
-    <li><p>Abra o <strong>painel administrativo da GoTo</strong> e vá até a ferramenta de geração de
-      áudio da URA (a mesma usada para as mensagens da telefonia).</p></li>
-    <li><p>Clique em <strong>Copiar texto</strong> no item que for gravar e cole no campo de texto
-      da ferramenta.</p></li>
-    <li><p>Gere o áudio e <strong>ouça antes de baixar</strong>. Se algum nome próprio sair com
-      pronúncia estranha, tente escrever foneticamente (ex.: escrever <em>"Zito"</em> como
-      <em>"Zíto"</em>) até soar natural.</p></li>
-    <li><p>Baixe o arquivo e <strong>renomeie exatamente</strong> como está no rótulo azul —
-      incluindo a pasta. Exemplo: o arquivo <code class="arquivo">dinossauros/1.mp3</code> deve ficar
-      dentro de uma pasta chamada <code class="arquivo">dinossauros</code>.</p></li>
-    <li><p>Marque a caixinha do item. Quando terminar uma história inteira, pode mandar a pasta —
-      não precisa esperar as 18 ficarem prontas.</p></li>
+    <li><p><strong>Grave a narração.</strong> Abra o painel da GoTo, clique em
+      <strong>Copiar narração</strong>, cole na ferramenta de áudio e gere. <strong>Ouça antes de
+      baixar</strong> — se um nome próprio sair estranho, escreva foneticamente
+      (ex.: <em>"Zito"</em> como <em>"Zíto"</em>) até soar natural.</p></li>
+    <li><p>Baixe o áudio e <strong>renomeie exatamente</strong> como está no rótulo azul,
+      incluindo a pasta. O arquivo <code class="arquivo">dinossauros/1.mp3</code> vai dentro de uma
+      pasta chamada <code class="arquivo">dinossauros</code>.</p></li>
+    <li><p><strong>Gere a imagem.</strong> Clique em <strong>Copiar prompt</strong> e cole numa IA de
+      imagem — Canva IA, Ideogram ou Adobe Firefly. Peça formato <strong>16:9 (deitado)</strong>,
+      que é o formato de vídeo.</p></li>
+    <li><p>Salve a imagem com o <strong>mesmo nome do áudio</strong>, trocando a extensão:
+      <code class="arquivo">dinossauros/1.png</code>. Assim a gente sabe qual imagem é de qual narração
+      sem precisar abrir uma por uma.</p></li>
+    <li><p><strong>Confira a continuidade.</strong> As 3 cenas da mesma história precisam parecer o
+      MESMO personagem. Se a cena 2 vier com outra roupa ou outro cabelo, gere de novo — se precisar,
+      cole junto a frase: <em>"mesma personagem da imagem anterior, mesma roupa e mesmo cabelo"</em>.</p></li>
+    <li><p>Marque a caixinha. Pode mandar história por história — <strong>não precisa esperar as 18
+      ficarem prontas</strong>.</p></li>
   </ol>
 
   <div class="aviso">
-    <strong>Formato:</strong> MP3, uma cena por arquivo. Não junte duas cenas no mesmo áudio —
-    o app toca cada cena separadamente conforme a criança avança na história.
+    <strong>Formato:</strong> áudio em MP3 e imagem em PNG ou JPG, <strong>16:9</strong>.
+    Uma cena por arquivo — não junte duas cenas no mesmo áudio, porque o app toca cada cena
+    separadamente conforme a criança avança na história.
   </div>
 
-  <h2>Os ${total} áudios</h2>
+  <h2>As ${total} cenas</h2>
   ${secoes}
 </div>
 

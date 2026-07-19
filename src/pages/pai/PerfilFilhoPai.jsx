@@ -4,7 +4,6 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import LayoutPai from '../../components/LayoutPai'
 import { Button, Card } from '../../components/ui'
-import { Bell } from '@phosphor-icons/react'
 import '../../styles/pai.css'
 
 const AVATAR_MAP = {
@@ -59,7 +58,6 @@ export default function PerfilFilhoPai() {
   const [toast, setToast] = useState(null)
   const [form, setForm] = useState({ nome: '', idade: '', faixa_etaria: 'construtores', serie: '' })
   const [timerDuration, setTimerDuration] = useState(45)
-  const [notifAtiva, setNotifAtiva] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [excluindo, setExcluindo] = useState(false)
 
@@ -291,21 +289,6 @@ export default function PerfilFilhoPai() {
                 <Button variant="secondary" onClick={salvarTimer} style={{ marginTop: 14 }} size="sm">Salvar tempo</Button>
               </div>
 
-              {/* Notifications toggle */}
-              <div style={{ borderTop: '1px solid var(--ns-violet-light)', paddingTop: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div>
-                    <p style={{ fontWeight: 700, fontSize: 14, color: 'var(--ns-text)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 4 }}><Bell weight="fill" size={16} color="#7C3AED" /> Notificações de progresso</p>
-                    <p style={{ fontSize: 12, color: 'var(--ns-text-muted)', lineHeight: 1.5 }}>Receba um email semanal com o resumo de atividades</p>
-                  </div>
-                  <button
-                    onClick={() => setNotifAtiva(!notifAtiva)}
-                    style={{ width: 46, height: 26, borderRadius: 999, border: 'none', cursor: 'pointer', position: 'relative', background: notifAtiva ? 'var(--ns-green)' : '#d1d5db', transition: 'background 0.2s', flexShrink: 0 }}
-                  >
-                    <div style={{ position: 'absolute', top: 3, left: notifAtiva ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: 'white', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-                  </button>
-                </div>
-              </div>
             </Card>
 
             {/* Achievements grid */}
