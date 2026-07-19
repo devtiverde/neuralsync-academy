@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useKids } from '../../hooks/useKids'
 import { kidsStorias } from '../../data/kidsStorias'
@@ -8,8 +8,72 @@ import { kidsHistoriaInterativa, TIPOS_FINAL } from '../../data/kidsHistoriaInte
 import LayoutCrianca from '../../components/LayoutCrianca'
 import '../../styles/crianca.css'
 
+// ── NARRAÇÃO ──
+// Toca a gravação humana quando existir e cai pro TTS do navegador quando não.
+// ⚠️ O Cloudflare Pages NÃO devolve 404 pra arquivo inexistente — devolve 200 com o
+// index.html do SPA. Por isso não dá pra confiar no status: o que salva aqui é o evento
+// 'error' do <audio>, que dispara quando ele tenta decodificar HTML como áudio.
+function useNarracao(src, texto) {
+  const [tocando, setTocando] = useState(false)
+  const audioRef = useRef(null)
+
+  const parar = useCallback(() => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+    if (window.speechSynthesis) window.speechSynthesis.cancel()
+    setTocando(false)
+  }, [])
+
+  // troca de cena / sair da página não pode deixar a narração anterior tocando por cima
+  useEffect(() => parar, [parar, src])
+
+  const tocar = useCallback(() => {
+    parar()
+    setTocando(true)
+
+    const cairNoTTS = () => {
+      if (!window.speechSynthesis) { setTocando(false); return }
+      const fala = new SpeechSynthesisUtterance(texto)
+      fala.lang = 'pt-BR'
+      fala.rate = 0.9
+      fala.pitch = 1.05
+      fala.onend = () => setTocando(false)
+      fala.onerror = () => setTocando(false)
+      window.speechSynthesis.speak(fala)
+    }
+
+    const audio = new Audio(src)
+    audioRef.current = audio
+    audio.addEventListener('ended', () => setTocando(false))
+    audio.addEventListener('error', cairNoTTS)
+    audio.play().catch(cairNoTTS)
+  }, [src, texto, parar])
+
+  return { tocando, alternar: () => (tocando ? parar() : tocar()) }
+}
+
+function BotaoNarracao({ src, texto, cor }) {
+  const { tocando, alternar } = useNarracao(src, texto)
+  return (
+    <button
+      onClick={alternar}
+      aria-label={tocando ? 'Parar narração' : 'Ouvir narração'}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: '7px',
+        background: tocando ? cor : cor + '22',
+        border: `1px solid ${tocando ? cor : cor + '55'}`,
+        borderRadius: '99px', padding: '7px 16px',
+        color: tocando ? 'white' : cor,
+        fontSize: '13px', fontWeight: '800', cursor: 'pointer',
+        fontFamily: 'inherit', transition: 'all 0.2s',
+      }}
+    >
+      {tocando ? '⏸ Parar' : '🔊 Ouvir história'}
+    </button>
+  )
+}
+
 // ── HISTÓRIA ILUSTRADA ──
-function HistoriaIlustrada({ historia, cor }) {
+function HistoriaIlustrada({ historia, cor, categoria }) {
   const [cenaAtiva, setCenaAtiva] = useState(0)
   if (!historia) return null
 
@@ -60,6 +124,15 @@ function HistoriaIlustrada({ historia, cor }) {
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, margin: 0, textAlign: 'center', fontStyle: 'italic' }}>
           "{cena.texto}"
         </p>
+
+        {/* narração gravada da cena — nomes dos arquivos combinados no guia de gravação */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '18px' }}>
+          <BotaoNarracao
+            src={`/audio/kids-storias/${categoria}/${cenaAtiva + 1}.mp3`}
+            texto={cena.texto}
+            cor={cor}
+          />
+        </div>
       </div>
 
       {/* navegação */}
@@ -715,7 +788,7 @@ export default function KidsCategoria() {
           {/* ABA: HISTÓRIA */}
           {abaAtiva === 'historia' && (
             <>
-              <HistoriaIlustrada historia={historia} cor={cor} />
+              <HistoriaIlustrada historia={historia} cor={cor} categoria={categoria} />
 
               {/* Introdução */}
               <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '20px', padding: '22px' }}>
