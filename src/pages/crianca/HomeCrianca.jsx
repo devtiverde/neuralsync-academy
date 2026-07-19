@@ -55,6 +55,19 @@ const tipoGradiente = {
   'zona-emocoes':       'linear-gradient(135deg, #9d174d, #EC4899)',
 }
 
+// Tamanho dos cards do hub por faixa etária.
+// Antes era fixo: tile 110px com ícone de 28px — o ícone ocupava ~8% da área do card, e é
+// justamente o ícone que a criança mira e reconhece, não a caixa.
+// Âncora: a Nielsen Norman Group recomenda ~2cm (≈76px) de alvo para crianças pequenas,
+// cerca do dobro dos 44px do nível AAA da WCAG (que vale para adultos).
+// `sub` desliga o contador "N ativ." nas faixas que ainda não leem número com fluência.
+const TAMANHOS = {
+  exploradores: { tile: 168, icone: 72, label: 17, gap: 16, sub: false },
+  construtores: { tile: 148, icone: 60, label: 16, gap: 14, sub: false },
+  criadores:    { tile: 128, icone: 44, label: 14, gap: 12, sub: true },
+  inventores:   { tile: 112, icone: 34, label: 13, gap: 10, sub: true },
+}
+
 const CATEGORIAS = [
   { id: 'tudo',       label: 'Tudo',       icon: '🌟' },
   { id: 'raciocinio', label: 'Raciocínio', icon: '🧠' },
@@ -177,6 +190,7 @@ export default function HomeCrianca() {
   ].filter(item => item.show)
 
   const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => item.cat === filtro)
+  const T = TAMANHOS[faixa] || TAMANHOS.construtores
 
   const statCards = [
     { emoji: '💰', value: child.neural_coins || 0, label: 'NeuralCoins', color: '#fbbf24', onClick: () => navigate('/coins'), delay: 0 },
@@ -328,9 +342,11 @@ export default function HomeCrianca() {
                     style={{
                       background: filtro === cat.id ? 'rgba(124,58,237,0.85)' : 'rgba(255,255,255,0.07)',
                       border: '1px solid ' + (filtro === cat.id ? 'rgba(124,58,237,0.9)' : 'rgba(255,255,255,0.12)'),
-                      borderRadius: 'var(--ns-radius-pill)', padding: '6px 14px',
+                      borderRadius: 'var(--ns-radius-pill)',
+                      // chip tinha ~29px de altura — abaixo do mínimo AAA da WCAG (44px)
+                      minHeight: 48, padding: '0 18px',
                       color: filtro === cat.id ? 'white' : 'rgba(255,255,255,0.5)',
-                      fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                      fontSize: 14, fontWeight: 700, cursor: 'pointer',
                       fontFamily: 'var(--ns-font-body)',
                       transition: 'all 0.15s', whiteSpace: 'nowrap',
                     }}
@@ -341,7 +357,7 @@ export default function HomeCrianca() {
               </div>
 
               {/* grid de atividades */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${T.tile}px, 1fr))`, gap: T.gap }}>
                 {itensFiltrados.map(item => (
                   <button
                     key={item.id}
@@ -354,7 +370,7 @@ export default function HomeCrianca() {
                       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
                       position: 'relative', transition: 'transform 0.15s, box-shadow 0.15s',
                       boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-                      minHeight: 100, justifyContent: 'center',
+                      minHeight: T.tile, justifyContent: 'center',
                     }}
                     onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.4)' }}
                     onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)' }}
@@ -364,14 +380,14 @@ export default function HomeCrianca() {
                         <Badge variant="ai" size="sm">{item.badge}</Badge>
                       </span>
                     )}
-                    <div style={{ fontSize: 28, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.icon}</div>
+                    <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.icon}</div>
                     <div style={{
-                      fontSize: 12,
+                      fontSize: T.label,
                       fontFamily: "'Fredoka One', cursive",
                       color: 'white', textAlign: 'center', lineHeight: 1.2,
                       textShadow: '0 1px 3px rgba(0,0,0,0.4)',
                     }}>{item.label}</div>
-                    {item.sub && (
+                    {item.sub && T.sub && (
                       <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 99, padding: '2px 7px', fontSize: 10, color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>{item.sub}</div>
                     )}
                   </button>
