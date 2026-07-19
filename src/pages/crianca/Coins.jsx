@@ -81,8 +81,10 @@ export default function Coins() {
               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', fontWeight: '500', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: 4 }}><Target weight="duotone" size={16} color="#F97316" /> Próxima recompensa</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <div style={{ fontWeight: '700', fontSize: '15px', color: 'white' }}>{nomeAlvo[proximoAlvo]}</div>
+                {/* volta pra "em breve": os brindes físicos ainda não existem, e prometer
+                    entrega numa meta que a criança persegue por semanas é pior que não ter */}
                 {BRINDES_FISICOS.has(proximoAlvo) && (
-                  <div style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: '999px', padding: '2px 9px', fontSize: '10px', color: '#fbbf24', fontWeight: '700', whiteSpace: 'nowrap' }}>🎁 Brinde físico</div>
+                  <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '999px', padding: '2px 9px', fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: '700', whiteSpace: 'nowrap' }}>🔜 Brinde em breve</div>
                 )}
               </div>
               <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '7px', overflow: 'hidden', marginBottom: '6px' }}>

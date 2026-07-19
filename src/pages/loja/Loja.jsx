@@ -400,7 +400,7 @@ export default function Loja() {
             { id: 'powerups', label: '⚡ Power-ups' },
             { id: 'efeitos', label: '✨ Efeitos' },
             { id: 'temas', label: '🎨 Temas' },
-            { id: 'brindes', label: '🎁 Brindes' },
+            { id: 'brindes', label: '🎁 Brindes (em breve)' },
           ].map(a => (
             <button key={a.id} onClick={() => setAba(a.id)} style={{
               flexShrink: 0, padding: '12px 14px', background: 'none', border: 'none',
@@ -602,23 +602,19 @@ export default function Loja() {
         {/* Brindes */}
         {aba === 'brindes' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '14px', padding: '16px' }}>
-              <div style={{ fontWeight: '800', fontSize: '13px', color: '#fbbf24', marginBottom: '12px' }}>🎁 Como funciona o resgate?</div>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                {[
-                  { n: '1', texto: 'Escolha um brinde e clique em Resgatar' },
-                  { n: '2', texto: 'Seu responsável recebe as instruções por email' },
-                  { n: '3', texto: 'O brinde chega na sua casa em alguns dias!' },
-                ].map(step => (
-                  <div key={step.n} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', flex: '1 1 150px' }}>
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(251,191,36,0.25)', color: '#fbbf24', fontWeight: '900', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{step.n}</div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.4' }}>{step.texto}</div>
-                  </div>
-                ))}
+            {/* Os brindes físicos ainda não existem de verdade. Deixar o resgate
+                funcionando prometeria uma entrega que ninguém faria — pior que não ter. */}
+            <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '14px', padding: '20px', textAlign: 'center' }}>
+              <div style={{ fontSize: '38px', marginBottom: '10px' }}>🎁</div>
+              <div style={{ fontWeight: '800', fontSize: '15px', color: '#fbbf24', marginBottom: '6px' }}>Brindes chegando em breve!</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: '1.6', maxWidth: '340px', margin: '0 auto' }}>
+                Estamos preparando prêmios de verdade para chegarem na sua casa.
+                Vá juntando suas NeuralCoins — elas continuam valendo!
               </div>
             </div>
+
             {catalogoBrindes.map(item => (
-              <div key={item.id} style={{ background: 'rgba(255,255,255,0.04)', border: comprados.includes(item.id) ? '1px solid rgba(251,191,36,0.3)' : '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px', display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <div key={item.id} style={{ opacity: 0.6, background: 'rgba(255,255,255,0.04)', border: comprados.includes(item.id) ? '1px solid rgba(251,191,36,0.3)' : '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '16px', display: 'flex', gap: '14px', alignItems: 'center' }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'rgba(251,191,36,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', flexShrink: 0 }}>{item.emoji}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: '700', fontSize: '14px', color: 'white', marginBottom: '3px' }}>{item.nome}</div>
@@ -626,7 +622,9 @@ export default function Loja() {
                   <div style={{ fontSize: '11px', color: '#fbbf24', fontWeight: '600' }}>💰 {item.preco} NeuralCoins</div>
                 </div>
                 <div style={{ flexShrink: 0, minWidth: '110px' }}>
-                  {renderBotao(item, false, false)}
+                  <div style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '7px', fontSize: '12px', fontWeight: '700', color: 'rgba(255,255,255,0.45)', textAlign: 'center' }}>
+                    🔜 Em breve
+                  </div>
                 </div>
               </div>
             ))}
