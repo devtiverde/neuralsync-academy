@@ -38,7 +38,7 @@ export default function QuizIAAtividade() {
 
   if (!authLoading && !(subscription?.plano === 'premium' && subscription?.plano_status === 'ativo')) {
     return <UpgradePremium
-      feature="Quiz IA â€” Perguntas geradas por IA"
+      feature="Quiz IA — Perguntas geradas por IA"
       emoji="🤖"
       descricao="A IA cria 5 perguntas novas sobre o tema que você escolher. Disponível exclusivamente no Plano Premium."
       onVoltar={() => navigate(-1)}
@@ -123,7 +123,7 @@ export default function QuizIAAtividade() {
           </div>
           <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
             <button onClick={() => setFase('temas')} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>🤖 Novo tema</button>
-            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo + ' â€” ' + temaSelecionado, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
+            <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo + ' — ' + temaSelecionado, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
               style={{ flex: 1, background: 'linear-gradient(135deg,#a855f7,#c084fc)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(168,85,247,0.4)' }}>
               Concluir ✓
             </button>

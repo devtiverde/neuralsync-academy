@@ -8,6 +8,13 @@ import { Trophy, Star, CoinVertical, RocketLaunch } from '@phosphor-icons/react'
 import Nix from '../../components/Nix'
 import '../../styles/crianca.css'
 
+// localStorage cheio lança QuotaExceededError. Sem isto, a tela que aparece depois de
+// TODA atividade concluída quebrava por inteiro por causa de um cache que nem é crítico.
+function salvarLocal(chave, valor) {
+  try { localStorage.setItem(chave, valor); return true }
+  catch (e) { console.warn('[Encerramento] falha ao salvar', chave, e); return false }
+}
+
 const badgeMap = {
   quiz:      { emoji: '🧠', texto: 'Mestre dos Quizzes!' },
   memoria:   { emoji: '💡', texto: 'Memória de Elefante!' },
@@ -232,7 +239,14 @@ export default function Encerramento() {
       timestamp: Date.now(),
     }
 
-    const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+    // ns_historico corrompido ou localStorage cheio derrubava a tela INTEIRA aqui,
+    // e esta é a tela que aparece depois de TODA atividade concluída
+    const hist = (() => {
+      try {
+        const h = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+        return Array.isArray(h) ? h : []
+      } catch { return [] }
+    })()
     const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
 
     if (child) {
@@ -253,11 +267,11 @@ export default function Encerramento() {
         } else {
           novoStreak = 1
         }
-        localStorage.setItem(ultimoAtivoKey, hoje)
+        salvarLocal(ultimoAtivoKey, hoje)
       }
       const novoStreakMax = Math.max(child.streak_maximo || 0, novoStreak)
       const childAtualizado = { ...child, xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }
-      localStorage.setItem('ns_active_child', JSON.stringify(childAtualizado))
+      salvarLocal('ns_active_child', JSON.stringify(childAtualizado))
       supabase.from('children').update({ xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }).eq('id', child.id).then(() => {})
       supabase.auth.getUser().then(({ data: { user } }) => {
         if (!user) return
@@ -266,7 +280,7 @@ export default function Encerramento() {
     }
 
     hist.unshift(entrada)
-    localStorage.setItem('ns_historico', JSON.stringify(hist.slice(0, 50)))
+    salvarLocal('ns_historico', JSON.stringify(hist.slice(0, 50)))
 
     const t1 = setTimeout(() => playSound('coin'), 400)
     const t2 = setTimeout(() => playSound('levelup'), 1200)
