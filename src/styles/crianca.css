@@ -585,3 +585,16 @@ h1, h2, h3, .crianca-heading {
   40%, 80% { transform: translateX(6px); }
 }
 
+
+/* Botão de feedback — empilhado ACIMA do FAQ.
+   No mobile o .faq-float-btn já sobe pra 88px por causa do .menu-bottom, então este
+   sobe junto pra não cobrir nem um nem outro. */
+.feedback-float-btn { bottom: 88px; }
+@media (max-width: 767px) {
+  .feedback-float-btn { bottom: 152px; }
+}
+.feedback-float-btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
+.feedback-float-btn { transition: transform .15s, filter .15s; }
+@media (prefers-reduced-motion: reduce) {
+  .feedback-float-btn { transition: none; }
+}

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Brain, List, X } from '@phosphor-icons/react'
 import { useAuth } from '../contexts/AuthContext'
 import FAQButton from './FAQButton'
+import FeedbackButton from './FeedbackButton'
 import '../styles/pai.css'
 
 const nav = [
@@ -168,6 +169,7 @@ export default function LayoutPai({ children }) {
         {children}
       </main>
       <FAQButton tipo="pai" />
+      <FeedbackButton tipo="pai" />
     </div>
   )
 }
