@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
-import { MUNDOS, mundoDaAtividade, tamanhoDaFaixa } from '../../data/mundos'
-import { getKidsLink } from '../../lib/kidsLinks'
+import { tamanhoDaFaixa } from '../../data/mundos'
 import { useAtividades } from '../../hooks/useAtividades'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import SplashScreen from '../../components/SplashScreen'
@@ -68,6 +67,9 @@ export default function HomeCrianca() {
   const [child, setChild] = useState(null)
   const [faixa, setFaixa] = useState('construtores')
   const [historico, setHistorico] = useState([])
+  // preferencia de visualizacao PERSISTE (ao contrario de filtro): e escolha deliberada
+  // de conforto, nao um estado que 'quebra' a tela se a crianca esquecer ligado
+  const [visao, setVisao] = useState(() => localStorage.getItem('ns_visao_home') || 'blocos')
   const [posicaoRanking, setPosicaoRanking] = useState(null)
 
   const { atividades } = useAtividades(faixa)
@@ -168,6 +170,24 @@ export default function HomeCrianca() {
     { id: 'zona-emocoes',        label: 'Emoções',     icon: '💗', cat: 'emocional',  grad: tipoGradiente['zona-emocoes'],         sub: 'Sentimentos', show: true, nav: () => navigate('/atividade/zona-emocoes') },
   ].filter(item => item.show)
   // os 7 destinos do app (nao sao atividades da Trilha)
+  function mudarVisao(v) { setVisao(v); localStorage.setItem('ns_visao_home', v) }
+
+  // um card por TIPO que a faixa realmente tem, na ordem de tipoConfig.
+  // 'Todas' vem primeiro: e o generico geral pedido pelo usuario.
+  const tiposDisponiveis = [
+    { id: '__todas', label: 'Todas as Atividades', icon: '🌟',
+      grad: 'linear-gradient(135deg,#6d28d9,#a78bfa)', qtd: atividades.length,
+      nav: () => navigate('/trilha') },
+    ...Object.entries(tipoConfig)
+      .filter(([tipo]) => contsPorTipo[tipo])
+      .map(([tipo, cfg]) => ({
+        id: tipo, label: cfg.label, icon: cfg.icon,
+        grad: tipoGradiente[tipo] || `linear-gradient(135deg, ${cfg.cor}, ${cfg.cor}bb)`,
+        qtd: contsPorTipo[tipo],
+        nav: navTrilha(navigate, tipo),
+      })),
+  ]
+
   const DESTINOS = ['quizia', 'neural-ai', 'digitacao', 'diario', 'kids', 'ebook', 'offline']
   const destinos = hubItens.filter(i => DESTINOS.includes(i.id) && i.show !== false)
   const T = tamanhoDaFaixa(faixa)
@@ -306,63 +326,100 @@ export default function HomeCrianca() {
               </div>
             )}
 
-            {/* ── MUNDOS ──────────────────────────────────────────────
-                Antes esta seção era um hub com chips de categoria EM CIMA e 29 cards de
-                TIPO DE ATIVIDADE embaixo. Os dois conceitos conviviam na mesma tela, que
-                era exatamente a confusão relatada ("está confundindo atividade com
-                categoria"). Trocar só o vocabulário do filtro não resolveu — o usuário
-                testou e disse que continuava igual, com razão.
-                Agora mundo é DESTINO, não filtro: a criança escolhe um lugar e entra.
-                A lista de atividades, a busca e o filtro por tipo vivem lá dentro
-                (Trilha), onde tipo não disputa espaço com categoria. */}
+            {/* ── TIPOS DE ATIVIDADE ──────────────────────────────────
+                Terceira e última versão desta tela. Histórico, pra ninguém repetir:
+                  v1: chips de categoria + 29 cards de tipo → dois conceitos na mesma tela
+                  v2: mundos (tema) como destino → o tipo sumiu, mas o tema não é como a
+                      criança pensa. Usuário testou: "continua confuso".
+                  v3 (esta): SÓ O TIPO. "Quero jogar labirinto" é um pensamento real de
+                      criança; "quero natureza" não é. Um eixo só, zero ambiguidade.
+                Tema/categoria deixou de existir como eixo de navegação. */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>Escolha um mundo</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>O que você quer jogar?</h3>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {[{ id: 'blocos', icon: '⊞', label: 'Blocos' }, { id: 'lista', icon: '☰', label: 'Lista' }].map(v => (
+                    <button
+                      key={v.id}
+                      onClick={() => mudarVisao(v.id)}
+                      aria-pressed={visao === v.id}
+                      aria-label={`Ver em ${v.label.toLowerCase()}`}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        minHeight: 44, padding: '0 14px', borderRadius: 'var(--ns-radius-pill)',
+                        background: visao === v.id ? 'rgba(124,58,237,0.85)' : 'rgba(255,255,255,0.07)',
+                        border: '1px solid ' + (visao === v.id ? 'rgba(124,58,237,0.9)' : 'rgba(255,255,255,0.12)'),
+                        color: visao === v.id ? 'white' : 'rgba(255,255,255,0.55)',
+                        fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--ns-font-body)',
+                      }}
+                    >
+                      <span style={{ fontSize: 15 }}>{v.icon}</span>{v.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${T.tile}px, 1fr))`, gap: T.gap }}>
-                {MUNDOS.filter(m => m.id !== 'descobrir').map(m => {
-                  const ehTudo = m.id === 'tudo'
-                  const qtd = ehTudo
-                    ? atividades.length
-                    : atividades.filter(a => mundoDaAtividade(a.tipo, getKidsLink(a.id)) === m.id).length
-                  // Descobrir agrupa destinos do app (Kids TV, Diário, Ebooks...), não
-                  // atividades da Trilha — por isso não mostra contador de atividade.
-                  if (!ehTudo && qtd === 0) return null
-
-                  return (
+              {visao === 'blocos' ? (
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${T.tile}px, 1fr))`, gap: T.gap }}>
+                  {tiposDisponiveis.map(t => (
                     <button
-                      key={m.id}
+                      key={t.id}
                       className="ns-hub-card"
-                      onClick={() => navigate(ehTudo ? '/trilha' : `/trilha?mundo=${m.id}`)}
+                      onClick={t.nav}
                       style={{
-                        background: `linear-gradient(150deg, ${m.cor}dd, ${m.cor}77)`,
-                        border: 'none', borderRadius: 'var(--ns-radius-md)',
+                        background: t.grad, border: 'none', borderRadius: 'var(--ns-radius-md)',
                         padding: '18px 10px', cursor: 'pointer',
                         display: 'flex', flexDirection: 'column', alignItems: 'center',
-                        justifyContent: 'center', gap: 8,
-                        minHeight: T.tile, position: 'relative',
-                        boxShadow: `0 4px 18px ${m.cor}44`,
+                        justifyContent: 'center', gap: 8, minHeight: T.tile,
+                        boxShadow: '0 4px 18px rgba(0,0,0,0.28)',
                         transition: 'transform 0.15s, box-shadow 0.15s',
                       }}
-                      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${m.cor}66` }}
-                      onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 18px ${m.cor}44` }}
+                      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)' }}
+                      onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)' }}
                     >
-                      <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.35))' }}>{m.icon}</div>
-                      <div style={{
-                        fontSize: T.label, fontFamily: "'Fredoka One', cursive",
-                        color: 'white', textAlign: 'center', lineHeight: 1.15,
-                        textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-                      }}>{ehTudo ? 'Todas as Atividades' : m.label}</div>
-                      {T.sub && (
-                        <div style={{ background: 'rgba(0,0,0,0.28)', borderRadius: 99, padding: '2px 9px', fontSize: 10, color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}>
-                          {qtd} ativ.
-                        </div>
+                      <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.35))' }}>{t.icon}</div>
+                      <div style={{ fontSize: T.label, fontFamily: "'Fredoka One', cursive", color: 'white', textAlign: 'center', lineHeight: 1.15, textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}>{t.label}</div>
+                      {T.sub && t.qtd != null && (
+                        <div style={{ background: 'rgba(0,0,0,0.28)', borderRadius: 99, padding: '2px 9px', fontSize: 10, color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}>{t.qtd} ativ.</div>
                       )}
                     </button>
-                  )
-                })}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {tiposDisponiveis.map(t => (
+                    <button
+                      key={t.id}
+                      onClick={t.nav}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14,
+                        width: '100%', minHeight: Math.max(64, Math.round(T.tile * 0.42)),
+                        padding: '10px 16px', borderRadius: 'var(--ns-radius-md)',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.09)',
+                        cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--ns-font-body)',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)' }}
+                      onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                    >
+                      <div style={{
+                        width: Math.round(T.icone * 0.9), height: Math.round(T.icone * 0.9), flexShrink: 0,
+                        borderRadius: 14, background: t.grad,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: Math.round(T.icone * 0.55),
+                      }}>{t.icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: Math.max(15, T.label), fontFamily: "'Fredoka One', cursive", color: 'white', lineHeight: 1.2 }}>{t.label}</div>
+                        {t.qtd != null && (
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 600, marginTop: 2 }}>{t.qtd} atividades</div>
+                        )}
+                      </div>
+                      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 20, flexShrink: 0 }}>›</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Destinos do app — Kids TV, Diário, Digitação... NÃO são atividades da
                   Trilha, então não cabem dentro de um mundo. Ficam numa faixa própria

@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { tipoConfig } from '../../data/atividadesData'
-import { MUNDOS, mundoDaAtividade } from '../../data/mundos'
-import { getKidsLink } from '../../lib/kidsLinks'
 import { hasEffect, consumePowerup } from '../../lib/powerups'
 import { foiAssistido } from '../atividades/IntroAtividade'
 import { useAtividades } from '../../hooks/useAtividades'
@@ -14,13 +12,6 @@ import LayoutCrianca from '../../components/LayoutCrianca'
 import { Target, Star, CheckCircle, Trophy, MagnifyingGlass } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
 
-// vocabulario unico: os mesmos MUNDOS que a Home usa (ver src/data/mundos.js).
-// antes aqui havia 16 'materias' proprias, que colidiam com os 16 'tipos' do outro
-// filtro — 'formas', 'cores', 'ingles' e 'tecnologia' apareciam nos dois com nome e
-// emoji quase iguais. Era a origem da confusao relatada pelo usuario.
-const materiaConfig = Object.fromEntries(
-  MUNDOS.filter(m => m.id !== 'tudo').map(m => [m.id, { label: m.label, icon: m.icon, cor: m.cor }])
-)
 
 const nomeFaixa = {
   exploradores: 'Exploradores 🔍',
@@ -79,9 +70,6 @@ export default function Trilha() {
 
   const [faixa, setFaixa] = useState('construtores')
   const [concluidas, setConcluidas] = useState([])
-  const [filtroMateria, setFiltroMateria] = useState(
-    () => new URLSearchParams(window.location.search).get('mundo') || 'todas'
-  )
   const [busca, setBusca] = useState('')
   const [filtroTipo, setFiltroTipo] = useState(() => new URLSearchParams(window.location.search).get('tipo') || 'todos')
   const [gridKey, setGridKey] = useState(0)
@@ -113,8 +101,6 @@ export default function Trilha() {
       const params = new URLSearchParams(window.location.search)
       const urlTipo = params.get('tipo')
       if (urlTipo) setFiltroTipo(urlTipo)
-      const urlMundo = params.get('mundo')
-      if (urlMundo) setFiltroMateria(urlMundo)
     }
   }, [])
 
@@ -203,10 +189,7 @@ export default function Trilha() {
     else url.searchParams.set('tipo', tipo)
     window.history.replaceState({}, '', url.toString())
   }
-
-  const getMateria = (act) => mundoDaAtividade(act.tipo, getKidsLink(act.id))
   const atividadesVisiveis = activities
-    .filter(a => filtroMateria === 'todas' || getMateria(a) === filtroMateria)
     .filter(a => filtroTipo === 'todos' || a.tipo === filtroTipo)
     .filter(a => {
       const q = busca.trim().toLowerCase()
@@ -222,9 +205,12 @@ export default function Trilha() {
   const pct = total > 0 ? Math.round((totalConcluidas / total) * 100) : 0
   // ordena na MESMA sequência em que os mundos aparecem na Home — a criança vê os
   // mesmos ícones, na mesma ordem, nas duas telas
-  const ordemMundos = MUNDOS.map(m => m.id)
-  const materiasDisponiveis = [...new Set(activities.map(getMateria))]
-    .sort((a, b) => ordemMundos.indexOf(a) - ordemMundos.indexOf(b))
+  // agrupa e ordena por TIPO, na mesma ordem do tipoConfig que a Home usa —
+  // categoria/tema deixou de ser eixo de navegação
+  const ordemTipos = Object.keys(tipoConfig)
+  const tiposDisponiveis = [...new Set(activities.map(a => a.tipo))]
+    .filter(t => tipoConfig[t])
+    .sort((a, b) => ordemTipos.indexOf(a) - ordemTipos.indexOf(b))
   const missaoConcluidas = missao.filter(a => concluidas.includes(a.id)).length
   const missaoCompleta = missao.length > 0 && missaoConcluidas === missao.length
   const tempoMissao = missao.reduce((s, a) => s + (a.tempo_estimado || 10), 0)
@@ -368,8 +354,7 @@ export default function Trilha() {
           {(() => {
             // só oferece tipos que realmente existem no recorte atual
             const base = activities
-              .filter(a => filtroMateria === 'todas' || getMateria(a) === filtroMateria)
-            const tipos = [...new Set(base.map(a => a.tipo))].filter(t => tipoConfig[t])
+                      const tipos = [...new Set(base.map(a => a.tipo))].filter(t => tipoConfig[t])
             if (tipos.length < 2) return null
             return (
               <select
@@ -392,175 +377,11 @@ export default function Trilha() {
             )
           })()}
         </div>
-
-        {/* ── FILTROS POR MATÉRIA ──────────────────────────────── */}
-        <div style={{
-          background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.06)',
-          padding: '12px 28px', display: 'flex', gap: '8px',
-          overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', flexShrink: 0,
-        }}>
-          <button onClick={() => setFiltroMateria('todas')} style={{
-            borderRadius: '99px', padding: '8px 18px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-            background: filtroMateria === 'todas' ? '#7C3AED' : 'rgba(255,255,255,0.06)',
-            color: filtroMateria === 'todas' ? 'white' : 'rgba(255,255,255,0.5)',
-            border: filtroMateria === 'todas' ? 'none' : '1px solid rgba(255,255,255,0.1)',
-            whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            boxShadow: filtroMateria === 'todas' ? '0 4px 12px rgba(124,58,237,0.4)' : 'none',
-          }}>
-            Todas ({total})
-          </button>
-          {materiasDisponiveis.map(m => {
-            const cfg = materiaConfig[m] || { label: m, icon: '📚', cor: '#6b7280' }
-            const qtd = activities.filter(a => getMateria(a) === m).length
-            const ativo = filtroMateria === m
-            return (
-              <button key={m} onClick={() => setFiltroMateria(m)} style={{
-                borderRadius: '99px', padding: '8px 16px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                background: ativo ? cfg.cor : 'rgba(255,255,255,0.06)',
-                color: ativo ? 'white' : 'rgba(255,255,255,0.5)',
-                border: ativo ? 'none' : `1px solid rgba(255,255,255,0.1)`,
-                display: 'flex', alignItems: 'center', gap: '5px',
-                whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                boxShadow: ativo ? `0 4px 12px ${cfg.cor}50` : 'none',
-                transition: 'all 0.15s',
-              }}>
-                {cfg.icon} {cfg.label} ({qtd})
-              </button>
-            )
-          })}
-        </div>
-
-        {/* ── BUSCA + FILTRO POR TIPO ───────────────────────────
-            Dentro de um mundo o TIPO volta a ser um filtro útil e não confunde: aqui ele
-            não disputa espaço com "categoria", porque a categoria já foi escolhida na
-            tela anterior ao entrar no mundo. */}
-        <div style={{
-          background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.06)',
-          padding: '12px 28px', display: 'flex', gap: '10px', alignItems: 'center',
-          flexWrap: 'wrap', flexShrink: 0,
-        }}>
-          <div style={{ position: 'relative', flex: '1 1 220px', minWidth: '180px' }}>
-            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', pointerEvents: 'none' }}>🔎</span>
-            <input
-              type="search"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              placeholder="Procurar atividade..."
-              aria-label="Procurar atividade pelo nome"
-              style={{
-                width: '100%', boxSizing: 'border-box', minHeight: '48px',
-                padding: '0 14px 0 40px', borderRadius: '99px',
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.14)',
-                color: 'white', fontSize: '15px', fontWeight: '600',
-                fontFamily: 'Plus Jakarta Sans, sans-serif', outline: 'none',
-              }}
-            />
-          </div>
-
-          {(() => {
-            // só oferece tipos que realmente existem no recorte atual
-            const base = activities
-              .filter(a => filtroMateria === 'todas' || getMateria(a) === filtroMateria)
-            const tipos = [...new Set(base.map(a => a.tipo))].filter(t => tipoConfig[t])
-            if (tipos.length < 2) return null
-            return (
-              <select
-                value={filtroTipo}
-                onChange={e => changeTipo(e.target.value)}
-                aria-label="Filtrar por tipo de atividade"
-                style={{
-                  minHeight: '48px', padding: '0 14px', borderRadius: '99px',
-                  background: filtroTipo === 'todos' ? 'rgba(255,255,255,0.07)' : 'rgba(124,58,237,0.35)',
-                  border: '1px solid ' + (filtroTipo === 'todos' ? 'rgba(255,255,255,0.14)' : 'rgba(124,58,237,0.7)'),
-                  color: 'white', fontSize: '14px', fontWeight: '700',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif', cursor: 'pointer', outline: 'none',
-                }}
-              >
-                <option value="todos">Todos os tipos</option>
-                {tipos.map(t => (
-                  <option key={t} value={t}>{tipoConfig[t].icon} {tipoConfig[t].label}</option>
-                ))}
-              </select>
-            )
-          })()}
-        </div>
-
-        {/* ── FILTROS POR MATÉRIA ──────────────────────────────── */}
-        <div style={{
-          background: 'rgba(0,0,0,0.3)', borderBottom: '1px solid rgba(255,255,255,0.06)',
-          padding: '12px 28px', display: 'flex', gap: '8px',
-          overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', flexShrink: 0,
-        }}>
-          <button onClick={() => setFiltroMateria('todas')} style={{
-            borderRadius: '99px', padding: '8px 18px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-            background: filtroMateria === 'todas' ? '#7C3AED' : 'rgba(255,255,255,0.06)',
-            color: filtroMateria === 'todas' ? 'white' : 'rgba(255,255,255,0.5)',
-            border: filtroMateria === 'todas' ? 'none' : '1px solid rgba(255,255,255,0.1)',
-            whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-            boxShadow: filtroMateria === 'todas' ? '0 4px 12px rgba(124,58,237,0.4)' : 'none',
-          }}>
-            Todas ({total})
-          </button>
-          {materiasDisponiveis.map(m => {
-            const cfg = materiaConfig[m] || { label: m, icon: '📚', cor: '#6b7280' }
-            const qtd = activities.filter(a => getMateria(a) === m).length
-            const ativo = filtroMateria === m
-            return (
-              <button key={m} onClick={() => setFiltroMateria(m)} style={{
-                borderRadius: '99px', padding: '8px 16px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                background: ativo ? cfg.cor : 'rgba(255,255,255,0.06)',
-                color: ativo ? 'white' : 'rgba(255,255,255,0.5)',
-                border: ativo ? 'none' : `1px solid rgba(255,255,255,0.1)`,
-                display: 'flex', alignItems: 'center', gap: '5px',
-                whiteSpace: 'nowrap', flexShrink: 0, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                boxShadow: ativo ? `0 4px 12px ${cfg.cor}50` : 'none',
-                transition: 'all 0.15s',
-              }}>
-                {cfg.icon} {cfg.label} ({qtd})
-              </button>
-            )
-          })}
-        </div>
-
-        {/* ── CONTEXTO DE TIPO ──────────────────────────────────────
-            O tipo de atividade DEIXOU de ser um eixo de filtro aqui. Ele existia como um
-            segundo painel de 16 chips, quase idêntico visualmente aos chips de matéria,
-            e os dois se aplicavam em AND — era a confusão "atividade vs categoria".
-            A criança já escolhe o tipo no hub da Home; ao chegar aqui via ?tipo=X ela só
-            precisa VER que está filtrada e conseguir sair com um toque. */}
-        {filtroTipo !== 'todos' && (() => {
-          const tc = tipoConfig[filtroTipo]
-          if (!tc) return null
-          return (
-            <div style={{ background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 28px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>
-                Mostrando só:
-              </span>
-              <button
-                onClick={() => changeTipo('todos')}
-                aria-label={`Remover filtro ${tc.label} e ver todas as atividades`}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '8px',
-                  background: (tc.cor || '#7C3AED') + '28',
-                  border: '1px solid ' + (tc.cor || '#7C3AED') + '70',
-                  borderRadius: '99px', minHeight: '44px', padding: '0 16px',
-                  color: 'white', fontSize: '14px', fontWeight: '800', cursor: 'pointer',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif',
-                }}
-              >
-                <span style={{ fontSize: '18px' }}>{tc.icon}</span>
-                {tc.label}
-                <span style={{ fontSize: '16px', opacity: 0.7, marginLeft: '2px' }}>✕</span>
-              </button>
-            </div>
-          )
-        })()}
 
         <div style={{ padding: '24px 32px' }}>
 
           {/* ── TRILHA DA SEMANA ───────────────────────────────── */}
-          {filtroMateria === 'todas' && filtroTipo === 'todos' && !busca.trim() && temaAtual && trilhaSemanal && (() => {
+          {filtroTipo === 'todos' && !busca.trim() && temaAtual && trilhaSemanal && (() => {
             const diaHoje = getDiaHoje()
             const temaObj = temas.find(t => t.id === trilhaSemanal.temaId) || temaAtual
             const diasLabels = ['', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex']
@@ -626,7 +447,7 @@ export default function Trilha() {
           })()}
 
           {/* ── MISSÃO DO DIA ──────────────────────────────────── */}
-          {filtroMateria === 'todas' && filtroTipo === 'todos' && !busca.trim() && missao.length > 0 && (
+          {filtroTipo === 'todos' && !busca.trim() && missao.length > 0 && (
             <div style={{
               borderRadius: '20px', marginBottom: '28px', overflow: 'hidden',
               border: `1px solid ${missaoCompleta ? 'rgba(16,185,129,0.4)' : 'rgba(124,58,237,0.4)'}`,
@@ -705,11 +526,11 @@ export default function Trilha() {
               <MagnifyingGlass weight="duotone" size={48} color="#7C3AED" style={{ marginBottom: '14px' }} />
               <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Nenhuma atividade aqui ainda. Toque em Tudo para ver todas.</p>
             </div>
-          ) : filtroMateria === 'todas' && filtroTipo === 'todos' && !busca.trim() ? (
+          ) : filtroTipo === 'todos' && !busca.trim() ? (
             <div>
-              {materiasDisponiveis.map(m => {
-                const mcfg = materiaConfig[m] || { label: m, icon: '📚', cor: '#6b7280' }
-                const mActs = activities.filter(a => getMateria(a) === m)
+              {tiposDisponiveis.map(m => {
+                const mcfg = tipoConfig[m] || { label: m, icon: '🎮', cor: '#6b7280' }
+                const mActs = activities.filter(a => a.tipo === m)
                 if (!mActs.length) return null
                 const mConcluidas = mActs.filter(a => getStatus(a) === 'concluido').length
                 return (
@@ -742,7 +563,7 @@ export default function Trilha() {
           </div>
 
           {/* ── DESAFIO DA SEMANA ──────────────────────────────── */}
-          {filtroMateria === 'todas' && filtroTipo === 'todos' && !busca.trim() && (
+          {filtroTipo === 'todos' && !busca.trim() && (
             <div style={{
               marginTop: '16px',
               background: desafioReivindicado ? 'rgba(16,185,129,0.08)' : 'rgba(251,191,36,0.06)',
