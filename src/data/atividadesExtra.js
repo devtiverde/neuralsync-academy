@@ -65,7 +65,7 @@ export const atividadesExtraPorFaixa = {
       ],
     },
     {
-      id: 'exp_memoria_profissoes',
+      id: 'exp_memoria_profissoes_2',
       tipo: 'memoria',
       titulo: 'Profissões Heroicas',
       descricao: 'Combine os pares de profissões!',
@@ -519,7 +519,7 @@ export const atividadesExtraPorFaixa = {
       ],
     },
     {
-      id: 'cri_memoria_inventores',
+      id: 'cri_memoria_inventores_2',
       tipo: 'memoria',
       titulo: 'Inventores e Invenções',
       descricao: 'Combine cada inventor com sua invenção!',

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { atividadesPorFaixa, fase2PorFaixa, fase3PorFaixa } from '../data/atividadesData'
 import { atividadesExtraPorFaixa, fase2ExtraPorFaixa, fase3ExtraPorFaixa, fase4ExtraPorFaixa, fase5ExtraPorFaixa, inglesExtraPorFaixa, formasExtraPorFaixa, numerosExtraPorFaixa, coresExtraPorFaixa, alfabetoExtraPorFaixa, colorirExtraPorFaixa, silabasExtraPorFaixa } from '../data/atividadesExtra'
+import { colorirExtra2PorFaixa } from '../data/colorirExtra2'
 
 export function useAtividades(faixaEtaria) {
   const [atividades, setAtividades] = useState([])
@@ -26,6 +27,7 @@ export function useAtividades(faixaEtaria) {
       ...(coresExtraPorFaixa[f]       || []),
       ...(alfabetoExtraPorFaixa[f]    || []),
       ...(colorirExtraPorFaixa[f]     || []),
+      ...(colorirExtra2PorFaixa[f]    || []),
       ...(silabasExtraPorFaixa[f]     || []),
     ]
 
