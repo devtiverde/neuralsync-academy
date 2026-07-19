@@ -26,6 +26,32 @@
 -- a tentativa de alterar campo protegido.
 -- ============================================================
 
+-- ── 0. Detector de service_role ──────────────────────────────
+-- Dois sinais independentes. O supabase-js com a service_role key fala com o PostgREST,
+-- que faz `SET LOCAL role = service_role` (pega em current_user) E popula
+-- request.jwt.claims (pega no segundo teste). Qualquer um dos dois basta.
+
+CREATE OR REPLACE FUNCTION public.eh_service_role()
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+AS $$
+BEGIN
+  IF current_user = 'service_role' OR session_user = 'service_role' THEN
+    RETURN true;
+  END IF;
+
+  -- o claim pode não existir (conexão direta, psql, cron) — `true` no 2º arg evita erro
+  RETURN coalesce(
+    current_setting('request.jwt.claims', true)::jsonb ->> 'role' = 'service_role',
+    false
+  );
+EXCEPTION WHEN others THEN
+  -- claims malformado não pode derrubar um UPDATE legítimo
+  RETURN false;
+END;
+$$;
+
 -- ── 1. Blindar as colunas de faturamento de `users` ──────────
 
 CREATE OR REPLACE FUNCTION public.protege_billing_users()
@@ -35,8 +61,11 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  -- service_role (Edge Functions: kiwify-webhook, activate-pending-plan) passa direto
-  IF current_setting('request.jwt.claims', true)::jsonb ->> 'role' = 'service_role' THEN
+  -- service_role (Edge Functions: kiwify-webhook, activate-pending-plan) passa direto.
+  -- Checa DOIS sinais de propósito: se este trigger errar e barrar o service_role, o
+  -- webhook da Kiwify para de ativar plano de quem pagou — falha pior que o próprio bug.
+  -- `current_user` cobre o SET LOCAL role do PostgREST; o claim do JWT cobre o resto.
+  IF public.eh_service_role() THEN
     RETURN NEW;
   END IF;
 
@@ -67,7 +96,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF current_setting('request.jwt.claims', true)::jsonb ->> 'role' = 'service_role' THEN
+  IF public.eh_service_role() THEN
     RETURN NEW;
   END IF;
 
