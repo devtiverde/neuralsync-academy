@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
+import { MUNDOS, getMundo, tamanhoDaFaixa } from '../../data/mundos'
 import { useAtividades } from '../../hooks/useAtividades'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import SplashScreen from '../../components/SplashScreen'
@@ -55,28 +56,6 @@ const tipoGradiente = {
   'zona-emocoes':       'linear-gradient(135deg, #9d174d, #EC4899)',
 }
 
-// Tamanho dos cards do hub por faixa etária.
-// Antes era fixo: tile 110px com ícone de 28px — o ícone ocupava ~8% da área do card, e é
-// justamente o ícone que a criança mira e reconhece, não a caixa.
-// Âncora: a Nielsen Norman Group recomenda ~2cm (≈76px) de alvo para crianças pequenas,
-// cerca do dobro dos 44px do nível AAA da WCAG (que vale para adultos).
-// `sub` desliga o contador "N ativ." nas faixas que ainda não leem número com fluência.
-const TAMANHOS = {
-  exploradores: { tile: 168, icone: 72, label: 17, gap: 16, sub: false },
-  construtores: { tile: 148, icone: 60, label: 16, gap: 14, sub: false },
-  criadores:    { tile: 128, icone: 44, label: 14, gap: 12, sub: true },
-  inventores:   { tile: 112, icone: 34, label: 13, gap: 10, sub: true },
-}
-
-const CATEGORIAS = [
-  { id: 'tudo',       label: 'Tudo',       icon: '🌟' },
-  { id: 'raciocinio', label: 'Raciocínio', icon: '🧠' },
-  { id: 'tecnologia', label: 'Tecnologia', icon: '🤖' },
-  { id: 'letras',     label: 'Letras',     icon: '📖' },
-  { id: 'emocional',  label: 'Emoções',    icon: '💗' },
-  { id: 'conteudo',   label: 'Conteúdo',   icon: '🎬' },
-  { id: 'offline',    label: 'Offline',    icon: '🌿' },
-]
 
 function navTrilha(navigate, tipo) {
   return () => navigate('/trilha?tipo=' + tipo)
@@ -189,8 +168,9 @@ export default function HomeCrianca() {
     { id: 'zona-emocoes',        label: 'Emoções',     icon: '💗', cat: 'emocional',  grad: tipoGradiente['zona-emocoes'],         sub: 'Sentimentos', show: true, nav: () => navigate('/atividade/zona-emocoes') },
   ].filter(item => item.show)
 
-  const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => item.cat === filtro)
-  const T = TAMANHOS[faixa] || TAMANHOS.construtores
+  // item.cat ainda usa o vocabulario antigo; getMundo() traduz na hora da comparacao
+  const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => getMundo(item.cat) === filtro)
+  const T = tamanhoDaFaixa(faixa)
 
   const statCards = [
     { emoji: '💰', value: child.neural_coins || 0, label: 'NeuralCoins', color: '#fbbf24', onClick: () => navigate('/coins'), delay: 0 },
@@ -335,7 +315,7 @@ export default function HomeCrianca() {
 
               {/* filtros por categoria */}
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-                {CATEGORIAS.map(cat => (
+                {MUNDOS.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setFiltro(cat.id)}

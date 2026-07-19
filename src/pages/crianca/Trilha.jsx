@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { tipoConfig } from '../../data/atividadesData'
+import { MUNDOS, mundoDaAtividade } from '../../data/mundos'
 import { getKidsLink } from '../../lib/kidsLinks'
 import { hasEffect, consumePowerup } from '../../lib/powerups'
 import { foiAssistido } from '../atividades/IntroAtividade'
@@ -13,24 +14,13 @@ import LayoutCrianca from '../../components/LayoutCrianca'
 import { Target, Star, CheckCircle, Trophy, MagnifyingGlass } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
 
-const materiaConfig = {
-  matematica:      { label: 'Matemática',   icon: '🔢', cor: '#3b82f6' },
-  tecnologia:      { label: 'Tecnologia',   icon: '💻', cor: '#7C3AED' },
-  animais:         { label: 'Animais',      icon: '🐾', cor: '#10b981' },
-  planeta_terra:   { label: 'Ciências',     icon: '🌍', cor: '#059669' },
-  historia_brasil: { label: 'História',     icon: '🏛️', cor: '#F07A20' },
-  arte:            { label: 'Arte',         icon: '🎨', cor: '#ec4899' },
-  corpo_humano:    { label: 'Corpo',        icon: '🫀', cor: '#ef4444' },
-  frutas:          { label: 'Natureza',     icon: '🍀', cor: '#84cc16' },
-  fisica:          { label: 'Física',       icon: '⚡', cor: '#6366f1' },
-  profissoes:      { label: 'Profissões',   icon: '👷', cor: '#f59e0b' },
-  transporte:      { label: 'Transporte',   icon: '🚗', cor: '#06b6d4' },
-  formas_cores:    { label: 'Formas',       icon: '🔷', cor: '#a855f7' },
-  golfinhos:       { label: 'Oceano',       icon: '🐬', cor: '#0ea5e9' },
-  filosofia:       { label: 'Filosofia',    icon: '🧠', cor: '#8b5cf6' },
-  ingles:          { label: 'Inglês',       icon: '🇺🇸', cor: '#3b82f6' },
-  outros:          { label: 'Outros',       icon: '🎮', cor: '#6b7280' },
-}
+// vocabulario unico: os mesmos MUNDOS que a Home usa (ver src/data/mundos.js).
+// antes aqui havia 16 'materias' proprias, que colidiam com os 16 'tipos' do outro
+// filtro — 'formas', 'cores', 'ingles' e 'tecnologia' apareciam nos dois com nome e
+// emoji quase iguais. Era a origem da confusao relatada pelo usuario.
+const materiaConfig = Object.fromEntries(
+  MUNDOS.filter(m => m.id !== 'tudo').map(m => [m.id, { label: m.label, icon: m.icon, cor: m.cor }])
+)
 
 const nomeFaixa = {
   exploradores: 'Exploradores 🔍',
@@ -98,7 +88,6 @@ export default function Trilha() {
   const [missaoBonusReivindicado, setMissaoBonusReivindicado] = useState(false)
   const [trilhaSemanal, setTrilhaSemanal] = useState(null)
   const [temaAtual, setTemaAtual] = useState(null)
-  const [tipoAberto, setTipoAberto] = useState(false)
 
   const { atividades: activities } = useAtividades(faixa)
 
@@ -114,10 +103,12 @@ export default function Trilha() {
     if (c?.id) {
       const chave = `ns_desafio_${c.id}_${semanaAtual()}`
       setDesafioReivindicado(!!localStorage.getItem(chave))
-      const savedTipo = localStorage.getItem(`ns_filtro_tipo_${c.id}`)
+      // o filtro de tipo agora vem SÓ da URL (deep-link vindo do hub da Home).
+      // antes ele era restaurado do localStorage, e como a Trilha da Semana, a Missão do
+      // Dia e o Desafio só aparecem sem filtro, a criança voltava dias depois e achava a
+      // tela "quebrada" sem entender por quê.
       const urlTipo = new URLSearchParams(window.location.search).get('tipo')
       if (urlTipo) setFiltroTipo(urlTipo)
-      else if (savedTipo) setFiltroTipo(savedTipo)
     }
   }, [])
 
@@ -205,10 +196,9 @@ export default function Trilha() {
     if (tipo === 'todos') url.searchParams.delete('tipo')
     else url.searchParams.set('tipo', tipo)
     window.history.replaceState({}, '', url.toString())
-    if (child?.id) localStorage.setItem(`ns_filtro_tipo_${child.id}`, tipo)
   }
 
-  const getMateria = (act) => getKidsLink(act.id) ?? 'outros'
+  const getMateria = (act) => mundoDaAtividade(act.tipo, getKidsLink(act.id))
   const atividadesVisiveis = activities
     .filter(a => filtroMateria === 'todas' || getMateria(a) === filtroMateria)
     .filter(a => filtroTipo === 'todos' || a.tipo === filtroTipo)
@@ -216,10 +206,11 @@ export default function Trilha() {
   const totalConcluidas = activities.filter(a => getStatus(a) === 'concluido').length
   const total = activities.length
   const pct = total > 0 ? Math.round((totalConcluidas / total) * 100) : 0
-  const materiasDisponiveis = [...new Set(activities.map(getMateria))].sort((a, b) => {
-    const order = ['matematica','tecnologia','animais','planeta_terra','historia_brasil','arte','corpo_humano','frutas','fisica','profissoes','transporte','formas_cores','golfinhos','filosofia','ingles','outros']
-    return order.indexOf(a) - order.indexOf(b)
-  })
+  // ordena na MESMA sequência em que os mundos aparecem na Home — a criança vê os
+  // mesmos ícones, na mesma ordem, nas duas telas
+  const ordemMundos = MUNDOS.map(m => m.id)
+  const materiasDisponiveis = [...new Set(activities.map(getMateria))]
+    .sort((a, b) => ordemMundos.indexOf(a) - ordemMundos.indexOf(b))
   const missaoConcluidas = missao.filter(a => concluidas.includes(a.id)).length
   const missaoCompleta = missao.length > 0 && missaoConcluidas === missao.length
   const tempoMissao = missao.reduce((s, a) => s + (a.tempo_estimado || 10), 0)
@@ -369,89 +360,36 @@ export default function Trilha() {
           })}
         </div>
 
-        {/* ── FILTRO POR TIPO — painel suspenso animado ────────── */}
-        {(() => {
-          const tiposComAtiv = [...new Set(activities.map(a => a.tipo))]
-          if (tiposComAtiv.length < 2) return null
-          const tipoOrder = ['quiz','memoria','sequencia','labirinto','robo','padrao','quizia','inventor','blocos','numeros','formas','cores','alfabeto','ingles','colorir','silabas']
-          const tiposOrdenados = tipoOrder.filter(t => tiposComAtiv.includes(t))
-          const tcAtivo = filtroTipo !== 'todos' ? tipoConfig[filtroTipo] : null
-          const selecionar = (t) => { changeTipo(t); setTipoAberto(false) }
+        {/* ── CONTEXTO DE TIPO ──────────────────────────────────────
+            O tipo de atividade DEIXOU de ser um eixo de filtro aqui. Ele existia como um
+            segundo painel de 16 chips, quase idêntico visualmente aos chips de matéria,
+            e os dois se aplicavam em AND — era a confusão "atividade vs categoria".
+            A criança já escolhe o tipo no hub da Home; ao chegar aqui via ?tipo=X ela só
+            precisa VER que está filtrada e conseguir sair com um toque. */}
+        {filtroTipo !== 'todos' && (() => {
+          const tc = tipoConfig[filtroTipo]
+          if (!tc) return null
           return (
-            <div style={{ background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 28px', flexShrink: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => setTipoAberto(v => !v)}
-                  aria-expanded={tipoAberto}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '7px', borderRadius: '99px',
-                    padding: '7px 16px', fontSize: '12px', fontWeight: '800', cursor: 'pointer',
-                    background: tipoAberto ? 'rgba(124,58,237,0.3)' : 'rgba(255,255,255,0.06)',
-                    border: '1px solid ' + (tipoAberto ? 'rgba(124,58,237,0.6)' : 'rgba(255,255,255,0.1)'),
-                    color: 'white', fontFamily: 'Plus Jakarta Sans, sans-serif', transition: 'all 0.2s',
-                  }}
-                >
-                  <MagnifyingGlass weight="duotone" size={14} color="#a78bfa" />
-                  Filtrar por tipo
-                  <span style={{ display: 'inline-block', fontSize: '10px', transition: 'transform 0.25s ease', transform: tipoAberto ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
-                </button>
-                {tcAtivo && (
-                  <button onClick={() => changeTipo('todos')} style={{
-                    display: 'flex', alignItems: 'center', gap: '5px', borderRadius: '99px',
-                    padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                    background: tcAtivo.cor + '25', border: `1px solid ${tcAtivo.cor}55`,
-                    color: tcAtivo.cor, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                  }}>
-                    {tcAtivo.icon} {tcAtivo.label} ✕
-                  </button>
-                )}
-              </div>
-
-              <div style={{
-                overflow: 'hidden',
-                maxHeight: tipoAberto ? 240 : 0,
-                opacity: tipoAberto ? 1 : 0,
-                marginTop: tipoAberto ? 10 : 0,
-                transition: 'max-height 0.3s ease, opacity 0.25s ease, margin-top 0.3s ease',
-              }}>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button onClick={() => selecionar('todos')} style={{
-                    borderRadius: '99px', padding: '6px 14px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                    background: filtroTipo === 'todos' ? '#7C3AED' : 'rgba(255,255,255,0.05)',
-                    color: filtroTipo === 'todos' ? 'white' : 'rgba(255,255,255,0.5)',
-                    border: filtroTipo === 'todos' ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                    fontFamily: 'Plus Jakarta Sans, sans-serif',
-                    boxShadow: filtroTipo === 'todos' ? '0 3px 10px rgba(124,58,237,0.4)' : 'none',
-                    transition: 'all 0.15s',
-                  }}>
-                    🌟 Todos
-                  </button>
-                  {tiposOrdenados.map(t => {
-                    const tc = tipoConfig[t]
-                    const qtd = activities.filter(a => a.tipo === t).length
-                    const ativo = filtroTipo === t
-                    return (
-                      <button key={t} onClick={() => selecionar(t)} style={{
-                        borderRadius: '99px', padding: '6px 12px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
-                        background: ativo ? tc.cor : 'rgba(255,255,255,0.05)',
-                        color: ativo ? 'white' : 'rgba(255,255,255,0.4)',
-                        border: ativo ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                        display: 'flex', alignItems: 'center', gap: '4px',
-                        fontFamily: 'Plus Jakarta Sans, sans-serif',
-                        boxShadow: ativo ? `0 3px 10px ${tc.cor}50` : 'none',
-                        transition: 'all 0.15s',
-                      }}>
-                        {tc.icon} {tc.label}
-                        <span style={{
-                          background: ativo ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
-                          borderRadius: '99px', padding: '1px 6px', fontSize: '10px', fontWeight: '900',
-                          minWidth: '18px', textAlign: 'center',
-                        }}>{qtd}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
+            <div style={{ background: 'rgba(0,0,0,0.2)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '10px 28px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', fontWeight: '600' }}>
+                Mostrando só:
+              </span>
+              <button
+                onClick={() => changeTipo('todos')}
+                aria-label={`Remover filtro ${tc.label} e ver todas as atividades`}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  background: (tc.cor || '#7C3AED') + '28',
+                  border: '1px solid ' + (tc.cor || '#7C3AED') + '70',
+                  borderRadius: '99px', minHeight: '44px', padding: '0 16px',
+                  color: 'white', fontSize: '14px', fontWeight: '800', cursor: 'pointer',
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                }}
+              >
+                <span style={{ fontSize: '18px' }}>{tc.icon}</span>
+                {tc.label}
+                <span style={{ fontSize: '16px', opacity: 0.7, marginLeft: '2px' }}>✕</span>
+              </button>
             </div>
           )
         })()}
@@ -602,7 +540,7 @@ export default function Trilha() {
           {atividadesVisiveis.length === 0 ? (
             <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', padding: '48px', textAlign: 'center' }}>
               <MagnifyingGlass weight="duotone" size={48} color="#7C3AED" style={{ marginBottom: '14px' }} />
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Nenhuma atividade encontrada nessa categoria.</p>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Nenhuma atividade aqui ainda. Toque em Tudo para ver todas.</p>
             </div>
           ) : filtroMateria === 'todas' && filtroTipo === 'todos' ? (
             <div>
