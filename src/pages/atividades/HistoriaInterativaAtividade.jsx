@@ -210,6 +210,7 @@ const HISTORIAS = {
 const CONFETTI_CORES = ['#7C3AED','#F97316','#06B6D4','#10B981','#F59E0B','#EF4444','#8B5CF6','#3B82F6']
 
 function falarTTS(texto) {
+  if (!window.speechSynthesis) return
   window.speechSynthesis.cancel()
   const utt = new SpeechSynthesisUtterance(texto)
   utt.lang = 'pt-BR'; utt.rate = 0.85; utt.pitch = 1.1

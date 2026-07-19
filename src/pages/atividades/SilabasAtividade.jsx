@@ -6,9 +6,13 @@ import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
 
+// O TTS pt-BR do navegador expande sigla de 2 letras MAIÚSCULAS como abreviação de
+// estado — "TO" vira "Tocantins", "PA" vira "Pará", "BA" vira "Bahia". As sílabas e as
+// palavras dos dados são todas em caixa alta, então tudo que vai pro TTS passa por
+// minúscula antes. (Os arquivos gravados não sofrem disso, isso é só a rede de segurança.)
 function falarTTS(texto) {
   if (!window.speechSynthesis) return
-  const utt = new SpeechSynthesisUtterance(texto)
+  const utt = new SpeechSynthesisUtterance(String(texto).toLowerCase())
   utt.lang = 'pt-BR'
   utt.rate = 0.8
   utt.pitch = 1.1
@@ -16,13 +20,30 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
+// criança toca as fichas rápido; sem isso as reproduções se empilham e sobrepõem
+let audioAtual = null
+function tocar(src, textoFallback) {
+  if (audioAtual) { audioAtual.pause(); audioAtual = null }
+  if (window.speechSynthesis) window.speechSynthesis.cancel()
+  const audio = new Audio(src)
+  audioAtual = audio
+  audio.addEventListener('error', () => falarTTS(textoFallback))
+  audio.play().catch(() => falarTTS(textoFallback))
+}
+
 // toca a gravação da palavra completa quando existir; cai pro TTS caso contrário
 // ou quando a palavra não tem áudio gravado (ex: novas palavras temáticas futuras)
 function falarPalavra(id, texto) {
   if (!id) { falarTTS(texto); return }
-  const audio = new Audio(`/audio/silabas/${id}.mp3`)
-  audio.addEventListener('error', () => falarTTS(texto))
-  audio.play().catch(() => falarTTS(texto))
+  tocar(`/audio/silabas/${id}.mp3`, texto)
+}
+
+// ficha de sílaba individual — gravações em `_fichas/`, geradas por
+// `gerar-audios-silabas.mjs` (lê as sílabas direto dos dados, é idempotente)
+function falarSilaba(texto) {
+  const slug = String(texto).toLowerCase()
+  if (!/^[a-z]+$/.test(slug)) { falarTTS(texto); return }
+  tocar(`/audio/silabas/_fichas/${slug}.mp3`, texto)
 }
 
 function embaralhar(silabas) {
@@ -83,7 +104,7 @@ export default function SilabasAtividade() {
 
   function handleFicha(ficha) {
     if (travado || fichasUsadas.has(ficha.fichaId)) return
-    falarTTS(ficha.texto)
+    falarSilaba(ficha.texto)
     playSound('click')
 
     const proximoVazio = slots.findIndex(s => s === null)

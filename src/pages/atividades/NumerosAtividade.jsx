@@ -29,11 +29,18 @@ function falarTTS(palavra) {
   window.speechSynthesis.speak(utt)
 }
 
+// MESMA normalização usada por `gerar-audios-temas.mjs` pra nomear as pastas.
+// Sem isso o player pede o id cru (com underscore) e o disco tem hífen — 404 silencioso
+// que fazia toda atividade temática cair no TTS robótico. Se mudar aqui, mudar lá.
+function slug(s) {
+  return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 function falar(numero, atividadeId, temTema, indice) {
   // atividades temáticas usam o índice como chave (não o "n") porque várias reaproveitam
   // o mesmo n pra entradas diferentes (frações com numerador 1, negativos e positivos etc.)
   const caminho = temTema
-    ? `/audio/numeros/_temas/${atividadeId}/${indice}.mp3`
+    ? `/audio/numeros/_temas/${slug(atividadeId)}/${indice}.mp3`
     : `/audio/numeros/${numero.n}.mp3`
   const audio = new Audio(caminho)
   audio.addEventListener('error', () => falarTTS(numero.word))

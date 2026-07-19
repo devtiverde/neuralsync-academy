@@ -53,10 +53,18 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
+// MESMA normalização usada por `gerar-audios-temas.mjs` pra nomear as pastas.
+// Sem isso o player pede `_temas/exp_alfabeto_animais` (underscore, id cru) enquanto o
+// disco tem `_temas/exp-alfabeto-animais` (hífen) — 404 silencioso que fazia TODAS as
+// atividades temáticas caírem no TTS robótico do navegador. Se mudar aqui, mudar lá.
+function slug(s) {
+  return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 function falar(letraData, atividadeId, temTema) {
   const texto = `${letraData.letra}. ${letraData.palavra}.`
   const letra = letraData.letra.toLowerCase()
-  const base = temTema ? `/audio/alfabeto/_temas/${atividadeId}` : '/audio/alfabeto'
+  const base = temTema ? `/audio/alfabeto/_temas/${slug(atividadeId)}` : '/audio/alfabeto'
 
   // letra e palavra são arquivos separados — toca a letra, espera uma pausa real
   // e só então toca a palavra (mais natural que confiar em pontuação dentro do TTS)

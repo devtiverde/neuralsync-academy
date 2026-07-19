@@ -98,10 +98,17 @@ function falarTTS(texto) {
   window.speechSynthesis.speak(utt)
 }
 
+// MESMA normalização usada por `gerar-audios-temas.mjs` pra nomear pasta e arquivo.
+// Sem isso o player pede o id cru (com underscore) e o disco tem hífen — 404 silencioso
+// que fazia toda atividade temática cair no TTS robótico. Se mudar aqui, mudar lá.
+function slug(s) {
+  return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 function falar(forma, atividadeId, temTema) {
   const texto = `${forma.nome}. ${forma.frase}`
   const caminho = temTema
-    ? `/audio/formas/_temas/${atividadeId}/${forma.id}.mp3`
+    ? `/audio/formas/_temas/${slug(atividadeId)}/${slug(forma.id)}.mp3`
     : `/audio/formas/${forma.id}.mp3`
   const audio = new Audio(caminho)
   audio.addEventListener('error', () => falarTTS(texto))
