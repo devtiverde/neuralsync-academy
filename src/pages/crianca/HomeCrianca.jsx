@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
-import { MUNDOS, getMundo, tamanhoDaFaixa } from '../../data/mundos'
+import { MUNDOS, mundoDaAtividade, tamanhoDaFaixa } from '../../data/mundos'
+import { getKidsLink } from '../../lib/kidsLinks'
 import { useAtividades } from '../../hooks/useAtividades'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import SplashScreen from '../../components/SplashScreen'
@@ -68,7 +69,6 @@ export default function HomeCrianca() {
   const [faixa, setFaixa] = useState('construtores')
   const [historico, setHistorico] = useState([])
   const [posicaoRanking, setPosicaoRanking] = useState(null)
-  const [filtro, setFiltro] = useState('tudo')
 
   const { atividades } = useAtividades(faixa)
 
@@ -167,9 +167,9 @@ export default function HomeCrianca() {
     { id: 'historia-interativa', label: 'História',    icon: '📖', cat: 'conteudo',   grad: tipoGradiente['historia-interativa'], sub: 'Aventura',  show: true, nav: () => navigate('/atividade/historia-interativa') },
     { id: 'zona-emocoes',        label: 'Emoções',     icon: '💗', cat: 'emocional',  grad: tipoGradiente['zona-emocoes'],         sub: 'Sentimentos', show: true, nav: () => navigate('/atividade/zona-emocoes') },
   ].filter(item => item.show)
-
-  // item.cat ainda usa o vocabulario antigo; getMundo() traduz na hora da comparacao
-  const itensFiltrados = filtro === 'tudo' ? hubItens : hubItens.filter(item => getMundo(item.cat) === filtro)
+  // os 7 destinos do app (nao sao atividades da Trilha)
+  const DESTINOS = ['quizia', 'neural-ai', 'digitacao', 'diario', 'kids', 'ebook', 'offline']
+  const destinos = hubItens.filter(i => DESTINOS.includes(i.id) && i.show !== false)
   const T = tamanhoDaFaixa(faixa)
 
   const statCards = [
@@ -306,73 +306,104 @@ export default function HomeCrianca() {
               </div>
             )}
 
-            {/* Hub Unificado */}
+            {/* ── MUNDOS ──────────────────────────────────────────────
+                Antes esta seção era um hub com chips de categoria EM CIMA e 29 cards de
+                TIPO DE ATIVIDADE embaixo. Os dois conceitos conviviam na mesma tela, que
+                era exatamente a confusão relatada ("está confundindo atividade com
+                categoria"). Trocar só o vocabulário do filtro não resolveu — o usuário
+                testou e disse que continuava igual, com razão.
+                Agora mundo é DESTINO, não filtro: a criança escolhe um lugar e entra.
+                A lista de atividades, a busca e o filtro por tipo vivem lá dentro
+                (Trilha), onde tipo não disputa espaço com categoria. */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>Explorar</h3>
-                <Button variant="secondary" size="sm" onClick={() => navigate('/trilha')}>Ver trilha →</Button>
+                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>Escolha um mundo</h3>
               </div>
 
-              {/* filtros por categoria */}
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-                {MUNDOS.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setFiltro(cat.id)}
-                    style={{
-                      background: filtro === cat.id ? 'rgba(124,58,237,0.85)' : 'rgba(255,255,255,0.07)',
-                      border: '1px solid ' + (filtro === cat.id ? 'rgba(124,58,237,0.9)' : 'rgba(255,255,255,0.12)'),
-                      borderRadius: 'var(--ns-radius-pill)',
-                      // chip tinha ~29px de altura — abaixo do mínimo AAA da WCAG (44px)
-                      minHeight: 48, padding: '0 18px',
-                      color: filtro === cat.id ? 'white' : 'rgba(255,255,255,0.5)',
-                      fontSize: 14, fontWeight: 700, cursor: 'pointer',
-                      fontFamily: 'var(--ns-font-body)',
-                      transition: 'all 0.15s', whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {cat.icon} {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* grid de atividades */}
               <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${T.tile}px, 1fr))`, gap: T.gap }}>
-                {itensFiltrados.map(item => (
-                  <button
-                    key={item.id}
-                    onClick={item.nav}
-                    className="ns-hub-card"
-                    style={{
-                      background: item.grad || 'rgba(255,255,255,0.06)',
-                      border: 'none', borderRadius: 'var(--ns-radius-md)',
-                      padding: '18px 10px', cursor: 'pointer',
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
-                      position: 'relative', transition: 'transform 0.15s, box-shadow 0.15s',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-                      minHeight: T.tile, justifyContent: 'center',
-                    }}
-                    onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.4)' }}
-                    onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)' }}
-                  >
-                    {item.badge && (
-                      <span style={{ position: 'absolute', top: 7, right: 7 }}>
-                        <Badge variant="ai" size="sm">{item.badge}</Badge>
-                      </span>
-                    )}
-                    <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}>{item.icon}</div>
-                    <div style={{
-                      fontSize: T.label,
-                      fontFamily: "'Fredoka One', cursive",
-                      color: 'white', textAlign: 'center', lineHeight: 1.2,
-                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
-                    }}>{item.label}</div>
-                    {item.sub && T.sub && (
-                      <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 99, padding: '2px 7px', fontSize: 10, color: 'rgba(255,255,255,0.75)', fontWeight: 700 }}>{item.sub}</div>
-                    )}
-                  </button>
-                ))}
+                {MUNDOS.filter(m => m.id !== 'descobrir').map(m => {
+                  const ehTudo = m.id === 'tudo'
+                  const qtd = ehTudo
+                    ? atividades.length
+                    : atividades.filter(a => mundoDaAtividade(a.tipo, getKidsLink(a.id)) === m.id).length
+                  // Descobrir agrupa destinos do app (Kids TV, Diário, Ebooks...), não
+                  // atividades da Trilha — por isso não mostra contador de atividade.
+                  if (!ehTudo && qtd === 0) return null
+
+                  return (
+                    <button
+                      key={m.id}
+                      className="ns-hub-card"
+                      onClick={() => navigate(ehTudo ? '/trilha' : `/trilha?mundo=${m.id}`)}
+                      style={{
+                        background: `linear-gradient(150deg, ${m.cor}dd, ${m.cor}77)`,
+                        border: 'none', borderRadius: 'var(--ns-radius-md)',
+                        padding: '18px 10px', cursor: 'pointer',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        justifyContent: 'center', gap: 8,
+                        minHeight: T.tile, position: 'relative',
+                        boxShadow: `0 4px 18px ${m.cor}44`,
+                        transition: 'transform 0.15s, box-shadow 0.15s',
+                      }}
+                      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = `0 10px 30px ${m.cor}66` }}
+                      onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 18px ${m.cor}44` }}
+                    >
+                      <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.35))' }}>{m.icon}</div>
+                      <div style={{
+                        fontSize: T.label, fontFamily: "'Fredoka One', cursive",
+                        color: 'white', textAlign: 'center', lineHeight: 1.15,
+                        textShadow: '0 1px 4px rgba(0,0,0,0.5)',
+                      }}>{ehTudo ? 'Todas as Atividades' : m.label}</div>
+                      {T.sub && (
+                        <div style={{ background: 'rgba(0,0,0,0.28)', borderRadius: 99, padding: '2px 9px', fontSize: 10, color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}>
+                          {qtd} ativ.
+                        </div>
+                      )}
+                    </button>
+                  )
+                })}
               </div>
+
+              {/* Destinos do app — Kids TV, Diário, Digitação... NÃO são atividades da
+                  Trilha, então não cabem dentro de um mundo. Ficam numa faixa própria
+                  pra continuarem acessíveis (antes viviam misturados no mesmo grid dos
+                  tipos de atividade, o que ajudava a embaralhar os conceitos). */}
+              {destinos.length > 0 && (
+                <>
+                  <h3 style={{ fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.75)', fontFamily: "'Fredoka One', cursive", margin: '26px 0 12px' }}>
+                    Descobrir
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(T.tile * 0.72)}px, 1fr))`, gap: Math.max(8, T.gap - 4) }}>
+                    {destinos.map(item => (
+                      <button
+                        key={item.id}
+                        className="ns-hub-card"
+                        onClick={item.nav}
+                        style={{
+                          background: item.grad || 'rgba(255,255,255,0.06)',
+                          border: 'none', borderRadius: 'var(--ns-radius-md)',
+                          padding: '14px 8px', cursor: 'pointer',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center',
+                          justifyContent: 'center', gap: 6,
+                          minHeight: Math.round(T.tile * 0.66), position: 'relative',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+                          transition: 'transform 0.15s',
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-3px)' }}
+                        onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)' }}
+                      >
+                        {item.badge && (
+                          <span style={{ position: 'absolute', top: 6, right: 6 }}>
+                            <Badge variant="ai" size="sm">{item.badge}</Badge>
+                          </span>
+                        )}
+                        <div style={{ fontSize: Math.round(T.icone * 0.62), lineHeight: 1 }}>{item.icon}</div>
+                        <div style={{ fontSize: Math.max(12, T.label - 2), fontFamily: "'Fredoka One', cursive", color: 'white', textAlign: 'center', lineHeight: 1.15 }}>{item.label}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

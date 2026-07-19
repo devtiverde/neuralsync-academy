@@ -35,11 +35,15 @@ export const MUNDO_POR_ID = Object.fromEntries(MUNDOS.map(m => [m.id, m]))
 // `filtro` desliga os chips por completo: nenhuma das 7 plataformas infantis de
 // referência (Khan Kids, Duolingo ABC, PBS Kids, Toca Boca...) dá filtro pra criança
 // pequena — o padrão é grade visual grande e navegação direta.
+// ⚠️ A primeira versão desta tabela deixava `inventores` em 112/34 — praticamente igual
+// ao antigo 110/28. O usuário testou justamente com um filho dessa faixa e disse, com
+// razão, que "os ícones estão normais". Subido para 136/54: continua a faixa mais
+// compacta (adolescente se beneficia de ver mais na tela) mas a mudança é perceptível.
 export const TAMANHOS = {
-  exploradores: { tile: 168, icone: 72, label: 17, gap: 16, sub: false, filtro: false },
-  construtores: { tile: 148, icone: 60, label: 16, gap: 14, sub: false, filtro: true },
-  criadores:    { tile: 128, icone: 44, label: 14, gap: 12, sub: true,  filtro: true },
-  inventores:   { tile: 112, icone: 34, label: 13, gap: 10, sub: true,  filtro: true },
+  exploradores: { tile: 176, icone: 80, label: 18, gap: 16, sub: false, filtro: false },
+  construtores: { tile: 160, icone: 68, label: 17, gap: 15, sub: false, filtro: true },
+  criadores:    { tile: 146, icone: 60, label: 15, gap: 13, sub: true,  filtro: true },
+  inventores:   { tile: 136, icone: 54, label: 14, gap: 12, sub: true,  filtro: true },
 }
 
 export const tamanhoDaFaixa = faixa => TAMANHOS[faixa] || TAMANHOS.construtores
