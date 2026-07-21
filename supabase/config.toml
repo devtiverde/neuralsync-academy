@@ -1,0 +1,17 @@
+# Configuração das Edge Functions.
+#
+# ⚠️ `verify_jwt = false` no kiwify-webhook é OBRIGATÓRIO e não é descuido.
+# A Kiwify chama esse endereço como servidor externo e não envia cabeçalho
+# `Authorization`. Com a verificação de JWT ligada (que é o PADRÃO do Supabase),
+# o gateway recusa a entrega com "Missing authorization header" antes de executar
+# uma única linha da função — e a venda se perde em silêncio, sem aparecer em
+# lugar nenhum do sistema. Foi exatamente o que aconteceu em 21/07/2026, causado
+# por um deploy feito sem este arquivo.
+#
+# A autenticação real desse webhook é feita DENTRO da função, conferindo o token
+# compartilhado (`KIWIFY_WEBHOOK_TOKEN`) por corpo ou por assinatura HMAC.
+[functions.kiwify-webhook]
+verify_jwt = false
+
+# As demais funções são chamadas pelo próprio app, com o usuário logado, e por
+# isso mantêm a verificação de JWT ligada (padrão).

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getHintUses, consumePowerup } from '../lib/powerups'
 import { Badge, Button } from './ui'
+import MenuLateral from './MenuLateral'
 import '../styles/crianca.css'
 
 const AVATAR_MAP = {
@@ -67,9 +68,21 @@ export default function GameShell({
   return (
     <div className="game-shell" style={{ background: t.bg, position: 'relative', overflow: 'hidden' }}>
 
-      {/* ── Ambient glow blobs ────────────────────── */}
-      <div style={{ position: 'absolute', top: '-10%', left: '20%', width: 500, height: 500, borderRadius: '50%', background: t.glow, filter: 'blur(120px)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', bottom: '-5%', right: '10%', width: 400, height: 400, borderRadius: '50%', background: t.glow, filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0, opacity: 0.5 }} />
+      {/* Dentro da atividade não havia nenhuma saída além do botão voltar do jogo:
+          nem início, nem troca de tela, nem sair da conta. */}
+      <MenuLateral tipo="crianca" />
+
+      {/* ── Ambient glow blobs ──────────────────────
+          Eram círculos sólidos com `filter: blur(120px)`/`blur(100px)`. Um filtro de
+          desfoque não é composto pela GPU como uma camada estática: sempre que algo
+          por cima muda (as partículas animadas, a rolagem do .game-center), o
+          navegador refaz o desfoque de uma superfície de 500×500 no processador.
+          Medido em celular emulado (390×844, CPU 20×) rolando a atividade de memória:
+          COM blur 29–31 de 119 quadros acima de 32ms (p95 = 50ms);
+          SEM blur  5–7  de 119 quadros acima de 32ms (p95 = 17–33ms).
+          Um radial-gradient dá o mesmo brilho difuso e é apenas pintura barata. */}
+      <div style={{ position: 'absolute', top: '-30%', left: '5%', width: 800, height: 800, borderRadius: '50%', background: `radial-gradient(circle, ${t.glow} 0%, transparent 65%)`, pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', bottom: '-25%', right: '-5%', width: 650, height: 650, borderRadius: '50%', background: `radial-gradient(circle, ${t.glow} 0%, transparent 65%)`, pointerEvents: 'none', zIndex: 0, opacity: 0.5 }} />
 
       {/* ── CSS-pure particles ────────────────────── */}
       {PARTICLES.map((p, i) => (

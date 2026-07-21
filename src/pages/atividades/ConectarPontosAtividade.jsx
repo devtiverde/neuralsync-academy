@@ -321,6 +321,16 @@ export default function ConectarPontosAtividade() {
         }}
       />
 
+      {/* Saída durante o jogo: antes disto só dava pra sair depois de completar */}
+      {!completo && (
+        <button
+          onClick={() => navigate('/home-crianca')}
+          style={{ marginTop: 24, background: 'transparent', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '8px 20px', fontSize: 13, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}
+        >
+          ← Sair da atividade
+        </button>
+      )}
+
       {/* Resultado após completar */}
       {completo && (
         <div style={{ textAlign: 'center', marginTop: 24 }}>

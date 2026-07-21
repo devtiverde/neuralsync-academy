@@ -63,20 +63,20 @@ export default function SequenciaAtividade() {
     return (
       <GameShell atividade={atividade} tipo={atividade.tipo} progresso={100} onVoltar={() => navigate(-1)}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: '24px', textAlign: 'center', gap: '20px' }}>
-          <div style={{ fontSize: '64px', letterSpacing: '6px', animation: 'ns-bounce 1.5s ease-in-out infinite' }}>{'â­'.repeat(estrelas)}</div>
+          <div style={{ fontSize: '64px', letterSpacing: '6px', animation: 'ns-bounce 1.5s ease-in-out infinite' }}>{'⭐'.repeat(estrelas)}</div>
           <div>
             <h2 style={{ color: 'white', fontSize: '30px', fontWeight: '900', marginBottom: '6px' }}>
-              {pct >= 80 ? 'RaciocÃ­nio afiado! ðŸ§ ' : pct >= 50 ? 'Bom trabalho! ðŸ‘' : 'Continue praticando! ðŸ’ª'}
+              {pct >= 80 ? 'Raciocínio afiado! 🧠' : pct >= 50 ? 'Bom trabalho! 👍' : 'Continue praticando! 💪'}
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px' }}>VocÃª acertou {acertos} de {total} sequÃªncias</p>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px' }}>Você acertou {acertos} de {total} sequências</p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%', maxWidth: '420px' }}>
             {[
-              ['+' + xpGanho + ' XP', 'ExperiÃªncia', '#10b981'],
-              ['+' + coinsGanho + ' ðŸ’°', 'Coins', '#f59e0b'],
+              ['+' + xpGanho + ' XP', 'Experiência', '#10b981'],
+              ['+' + coinsGanho + ' 💰', 'Coins', '#f59e0b'],
               [acertos + '/' + total, 'Acertos', '#3b82f6'],
-              [pct + '%', 'PontuaÃ§Ã£o', '#a855f7'],
+              [pct + '%', 'Pontuação', '#a855f7'],
             ].map(([val, label, cor]) => (
               <div key={label} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '18px', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: '22px', fontWeight: '900', color: cor, marginBottom: '4px' }}>{val}</div>
@@ -87,18 +87,18 @@ export default function SequenciaAtividade() {
 
           {atividade.contexto_matematico && (
             <div style={{ background: 'rgba(16,185,129,0.1)', borderRadius: '14px', padding: '16px 18px', border: '1px solid rgba(16,185,129,0.3)', width: '100%', maxWidth: '420px' }}>
-              <div style={{ fontSize: '10px', color: '#6ee7b7', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>ðŸ§  SABIA QUE...</div>
+              <div style={{ fontSize: '10px', color: '#6ee7b7', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>🧠 SABIA QUE...</div>
               <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0, fontWeight: '500' }}>{atividade.contexto_matematico}</p>
             </div>
           )}
 
           <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
             <button onClick={reiniciar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              ðŸ” Repetir
+              🔁 Repetir
             </button>
             <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
               style={{ flex: 1, background: 'linear-gradient(135deg,#10b981,#34d399)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(16,185,129,0.4)' }}>
-              Concluir âœ“
+              Concluir ✓
             </button>
           </div>
         </div>
@@ -118,17 +118,17 @@ export default function SequenciaAtividade() {
 
         <div style={{ background: 'rgba(255,255,255,0.07)', borderRadius: '20px', padding: '28px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px' }}>
-            Qual elemento completa a sequÃªncia?
+            Qual elemento completa a sequência?
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             {seq.items.map((item, i) => (
               <div key={i} style={{
-                background: item === 'â“' ? 'linear-gradient(135deg, #10b981, #34d399)' : 'rgba(255,255,255,0.1)',
+                background: item === '❓' ? 'linear-gradient(135deg, #10b981, #34d399)' : 'rgba(255,255,255,0.1)',
                 borderRadius: '14px', padding: '14px 18px',
                 fontSize: item.length > 2 ? '18px' : '26px',
                 fontWeight: '900', color: 'white', minWidth: '52px', textAlign: 'center',
-                boxShadow: item === 'â“' ? '0 4px 16px rgba(16,185,129,0.4)' : 'none',
-                border: item === 'â“' ? 'none' : '1px solid rgba(255,255,255,0.15)',
+                boxShadow: item === '❓' ? '0 4px 16px rgba(16,185,129,0.4)' : 'none',
+                border: item === '❓' ? 'none' : '1px solid rgba(255,255,255,0.15)',
               }}>
                 {item}
               </div>
@@ -168,8 +168,8 @@ export default function SequenciaAtividade() {
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
               }}>
                 {opcao}
-                {selecionado !== null && opcao === seq.resposta && <span style={{ fontSize: '16px' }}>âœ…</span>}
-                {selecionado !== null && opcao === selecionado && opcao !== seq.resposta && <span style={{ fontSize: '16px' }}>âŒ</span>}
+                {selecionado !== null && opcao === seq.resposta && <span style={{ fontSize: '16px' }}>✅</span>}
+                {selecionado !== null && opcao === selecionado && opcao !== seq.resposta && <span style={{ fontSize: '16px' }}>❌</span>}
               </button>
             )
           })}
@@ -183,7 +183,7 @@ export default function SequenciaAtividade() {
             animation: 'ns-slide-up 0.25s ease',
           }}>
             <div style={{ textAlign: 'center', fontSize: '15px', fontWeight: '800', color: selecionado === seq.resposta ? '#6ee7b7' : '#fca5a5', marginBottom: '14px' }}>
-              {selecionado === seq.resposta ? 'âœ… Isso mesmo! LÃ³gica perfeita!' : 'âŒ A resposta correta Ã©: ' + seq.resposta}
+              {selecionado === seq.resposta ? '✅ Isso mesmo! Lógica perfeita!' : '❌ A resposta correta é: ' + seq.resposta}
             </div>
             <button onClick={avancar} style={{
               width: '100%', padding: '13px', borderRadius: '12px', border: 'none',
@@ -191,7 +191,7 @@ export default function SequenciaAtividade() {
               color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
               fontFamily: 'Plus Jakarta Sans, sans-serif',
             }}>
-              {atual + 1 < total ? 'PrÃ³xima â†’' : 'Ver resultado â†’'}
+              {atual + 1 < total ? 'Próxima →' : 'Ver resultado →'}
             </button>
           </div>
         )}

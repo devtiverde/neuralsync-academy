@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { playSound } from '../../lib/sounds'
 import { kidsData } from '../../data/kidsData'
@@ -48,6 +48,14 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
   const [assistido, setAssistido] = useState(() => foiAssistido(child?.id, atividade?.id))
   const [slideIdx, setSlideIdx] = useState(0)
   const slides = atividade?.tipo ? (INTRO_SLIDES[atividade.tipo] || []) : []
+  // ponto inicial do dedo, para distinguir "arrastar de lado" de "rolar a pagina"
+  const toqueRef = useRef(null)
+  // circular: quem chega no ultimo slide e arrasta de novo volta ao primeiro,
+  // em vez de ficar com a sensacao de que a tela travou
+  const irParaSlide = (delta) => {
+    if (slides.length < 2) return
+    setSlideIdx(i => (i + delta + slides.length) % slides.length)
+  }
 
   const atividadeFaixa = getFaixaFromId(atividade?.id)
   const precisaGuard = !!atividadeFaixa && !podeAcessar(child?.faixa_etaria, atividade?.id)
@@ -83,9 +91,12 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
       )}
 
 
-      {/* Ambient blobs */}
-      <div style={{ position: 'absolute', top: '-15%', left: '25%', width: '600px', height: '600px', borderRadius: '50%', background: t.accent, opacity: 0.07, filter: 'blur(100px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '10%', width: '400px', height: '400px', borderRadius: '50%', background: t.soft, opacity: 0.06, filter: 'blur(80px)', pointerEvents: 'none' }} />
+      {/* Ambient blobs — radial-gradient no lugar de `filter: blur()`.
+          Ver a explicação medida em GameShell.jsx: o filtro obriga o navegador a
+          refazer o desfoque a cada quadro em que algo por cima muda (aqui há 5 emojis
+          com animação infinita logo abaixo), e isso derruba quadros no celular. */}
+      <div style={{ position: 'absolute', top: '-30%', left: '10%', width: '800px', height: '800px', borderRadius: '50%', background: `radial-gradient(circle, ${t.accent} 0%, transparent 65%)`, opacity: 0.1, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-25%', right: '0%', width: '560px', height: '560px', borderRadius: '50%', background: `radial-gradient(circle, ${t.soft} 0%, transparent 65%)`, opacity: 0.09, pointerEvents: 'none' }} />
 
       {/* Floating emoji decorations */}
       {['✨','⚡','🌟','💫','🎯'].map((e, i) => (
@@ -222,20 +233,64 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
             </button>
           ) : null}
 
-          {/* ── SABIA QUE — slides para todos os tipos ── */}
+          {/* ── SABIA QUE — slides para todos os tipos ──
+              Relato real: "sao tres abas mas nao da pra passar rodando a tela, somente
+              clicando nos pontinhos, e estao muito pequenos". Os pontinhos mediam 6x6px
+              (o minimo recomendado para o dedo e 44x44) e nao havia nenhum gesto de
+              arrastar. Agora: swipe por toque, setas ‹ › e alvo de toque de 44px de
+              altura em volta de cada pontinho (o ponto desenhado continua pequeno). */}
           {slides.length > 0 && (
-            <div style={{ width: '100%', marginBottom: '12px', background: `rgba(255,255,255,0.05)`, border: `1px solid ${t.accent}40`, borderRadius: '16px', padding: '16px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '800', color: t.soft, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>📖 Sabia que...</div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: '28px', flexShrink: 0, lineHeight: 1 }}>{slides[slideIdx].emoji}</div>
-                <div>
-                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>{slides[slideIdx].titulo}</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{slides[slideIdx].texto}</div>
-                </div>
+            <div
+              style={{ width: '100%', marginBottom: '12px', background: `rgba(255,255,255,0.05)`, border: `1px solid ${t.accent}40`, borderRadius: '16px', padding: '16px', touchAction: 'pan-y', userSelect: 'none' }}
+              onPointerDown={e => { toqueRef.current = { x: e.clientX, y: e.clientY } }}
+              onPointerUp={e => {
+                const ini = toqueRef.current
+                toqueRef.current = null
+                if (!ini) return
+                const dx = e.clientX - ini.x
+                const dy = e.clientY - ini.y
+                // so conta como swipe horizontal: 40px e um gesto claro, e |dx|>|dy|
+                // impede que rolar a pagina para baixo troque o slide sem querer
+                if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy)) return
+                irParaSlide(dx < 0 ? 1 : -1)
+              }}
+              onPointerCancel={() => { toqueRef.current = null }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '10px' }}>
+                <div style={{ fontSize: '10px', fontWeight: '800', color: t.soft, textTransform: 'uppercase', letterSpacing: '1px' }}>📖 Sabia que...</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '700' }}>{slideIdx + 1}/{slides.length}</div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '12px' }}>
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <button
+                  onClick={() => irParaSlide(-1)}
+                  aria-label="Slide anterior"
+                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
+                >‹</button>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '28px', flexShrink: 0, lineHeight: 1 }}>{slides[slideIdx].emoji}</div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>{slides[slideIdx].titulo}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{slides[slideIdx].texto}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => irParaSlide(1)}
+                  aria-label="Próximo slide"
+                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
+                >›</button>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4px' }}>
                 {slides.map((_, i) => (
-                  <button key={i} onClick={() => setSlideIdx(i)} style={{ width: i === slideIdx ? 20 : 6, height: 6, borderRadius: 999, border: 'none', cursor: 'pointer', background: i === slideIdx ? t.accent : 'rgba(255,255,255,0.2)', transition: 'all 0.2s', padding: 0 }} />
+                  <button
+                    key={i}
+                    onClick={() => setSlideIdx(i)}
+                    aria-label={`Ir para o slide ${i + 1}`}
+                    // o botao inteiro tem 44px de altura e >=22px de largura: e o alvo
+                    // do dedo. O ponto colorido de dentro continua com 6px de altura.
+                    style={{ width: 26, height: 44, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <span style={{ display: 'block', width: i === slideIdx ? 20 : 8, height: 8, borderRadius: 999, background: i === slideIdx ? t.accent : 'rgba(255,255,255,0.25)', transition: 'all 0.2s' }} />
+                  </button>
                 ))}
               </div>
             </div>

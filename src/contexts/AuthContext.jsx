@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { assinaturaVigente } from '../lib/assinatura'
 
 const AuthContext = createContext({})
 
@@ -15,6 +16,8 @@ export function AuthProvider({ children }) {
   // precisa ver isso escrito, senão acha que o pagamento não passou e pede reembolso
   const [ativacaoFalhou, setAtivacaoFalhou] = useState(null)
 
+  // Devolve a assinatura carregada para que quem chamou possa decidir na hora,
+  // sem depender do setState (que só vale no próximo render).
   const loadSubscription = async (userId) => {
     try {
       const { data } = await supabase
@@ -23,7 +26,9 @@ export function AuthProvider({ children }) {
         .eq('id', userId)
         .single()
       if (data) setSubscription(data)
+      return data ?? null
     } catch {
+      return null
     } finally {
       setSubscriptionLoaded(true)
     }
@@ -76,8 +81,13 @@ export function AuthProvider({ children }) {
       // um plano recém-ativado.
       setAtivando(true)
       const r = await activatePendingPlan(data.session?.access_token)
-      if (r && r.activated === false) setAtivacaoFalhou(email.toLowerCase())
-      await loadSubscription(data.user.id)
+      const sub = await loadSubscription(data.user.id)
+      // `activated:false` só significa "não havia nada pendente pra ativar" — e isso
+      // é o caso normal de QUALQUER pessoa cujo plano já foi ativado antes. Só é
+      // problema de verdade se, depois de carregar, ela realmente não tiver plano.
+      if (r && r.activated === false && !assinaturaVigente(sub)) {
+        setAtivacaoFalhou(email.toLowerCase())
+      }
       setAtivando(false)
     }
     return { error }
@@ -92,8 +102,10 @@ export function AuthProvider({ children }) {
       })
       setAtivando(true)
       const r = await activatePendingPlan(data.session?.access_token)
-      if (r && r.activated === false) setAtivacaoFalhou(emailLower)
-      await loadSubscription(data.user.id)
+      const sub = await loadSubscription(data.user.id)
+      if (r && r.activated === false && !assinaturaVigente(sub)) {
+        setAtivacaoFalhou(emailLower)
+      }
       setAtivando(false)
     }
     return { error }

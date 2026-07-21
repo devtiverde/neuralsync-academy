@@ -51,7 +51,9 @@ export default function Auth() {
 
   const subtituloSignup = ativado
     ? `Pagamento confirmado${planoParam ? ` — plano ${planoParam}` : ''}! Preencha seus dados para ativar o acesso.`
-    : 'Crie sua conta e comece com 7 dias de garantia.'
+    // "comece com 7 dias de garantia" soava a teste grátis, e não existe plano
+    // grátis: a garantia é de reembolso, e só vale depois de assinar.
+    : 'Crie sua conta para acessar sua assinatura.'
 
   return (
     <div className="auth-page">
@@ -163,6 +165,15 @@ export default function Auth() {
             {isLogin ? 'Criar agora' : 'Entrar'}
           </button>
         </p>
+
+        {/* Não havia NENHUM caminho para comprar a partir desta tela: quem caía aqui
+            sem assinatura ficava sem saída além de voltar pelo navegador. */}
+        <p className="auth-switch" style={{ marginTop: 6 }}>
+          Ainda não assinou?{' '}
+          <button onClick={() => navigate('/planos')} className="auth-link">
+            Ver planos →
+          </button>
+        </p>
       </div>
 
       {/* LADO DIREITO — painel de marketing */}
@@ -176,7 +187,7 @@ export default function Auth() {
             Transforme o tempo de tela em inteligência
           </h2>
           <p className="auth-right-sub">
-            Desenvolvida para crianças de 3 a 15 anos. Gamificação real, aprendizado que fica.
+            Desenvolvida para crianças de 4 a 15 anos. Gamificação real, aprendizado que fica.
           </p>
 
           <div className="auth-stats">
@@ -188,16 +199,20 @@ export default function Auth() {
             ))}
           </div>
 
+          {/* Havia aqui um depoimento com nome, avatar e cinco estrelas — inventado.
+              Trocado por um fato verificável, que sustenta a mesma promessa sem
+              atribuir uma frase a uma pessoa que não existe. */}
           <div className="auth-testimonial">
-            <div className="auth-stars">★★★★★</div>
             <p className="auth-testimonial-text">
-              "Minha filha pediu para fazer mais um desafio antes de dormir. Não acreditei!"
+              Cada atividade alimenta um relatório com seis habilidades cognitivas —
+              memória, atenção, lógica, linguagem, raciocínio espacial e coordenação.
+              Você acompanha a evolução sem precisar ficar do lado.
             </p>
             <div className="auth-testimonial-author">
-              <div className="auth-testimonial-avatar">🌸</div>
+              <div className="auth-testimonial-avatar">📊</div>
               <div>
-                <div className="auth-testimonial-name">Marina S.</div>
-                <div className="auth-testimonial-role">Mãe da Sofia, 7 anos</div>
+                <div className="auth-testimonial-name">Relatório para os pais</div>
+                <div className="auth-testimonial-role">Incluído nos planos Família e Premium</div>
               </div>
             </div>
           </div>

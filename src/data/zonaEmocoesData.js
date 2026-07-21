@@ -134,7 +134,7 @@ export const ESTRATEGIAS_NEGATIVAS_BASE = {
   identificar_gatilho: {
     emoji: '🔍', label: 'Pensar o que causou isso',
     afirmacao: {
-      construtores: 'Pensar "o que fez eu me sentir assim?" ajuda a entender melhor a situação.',
+      construtores: 'Pensar "o que me fez sentir assim?" ajuda a entender melhor a situação.',
       criadores: 'Identificar o que disparou a emoção ajuda a entender o padrão e agir melhor da próxima vez.',
       inventores: 'Reconhecer o gatilho específico de uma emoção é o primeiro passo de qualquer estratégia de regulação eficaz — sem saber a causa, é difícil escolher a resposta certa.',
     },
@@ -259,7 +259,7 @@ export const CENAS_POR_FAIXA = {
     { texto: 'Amanhã é sua primeira apresentação de trabalho em grupo, na frente da turma.',  ilustracao: '🎤', correta: 'ansioso' },
   ],
   inventores: [
-    { texto: 'Você recebeu a notícia de que passou de fase num campeonato que treinou meses.', ilustracao: '🏆', correta: 'feliz' },
+    { texto: 'Você recebeu a notícia de que passou de fase num campeonato para o qual treinou meses.', ilustracao: '🏆', correta: 'feliz' },
     { texto: 'Um projeto em que você trabalhou semanas não foi selecionado.',                  ilustracao: '📉', correta: 'triste' },
     { texto: 'Você viu alguém sendo tratado de forma injusta e ninguém fez nada.',             ilustracao: '⚖️', correta: 'bravo' },
     { texto: 'Você está sozinho em casa e ouviu um barulho estranho vindo do quintal.',        ilustracao: '🌙', correta: 'assustado' },

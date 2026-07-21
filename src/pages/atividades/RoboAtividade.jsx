@@ -7,7 +7,7 @@ import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
 
 const DIRS = {
-  'â†‘': [-1, 0], 'â†“': [1, 0], 'â†': [0, -1], 'â†’': [0, 1],
+  '↑': [-1, 0], '↓': [1, 0], '←': [0, -1], '→': [0, 1],
 }
 
 function cmdBtn(cor) {
@@ -142,17 +142,17 @@ export default function RoboAtividade() {
       atividade={atividade}
       tipo={atividade.tipo}
       progresso={progresso}
-      labelProgresso={`NÃ­vel ${nivelIdx + 1}/${atividade.niveis.length}`}
+      labelProgresso={`Nível ${nivelIdx + 1}/${atividade.niveis.length}`}
       onVoltar={() => navigate(-1)}
     >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', maxWidth: '700px', width: '100%', margin: '0 auto', animation: 'ns-slide-up 0.3s ease' }}>
 
         {/* Level info */}
         <div style={{ width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '12px 18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '20px' }}>ðŸ¤–</span>
+          <span style={{ fontSize: '20px' }}>🤖</span>
           <div>
-            <div style={{ color: 'white', fontWeight: '800', fontSize: '14px' }}>Grade {grade}Ã—{grade} â€¢ MÃ¡x. {passos_max} comandos</div>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Programe o robÃ´ para chegar ao ðŸ†</div>
+            <div style={{ color: 'white', fontWeight: '800', fontSize: '14px' }}>Grade {grade}×{grade} • Máx. {passos_max} comandos</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '12px' }}>Programe o robô para chegar ao 🏆</div>
           </div>
         </div>
 
@@ -180,7 +180,7 @@ export default function RoboAtividade() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: celSize * 0.55, transition: 'background 0.2s ease',
                     }}>
-                      {isRobo ? (resultado === 'falhou' ? 'ðŸ’¥' : 'ðŸ¤–') : isFim ? 'ðŸ†' : ''}
+                      {isRobo ? (resultado === 'falhou' ? '💥' : '🤖') : isFim ? '🏆' : ''}
                     </div>
                   )
                 })}
@@ -218,9 +218,9 @@ export default function RoboAtividade() {
                 fontSize: '14px', fontWeight: '700',
                 color: resultado === 'sucesso' ? '#6ee7b7' : resultado === 'falhou' ? '#fca5a5' : '#fde68a',
               }}>
-                {resultado === 'sucesso' && 'ðŸŽ‰ Chegou ao destino!'}
-                {resultado === 'falhou' && 'ðŸ’¥ O robÃ´ bateu! Tente de novo.'}
-                {resultado === 'incompleto' && 'ðŸ¤” O programa terminou antes de chegar.'}
+                {resultado === 'sucesso' && '🎉 Chegou ao destino!'}
+                {resultado === 'falhou' && '💥 O robô bateu! Tente de novo.'}
+                {resultado === 'incompleto' && '🤔 O programa terminou antes de chegar.'}
               </div>
             )}
 
@@ -229,27 +229,27 @@ export default function RoboAtividade() {
               <>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: '700', marginBottom: '4px' }}>ADICIONAR COMANDO</div>
-                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†‘'])} style={cmdBtn('#6366f1')}>â†‘</button>
+                  <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '↑'])} style={cmdBtn('#6366f1')}>↑</button>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†'])} style={cmdBtn('#6366f1')}>â†</button>
-                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†“'])} style={cmdBtn('#6366f1')}>â†“</button>
-                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, 'â†’'])} style={cmdBtn('#6366f1')}>â†’</button>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '←'])} style={cmdBtn('#6366f1')}>←</button>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '↓'])} style={cmdBtn('#6366f1')}>↓</button>
+                    <button onClick={() => programa.length < passos_max && setPrograma(p => [...p, '→'])} style={cmdBtn('#6366f1')}>→</button>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => setPrograma(p => p.slice(0, -1))} disabled={programa.length === 0} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>âŒ« Apagar</button>
-                  <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>ðŸ”„ Reset</button>
+                  <button onClick={() => setPrograma(p => p.slice(0, -1))} disabled={programa.length === 0} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>⌫ Apagar</button>
+                  <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>🔄 Reset</button>
                   <button onClick={executar} disabled={programa.length === 0 || animando} style={{ flex: 1.5, background: 'linear-gradient(135deg,#6366f1,#818cf8)', border: 'none', borderRadius: '10px', padding: '10px', color: 'white', cursor: 'pointer', fontWeight: '900', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '14px', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}>
-                    {animando ? 'â–¶ ...' : 'â–¶ Executar'}
+                    {animando ? '▶ ...' : '▶ Executar'}
                   </button>
                 </div>
               </>
             ) : (
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>ðŸ”„ Tentar</button>
+                <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>🔄 Tentar</button>
                 {resultado === 'sucesso' && (
                   <button onClick={proximoNivel} style={{ flex: 1, background: 'linear-gradient(135deg,#6366f1,#818cf8)', border: 'none', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 16px rgba(99,102,241,0.4)' }}>
-                    {hasMoreNiveis ? 'PrÃ³ximo â†’' : 'Concluir âœ“'}
+                    {hasMoreNiveis ? 'Próximo →' : 'Concluir ✓'}
                   </button>
                 )}
               </div>

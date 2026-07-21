@@ -21,7 +21,7 @@ export default function Privacidade() {
           .priv-table td { padding: 10px 12px; border: 1px solid #e5e7eb; color: #374151; vertical-align: top; }
         `}</style>
 
-        <p className="priv-p">A NeuralSync Academy (CNPJ a confirmar) leva a privacidade das crianças muito a sério. Esta política descreve quais dados coletamos, como os utilizamos e quais são os seus direitos como responsável legal.</p>
+        <p className="priv-p">A NeuralSync Academy é operada por TI Verde, inscrita no CNPJ 65.554.953/0001-47, e leva a privacidade das crianças muito a sério. Esta política descreve quais dados coletamos, como os utilizamos e quais são os seus direitos como responsável legal.</p>
 
         <h2 className="priv-h2">1. Quem é o controlador dos dados</h2>
         <p className="priv-p">A NeuralSync Academy é a controladora dos dados pessoais coletados nesta plataforma, conforme o Art. 5º, VI da Lei Geral de Proteção de Dados (LGPD — Lei 13.709/2018). Para contato com o Encarregado de Dados (DPO): <strong>suporte@neuralsync.com.br</strong>.</p>
@@ -67,7 +67,11 @@ export default function Privacidade() {
         <p className="priv-p">Para exercer seus direitos, acesse <strong>Configurações → Exclusão de conta</strong> ou envie e-mail para <strong>suporte@neuralsync.com.br</strong>.</p>
 
         <h2 className="priv-h2">7. Cookies e localStorage</h2>
-        <p className="priv-p">Utilizamos localStorage do navegador para armazenar preferências locais (configurações de timer, progresso de atividades, itens equipados). Não utilizamos cookies de rastreamento de terceiros nem qualquer serviço de analytics externo.</p>
+        {/* O texto anterior negava qualquer rastreamento, enquanto o site de vendas
+              carrega o pixel do Meta. Declarar isso é obrigação da LGPD e das
+              próprias políticas de anúncio do Meta. */}
+          <p className="priv-p">Dentro da plataforma (<strong>app.neuralsync.com.br</strong>), onde a criança navega, utilizamos apenas o localStorage do navegador para preferências locais — configurações de timer, progresso de atividades e itens equipados. <strong>Não há rastreamento publicitário nem analytics de terceiros na área da criança.</strong></p>
+          <p className="priv-p">No nosso site de divulgação (<strong>neuralsync.com.br</strong>), destinado a adultos e sem login, utilizamos o Meta Pixel para medir o resultado de anúncios. Ele registra visitas e conversões de forma anônima e <strong>nunca recebe qualquer dado das crianças cadastradas</strong>. Você pode bloqueá-lo nas configurações do navegador sem prejuízo ao uso da plataforma.</p>
 
         <h2 className="priv-h2">8. Crianças e adolescentes</h2>
         <p className="priv-p">Seguimos rigorosamente o Art. 14 da LGPD. O perfil de criança é sempre criado pelo responsável, não pela própria criança. Dados de crianças nunca são usados para publicidade segmentada ou compartilhados com anunciantes.</p>

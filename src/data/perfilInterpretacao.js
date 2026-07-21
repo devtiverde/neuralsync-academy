@@ -53,7 +53,7 @@ export const interpretacao = {
       dica: 'Quebre tarefas em etapas pequenas e celebre cada conquista. Evite desafios longos demais no começo.',
     },
     media: {
-      titulo: '😤 Tenta de novo, mas frustra',
+      titulo: '😤 Tenta de novo, mas se frustra',
       descricao: 'Insiste por um tempo, mas a frustração aparece. Está desenvolvendo tolerância ao erro — um ótimo momento para reforçar que errar faz parte.',
       dica: 'Valide o esforço ("você tentou!") mais do que o acerto. Mostre que errar é parte de aprender.',
     },
@@ -98,7 +98,7 @@ export const interpretacao = {
     },
     media: {
       titulo: '🤔 Negocia o tempo',
-      descricao: 'Pede "mais um pouco" mas costuma ceder. Está aprendendo a lidar com a frustração — combina bem com regras claras e combinadas antes.',
+      descricao: 'Pede "mais um pouco", mas costuma ceder. Está aprendendo a lidar com a frustração — combina bem com regras claras e combinadas antes.',
       dica: 'Combine o limite ANTES de começar e avise quando estiver perto do fim. Previsibilidade reduz o conflito.',
     },
     baixa: {

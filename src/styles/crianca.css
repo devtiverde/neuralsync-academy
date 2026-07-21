@@ -598,3 +598,87 @@ h1, h2, h3, .crianca-heading {
 @media (prefers-reduced-motion: reduce) {
   .feedback-float-btn { transition: none; }
 }
+
+/* -- Topbar nav rolavel ---------------------------
+   A fileira de navegacao nao cabe em janelas estreitas. Antes ela apenas vazava
+   para fora da tela e o `overflow-x: hidden` do html/body escondia a barra --
+   os ultimos itens ficavam inacessiveis. Agora ela rola. */
+.ns-topbar-nav {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ns-topbar-nav::-webkit-scrollbar { display: none; }
+
+/* -- Topbar no celular -----------------------------------------------------
+   Relato real de uso em celular: "nao da pra ver nome da crianca, streak nem
+   pontos; o cabecalho nao movimenta".
+
+   O que acontecia: a linha do cabecalho era
+     [logo 150px] [nav rolavel, flex:1] [pills da crianca]
+   As pills vinham por ULTIMO num flex sem quebra de linha, entao em 390px elas
+   comecavam em x=396 -- fora da tela. E como html/body tem `overflow-x: hidden`
+   (src/index.css), arrastar o cabecalho para o lado nao fazia nada: as
+   informacoes eram inalcancaveis, nao apenas escondidas.
+
+   Correcao: abaixo de 768px a nav do topo some por completo. Ela nao e perdida --
+   o `.menu-bottom` (que so existe abaixo de 768px) ja renderiza exatamente a mesma
+   lista `nav`, item por item. O espaco liberado fica com a identidade da crianca.
+   Acima de 768px nada muda. */
+@media (max-width: 767px) {
+  .ns-topbar-nav { display: none !important; }
+
+  .ns-topbar-row {
+    padding: 0 10px !important;
+    height: 58px !important;
+    gap: 6px !important;
+  }
+  /* so o icone do cerebro; "NeuralSync Academy" custa ~110px que a crianca precisa */
+  .ns-topbar-logo { margin-right: 0 !important; }
+  .ns-topbar-logo-text { display: none !important; }
+
+  .ns-topbar-pills {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    gap: 6px !important;
+  }
+  /* ordem visual do desktop vem de `order`; no celular vale a ordem do DOM
+     (perfil, coins, streak, pais) para o nome ficar colado no avatar */
+  .ns-topbar-pills > * { order: 0 !important; }
+
+  .ns-pill-perfil {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 6px 8px !important;
+  }
+  .ns-pill-nome {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ns-pill-num { padding: 6px 7px !important; }
+  .ns-btn-pais { padding: 8px 9px !important; min-height: 34px; }
+  .ns-btn-pais-txt { display: none; }
+}
+
+/* -- Digitacao: teclado da tela no celular --------------------------------
+   30x32px e pequeno demais para o dedo de uma crianca. A linha de cima tem 10
+   teclas: em 360px de largura nao da para fixar 44px de largura em cada uma,
+   entao a largura vira elastica (flex) e a ALTURA sobe para 44px, que e o que
+   mais importa para acertar a tecla. */
+@media (max-width: 767px) {
+  .ns-dt-teclado-linha { gap: 3px !important; }
+  .ns-dt-tecla {
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 44px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Telas bem estreitas (<=360px): o nome ainda tem de caber */
+@media (max-width: 360px) {
+  .ns-topbar-row { padding: 0 6px !important; gap: 4px !important; }
+  .ns-topbar-pills { gap: 4px !important; }
+  .ns-pill-num { padding: 6px 5px !important; }
+}

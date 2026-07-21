@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --violet:#7C3AED; --violet-soft:#A78BFA; --cyan:#06B6D4; --gold:#FBBF24;
+    --deep:#0A0415;
+    --display:'Fredoka One',cursive; --body:'Plus Jakarta Sans',sans-serif; --mono:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#222;}
+  .slide{
+    width:1080px;height:1350px;position:relative;overflow:hidden;
+    background:var(--deep);
+    background-image:
+      radial-gradient(900px 700px at 85% -5%, rgba(124,58,237,0.38), transparent 62%),
+      radial-gradient(700px 600px at -10% 25%, rgba(6,182,212,0.18), transparent 60%);
+    font-family:var(--body); color:#F1EDFB;
+    padding:90px 80px;
+    display:flex; flex-direction:column;
+    margin-bottom:24px;
+  }
+  /* stars */
+  .star{position:absolute;border-radius:50%;background:#fff;opacity:.5;}
+
+  .brandbar{display:flex;align-items:center;gap:14px;margin-bottom:auto;position:relative;z-index:2;}
+  .brandmark{width:44px;height:44px;border-radius:13px;background:linear-gradient(150deg,#67e8f9,#7C3AED);
+    box-shadow:0 0 24px rgba(124,58,237,.6);}
+  .brandname{font-family:var(--display);font-size:26px;letter-spacing:.3px;}
+  .brandname span{color:var(--violet-soft);}
+  .handle{margin-left:auto;font-family:var(--mono);font-size:20px;color:#756B93;}
+
+  .content{position:relative;z-index:2;}
+
+  .kicker{font-family:var(--mono);font-size:24px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin-bottom:26px;}
+  h1{font-family:var(--display);font-weight:400;font-size:88px;line-height:1.02;margin-bottom:34px;}
+  h1 .hl{color:var(--gold);}
+  .sub{font-size:34px;line-height:1.45;color:#ADA3C9;max-width:20ch;}
+
+  .swipe{margin-top:auto;position:relative;z-index:2;display:flex;align-items:center;gap:16px;
+    font-family:var(--mono);font-size:24px;color:var(--violet-soft);}
+  .swipe .arrow{font-size:32px;}
+
+  /* numbered sign slides */
+  .signnum{font-family:var(--display);font-size:150px;line-height:1;color:rgba(167,139,250,0.28);margin-bottom:10px;}
+  .signtitle{font-family:var(--display);font-size:70px;line-height:1.08;margin-bottom:30px;}
+  .signbody{font-size:34px;line-height:1.5;color:#ADA3C9;max-width:24ch;}
+  .counter{position:absolute;top:90px;right:80px;font-family:var(--mono);font-size:22px;color:#756B93;z-index:2;}
+
+  /* final cta slide */
+  .ctabox{border:2px solid rgba(251,191,36,.4);background:rgba(251,191,36,.08);
+    border-radius:28px;padding:40px 44px;margin-top:34px;}
+  .ctabox p{font-size:32px;line-height:1.45;}
+  .ctabox b{color:#fff;}
+  .cta-btn{margin-top:34px;display:inline-block;background:linear-gradient(135deg,#7c3aed,#5b21b6);
+    border-radius:22px;padding:30px 52px;font-family:var(--display);font-size:40px;
+    box-shadow:0 16px 50px rgba(124,58,237,.5);}
+  .good{color:#34d399;}
+</style>
+</head>
+<body>
+
+<!-- ============ SLIDE 1 — CAPA ============ -->
+<div class="slide" id="s1">
+  <div class="star" style="width:5px;height:5px;top:12%;left:14%"></div>
+  <div class="star" style="width:8px;height:8px;top:22%;left:78%;background:#FBBF24;opacity:.85"></div>
+  <div class="star" style="width:4px;height:4px;top:40%;left:8%"></div>
+  <div class="star" style="width:6px;height:6px;top:68%;left:88%;background:#67e8f9;opacity:.8"></div>
+  <div class="star" style="width:5px;height:5px;top:80%;left:20%"></div>
+
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+
+  <div class="content">
+    <p class="kicker">Sinais de alerta</p>
+    <h1>7 sinais de que o tempo de tela está <span class="hl">afetando seu filho</span></h1>
+    <p class="sub">O 4º passa despercebido pela maioria dos pais.</p>
+  </div>
+
+  <div class="swipe"><span class="arrow">→</span> Arrasta pra ver todos</div>
+</div>
+
+<!-- ============ SLIDE 2 ============ -->
+<div class="slide" id="s2">
+  <div class="counter">01 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">01</div>
+    <div class="signtitle">Fica irritado quando você desliga</div>
+    <p class="signbody">A reação é desproporcional — como se você tivesse tirado algo essencial, não um brinquedo.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 3 ============ -->
+<div class="slide" id="s3">
+  <div class="counter">02 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">02</div>
+    <div class="signtitle">Perdeu o interesse por brincar sem tela</div>
+    <p class="signbody">Os brinquedos continuam ali. Ele só não olha mais pra eles.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 4 ============ -->
+<div class="slide" id="s4">
+  <div class="counter">03 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">03</div>
+    <div class="signtitle">A escola começou a reclamar de concentração</div>
+    <p class="signbody">Ele consegue focar 2 horas num vídeo, mas não 10 minutos numa lição.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 5 ============ -->
+<div class="slide" id="s5">
+  <div class="counter">04 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">04</div>
+    <div class="signtitle">Ele consome, mas não cria nada</div>
+    <p class="signbody">Horas de tela e nenhuma pergunta, nenhum desenho, nenhuma ideia nova. Esse é o sinal que quase ninguém percebe.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 6 ============ -->
+<div class="slide" id="s6">
+  <div class="counter">05 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">05</div>
+    <div class="signtitle">Dorme mal e acorda agitado</div>
+    <p class="signbody">Tela perto de dormir atrapalha o sono — e sono ruim piora tudo no dia seguinte.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 7 ============ -->
+<div class="slide" id="s7">
+  <div class="counter">06 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">06</div>
+    <div class="signtitle">Precisa da tela pra comer ou se acalmar</div>
+    <p class="signbody">Virou a única ferramenta que funciona — e isso tira dele a chance de aprender a se regular sozinho.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 8 ============ -->
+<div class="slide" id="s8">
+  <div class="counter">07 / 07</div>
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+  <div class="content">
+    <div class="signnum">07</div>
+    <div class="signtitle">Você já tentou tirar. E não conseguiu.</div>
+    <p class="signbody">Se proibir funcionasse, você não estaria lendo isso.</p>
+  </div>
+  <div class="swipe"><span class="arrow">→</span></div>
+</div>
+
+<!-- ============ SLIDE 9 — VIRADA ============ -->
+<div class="slide" id="s9">
+  <div class="star" style="width:6px;height:6px;top:16%;left:82%;background:#FBBF24;opacity:.9"></div>
+  <div class="star" style="width:4px;height:4px;top:30%;left:10%"></div>
+  <div class="star" style="width:7px;height:7px;top:74%;left:86%;background:#67e8f9;opacity:.8"></div>
+
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+
+  <div class="content">
+    <p class="kicker">A boa notícia</p>
+    <h1>O problema não é a tela. É <span class="hl">o que tem nela.</span></h1>
+    <p class="sub">Uma hora passiva vicia. Uma hora ativa constrói memória, lógica e atenção.</p>
+
+    <div class="ctabox">
+      <p>O <b>NeuralSync Academy</b> transforma o tempo de tela em desenvolvimento cognitivo de verdade — com <b>relatório semanal</b> pra você acompanhar a evolução.</p>
+    </div>
+  </div>
+
+  <div class="swipe"><span class="arrow">→</span> Continua</div>
+</div>
+
+<!-- ============ SLIDE 10 — CTA ============ -->
+<div class="slide" id="s10">
+  <div class="star" style="width:5px;height:5px;top:14%;left:16%"></div>
+  <div class="star" style="width:8px;height:8px;top:26%;left:80%;background:#FBBF24;opacity:.9"></div>
+  <div class="star" style="width:5px;height:5px;top:78%;left:12%;background:#67e8f9;opacity:.8"></div>
+
+  <div class="brandbar">
+    <div class="brandmark"></div>
+    <div class="brandname">Neural<span>Sync</span></div>
+  </div>
+
+  <div class="content">
+    <p class="kicker">Comece hoje</p>
+    <h1>300+ atividades que <span class="hl">desenvolvem o cérebro</span></h1>
+    <p class="sub" style="max-width:26ch;">Para crianças de 4 a 15 anos. Com IA adaptativa e acompanhamento pros pais.</p>
+
+    <div class="ctabox" style="margin-top:44px;">
+      <p><span class="good">✓</span> Cupom <b>LANCAMENTO</b> — 10% off<br>
+         <span class="good">✓</span> Garantia de 7 dias<br>
+         <span class="good">✓</span> Sem fidelidade</p>
+    </div>
+
+    <div class="cta-btn">Link na bio →</div>
+  </div>
+
+  <div class="swipe" style="color:#756B93;">neuralsync.com.br</div>
+</div>
+
+</body>
+</html>

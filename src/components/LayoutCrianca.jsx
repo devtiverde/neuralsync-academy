@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Brain, CoinVertical, Fire } from '@phosphor-icons/react'
 import FAQButton from './FAQButton'
 import FeedbackButton from './FeedbackButton'
+import MenuLateral from './MenuLateral'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../lib/lojaConfig'
 import '../styles/crianca.css'
 
@@ -67,22 +68,26 @@ export default function LayoutCrianca({ children, child }) {
         borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}>
         {/* Nav row */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '0 28px', height: '66px', gap: '8px' }}>
+        <div className="ns-topbar-row" style={{ display: 'flex', alignItems: 'center', padding: '0 28px', height: '66px', gap: '8px' }}>
 
           {/* Logo */}
           <div
             onClick={() => navigate('/home-crianca')}
+            className="ns-topbar-logo"
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', marginRight: '20px', flexShrink: 0 }}
           >
             <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'linear-gradient(135deg, #7C3AED, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Brain weight="duotone" size={20} color="white" /></div>
-            <div>
+            <div className="ns-topbar-logo-text">
               <div style={{ color: 'white', fontWeight: '900', fontSize: '15px', lineHeight: 1.1, fontFamily: "'Baloo 2', sans-serif" }}>NeuralSync</div>
               <div style={{ color: '#a78bfa', fontWeight: '700', fontSize: '10px', letterSpacing: '0.5px' }}>Academy</div>
             </div>
           </div>
 
           {/* Navigation links */}
-          <nav style={{ display: 'flex', gap: '2px', flex: 1 }}>
+          {/* Sem overflow-x a fileira simplesmente ultrapassava a tela e, como o CSS
+              global esconde a barra horizontal, Loja e Perfil ficavam inalcançáveis
+              em qualquer janela abaixo de ~1300px. */}
+          <nav className="ns-topbar-nav" style={{ display: 'flex', gap: '2px', flex: 1, overflowX: 'auto', minWidth: 0 }}>
             {nav.map(item => {
               const isActive = pathname === item.path || (item.path !== '/home-crianca' && pathname.startsWith(item.path))
               return (
@@ -116,33 +121,43 @@ export default function LayoutCrianca({ children, child }) {
           </nav>
 
           {/* Child info pills */}
+          {/* No celular estas pills vinham DEPOIS da nav rolável e eram empurradas para
+              fora da tela — e como html/body têm `overflow-x: hidden` (src/index.css),
+              não havia como rolar até elas: o nome, os coins e o streak simplesmente
+              não existiam para quem usa celular. Agora, abaixo de 768px, a nav some
+              (o .menu-bottom já repete exatamente os mesmos itens) e as pills ocupam a
+              linha inteira. Ver as regras `.ns-topbar-*` em styles/crianca.css. */}
           {child && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-              <div onClick={() => navigate('/coins')} style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer' }}>
-                <CoinVertical weight="duotone" size={20} color="#F59E0B" />
-                <span style={{ color: '#fbbf24', fontWeight: '800', fontSize: '14px' }}>{child.neural_coins || 0}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.25)', borderRadius: '8px', padding: '6px 12px' }}>
-                <Fire weight="duotone" size={20} color="#F97316" className="ns-icon-bounce" />
-                <span style={{ color: '#fb923c', fontWeight: '800', fontSize: '14px' }}>{child.streak_atual || 0}</span>
-              </div>
+            <div className="ns-topbar-pills" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <div
                 onClick={() => navigate('/perfil-crianca')}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '7px 13px', cursor: 'pointer' }}
+                className="ns-pill-perfil"
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '7px 13px', cursor: 'pointer', order: 3 }}
               >
                 <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'linear-gradient(135deg, #7C3AED, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0, ...(molduraStyle ? { border: molduraStyle.border, boxShadow: molduraStyle.boxShadow } : {}) }}>
                   {avatar(child.avatar)}
                 </div>
-                <div>
-                  <div style={{ color: 'white', fontWeight: '700', fontSize: '13px', lineHeight: 1.2 }}>{child.nome}</div>
-                  <div style={{ color: '#a78bfa', fontSize: '10px', fontWeight: '600' }}>Nível {child.nivel || 1}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div className="ns-pill-nome" style={{ color: 'white', fontWeight: '700', fontSize: '13px', lineHeight: 1.2 }}>{child.nome}</div>
+                  {/* O XP só aparecia como uma barrinha de 3px sem número nenhum. */}
+                  <div style={{ color: '#a78bfa', fontSize: '10px', fontWeight: '600', whiteSpace: 'nowrap' }}>Nível {child.nivel || 1} · {child.xp || 0} XP</div>
                 </div>
+              </div>
+              <div onClick={() => navigate('/coins')} className="ns-pill-num" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '8px', padding: '6px 12px', cursor: 'pointer', flexShrink: 0, order: 1 }}>
+                <CoinVertical weight="duotone" size={20} color="#F59E0B" />
+                <span style={{ color: '#fbbf24', fontWeight: '800', fontSize: '14px' }}>{child.neural_coins || 0}</span>
+              </div>
+              <div className="ns-pill-num" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.25)', borderRadius: '8px', padding: '6px 12px', flexShrink: 0, order: 2 }}>
+                <Fire weight="duotone" size={20} color="#F97316" className="ns-icon-bounce" />
+                <span style={{ color: '#fb923c', fontWeight: '800', fontSize: '14px' }}>{child.streak_atual || 0}</span>
               </div>
               <button
                 onClick={() => navigate('/dashboard')}
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '7px 12px', color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', whiteSpace: 'nowrap' }}
+                className="ns-btn-pais"
+                aria-label="Voltar para a área dos pais"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '7px 12px', color: 'rgba(255,255,255,0.35)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', whiteSpace: 'nowrap', flexShrink: 0, order: 4 }}
               >
-                ← Pais
+                ←<span className="ns-btn-pais-txt"> Pais</span>
               </button>
             </div>
           )}
@@ -160,6 +175,7 @@ export default function LayoutCrianca({ children, child }) {
       <main style={{ flex: 1, width: '100%' }}>
         {children}
       </main>
+      <MenuLateral tipo="crianca" />
       <FAQButton tipo="crianca" />
       <FeedbackButton tipo="crianca" />
 

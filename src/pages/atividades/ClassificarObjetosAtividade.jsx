@@ -77,6 +77,9 @@ export default function ClassificarObjetosAtividade() {
   const [erroZona,        setErroZona]         = useState(null)
   const [acertosTotal,    setAcertosTotal]      = useState(0)
   const [roundConcluido,  setRoundConcluido]   = useState(false)
+  // Toque: HTML5 drag-and-drop não existe em tablet/celular. Sem isto a atividade
+  // era impossível de terminar no aparelho que a criança mais usa.
+  const [selecionado,     setSelecionado]      = useState(null)
 
   const iniciarRound = useCallback((idx) => {
     const round = ROUNDS[idx]
@@ -110,11 +113,9 @@ export default function ClassificarObjetosAtividade() {
     e.dataTransfer.dropEffect = 'move'
   }, [])
 
-  const handleDrop = useCallback((e, categoriaZona) => {
-    e.preventDefault()
-    const obj = dragItemRef.current
+  const classificar = useCallback((obj, categoriaZona) => {
     if (!obj) return
-    dragItemRef.current = null
+    setSelecionado(null)
 
     if (obj.categoria === categoriaZona) {
       // Acerto
@@ -141,6 +142,18 @@ export default function ClassificarObjetosAtividade() {
       setTimeout(() => setErroZona(null), 400)
     }
   }, [])
+
+  const handleDrop = useCallback((e, categoriaZona) => {
+    e.preventDefault()
+    const obj = dragItemRef.current
+    dragItemRef.current = null
+    classificar(obj, categoriaZona)
+  }, [classificar])
+
+  const handleZonaClick = useCallback((categoriaZona) => {
+    if (!selecionado) return
+    classificar(selecionado, categoriaZona)
+  }, [selecionado, classificar])
 
   const handleProximoRound = useCallback(() => {
     const proximo = roundIdx + 1
@@ -194,6 +207,9 @@ export default function ClassificarObjetosAtividade() {
         <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 26, margin: 0 }}>
           {round.criterio}
         </h2>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: '6px 0 0' }}>
+          {selecionado ? 'Agora toque na caixa certa!' : 'Toque num objeto e depois na caixa certa (ou arraste).'}
+        </p>
       </div>
 
       {/* Objetos pendentes */}
@@ -211,31 +227,37 @@ export default function ClassificarObjetosAtividade() {
         padding: 12,
         border: '1px solid rgba(255,255,255,0.08)',
       }}>
-        {objetosPendentes.map(obj => (
-          <div
-            key={obj.id}
-            draggable
-            onDragStart={(e) => handleDragStart(e, obj)}
-            style={{
-              width: 70,
-              height: 70,
-              background: 'rgba(255,255,255,0.08)',
-              border: '1.5px solid rgba(255,255,255,0.2)',
-              borderRadius: 14,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 36,
-              cursor: 'grab',
-              userSelect: 'none',
-              transition: 'transform 0.1s',
-            }}
-            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
-            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            {obj.emoji}
-          </div>
-        ))}
+        {objetosPendentes.map(obj => {
+          const ativo = selecionado?.id === obj.id
+          return (
+            <button
+              key={obj.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, obj)}
+              onClick={() => setSelecionado(ativo ? null : obj)}
+              aria-pressed={ativo}
+              style={{
+                width: 70,
+                height: 70,
+                background: ativo ? 'rgba(124,58,237,0.35)' : 'rgba(255,255,255,0.08)',
+                border: ativo ? '2px solid #a78bfa' : '1.5px solid rgba(255,255,255,0.2)',
+                borderRadius: 14,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 36,
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'transform 0.1s, background 0.15s, border-color 0.15s',
+                transform: ativo ? 'scale(1.06)' : 'scale(1)',
+                padding: 0,
+                fontFamily: 'inherit',
+              }}
+            >
+              {obj.emoji}
+            </button>
+          )
+        })}
         {objetosPendentes.length === 0 && !roundConcluido && (
           <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, margin: 'auto' }}>
             Todos os objetos foram classificados!
@@ -261,7 +283,9 @@ export default function ClassificarObjetosAtividade() {
               key={cat}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, cat)}
+              onClick={() => handleZonaClick(cat)}
               style={{
+                cursor: selecionado ? 'pointer' : 'default',
                 flex: '1 1 140px',
                 minHeight: 140,
                 background: temErro
@@ -306,6 +330,14 @@ export default function ClassificarObjetosAtividade() {
           )
         })}
       </div>
+
+      {/* Saída: sem isto a criança só sairia da atividade pelo botão do navegador */}
+      <button
+        onClick={() => navigate('/home-crianca')}
+        style={{ marginTop: 32, background: 'transparent', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '8px 20px', fontSize: 13, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}
+      >
+        ← Sair da atividade
+      </button>
 
       {/* Banner round concluído */}
       {roundConcluido && (

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { SUPPORT } from '../../config/support'
+import { assinaturaVigente } from '../../lib/assinatura'
 import LayoutPai from '../../components/LayoutPai'
 import { Button, Card } from '../../components/ui'
 import { CheckCircle, Brain, GearSix } from '@phosphor-icons/react'
@@ -245,7 +246,16 @@ export default function Dashboard() {
   // Antes disto a Edge Function respondia {activated:false}, a resposta era descartada
   // num catch vazio, e a pessoa era jogada em /planos sem UMA palavra de explicação —
   // concluía que o pagamento não passou e pedia reembolso.
-  if (ativacaoFalhou) {
+  // Segunda trava: mesmo que `ativacaoFalhou` esteja setado, se a assinatura desta
+  // conta está vigente NÃO existe problema nenhum a mostrar. Sem esta checagem,
+  // quem já tinha plano ativo via esta tela em todo login (a Edge Function responde
+  // "não achei pendência" para todo mundo já ativado) e ficava sem acesso.
+  // Só faz sentido perguntar "pagou com outro e-mail?" para quem NUNCA teve plano.
+  // Quem tem plano registrado e cancelado/vencido recebia essa mesma tela e ficava
+  // achando que o pagamento tinha se perdido, quando na verdade a assinatura
+  // acabou — dois problemas opostos com a mesma mensagem.
+  const nuncaTevePlano = !subscription?.plano || subscription.plano === 'none'
+  if (ativacaoFalhou && !assinaturaVigente(subscription) && nuncaTevePlano) {
     return (
       <LayoutPai>
         <div className="pai-content" style={{ maxWidth: 620, padding: '48px 24px' }}>

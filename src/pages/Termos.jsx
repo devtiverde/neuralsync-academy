@@ -22,7 +22,7 @@ export default function Termos() {
         <p className="termos-p">Bem-vindo à NeuralSync Academy! Ao criar uma conta e utilizar nossa plataforma, você concorda com os termos descritos abaixo. Leia com atenção antes de prosseguir.</p>
 
         <h2 className="termos-h2">1. Sobre a plataforma</h2>
-        <p className="termos-p">A NeuralSync Academy é uma plataforma educacional gamificada voltada para crianças de 3 a 15 anos, acessível mediante assinatura. O responsável legal da criança (pai, mãe ou tutor) é o titular da conta.</p>
+        <p className="termos-p">A NeuralSync Academy é uma plataforma educacional gamificada voltada para crianças de 4 a 15 anos, acessível mediante assinatura. O responsável legal da criança (pai, mãe ou tutor) é o titular da conta.</p>
 
         <h2 className="termos-h2">2. Cadastro e responsabilidade</h2>
         <ul className="termos-ul">

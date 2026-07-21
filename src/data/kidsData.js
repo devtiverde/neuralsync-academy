@@ -99,8 +99,8 @@ export const kidsData = {
     ],
     quiz: [
       { pergunta: 'Qual animal tem o maior cérebro em proporção ao corpo?', opcoes: ['Elefante', 'Golfinho', 'Macaco', 'Chimpanzé'], correta: 1, explicacao: 'Golfinhos têm o maior cérebro proporcional de todos os animais não-humanos, sendo considerados os mais inteligentes!' },
-      { pergunta: 'Como as abelhas comunicam onde encontraram flores?', opcoes: ['Com sons', 'Com cheiros', 'Com uma dança em formato de 8', 'Com cores'], correta: 2, explicacao: 'A "dança do bambolê" das abelhas indica direção, distância e qualidade da flor com precisão extraordinária!' },
-      { pergunta: 'Qual animal pode abrir qualquer frasco com tampa?', opcoes: ['Chimpanzé', 'Golfinho', 'Polvo', 'Corvo'], correta: 2, explicacao: 'O polvo usa seus 8 tentáculos com ventos e força para abrir frascos. Ele tem inteligência incrível apesar de não ter esqueleto!' },
+      { pergunta: 'Como as abelhas comunicam onde encontraram flores?', opcoes: ['Com sons', 'Com cheiros', 'Com uma dança em formato de 8', 'Com cores'], correta: 2, explicacao: 'A "dança do requebrado" das abelhas indica direção, distância e qualidade da flor com precisão extraordinária!' },
+      { pergunta: 'Qual animal pode abrir qualquer frasco com tampa?', opcoes: ['Chimpanzé', 'Golfinho', 'Polvo', 'Corvo'], correta: 2, explicacao: 'O polvo usa seus 8 tentáculos com ventosas e força para abrir frascos. Ele tem inteligência incrível apesar de não ter esqueleto!' },
     ],
   },
 
@@ -128,7 +128,7 @@ export const kidsData = {
     ],
     fatos: [
       '🌍 A Terra é o único planeta com tectônica de placas ativa — isso pode ser essencial para a existência da vida!',
-      '🌙 A Lua se afasta da Terra 3,8 cm por ano. Daqui 600 milhões de anos, eclipses totais não existirão mais!',
+      '🌙 A Lua se afasta da Terra 3,8 cm por ano. Daqui a 600 milhões de anos, eclipses totais não existirão mais!',
       '⚡ A Terra sofre 100 raios por segundo — são 8,6 milhões de raios por dia ao redor do mundo!',
       '🧭 Os polos magnéticos da Terra se invertem a cada 200-300 mil anos. A última inversão foi há 780 mil anos!',
     ],
@@ -258,7 +258,7 @@ export const kidsData = {
       {
         emoji: '🏝️',
         titulo: 'Vulcões Criam Ilhas',
-        texto: 'O Havaí inteiro foi criado por vulcões! Uma série de vulcões submarinos cresceu do fundo do Pacífico ao longo de milhões de anos, formando as ilhas hawaianas uma por uma. O mesmo processo criou as Ilhas Canárias, Açores e Galápagos. Atualmente, o vulcão Kilauea ainda está ativo — criando terra nova todos os dias!',
+        texto: 'O Havaí inteiro foi criado por vulcões! Uma série de vulcões submarinos cresceu do fundo do Pacífico ao longo de milhões de anos, formando as ilhas havaianas uma por uma. O mesmo processo criou as Ilhas Canárias, Açores e Galápagos. Atualmente, o vulcão Kilauea ainda está ativo — criando terra nova todos os dias!',
       },
       {
         emoji: '💨',
@@ -269,13 +269,13 @@ export const kidsData = {
     fatos: [
       '🌊 75% dos vulcões do mundo ficam no fundo do mar! A maioria da atividade vulcânica é subaquática.',
       '🪐 Io, lua de Júpiter, tem mais de 400 vulcões ativos — é o corpo mais vulcânico do sistema solar!',
-      '❄️ Existe "criovolcanismo" em luas geladas como Encélado (Saturno) que erjeta gelo e água, não lava!',
-      '🌡️ A lava pode chegar a 1.300°C — quase tão quente quanto a superfície do Sol!',
+      '❄️ Existe "criovolcanismo" em luas geladas como Encélado (Saturno) que ejeta gelo e água, não lava!',
+      '🌡️ A lava pode chegar a 1.300°C — quente o bastante para derreter pedra!',
     ],
     quiz: [
       { pergunta: 'O que é a câmara magmática?', opcoes: ['A cratera do vulcão', 'Uma bolsa de rocha derretida sob o vulcão', 'A lava resfriada', 'A fumaça do vulcão'], correta: 1, explicacao: 'A câmara magmática é o reservatório de magma sob pressão que alimenta o vulcão. Quando a pressão sobe, o magma busca saída!' },
-      { pergunta: 'Como o Havaí foi formado?', opcoes: ['Por terremotos', 'Por vulcões submarinos', 'Por meteoritos', 'Por erosão do mar'], correta: 1, explicacao: 'As ilhas hawaianas são topos de vulcões submarinos gigantescos! Cresceram do fundo do Pacífico ao longo de milhões de anos.' },
-      { pergunta: 'O que aconteceu em 1816 após o vulcão Tambora?', opcoes: ['Tsumani global', 'Ano sem Verão e fome mundial', 'Nova ilha surgiu', 'Extinção de espécies'], correta: 1, explicacao: 'A erupção do Tambora jogou tanta cinza na atmosfera que bloqueou a luz solar — 1816 teve neve em junho nos EUA e colheitas destruídas no mundo todo!' },
+      { pergunta: 'Como o Havaí foi formado?', opcoes: ['Por terremotos', 'Por vulcões submarinos', 'Por meteoritos', 'Por erosão do mar'], correta: 1, explicacao: 'As ilhas havaianas são topos de vulcões submarinos gigantescos! Cresceram do fundo do Pacífico ao longo de milhões de anos.' },
+      { pergunta: 'O que aconteceu em 1816 após o vulcão Tambora?', opcoes: ['Tsunami global', 'Ano sem Verão e fome mundial', 'Nova ilha surgiu', 'Extinção de espécies'], correta: 1, explicacao: 'A erupção do Tambora jogou tanta cinza na atmosfera que bloqueou a luz solar — 1816 teve neve em junho nos EUA e colheitas destruídas no mundo todo!' },
     ],
   },
 
@@ -305,7 +305,7 @@ export const kidsData = {
       '🔢 Os computadores entendem tudo como 0s e 1s — chamado de código binário. O número 10 em binário é "1010"!',
       '🐛 O primeiro "bug" de computador foi uma mariposa real encontrada dentro de um computador em 1947!',
       '📱 Há mais smartphones ativos no mundo do que escovas de dente — 7,3 bilhões vs 4,2 bilhões!',
-      '💾 Um único DVD guardaria 4,7 GB — mas um pendrive moderno guarda 1.000× mais no mesmo tamanho!',
+      '💾 Um único DVD guardaria 4,7 GB — mas um pendrive moderno guarda 200× mais no mesmo tamanho!',
     ],
     quiz: [
       { pergunta: 'Quem foi a primeira programadora da história?', opcoes: ['Marie Curie', 'Ada Lovelace', 'Grace Hopper', 'Alan Turing'], correta: 1, explicacao: 'Ada Lovelace escreveu o primeiro algoritmo em 1843 — antes dos computadores! Por isso ela é considerada a "mãe da programação".' },
@@ -375,7 +375,7 @@ export const kidsData = {
       '🎨 Picasso pintou mais de 20.000 obras em vida — pintura, escultura, cerâmica e muito mais!',
       '🎵 A música clássica pode aumentar a concentração e o desempenho em testes — o chamado "Efeito Mozart"!',
       '📚 Shakespeare inventou mais de 1.700 palavras do inglês moderno, incluindo "bedroom", "gossip" e "lonely"!',
-      '🎬 O Oscar mais caro da história foi vendido por US$ 1,5 milhão — pertencia a "Os Ventos da Guerra" (1942)!',
+      '🎬 O Oscar mais caro da história foi vendido por US$ 1,5 milhão — pertencia a "E o Vento Levou" (1939)!',
     ],
     quiz: [
       { pergunta: 'Quem pintou a Mona Lisa?', opcoes: ['Michelangelo', 'Rafael', 'Leonardo da Vinci', 'Van Gogh'], correta: 2, explicacao: 'Leonardo da Vinci pintou a Mona Lisa entre 1503 e 1519! É a obra mais visitada do mundo, no Museu do Louvre em Paris, protegida por vidro à prova de balas.' },
@@ -403,14 +403,14 @@ export const kidsData = {
       {
         emoji: '🌟',
         titulo: 'República e Brasil Moderno: 1889–hoje',
-        texto: 'A República foi proclamada em 15 de novembro de 1889 pelo Marechal Deodoro da Fonseca. Em 1960, a capital foi transferida de Rio de Janeiro para Brasília — construída do zero em apenas 3 anos e 10 meses! Brasília foi projetada por Oscar Niemeyer e Lúcio Costa e se tornou Patrimônio Cultural da Humanidade pela UNESCO. O Brasil é hoje a maior economia da América Latina, lar de 215 milhões de pessoas e da maior floresta tropical do mundo — a Amazônia, com 5,5 milhões de km².',
+        texto: 'A República foi proclamada em 15 de novembro de 1889 pelo Marechal Deodoro da Fonseca. Em 1960, a capital foi transferida de Rio de Janeiro para Brasília — construída do zero em apenas 41 meses! Brasília foi projetada por Oscar Niemeyer e Lúcio Costa e se tornou Patrimônio Cultural da Humanidade pela UNESCO. O Brasil é hoje a maior economia da América Latina, lar de 215 milhões de pessoas e da maior floresta tropical do mundo — a Amazônia, com 5,5 milhões de km².',
       },
     ],
     fatos: [
       '🦜 O nome "Brasil" vem do pau-brasil, uma árvore com madeira vermelha usada para fazer tinta — chamada de "brasa" pelos portugueses!',
       '🏙️ Brasília foi construída em tempo recorde: 41 meses! Em abril de 1960, a nova capital foi inaugurada.',
-      '⚽ O Brasil é o único país a ter participado de todas as edições da Copa do Mundo de Futebol (21 edições)!',
-      '🌿 A Amazônia brasileira produz 20% do oxigênio do planeta e abriga 10% de todas as espécies da Terra!',
+      '⚽ O Brasil é o único país a ter participado de todas as edições da Copa do Mundo de Futebol (22 edições)!',
+      '🌿 A Amazônia brasileira guarda 20% da água doce do planeta e abriga 10% de todas as espécies da Terra!',
     ],
     quiz: [
       { pergunta: 'Em que ano o Brasil foi descoberto pelos portugueses?', opcoes: ['1488', '1492', '1500', '1520'], correta: 2, explicacao: 'Pedro Álvares Cabral chegou ao Brasil em 22 de abril de 1500! Mas os povos indígenas já habitavam essas terras há pelo menos 12.000 anos antes disso.' },
@@ -595,7 +595,7 @@ export const kidsData = {
     fatos: [
       '🌈 O arco-íris tem 7 cores sempre na mesma ordem: vermelho, laranja, amarelo, verde, azul, anil e violeta!',
       '🔴🔵🟡 Apenas 3 cores primárias (vermelho, azul e amarelo) criam todas as outras cores do mundo!',
-      '⭕ O círculo é a forma mais resistente que existe — por isso rodas, pipas e arcas são redondas!',
+      '⭕ O círculo distribui a força por igual em todas as direções — por isso rodas, arcos e cúpulas são redondos!',
       '🎨 As abelhas constroem seus favos em formato hexagonal — uma forma com 6 lados — para guardar mais mel!',
     ],
     quiz: [

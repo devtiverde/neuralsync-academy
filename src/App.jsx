@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { supabase } from './lib/supabase'
 
 // Páginas públicas (carregam logo — bundle separado mas pequenos)
 const Landing = lazy(() => import('./pages/Landing'))
@@ -100,9 +101,52 @@ function NotFound() {
   return <Navigate to={user ? '/dashboard' : '/'} replace />
 }
 
+/**
+ * Resgata quem chegou por link de definição de senha e caiu na rota errada.
+ *
+ * O Supabase só respeita o destino do link se ele estiver na lista de "Redirect
+ * URLs" do projeto; se não estiver, ele descarta o destino e joga a pessoa na
+ * Site URL — normalmente a raiz, que não sabe tratar o token. O cliente que
+ * acabou de pagar clicaria no e-mail e ficaria olhando a landing page, sem
+ * conseguir criar a senha.
+ *
+ * Aqui a gente ouve o evento de recuperação em qualquer rota e leva para a tela
+ * certa, o que torna o fluxo imune a essa configuração.
+ */
+function ResgateLinkSenha() {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    if (pathname === '/nova-senha') return
+
+    const irParaNovaSenha = () => {
+      const novo = new URLSearchParams(window.location.search).get('novo')
+      navigate(`/nova-senha${novo ? '?novo=' + novo : ''}`, { replace: true })
+    }
+
+    // A marca é gravada em src/lib/supabase.js antes do cliente iniciar, porque o
+    // supabase-js apaga o token da URL durante a própria importação — quando este
+    // componente monta, o evento PASSWORD_RECOVERY já passou. Sem isto a pessoa
+    // era levada para a navegação normal (ia parar em /planos) em vez da tela de
+    // criar senha.
+    let marcado = false
+    try { marcado = sessionStorage.getItem('ns_fluxo_definir_senha') === '1' } catch { /* modo privado */ }
+    if (marcado) { irParaNovaSenha(); return }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') irParaNovaSenha()
+    })
+    return () => subscription.unsubscribe()
+  }, [navigate, pathname])
+
+  return null
+}
+
 function AppContent() {
   return (
     <Suspense fallback={<PageLoader />}>
+      <ResgateLinkSenha />
       <Routes>
         {/* Rotas públicas */}
         <Route path="/" element={<Landing />} />

@@ -3,11 +3,11 @@
 
 export const kidsFlashcards = {
   dinossauros: [
-    { emoji: '🦕', frente: 'Qual dinossauro tinha o pescoço mais comprido?', verso: 'Brachiosaurus! O pescoço media até 12 metros — mais que um ônibus escolar. Ossos ocos o tornavam leve.', dica: 'Pense num girafa gigante!' },
+    { emoji: '🦕', frente: 'Qual dinossauro tinha o pescoço mais comprido?', verso: 'Brachiosaurus! O pescoço media até 12 metros — mais que um ônibus escolar. Ossos ocos o tornavam leve.', dica: 'Pense numa girafa gigante!' },
     { emoji: '🦴', frente: 'O que estuda um paleontólogo?', verso: 'Fósseis! Restos preservados de animais e plantas extintos, como ossos, dentes, pegadas e ovos de dinossauros.', dica: 'Paleon = antigo (grego)' },
     { emoji: '💥', frente: 'Por que os dinossauros se extinguiram?', verso: 'Um asteroide de 10 km atingiu a Terra há 66 milhões de anos. A poeira bloqueou o sol por anos, extinguindo 75% das espécies.', dica: 'Mas nem todos morreram...' },
-    { emoji: '🐦', frente: 'Qual animal de hoje é parente direto dos dinossauros?', verso: 'As aves! Pássaros descendem de dinossauros terópodes emplumados. O T-Rex é ancestral direto de frango e peru!', dica: 'Olhe para o pé do frango...' },
-    { emoji: '🥚', frente: 'Como sabemos que alguns dinossauros cuidavam dos filhotes?', verso: 'Fosseis do Maiasaura mostram ninhos com ovos e filhotes de diferentes tamanhos juntos, indicando que os pais alimentavam os filhotes.', dica: 'Comportamento parental fossilizado!' },
+    { emoji: '🐦', frente: 'Qual animal de hoje é parente direto dos dinossauros?', verso: 'As aves! Pássaros descendem de dinossauros terópodes emplumados. O T-Rex é um primo distante do frango e do peru!', dica: 'Olhe para o pé do frango...' },
+    { emoji: '🥚', frente: 'Como sabemos que alguns dinossauros cuidavam dos filhotes?', verso: 'Fósseis do Maiasaura mostram ninhos com ovos e filhotes de diferentes tamanhos juntos, indicando que os pais alimentavam os filhotes.', dica: 'Comportamento parental fossilizado!' },
     { emoji: '🌡️', frente: 'Dinossauros eram de sangue quente ou frio?', verso: 'Pesquisas recentes indicam que muitos eram de sangue quente (endotérmicos) como aves e mamíferos — não frios como répteis modernos.', dica: 'A ciência continua descobrindo!' },
   ],
 
@@ -17,7 +17,7 @@ export const kidsFlashcards = {
     { emoji: '🦷', frente: 'Qual é o osso mais forte do corpo humano?', verso: 'O fêmur (osso da coxa)! É mais forte que concreto — suporta até 1.700 kg antes de quebrar, mesmo pesando menos de 500g.', dica: 'O maior osso do corpo' },
     { emoji: '👁️', frente: 'Quantas cores o olho humano consegue distinguir?', verso: 'Cerca de 10 milhões de cores! Os cones da retina detectam vermelho, verde e azul e o cérebro combina essas informações.', dica: 'Tetracromatas veem ainda mais!' },
     { emoji: '🫁', frente: 'Quantas vezes você respira por dia?', verso: 'Aproximadamente 20.000 vezes! Isso é cerca de 500 litros de ar por hora. O diafragma é o músculo responsável.', dica: 'Tudo automático, sem precisar pensar' },
-    { emoji: '🩸', frente: 'Em quantos minutos o sangue circula por todo o corpo?', verso: 'Em apenas 1 minuto o sangue faz o percurso completo pelo corpo todo! Viajando a até 200 km/h pelas artérias principais.', dica: 'Uma volta completa por minuto!' },
+    { emoji: '🩸', frente: 'Em quantos minutos o sangue circula por todo o corpo?', verso: 'Em apenas 1 minuto o sangue faz o percurso completo pelo corpo todo! Na aorta ele corre a cerca de 1,5 km/h.', dica: 'Uma volta completa por minuto!' },
   ],
 
   animais: [
@@ -25,17 +25,17 @@ export const kidsFlashcards = {
     { emoji: '🐬', frente: 'O que é único na comunicação dos golfinhos comparado a outros animais?', verso: 'Cada golfinho tem um assobio único (seu "nome") e usa o assobio dos outros para chamá-los — só humanos e golfinhos fazem isso!', dica: 'Nomes individuais no mundo animal' },
     { emoji: '🐝', frente: 'Como as abelhas comunicam a localização de flores?', verso: 'Com a Dança das Abelhas! A direção indica o ângulo para o sol, a duração indica a distância. É uma linguagem de dança!', dica: 'Karl von Frisch ganhou Nobel por decifrar isso' },
     { emoji: '🦁', frente: 'Qual felino é o único que vive em grupo?', verso: 'O leão! Os outros felinos — tigres, leopardos, jaguares — são solitários. Leões vivem em grupos de até 40 indivíduos.', dica: 'O grupo se chama alcateia... não, matilha... não, bando! Chama-se BANDO' },
-    { emoji: '🐙', frente: 'Quantos corações tem um polvo?', verso: '3 corações! Um bombeia sangue pelo corpo, dois bombeia sangue pelas brânquias. O sangue é azul (cobre, não ferro).', dica: 'Azul de sangue literalmente!' },
-    { emoji: '🐧', frente: 'Por que os pinguins não deslizam no gelo?', verso: 'Suas patas têm sistemas de contracorrente: sangue quente das artérias aquece o sangue frio das veias, mantendo as patas acima de 0°C sem perder calor corporal.', dica: 'Engenharia térmica natural' },
+    { emoji: '🐙', frente: 'Quantos corações tem um polvo?', verso: '3 corações! Um bombeia sangue pelo corpo, dois bombeiam sangue pelas brânquias. O sangue é azul (cobre, não ferro).', dica: 'Azul de sangue literalmente!' },
+    { emoji: '🐧', frente: 'Por que as patas dos pinguins não congelam no gelo?', verso: 'Suas patas têm sistemas de contracorrente: sangue quente das artérias aquece o sangue frio das veias, mantendo as patas acima de 0°C sem perder calor corporal.', dica: 'Engenharia térmica natural' },
   ],
 
   planeta_terra: [
     { emoji: '🌋', frente: 'O que é a Placa Tectônica?', verso: 'São gigantescas "fatias" da crosta terrestre que se movem. Seu movimento causa terremotos, vulcões e formou as montanhas e continentes.', dica: 'A Terra está sempre se movendo!' },
-    { emoji: '🌊', frente: 'Qual é a profundidade máxima do oceano?', verso: 'Fossa das Marianas: 11.034 metros de profundidade! Mais fundo que o Monte Everest é alto. Só 3 pessoas já chegaram lá.', dica: 'Sabemos mais sobre a Lua' },
-    { emoji: '🌬️', frente: 'De que é feita a atmosfera terrestre?', verso: '78% nitrogênio, 21% oxigênio, 1% argônio e outros gases (incluindo 0,04% de CO₂). Só o oxigênio é produzido por seres vivos!', dica: 'Nitrogênio é o mais abundante' },
+    { emoji: '🌊', frente: 'Qual é a profundidade máxima do oceano?', verso: 'Fossa das Marianas: 11.034 metros de profundidade! Mais fundo que o Monte Everest é alto. Pouquíssimas pessoas já chegaram lá.', dica: 'Sabemos mais sobre a Lua' },
+    { emoji: '🌬️', frente: 'De que é feita a atmosfera terrestre?', verso: '78% nitrogênio, 21% oxigênio, 1% argônio e outros gases (incluindo 0,04% de CO₂). O oxigênio todo veio de seres vivos que fazem fotossíntese!', dica: 'Nitrogênio é o mais abundante' },
     { emoji: '🧲', frente: 'O que cria o campo magnético da Terra?', verso: 'O núcleo externo de ferro líquido girando! Esse movimento gera correntes elétricas que criam o campo magnético — nosso escudo contra ventos solares.', dica: 'A bússola aponta para ele' },
     { emoji: '🏔️', frente: 'Qual é a montanha mais alta se medirmos do centro da Terra?', verso: 'O Chimborazo, no Equador! O Everest é o mais alto do nível do mar, mas o Chimborazo fica no equador onde a Terra é mais "larga".', dica: 'Depende do ponto de referência!' },
-    { emoji: '🌀', frente: 'O que é o Efeito Coriolis?', verso: 'A rotação da Terra faz furacões girarem para esquerda no sul e direita no norte. Também afeta trajetórias de aviões e correntes oceânicas.', dica: 'A Terra gira, tudo se desvia!' },
+    { emoji: '🌀', frente: 'O que é o Efeito Coriolis?', verso: 'A rotação da Terra faz furacões girarem no sentido anti-horário no hemisfério norte e no sentido horário no sul. Também afeta trajetórias de aviões e correntes oceânicas.', dica: 'A Terra gira, tudo se desvia!' },
   ],
 
   esportes: [
@@ -83,7 +83,7 @@ export const kidsFlashcards = {
   matematica: [
     { emoji: '🌀', frente: 'O que é a Sequência de Fibonacci?', verso: '1, 1, 2, 3, 5, 8, 13, 21, 34... Cada número é a soma dos dois anteriores. Aparece em flores, conchas, pinheiros e galáxias espirais.', dica: '1+1=2, 1+2=3, 2+3=5...' },
     { emoji: '∞', frente: 'O que é o Número Pi (π)?', verso: 'Razão entre a circunferência e o diâmetro de qualquer círculo: 3,14159... São infinitas casas decimais sem repetição. Existe em fenômenos naturais além da geometria!', dica: 'π aparece até em probabilidade e física quântica' },
-    { emoji: '0', frente: 'Onde e quando o zero foi inventado?', verso: 'Na Índia, por volta do século 5 d.C., pelo matemático Brahmagupta. Sem o zero não há sistema decimal, álgebra nem computadores!', dica: 'Romanos não tinham zero — por isso aritmética era difícil' },
+    { emoji: '0', frente: 'Onde e quando o zero foi inventado?', verso: 'Na Índia, por volta do século 7 d.C., pelo matemático Brahmagupta. Sem o zero não há sistema decimal, álgebra nem computadores!', dica: 'Romanos não tinham zero — por isso aritmética era difícil' },
     { emoji: '📐', frente: 'O que diz o Teorema de Pitágoras?', verso: 'Em triângulo retângulo: a² + b² = c² (onde c é a hipotenusa, o maior lado). Usado em arquitetura, GPS, computação gráfica e muito mais!', dica: 'Pitágoras c. 570 a.C. na Grécia' },
     { emoji: '🎲', frente: 'O que é a probabilidade de tirar cara em uma moeda?', verso: '50% (0,5). Mas em 10 lançamentos pode não dar 5 caras — a lei dos grandes números: com mais tentativas, se aproxima de 50%.', dica: 'Com 1 lançamento, pode dar 0 caras' },
     { emoji: '♾️', frente: 'Existem mais números entre 0 e 1 do que números inteiros?', verso: 'Sim! Cantor provou que o infinito dos números reais é "maior" que o infinito dos inteiros. Existem diferentes tamanhos de infinito!', dica: 'A matemática do infinito surpreende sempre' },
@@ -103,13 +103,13 @@ export const kidsFlashcards = {
     { emoji: '🏙️', frente: 'Quanto tempo levou para construir Brasília?', verso: '41 meses! JK prometeu "50 anos em 5" e cumpriu. 30.000 candangos trabalharam dia e noite. Inaugurada em 21 de abril de 1960. UNESCO: Patrimônio da Humanidade em 1987.', dica: 'Niemeyer + Lúcio Costa = gênios' },
     { emoji: '🌳', frente: 'Qual é o maior bioma do Brasil?', verso: 'A Amazônia! Ocupa 49% do território nacional (cerca de 4,2 milhões de km²) e contém 20% de toda a água doce do planeta.', dica: 'Maior floresta tropical do mundo' },
     { emoji: '🎭', frente: 'O que é o Carnaval e por que é tão importante?', verso: 'Festa popular que mistura influências africanas, europeias e indígenas. As escolas de samba surgiram nos morros do Rio nos anos 1920 e viraram patrimônio cultural mundial.', dica: 'Síntese da cultura brasileira' },
-    { emoji: '⚽', frente: 'Quantas vezes o Brasil ganhou a Copa do Mundo?', verso: '5 vezes: 1958 (Suécia), 1962 (Chile), 1970 (México), 1994 (EUA) e 2002 (Coreia/Japão). É o único pentacampeão da história!', dica: 'Única seleção invicta nas Copas até 2022' },
+    { emoji: '⚽', frente: 'Quantas vezes o Brasil ganhou a Copa do Mundo?', verso: '5 vezes: 1958 (Suécia), 1962 (Chile), 1970 (México), 1994 (EUA) e 2002 (Coreia/Japão). É o único pentacampeão da história!', dica: 'Única seleção que jogou todas as Copas do Mundo' },
   ],
 
   frutas: [
     { emoji: '🍊', frente: 'Por que frutas maduras são doces?', verso: 'O amido se converte em açúcares (frutose, glucose, sacarose) durante o amadurecimento. É a planta "avisando" que as sementes estão prontas para ser dispersas por animais.', dica: 'Açúcar = sinal de "coma-me agora!"' },
     { emoji: '🍋', frente: 'O que é vitamina C e por que frutas cítricas têm tanta?', verso: 'Ácido ascórbico — essencial para produção de colágeno (pele, ossos). Citros evoluíram para ter muita por razões de defesa de predadores (sabor ácido = proteção).', dica: 'Carência de vit. C = escorbuto' },
-    { emoji: '🌸', frente: 'Qual é o papel das flores na formação das frutas?', verso: 'A flor contém o óvulo (futuro semente). O pólen fecunda o óvulo. O ovário da flor se transforma na fruta — que é literalmente o ovário maduro da planta!', dica: 'Fruta = ovário da planta' },
+    { emoji: '🌸', frente: 'Qual é o papel das flores na formação das frutas?', verso: 'A flor contém o óvulo (futura semente). O pólen fecunda o óvulo. O ovário da flor se transforma na fruta — que é literalmente o ovário maduro da planta!', dica: 'Fruta = ovário da planta' },
     { emoji: '🐝', frente: 'Quantas flores uma abelha visita por dia?', verso: 'Até 1.500 flores por dia! Em sua vida (6 semanas), produz 1/12 de colher de chá de mel. Para 500g de mel são necessárias 2 milhões de visitas a flores.', dica: 'O mel é muito precioso!' },
     { emoji: '🌈', frente: 'Por que diferentes frutas têm cores diferentes?', verso: 'Cada cor é um pigmento diferente: antocianinas (roxo/azul), carotenoides (amarelo/laranja/vermelho), clorofila (verde). Cada um atrai polinizadores e dispersores específicos.', dica: 'Cores = marketing da natureza' },
   ],
@@ -118,7 +118,7 @@ export const kidsFlashcards = {
     { emoji: '🍎', frente: 'O que Newton descobriu com a maçã?', verso: 'A gravidade! Percebeu que a força que faz a maçã cair é a mesma que mantém a Lua em órbita. Formulou a Lei da Gravitação Universal (F = Gm₁m₂/r²).', dica: 'A maçã não caiu NA cabeça dele' },
     { emoji: '⚡', frente: 'O que é a Teoria da Relatividade de Einstein?', verso: 'E=mc²: energia e massa são equivalentes. E que tempo e espaço são relativos à velocidade. GPS precisa corrigir os relógios dos satélites usando essa teoria!', dica: 'Sem Einstein, GPS erra 11km/dia' },
     { emoji: '🌡️', frente: 'O que é entropia?', verso: 'A tendência natural do universo de ir do organizado para o caótico. Ovo quebrado não se reconstrói. Mistura de café/leite não se separa. O tempo vai só para frente por causa disso!', dica: 'Segunda Lei da Termodinâmica' },
-    { emoji: '⚛️', frente: 'O que é superposição quântica?', verso: 'Uma partícula subatômica existe em múltiplos estados ao mesmo tempo, até ser medida. Sem essa física impossível: lasers, transistores, MRI não existiriam.', dica: 'Einstein chamou de "assustador à distância"' },
+    { emoji: '⚛️', frente: 'O que é superposição quântica?', verso: 'Uma partícula subatômica existe em múltiplos estados ao mesmo tempo, até ser medida. Sem essa física, lasers, transistores e ressonância magnética não existiriam.', dica: 'Einstein não gostava nada dessa ideia!' },
     { emoji: '🔊', frente: 'Por que o som não viaja no espaço?', verso: 'Som é vibração de moléculas. No vácuo do espaço não há moléculas para vibrar — o som não tem "meio" para viajar. Luz viaja (não precisa de meio). Explosões espaciais são silenciosas!', dica: '"No espaço ninguém ouve você gritar"' },
     { emoji: '🌊', frente: 'O que é o Princípio de Arquimedes?', verso: 'Objeto submerso sofre empuxo (força para cima) igual ao peso do líquido que deslocou. Por isso navios de aço flutuam: o ar dentro deles desloca mais água que seu peso.', dica: 'Eureka! Descoberto na banheira' },
   ],
@@ -127,7 +127,7 @@ export const kidsFlashcards = {
     { emoji: '👨‍⚕️', frente: 'Quantos anos de estudo são necessários para ser médico?', verso: 'No mínimo 12 anos: 6 de faculdade + 2 de residência + 2-4 de especialização. Algumas especialidades (neurocirurgia) exigem 15+ anos de formação!', dica: 'Estudo contínuo a vida toda' },
     { emoji: '🚒', frente: 'Qual é o tempo de resposta ideal de um bombeiro?', verso: '3 minutos para estar no caminhão e a caminho! Isso porque fogo dobra de tamanho a cada minuto — 3 minutos de diferença pode ser 8x mais fogo.', dica: 'Segundos salvam vidas' },
     { emoji: '👩‍💻', frente: 'O que é a profissão de cientista de dados?', verso: 'Combina estatística, programação e conhecimento de negócios para encontrar padrões em grandes conjuntos de dados. Uma das profissões mais valorizadas e bem pagas do século 21.', dica: 'Dados são o novo petróleo' },
-    { emoji: '🌱', frente: 'Quais profissões não existiam há 20 anos?', verso: 'Designer UX/UI, engenheiro de machine learning, youtuber/streamer, especialista em cibersegurança, arquiteto de nuvem, biólogo de bioinformática, podcaster...', dica: 'Sua futura profissão talvez ainda não existe!' },
+    { emoji: '🌱', frente: 'Quais profissões não existiam há 20 anos?', verso: 'Designer UX/UI, engenheiro de machine learning, youtuber/streamer, especialista em cibersegurança, arquiteto de nuvem, biólogo de bioinformática, podcaster...', dica: 'Sua futura profissão talvez ainda não exista!' },
     { emoji: '🎓', frente: 'O que é inteligência emocional no trabalho?', verso: 'Capacidade de reconhecer e gerir suas emoções e as dos outros. Pesquisas mostram que QE (quociente emocional) prevê melhor o sucesso profissional que QI!', dica: 'Daniel Goleman popularizou o conceito' },
   ],
 
@@ -141,15 +141,15 @@ export const kidsFlashcards = {
 
   formas_cores: [
     { emoji: '🔺', frente: 'Por que triângulos são usados em pontes e construções?', verso: 'O triângulo é a única forma rígida — forças aplicadas se distribuem pelos três lados sem deformar. Quadrados e hexágonos "dobram"; triângulos resistem.', dica: 'Treliça = sistema de triângulos' },
-    { emoji: '🔵', frente: 'Por que o círculo é a forma mais eficiente?', verso: 'Um círculo tem o maior área para qualquer perímetro. Por isso bolhas, células e planetas são esféricos — natureza otimiza para eficiência de material e energia.', dica: 'Isoperimetric inequality (matemática)' },
-    { emoji: '🌈', frente: 'Qual é a ordem das cores do arco-íris?', verso: 'ROY G BIV: Vermelho, Laranja, Amarelo, Verde, Azul, Anil, Violeta. Sempre nessa ordem — é a dispersão da luz branca por comprimento de onda decrescente.', dica: 'Em inglês: ROY G BIV, mesmo ordem' },
+    { emoji: '🔵', frente: 'Por que o círculo é a forma mais eficiente?', verso: 'Um círculo tem a maior área para qualquer perímetro. Por isso bolhas, células e planetas são esféricos — natureza otimiza para eficiência de material e energia.', dica: 'Desigualdade isoperimétrica (matemática)' },
+    { emoji: '🌈', frente: 'Qual é a ordem das cores do arco-íris?', verso: 'ROY G BIV: Vermelho, Laranja, Amarelo, Verde, Azul, Anil, Violeta. Sempre nessa ordem — é a dispersão da luz branca por comprimento de onda decrescente.', dica: 'Em inglês: ROY G BIV, mesma ordem' },
     { emoji: '🔷', frente: 'Por que favos de mel são hexagonais?', verso: 'O hexágono permite cobrir 100% de uma superfície plana usando menos cera e guardando mais mel. As abelhas "descobriram" a geometria eficiente por evolução!', dica: 'Círculos deixariam espaços vazios' },
     { emoji: '🎨', frente: 'Quais são as cores primárias da luz vs. do pigmento?', verso: 'Luz (RGB): vermelho + verde + azul = branco. Pigmento (CMYK): ciano + magenta + amarelo + preto = preto. Luz mistura adicionando; pigmento mistura subtraindo.', dica: 'Tela de celular usa RGB' },
     { emoji: '🔴', frente: 'O que é o daltonismo?', verso: 'Dificuldade em distinguir certas cores, geralmente vermelho-verde. Afeta 8% dos homens e 0,5% das mulheres. A maioria dos daltônicos não é completamente cego para cor!', dica: 'Gene recessivo ligado ao X' },
   ],
 
   transporte: [
-    { emoji: '✈️', frente: 'Por que aviões voam? (Princípio básico)', verso: 'A asa tem perfil assimétrico: ar de cima percorre caminho maior (mais rápido) → menor pressão em cima. Pressão maior embaixo cria sustentação para cima. Lei de Bernoulli!', dica: 'Bernoulli + Newton juntos explicam o voo' },
+    { emoji: '✈️', frente: 'Por que aviões voam? (Princípio básico)', verso: 'A asa tem perfil assimétrico: o ar passa mais rápido por cima → menor pressão em cima. A asa também empurra o ar para baixo e é empurrada para cima. Bernoulli + Newton!', dica: 'Bernoulli + Newton juntos explicam o voo' },
     { emoji: '🚀', frente: 'Qual lei de Newton explica o foguete?', verso: 'Terceira Lei: ação e reação. Combustível queimado expelido para baixo → foguete vai para cima. Não precisa de ar para empurrar — funciona no vácuo do espaço!', dica: 'Diferente de avião, que precisa de ar' },
     { emoji: '🚄', frente: 'Como o trem-bala Maglev levita?', verso: 'Eletromagnetos criam campo repulsivo entre o trem e o trilho — o trem literalmente flutua! Sem atrito mecânico, velocidades de 600+ km/h são possíveis.', dica: 'Maglev = Magnetic Levitation' },
     { emoji: '🌊', frente: 'Por que navios de aço flutuam?', verso: 'Princípio de Arquimedes: o navio desloca um volume de água com peso maior que o do próprio navio (por causa do ar interno). Empuxo > peso = flutua!', dica: 'Uma bola de aço sólida afunda; oco, flutua' },

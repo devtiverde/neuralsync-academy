@@ -2,10 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
-const depoimentos = [
-  ["Minha filha pediu para fazer mais um desafio do cérebro antes de dormir. Não acreditei!","🌸","Marina S.","Mãe da Sofia, 7 anos"],
-  ["O relatório semanal me mostra exatamente em quais habilidades ele evoluiu. É surreal.","🐯","Rafael P.","Pai do Bento, 10 anos"],
-  ["Substituí 30 minutos de YouTube por NeuralSync. Diferença visível em duas semanas.","🦊","Camila R.","Mãe do Theo, 5 anos"]
+// Aqui existiam três depoimentos com nome, foto e cinco estrelas — todos
+// inventados, num produto que ainda não tinha cliente pagante. Além de ser
+// publicidade enganosa (CDC art. 37) e motivo de banimento de conta de anúncios,
+// é o tipo de coisa que destrói a confiança se um pai desconfiar.
+// No lugar entram fatos verificáveis sobre o que a plataforma entrega.
+// Números conferidos contra `src/lib/kidsLinks.js`: 421 ids únicos, 17 tipos de
+// jogo distintos. Não arredondar para cima — é promessa de venda.
+const provas = [
+  ["421 atividades prontas", "🧩", "Distribuídas em 17 tipos de jogo, de quebra-cabeças a laboratório de invenções."],
+  ["4 faixas etárias", "🎯", "Exploradores, Construtores, Criadores e Inventores — o conteúdo acompanha a idade."],
+  ["Relatório para os pais", "📊", "Seis habilidades cognitivas medidas a partir do que a criança realmente jogou."],
 ]
 
 export default function Landing() {
@@ -76,13 +83,18 @@ export default function Landing() {
             <span style={{color:'#7C3AED'}}>Academy</span>
           </span>
         </div>
-        <nav className="l-nav" style={{display:'flex',gap:'32px',alignItems:'center'}}>
-          {[['Como funciona','#como'],['Benefícios','#beneficios'],['Idades','#idades'],['Depoimentos','#depoimentos']].map(([label,href]) => (
-            <a key={href} href={href} className="nav-link">{label}</a>
-          ))}
-          <a onClick={() => navigate('/planos')} className="nav-link" style={{cursor:'pointer',color:'#7C3AED',fontWeight:'700'}}>Preços</a>
-          <button onClick={() => navigate('/auth')} style={{background:'none',border:'none',color:'#0f0a1e',cursor:'pointer',fontSize:'14px',fontWeight:'600',padding:'8px 16px',borderRadius:'8px'}}>Entrar</button>
-          <button onClick={() => navigate('/planos')} className="btn-primary" style={{padding:'10px 22px',fontSize:'14px',borderRadius:'999px'}}>Assinar agora</button>
+        {/* Só as âncoras de seção somem no celular. Entrar e Assinar precisam
+            sobreviver: escondendo a nav inteira, o visitante de telefone ficava
+            sem login e sem botão de compra no topo — e a maioria vem de telefone. */}
+        <nav style={{display:'flex',gap:'12px',alignItems:'center'}}>
+          <span className="l-nav" style={{display:'flex',gap:'32px',alignItems:'center'}}>
+            {[['Como funciona','#como'],['Benefícios','#beneficios'],['Idades','#idades'],['O que você recebe','#depoimentos']].map(([label,href]) => (
+              <a key={href} href={href} className="nav-link">{label}</a>
+            ))}
+            <a onClick={() => navigate('/planos')} className="nav-link" style={{cursor:'pointer',color:'#7C3AED',fontWeight:'700'}}>Preços</a>
+          </span>
+          <button onClick={() => navigate('/auth')} style={{background:'none',border:'none',color:'#0f0a1e',cursor:'pointer',fontSize:'14px',fontWeight:'600',padding:'8px 14px',borderRadius:'8px',whiteSpace:'nowrap'}}>Entrar</button>
+          <button onClick={() => navigate('/planos')} className="btn-primary" style={{padding:'10px 18px',fontSize:'14px',borderRadius:'999px',whiteSpace:'nowrap'}}>Assinar</button>
         </nav>
       </header>
 
@@ -184,7 +196,7 @@ export default function Landing() {
 
       <section style={{background:'#faf5ff',borderTop:'1px solid #ede9fe',borderBottom:'1px solid #ede9fe',padding:'52px 40px'}}>
         <div className="l-stats" style={{maxWidth:'900px',margin:'0 auto',display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'20px',textAlign:'center'}}>
-          {[['420+','Atividades'],['20+','Tipos de jogo'],['8','Habilidades trabalhadas'],['4–15','Anos de idade']].map(([num,label]) => (
+          {[['421','Atividades'],['17','Tipos de jogo'],['8','Habilidades trabalhadas'],['4–15','Anos de idade']].map(([num,label]) => (
             <div key={label}>
               <div style={{fontSize:'38px',fontWeight:'900',color:'#7C3AED',marginBottom:'6px',letterSpacing:'-1px'}}>{num}</div>
               <div style={{fontSize:'14px',color:'#6b7280',fontWeight:'500'}}>{label}</div>
@@ -202,7 +214,7 @@ export default function Landing() {
           {[
             ['1','Crie o perfil do seu filho','Personalize avatar, idade e nome em segundos.','👤'],
             ['2','Receba missões diárias','Atividades curtas que estimulam o cérebro de forma divertida.','🎯'],
-            ['3','Acompanhe a evolução','Relatórios visuais para os pais semanais e mensais.','📊']
+            ['3','Acompanhe a evolução','Relatórios visuais semanais e mensais para os pais.','📊']
           ].map(([num,titulo,desc,icon]) => (
             <div key={num} style={{background:'#faf5ff',borderRadius:'22px',padding:'36px',border:'1.5px solid #ede9fe'}}>
               <div style={{width:'52px',height:'52px',borderRadius:'16px',background:'linear-gradient(135deg,#7C3AED,#6d28d9)',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:'22px',fontWeight:'900',marginBottom:'24px',boxShadow:'0 4px 16px rgba(124,58,237,0.3)'}}>{num}</div>
@@ -307,21 +319,15 @@ export default function Landing() {
 
       <section id="depoimentos" className="l-section" style={{padding:'110px 40px',maxWidth:'1000px',margin:'0 auto'}}>
         <div style={{textAlign:'center',marginBottom:'64px'}}>
-          <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>Histórias reais</div>
-          <h2 style={{fontSize:'44px',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>Pais que mudaram a relação dos filhos com a tela</h2>
+          <div style={{fontSize:'12px',color:'#7C3AED',fontWeight:'700',marginBottom:'14px',textTransform:'uppercase',letterSpacing:'2px'}}>O que você recebe</div>
+          <h2 style={{fontSize:'clamp(28px, 6vw, 44px)',fontWeight:'900',letterSpacing:'-1.5px',color:'#0f0a1e',lineHeight:'1.1'}}>Conteúdo pronto desde o primeiro dia</h2>
         </div>
         <div className="l-grid3" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'24px'}}>
-          {depoimentos.map(([texto,emoji,nome,cargo]) => (
-            <div key={nome} className="dep-card">
-              <div style={{color:'#F07A20',fontSize:'16px',marginBottom:'18px',letterSpacing:'2px'}}>★★★★★</div>
-              <p style={{color:'#374151',fontSize:'15px',lineHeight:'1.75',marginBottom:'28px',fontStyle:'italic'}}>{texto}</p>
-              <div style={{display:'flex',alignItems:'center',gap:'12px',paddingTop:'20px',borderTop:'1px solid #f3f4f6'}}>
-                <div style={{width:'46px',height:'46px',borderRadius:'14px',background:'linear-gradient(135deg,#7C3AED,#F07A20)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px'}}>{emoji}</div>
-                <div>
-                  <div style={{fontWeight:'700',fontSize:'14px',color:'#0f0a1e'}}>{nome}</div>
-                  <div style={{color:'#6b7280',fontSize:'12px',marginTop:'2px'}}>{cargo}</div>
-                </div>
-              </div>
+          {provas.map(([titulo,emoji,texto]) => (
+            <div key={titulo} className="dep-card">
+              <div style={{width:'46px',height:'46px',borderRadius:'14px',background:'linear-gradient(135deg,#7C3AED,#F07A20)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'22px',marginBottom:'18px'}}>{emoji}</div>
+              <div style={{fontWeight:'800',fontSize:'17px',color:'#0f0a1e',marginBottom:'10px'}}>{titulo}</div>
+              <p style={{color:'#374151',fontSize:'15px',lineHeight:'1.7'}}>{texto}</p>
             </div>
           ))}
         </div>

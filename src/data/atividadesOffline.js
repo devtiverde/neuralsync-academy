@@ -296,7 +296,7 @@ export const atividadesOffline = [
       'Comece a "bordar" passando a lã de um furinho ao outro, por cima e por baixo da cartolina.',
       'Quando quiser trocar de cor, faça um nó atrás e comece a nova lã.',
       'No final, dê um nó firme atrás para segurar.',
-      'Encadure na parede — fica lindo!',
+      'Pendure na parede — fica lindo!',
     ],
   },
   {
@@ -388,7 +388,7 @@ export const atividadesOffline = [
       'Quem quiser pode fazer voz e gestos para o personagem.',
       'A regra: nunca matar o personagem principal — ele pode se transformar!',
       'A história termina quando todos tiverem falado pelo menos uma vez.',
-      'Quem lembra melhor recontou?',
+      'Quem lembrar melhor reconta!',
     ],
   },
   {
@@ -401,7 +401,7 @@ export const atividadesOffline = [
     materiais: ['Quebra-cabeça', 'Mesa grande ou chão limpo'],
     passos: [
       'Escolham um quebra-cabeça desafiador — quanto mais peças, melhor!',
-      'Espirrem todas as peças na mesa com a face para cima.',
+      'Espalhem todas as peças na mesa com a face para cima.',
       'Dividam as tarefas: um separa bordas, outros separam por cores ou padrões.',
       'Comecem pelas bordas para montar o contorno.',
       'Trabalhem de áreas de cor mais simples para o centro.',
@@ -416,7 +416,7 @@ export const atividadesOffline = [
     titulo: 'Karaokê em família',
     tempo: 30,
     dificuldade: 'fácil',
-    materiais: ['Celular ou computador com YouTube ou Spotify', 'Microphone improvisado (cabo de vassoura, espátula)', 'Vontade de rir'],
+    materiais: ['Celular ou computador com YouTube ou Spotify', 'Microfone improvisado (cabo de vassoura, espátula)', 'Vontade de rir'],
     passos: [
       'Escolham uma lista de músicas que todo mundo goste — ou uma surpresa!',
       'Façam microfones improvisados com o que tiver em casa.',
@@ -598,7 +598,7 @@ export const atividadesOffline = [
     dificuldade: 'médio',
     materiais: ['Folhas A4 dobradas ao meio', 'Canetinhas e lápis', 'Tesoura e cola para recortes (opcional)', 'Ideias de notícias'],
     passos: [
-      'Dêem um nome para o jornal — "O Diário das Crianças", "Gazeta do Recreio"...',
+      'Deem um nome para o jornal — "O Diário das Crianças", "Gazeta do Recreio"...',
       'Distribuam as seções: notícias do bairro, esportes, receita, piada, horóscopo inventado.',
       'Cada criança escreve e ilustra a sua seção.',
       'Montem tudo numa folha dobrada ao meio.',
@@ -650,7 +650,7 @@ export const atividadesOffline = [
     id: 'off_nat_8',
     categoria: 'natureza',
     emoji: '🍂',
-    titulo: 'Herborário de bolso',
+    titulo: 'Herbário de bolso',
     tempo: 45,
     dificuldade: 'fácil',
     materiais: ['Folhas e flores coletadas no quintal ou parque', 'Caderno velho ou folhas de papel', 'Livros pesados para prensagem', 'Cola batom', 'Caneta'],
@@ -661,7 +661,7 @@ export const atividadesOffline = [
       'Após secar, cole cada peça numa página do caderno com cola batom.',
       'Ao lado de cada uma escreva: nome (se souber), onde encontrou, data.',
       'Pesquise com um adulto o nome científico de pelo menos uma planta.',
-      'Seu herborário começa agora — pode continuar por meses!',
+      'Seu herbário começa agora — pode continuar por meses!',
     ],
   },
 
@@ -681,7 +681,7 @@ export const atividadesOffline = [
       'Deixe secar completamente (uns 15 minutos).',
       'Corte um quadrado de papelão para ser a base.',
       'Cole os rolos na base, agrupados, e deixe secar.',
-      'Decore a base com papel colorido, stickers ou desenhos.',
+      'Decore a base com papel colorido, adesivos ou desenhos.',
       'Preencha com seus materiais escolares — organize por tipo!',
     ],
   },
@@ -692,7 +692,7 @@ export const atividadesOffline = [
     titulo: 'Fantoches de meia',
     tempo: 30,
     dificuldade: 'fácil',
-    materiais: ['Meias velhas (par ou ímpares)', 'Botões para os olhos', 'Lã colorida para cabelo', 'Cola quente (com adulto) ou agulha e linha', 'Feltro ou tecido colorido'],
+    materiais: ['Meias velhas (pares ou ímpares)', 'Botões para os olhos', 'Lã colorida para cabelo', 'Cola quente (com adulto) ou agulha e linha', 'Feltro ou tecido colorido'],
     passos: [
       'Enfie a mão dentro da meia e dobre a ponta para dentro — essa é a boca do fantoche.',
       'Marque com caneta onde ficam os olhos (na parte de cima, perto da abertura).',

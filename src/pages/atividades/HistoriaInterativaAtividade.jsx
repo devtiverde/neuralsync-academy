@@ -486,5 +486,27 @@ export default function HistoriaInterativaAtividade() {
     )
   }
 
-  return null
+  // Rede de segurança: se o nó da história não existir (dado quebrado), a criança
+  // ficaria numa tela em branco sem nenhuma saída. Nunca deixar sem saída.
+  return (
+    <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif', textAlign: 'center', gap: 16 }}>
+      <div style={{ fontSize: 64 }}>📖</div>
+      <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 24, margin: 0 }}>Essa página da história sumiu!</h2>
+      <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, margin: 0 }}>Escolha outra aventura para continuar.</p>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
+        <button
+          onClick={() => { pararNarracao(); setNoId('inicio'); setHistoricoEscolhas([]); setFase('selecao') }}
+          style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 28px', fontSize: 16, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}
+        >
+          🔄 Escolher outra história
+        </button>
+        <button
+          onClick={() => { pararNarracao(); navigate('/home-crianca') }}
+          style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 14, padding: '14px 28px', fontSize: 16, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}
+        >
+          🏠 Início
+        </button>
+      </div>
+    </div>
+  )
 }

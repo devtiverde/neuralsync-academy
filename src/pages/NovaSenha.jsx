@@ -1,9 +1,13 @@
 ﻿import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 export default function NovaSenha() {
   const navigate = useNavigate()
+  const [params] = useSearchParams()
+  // Quem chega pelo e-mail de boas-vindas da compra não está "recuperando" nada:
+  // a conta acabou de ser criada pra ele e só falta escolher a senha.
+  const boasVindas = params.get('novo') === '1'
   const [sessionOk, setSessionOk] = useState(false)
   const [novaSenha, setNovaSenha] = useState('')
   const [pronto, setPronto] = useState(false)
@@ -38,8 +42,18 @@ export default function NovaSenha() {
     document.head.appendChild(style)
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') setSessionOk(true)
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') setSessionOk(true)
     })
+
+    // Rede de segurança: o supabase-js consome o token da URL na inicialização do
+    // módulo, que acontece ANTES deste componente montar. Quando isso ocorre o
+    // evento PASSWORD_RECOVERY já passou e o listener acima nunca dispara — a
+    // pessoa ficava presa em "Verificando link..." para sempre. Se já existe
+    // sessão válida, o link funcionou e podemos seguir.
+    supabase.auth.getSession().then(({ data }) => {
+      if (data?.session) setSessionOk(true)
+    })
+
     return () => subscription.unsubscribe()
   }, [])
 
@@ -50,8 +64,11 @@ export default function NovaSenha() {
     setError('')
     const { error } = await supabase.auth.updateUser({ password: novaSenha })
     if (error) {
-      setError('Nao foi possivel atualizar a senha. Tente solicitar um novo link.')
+      setError('Não foi possível atualizar a senha. Tente solicitar um novo link.')
     } else {
+      // senha definida: a marca cumpriu seu papel e não pode sobreviver na aba,
+      // senão a próxima navegação volta para cá.
+      try { sessionStorage.removeItem('ns_fluxo_definir_senha') } catch { /* modo privado */ }
       setPronto(true)
       setTimeout(() => navigate('/dashboard'), 2000)
     }
@@ -77,7 +94,9 @@ export default function NovaSenha() {
           {pronto ? (
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '56px', marginBottom: '16px' }}>✅</div>
-              <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#0f0a1e', marginBottom: '12px' }}>Senha atualizada!</h2>
+              <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#0f0a1e', marginBottom: '12px' }}>
+                {boasVindas ? 'Tudo pronto!' : 'Senha atualizada!'}
+              </h2>
               <p style={{ color: '#6b7280', fontSize: '15px' }}>Redirecionando para o painel...</p>
             </div>
           ) : !sessionOk ? (
@@ -85,7 +104,7 @@ export default function NovaSenha() {
               <div style={{ fontSize: '56px', marginBottom: '16px' }}>⏳</div>
               <h2 style={{ fontSize: '22px', fontWeight: '900', color: '#0f0a1e', marginBottom: '12px' }}>Verificando link...</h2>
               <p style={{ color: '#6b7280', fontSize: '14px', lineHeight: '1.6' }}>
-                Aguarde enquanto validamos seu link de recuperacao.
+                Aguarde enquanto validamos seu link de acesso.
                 Se demorar, solicite um novo link em{' '}
                 <button onClick={() => navigate('/recuperar-senha')} style={{ background: 'none', border: 'none', color: '#7C3AED', fontWeight: '700', cursor: 'pointer', fontSize: '14px' }}>
                   Recuperar senha
@@ -95,10 +114,12 @@ export default function NovaSenha() {
           ) : (
             <>
               <h1 style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '-0.5px', color: '#0f0a1e', marginBottom: '10px' }}>
-                Nova senha
+                {boasVindas ? 'Bem-vindo à NeuralSync!' : 'Nova senha'}
               </h1>
               <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '32px', lineHeight: '1.5' }}>
-                Escolha uma nova senha para sua conta.
+                {boasVindas
+                  ? 'Sua conta já está criada e sua assinatura ativa. Escolha uma senha para entrar.'
+                  : 'Escolha uma nova senha para sua conta.'}
               </p>
 
               {error && (
@@ -109,11 +130,13 @@ export default function NovaSenha() {
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px', display: 'block' }}>Nova senha</label>
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px', display: 'block' }}>
+                    {boasVindas ? 'Crie sua senha' : 'Nova senha'}
+                  </label>
                   <input
                     className="auth-input"
                     type="password"
-                    placeholder="Minimo 6 caracteres"
+                    placeholder="Mínimo 6 caracteres"
                     value={novaSenha}
                     onChange={e => setNovaSenha(e.target.value)}
                     required
@@ -121,7 +144,7 @@ export default function NovaSenha() {
                   />
                 </div>
                 <button type="submit" className="auth-btn" disabled={loading} style={{ marginTop: '8px' }}>
-                  {loading ? 'Salvando...' : 'Salvar nova senha'}
+                  {loading ? 'Salvando...' : boasVindas ? 'Criar senha e entrar' : 'Salvar nova senha'}
                 </button>
               </form>
             </>

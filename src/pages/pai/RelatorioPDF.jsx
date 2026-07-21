@@ -303,7 +303,7 @@ export default function RelatorioPDF() {
 
       function garantirEspaco(altura, tituloContinuacao) {
         if (y + altura > LIMITE_CONTEUDO) {
-          iniciarPaginaContinuacao(tituloContinuacao || ('NeuralSync  |  Relatorio Cognitivo  |  ' + nome))
+          iniciarPaginaContinuacao(tituloContinuacao || ('NeuralSync  |  Relatório Cognitivo  |  ' + nome))
         }
       }
 
@@ -318,7 +318,7 @@ export default function RelatorioPDF() {
       doc.text('NeuralSync Academy', W/2, 16, { align: 'center' })
       doc.setFontSize(11)
       doc.setFont('helvetica', 'normal')
-      doc.text('Relatorio Cognitivo Mensal Premium', W/2, 26, { align: 'center' })
+      doc.text('Relatório Cognitivo Mensal Premium', W/2, 26, { align: 'center' })
       doc.setFontSize(9)
       doc.text(mes.charAt(0).toUpperCase() + mes.slice(1), W/2, 36, { align: 'center' })
       doc.text('Gerado automaticamente pelo sistema NeuralSync', W/2, 44, { align: 'center' })
@@ -336,7 +336,7 @@ export default function RelatorioPDF() {
       doc.setTextColor(107, 114, 128)
       doc.setFontSize(9)
       doc.setFont('helvetica', 'normal')
-      doc.text((child?.idade || '') + ' anos  |  Nivel ' + (child?.nivel || 1) + '  |  Media geral: ' + mediaGeral + '%  (+' + evolucao + '% vs mes anterior)', W/2, 76, { align: 'center' })
+      doc.text((child?.idade || '') + ' anos  |  Nível ' + (child?.nivel || 1) + '  |  Média geral: ' + mediaGeral + '%  (+' + evolucao + '% vs mês anterior)', W/2, 76, { align: 'center' })
 
       // RESUMO EXECUTIVO
       const topSkill = habilidades.reduce((a, b) => a.value >= b.value ? a : b, habilidades[0] || { skill: '—', value: 0 })
@@ -345,7 +345,7 @@ export default function RelatorioPDF() {
       const topAtividadeTxt = topAtividades.length > 0
         ? ` A atividade mais praticada foi ${tipoConfig[topAtividades[0].tipo]?.label || topAtividades[0].tipo} (${topAtividades[0].vezes}x).`
         : ''
-      const resumoTxt = `${nome} completou ${totalSessoes} atividade${totalSessoes !== 1 ? 's' : ''} em ${mesAtual}, acumulando ${horasFormatadas} de foco cognitivo.${topAtividadeTxt} Destaque para a habilidade de ${topSkill.skill} (${topSkill.value}%), demonstrando evolucao consistente. Recomendamos maior atencao a ${botSkill.skill} (${botSkill.value}%) para desenvolvimento equilibrado das competencias.`
+      const resumoTxt = `${nome} completou ${totalSessoes} atividade${totalSessoes !== 1 ? 's' : ''} em ${mesAtual}, acumulando ${horasFormatadas} de foco cognitivo.${topAtividadeTxt} Destaque para a habilidade de ${topSkill.skill} (${topSkill.value}%), demonstrando evolução consistente. Recomendamos maior atenção à ${botSkill.skill} (${botSkill.value}%) para desenvolvimento equilibrado das competências.`
 
       doc.setFillColor(245, 243, 255)
       doc.roundedRect(15, 82, W - 30, 24, 3, 3, 'F')
@@ -365,7 +365,7 @@ export default function RelatorioPDF() {
       y = 110
       garantirEspaco(40)
       const statItems = [
-        [String(totalSessoes), 'Sessoes'],
+        [String(totalSessoes), 'Sessões'],
         [horasFormatadas, 'Foco total'],
         [(child?.xp || 0) + ' XP', 'Acumulado'],
         [String(child?.neural_coins || 0), 'NeuralCoins'],
@@ -394,7 +394,7 @@ export default function RelatorioPDF() {
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('Habilidades Cognitivas — Evolucao Mensal', 15, y)
+      doc.text('Habilidades Cognitivas — Evolução Mensal', 15, y)
 
       doc.setFontSize(7)
       doc.setFont('helvetica', 'normal')
@@ -512,11 +512,11 @@ export default function RelatorioPDF() {
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('Principais Recomendacoes', 15, y)
+      doc.text('Principais Recomendações', 15, y)
       doc.setFontSize(7.5)
       doc.setFont('helvetica', 'italic')
       doc.setTextColor(107, 114, 128)
-      doc.text('Baseado em neurociencia infantil — Instituto NeuroSaber, Manual MSD 2025, Dra. Fernanda Monteiro', 15, y + 6)
+      doc.text('Baseado em neurociência infantil — Instituto NeuroSaber, Manual MSD 2025, Dra. Fernanda Monteiro', 15, y + 6)
       y += 12
 
       recomendacoes.slice(0, 2).forEach(rec => {
@@ -555,13 +555,13 @@ export default function RelatorioPDF() {
       })
 
       // PLANO DE ACAO — sempre inicia em página própria (separação de conteúdo)
-      const tituloContinuacao = 'NeuralSync  |  Plano de Acao Personalizado  |  ' + nome
+      const tituloContinuacao = 'NeuralSync  |  Plano de Ação Personalizado  |  ' + nome
       iniciarPaginaContinuacao(tituloContinuacao)
 
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('Analise Completa das 8 Habilidades', 15, y)
+      doc.text('Análise Completa das 8 Habilidades', 15, y)
       y += 8
 
       recomendacoes.forEach(rec => {
@@ -613,7 +613,7 @@ export default function RelatorioPDF() {
       doc.setTextColor(15, 10, 30)
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('Metas para o Proximo Mes', 15, y)
+      doc.text('Metas para o Próximo Mês', 15, y)
       y += 6
 
       doc.setFillColor(240, 253, 244)
@@ -643,10 +643,10 @@ export default function RelatorioPDF() {
       doc.setTextColor(59, 130, 246)
       doc.setFontSize(8)
       doc.setFont('helvetica', 'bold')
-      doc.text('Base Cientifica deste Relatorio', 22, y + 7)
+      doc.text('Base Científica deste Relatório', 22, y + 7)
       doc.setFontSize(7)
       doc.setFont('helvetica', 'normal')
-      const nota = 'Analise baseada em Piaget (fase operatoria concreta), diretrizes do Manual MSD de Desenvolvimento Infantil (2025), Instituto NeuroSaber, e pesquisas da Dra. Fernanda Monteiro sobre estimulacao cognitiva infantil.'
+      const nota = 'Análise baseada em Piaget (fase operatória concreta), diretrizes do Manual MSD de Desenvolvimento Infantil (2025), Instituto NeuroSaber, e pesquisas da Dra. Fernanda Monteiro sobre estimulação cognitiva infantil.'
       const notaLines = doc.splitTextToSize(nota, W - 46)
       doc.text(notaLines, 22, y + 14)
 
@@ -663,11 +663,11 @@ export default function RelatorioPDF() {
         doc.setFont('helvetica', 'normal')
         doc.text(
           p === 1
-            ? 'NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia  |  neuralsync.com.br'
-            : 'Gerado pelo NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciencia',
+            ? 'NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciência  |  neuralsync.com.br'
+            : 'Gerado pelo NeuralSync Academy — Desenvolvimento Cognitivo Baseado em Ciência',
           W / 2, 284, { align: 'center' }
         )
-        doc.text('Pagina ' + p + ' de ' + totalPaginas + '  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W / 2, 292, { align: 'center' })
+        doc.text('Página ' + p + ' de ' + totalPaginas + '  |  ' + new Date().toLocaleDateString('pt-BR') + '  |  Confidencial', W / 2, 292, { align: 'center' })
       }
 
       doc.save('NeuralSync_Relatorio_' + nome + '.pdf')
@@ -704,9 +704,9 @@ export default function RelatorioPDF() {
           <div style={{position:'relative',zIndex:1}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'20px'}}>
               <div>
-                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.6)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>Relatorio Cognitivo Mensal Premium</div>
+                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.6)',fontWeight:'600',textTransform:'uppercase',letterSpacing:'1px',marginBottom:'4px'}}>Relatório Cognitivo Mensal Premium</div>
                 <h2 style={{fontSize:'24px',fontWeight:'900',marginBottom:'4px'}}>{child.nome}</h2>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:'13px'}}>{child.idade} anos  •  Nivel {child.nivel}</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:'13px'}}>{child.idade} anos  •  Nível {child.nivel}</p>
               </div>
               <div style={{textAlign:'right'}}>
                 <div style={{fontSize:'42px',fontWeight:'900',lineHeight:'1'}}>{mediaGeral}%</div>
@@ -716,7 +716,7 @@ export default function RelatorioPDF() {
             </div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'8px'}}>
               {[
-                [String(totalSessoes),'Sessoes'],
+                [String(totalSessoes),'Sessões'],
                 [horasFormatadas,'Foco'],
                 [(child.xp||0)+' XP','Total'],
                 [String(child.neural_coins||0),'Coins'],

@@ -162,7 +162,7 @@ export default function BlocosAtividade() {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         lineHeight: 1.1, minWidth: isRepetir ? '40px' : '36px',
       }}>
-        {isRepetir ? (<><span style={{ fontSize: '14px' }}>ðŸ”</span><span>×{n}</span></>) : b}
+        {isRepetir ? (<><span style={{ fontSize: '14px' }}>🔁</span><span>×{n}</span></>) : b}
       </div>
     )
   }
@@ -289,7 +289,7 @@ export default function BlocosAtividade() {
                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1px',
                         fontFamily: 'Plus Jakarta Sans, sans-serif', opacity: programa.length >= passos_max ? 0.4 : 1,
                       }}>
-                        <span style={{ fontSize: '13px', lineHeight: 1 }}>ðŸ”</span>
+                        <span style={{ fontSize: '13px', lineHeight: 1 }}>🔁</span>
                         <span style={{ fontSize: '10px', fontWeight: '900' }}>×{r.slice(1)}</span>
                       </button>
                     ))}
@@ -300,7 +300,7 @@ export default function BlocosAtividade() {
                   <button onClick={() => setPrograma(p => p.slice(0, -1))} disabled={programa.length === 0} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>⌫ Apagar</button>
                   <button onClick={resetar} style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '10px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '13px' }}>🔄 Limpar</button>
                   <button onClick={executar} disabled={programa.length === 0 || animando} style={{ flex: 1.5, background: programa.length === 0 || animando ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg,#10b981,#34d399)', border: 'none', borderRadius: '10px', padding: '10px', color: 'white', cursor: programa.length === 0 || animando ? 'not-allowed' : 'pointer', fontWeight: '900', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: '14px', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
-                    {animando ? 'â–¶ ...' : 'â–¶ Executar'}
+                    {animando ? '▶ ...' : '▶ Executar'}
                   </button>
                 </div>
               </>

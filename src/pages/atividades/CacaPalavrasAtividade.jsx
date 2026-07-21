@@ -24,7 +24,7 @@ const TEMAS = {
 const DIFS = {
   facil:   { label: 'Fácil',   emoji: '😊', tamanho: 8,  diagonal: false, timer: null, desc: '8×8 · sem diagonal' },
   medio:   { label: 'Médio',   emoji: '😮', tamanho: 10, diagonal: true,  timer: 180,  desc: '10×10 · diagonal · 3 min' },
-  dificil: { label: 'Difícil', emoji: '🔥', tamanho: 12, diagonal: true,  timer: 120,  desc: '12×12 · todas direções · 2 min' },
+  dificil: { label: 'Difícil', emoji: '🔥', tamanho: 12, diagonal: true,  timer: 120,  desc: '12×12 · todas as direções · 2 min' },
 }
 
 const CORES_PALAVRAS = ['#7C3AED','#F97316','#06B6D4','#10B981','#F59E0B','#EF4444','#8B5CF6','#3B82F6']

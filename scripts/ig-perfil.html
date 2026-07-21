@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#333;display:flex;gap:20px;padding:20px;flex-wrap:wrap;}
+
+  .pf{width:1080px;height:1080px;position:relative;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;}
+
+  .star{position:absolute;border-radius:50%;background:#fff;}
+
+  /* o Nix, em CSS puro (mesmo blob do componente de producao) */
+  .nix{position:relative;width:660px;height:660px;}
+  .nix .glow{
+    position:absolute;inset:-130px;border-radius:50%;
+    background:radial-gradient(circle, rgba(124,58,237,0.5), rgba(6,182,212,0.26) 55%, transparent 72%);
+    filter:blur(10px);
+  }
+  .nix .body{
+    position:absolute;inset:0;
+    border-radius:42% 58% 55% 45% / 48% 42% 58% 52%;
+    background:linear-gradient(150deg, #67e8f9 0%, #7C3AED 55%, #7C3AED 100%);
+    box-shadow:0 0 178px rgba(124,58,237,0.55),
+               inset -60px -60px 132px rgba(76,29,149,0.5),
+               inset 46px 46px 105px rgba(255,255,255,0.35);
+  }
+  .nix .face{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:33px;}
+  .nix .eyes{display:flex;gap:86px;}
+  .nix .eye{width:53px;height:73px;background:#1b0b33;border-radius:50%;}
+  .nix .mouth{width:99px;height:50px;border-radius:0 0 99px 99px;
+    border:14px solid #1b0b33;border-top:none;box-sizing:border-box;}
+  .nix .spark{position:absolute;border-radius:50%;}
+
+  /* A — fundo espaco profundo */
+  #pf-nix{
+    background:#0A0415;
+    background-image:
+      radial-gradient(circle at 50% 42%, rgba(124,58,237,0.42), transparent 62%),
+      radial-gradient(circle at 20% 80%, rgba(6,182,212,0.22), transparent 55%);
+  }
+
+  /* B — fundo violeta solido (mais visivel em miniatura) */
+  #pf-nix-solid{
+    background:radial-gradient(circle at 50% 38%, #4c1d95 0%, #2e1065 55%, #1a0940 100%);
+  }
+</style>
+</head>
+<body>
+
+<div class="pf" id="pf-nix">
+  <div class="star" style="width:11px;height:11px;top:13%;left:16%;opacity:.55"></div>
+  <div class="star" style="width:16px;height:16px;top:19%;left:81%;background:#FBBF24;opacity:.9"></div>
+  <div class="star" style="width:9px;height:9px;top:74%;left:11%;background:#67e8f9;opacity:.8"></div>
+  <div class="star" style="width:10px;height:10px;top:85%;left:78%;opacity:.45"></div>
+  <div class="nix">
+    <div class="glow"></div>
+    <div class="body"></div>
+    <div class="face">
+      <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+      <div class="mouth"></div>
+    </div>
+    <div class="spark" style="width:36px;height:36px;top:2%;right:4%;background:#FBBF24;"></div>
+    <div class="spark" style="width:28px;height:28px;top:58%;right:-1%;background:#67e8f9;"></div>
+  </div>
+</div>
+
+<div class="pf" id="pf-nix-solid">
+  <div class="star" style="width:12px;height:12px;top:15%;left:18%;opacity:.5"></div>
+  <div class="star" style="width:16px;height:16px;top:22%;left:79%;background:#FBBF24;opacity:.95"></div>
+  <div class="star" style="width:10px;height:10px;top:78%;left:14%;background:#67e8f9;opacity:.85"></div>
+  <div class="nix">
+    <div class="glow"></div>
+    <div class="body"></div>
+    <div class="face">
+      <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+      <div class="mouth"></div>
+    </div>
+    <div class="spark" style="width:36px;height:36px;top:2%;right:4%;background:#FBBF24;"></div>
+    <div class="spark" style="width:28px;height:28px;top:58%;right:-1%;background:#67e8f9;"></div>
+  </div>
+</div>
+
+</body>
+</html>

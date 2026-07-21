@@ -4,6 +4,7 @@ import { Brain, List, X } from '@phosphor-icons/react'
 import { useAuth } from '../contexts/AuthContext'
 import FAQButton from './FAQButton'
 import FeedbackButton from './FeedbackButton'
+import MenuLateral from './MenuLateral'
 import '../styles/pai.css'
 
 const nav = [
@@ -168,6 +169,7 @@ export default function LayoutPai({ children }) {
       <main style={{ flex: 1, width: '100%', minWidth: 0 }}>
         {children}
       </main>
+      <MenuLateral tipo="pai" />
       <FAQButton tipo="pai" />
       <FeedbackButton tipo="pai" />
     </div>

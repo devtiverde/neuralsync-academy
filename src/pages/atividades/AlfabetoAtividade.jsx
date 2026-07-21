@@ -17,7 +17,7 @@ const LETRAS = [
   { letra: 'H', palavra: 'Hipopótamo', emoji: '🦛', funfato: 'O H em português é mudo — mas em "nh" e "lh" ajuda a fazer sons especiais!',           detalhe: 'Letra muda em português — não representa nenhum som sozinha' },
   { letra: 'I', palavra: 'Iglu',       emoji: '🏔️', funfato: 'O I também é número romano — I=1, II=2, III=3, IV=4, V=5!',                           detalhe: 'Vogal fechada alta | Frequência: ~5,9%' },
   { letra: 'J', palavra: 'Janela',     emoji: '🪟', funfato: 'O J foi a última letra a entrar no alfabeto — existia antes como variação do I!',       detalhe: 'Consoante fricativa pós-alveolar | Som: /ʒ/ (como "jogo")' },
-  { letra: 'K', palavra: 'Koala',      emoji: '🐨', funfato: 'O K só foi incluído no alfabeto português em 2009 — antes era usada só em siglas!',    detalhe: 'Usada em siglas e palavras estrangeiras | Som: /k/' },
+  { letra: 'K', palavra: 'Koala',      emoji: '🐨', funfato: 'O K só foi incluído no alfabeto português em 2009 — antes era usado só em siglas!',    detalhe: 'Usada em siglas e palavras estrangeiras | Som: /k/' },
   { letra: 'L', palavra: 'Leão',       emoji: '🦁', funfato: 'No final de sílaba o L vira W — por isso "sol" soa como "sow" e "mel" como "mew"!',   detalhe: 'Consoante lateral | No final de sílaba soa como /w/ (mal→mau)' },
   { letra: 'M', palavra: 'Macaco',     emoji: '🐒', funfato: 'O M nasaliza a vogal anterior — "cam" soa diferente de "ca" por causa disso!',         detalhe: 'Consoante nasal bilabial | Nasaliza a vogal anterior' },
   { letra: 'N', palavra: 'Nuvem',      emoji: '☁️', funfato: 'O N vem do hebraico "nun" que significa peixe — veja a forma de um peixe nadando!',   detalhe: 'Consoante nasal alveolar | Frequência: ~5,1%' },
@@ -142,7 +142,7 @@ export default function AlfabetoAtividade() {
 
   function navegar(dir) {
     const next = currentIndex + dir
-    if (next < 0 || next >= LETRAS.length) return
+    if (next < 0 || next >= DADOS.length) return
     playSound('click')
     setAnimIn(false)
     setTimeout(() => { setCurrentIndex(next); setAnimIn(true) }, 200)

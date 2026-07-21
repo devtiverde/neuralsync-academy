@@ -146,7 +146,7 @@ export default function QuizIAAtividade() {
 
           {erroAPI && (
             <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '14px', color: '#fca5a5', fontSize: '13px', textAlign: 'center' }}>
-              âš ï¸ {erroAPI}
+              ⚠️ {erroAPI}
             </div>
           )}
 

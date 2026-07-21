@@ -95,6 +95,9 @@ export default function QuebracabecaAtividade() {
   const [tabuleiro,        setTabuleiro]        = useState({})
   const [slotFlash,        setSlotFlash]        = useState(null)
   const [brilhoConcluido,  setBrilhoConcluido]  = useState(false)
+  // Toque: HTML5 drag-and-drop não funciona em tablet/celular. Sem isto o puzzle
+  // nunca podia ser completado no aparelho que a criança mais usa.
+  const [pecaSel,          setPecaSel]          = useState(null)
 
   const encaixadas = Object.keys(tabuleiro).length
 
@@ -104,6 +107,7 @@ export default function QuebracabecaAtividade() {
     setTabuleiro({})
     setSlotFlash(null)
     setBrilhoConcluido(false)
+    setPecaSel(null)
     inicioRef.current = Date.now()
     setFase('jogo')
   }, [])
@@ -135,15 +139,13 @@ export default function QuebracabecaAtividade() {
 
   const handleDragOver = useCallback((e) => { e.preventDefault() }, [])
 
-  const handleDrop = useCallback((e, row, col) => {
-    e.preventDefault()
-    const id = dragIdRef.current
-    dragIdRef.current = null
+  const encaixar = useCallback((id, row, col) => {
     if (!id || !puzzleAtual) return
     const pos  = `${row}-${col}`
     if (tabuleiro[pos]) return
     const peca = puzzleAtual.pecas.find(p => p.id === id)
     if (!peca) return
+    setPecaSel(null)
     if (peca.row === row && peca.col === col) {
       tocarPop(audioRef)
       setTabuleiro(prev => ({ ...prev, [pos]: id }))
@@ -155,6 +157,18 @@ export default function QuebracabecaAtividade() {
       setTimeout(() => setSlotFlash(f => f?.pos === pos ? null : f), 300)
     }
   }, [puzzleAtual, tabuleiro])
+
+  const handleDrop = useCallback((e, row, col) => {
+    e.preventDefault()
+    const id = dragIdRef.current
+    dragIdRef.current = null
+    encaixar(id, row, col)
+  }, [encaixar])
+
+  const handleSlotClick = useCallback((row, col) => {
+    if (!pecaSel) return
+    encaixar(pecaSel, row, col)
+  }, [pecaSel, encaixar])
 
   if (!iniciou) {
     return (
@@ -214,29 +228,41 @@ export default function QuebracabecaAtividade() {
         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
           {encaixadas} de {pecas.length} peças encaixadas
         </p>
+        {!brilhoConcluido && (
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, margin: '6px 0 0' }}>
+            {pecaSel ? 'Agora toque no lugar certo do tabuleiro!' : 'Toque numa peça e depois no tabuleiro (ou arraste).'}
+          </p>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center', maxWidth: 800, width: '100%' }}>
         {/* Banco */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: 1 }}>Peças</p>
-          {bancoPecas.map(peca => (
-            <div
-              key={peca.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, peca.id)}
-              style={{
-                width: 80, height: 80, background: peca.cor, borderRadius: 16,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 36, cursor: 'grab', border: '2px solid rgba(255,255,255,0.2)',
-                userSelect: 'none',
-                transition: 'filter 0.3s',
-                filter: brilhoConcluido ? 'brightness(1.6) drop-shadow(0 0 8px white)' : 'none',
-              }}
-            >
-              {peca.label}
-            </div>
-          ))}
+          {bancoPecas.map(peca => {
+            const ativo = pecaSel === peca.id
+            return (
+              <button
+                key={peca.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, peca.id)}
+                onClick={() => setPecaSel(ativo ? null : peca.id)}
+                aria-pressed={ativo}
+                style={{
+                  width: 80, height: 80, background: peca.cor, borderRadius: 16,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 36, cursor: 'pointer',
+                  border: ativo ? '3px solid white' : '2px solid rgba(255,255,255,0.2)',
+                  userSelect: 'none', padding: 0, fontFamily: 'inherit',
+                  transform: ativo ? 'scale(1.06)' : 'scale(1)',
+                  transition: 'filter 0.3s, transform 0.15s, border-color 0.15s',
+                  filter: brilhoConcluido ? 'brightness(1.6) drop-shadow(0 0 8px white)' : 'none',
+                }}
+              >
+                {peca.label}
+              </button>
+            )
+          })}
         </div>
 
         {/* Tabuleiro */}
@@ -254,7 +280,9 @@ export default function QuebracabecaAtividade() {
                     key={pos}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, row, col)}
+                    onClick={() => handleSlotClick(row, col)}
                     style={{
+                      cursor: pecaSel && !peca ? 'pointer' : 'default',
                       width: 84, height: 84, borderRadius: 14,
                       background: peca ? peca.cor : flash === 'err' ? 'rgba(239,68,68,0.25)' : flash === 'ok' ? 'rgba(16,185,129,0.25)' : 'rgba(255,255,255,0.04)',
                       border: peca ? '2px solid rgba(255,255,255,0.2)' : flash === 'err' ? '2px solid #EF4444' : flash === 'ok' ? '2px solid #10B981' : '2px dashed rgba(255,255,255,0.2)',

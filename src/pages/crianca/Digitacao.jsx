@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import IntroAtividade from '../atividades/IntroAtividade'
@@ -94,27 +94,50 @@ const TECLADO_LINHAS = [
 ]
 const HOME_ROW = new Set(['A','S','D','F','J','K','L'])
 
-function TecladoVisual({ letraAlvo, letraAtiva }) {
+// O teclado desenhado era puramente decorativo: `<div>` sem onClick, 30x32px.
+// No celular nao existe teclado fisico, e o ModoSumir nao tem nenhum <input> --
+// entao a atividade era literalmente impossivel de jogar ("nao da pra clicar na
+// letra"). Agora cada tecla e um <button> de verdade, com 44px de altura no
+// celular (alvo minimo para o dedo) e largura elastica para caber 10 teclas em
+// 360px sem estourar. `onTecla` e opcional: onde ele nao for passado o teclado
+// continua sendo so ilustracao.
+function TecladoVisual({ letraAlvo, letraAtiva, onTecla }) {
+  const clicavel = typeof onTecla === 'function'
   return (
-    <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '16px', padding: '14px' }}>
-      <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', textAlign: 'center' }}>Teclado</div>
+    <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '16px', padding: '14px 8px' }}>
+      <div style={{ fontSize: '11px', fontWeight: '800', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px', textAlign: 'center' }}>
+        {clicavel ? 'Toque na letra' : 'Teclado'}
+      </div>
       {TECLADO_LINHAS.map((linha, li) => (
-        <div key={li} style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '4px' }}>
+        <div key={li} className="ns-dt-teclado-linha" style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '4px' }}>
           {linha.map(k => {
             const isAlvo = k === letraAlvo?.toUpperCase()
             const isAtiva = k === letraAtiva?.toUpperCase()
             const isHome = HOME_ROW.has(k)
             return (
-              <div key={k} style={{
-                width: '30px', height: '32px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '11px', fontWeight: '800', fontFamily: 'monospace',
-                background: isAtiva ? '#10b981' : isAlvo ? COR : isHome ? 'rgba(124,58,237,0.18)' : 'rgba(255,255,255,0.07)',
-                border: isAlvo ? `2px solid ${COR}` : isHome ? '1px solid rgba(124,58,237,0.3)' : '1px solid rgba(255,255,255,0.08)',
-                color: isAtiva || isAlvo ? 'white' : isHome ? COR : 'rgba(255,255,255,0.4)',
-                transform: isAtiva ? 'scale(0.85)' : 'scale(1)',
-                transition: 'all 0.1s',
-                boxShadow: isAlvo ? `0 0 10px ${COR}50` : 'none',
-              }}>{k}</div>
+              <button
+                key={k}
+                type="button"
+                aria-label={`Tecla ${k}`}
+                // pointerdown, nao click: no celular o click chega ~100-300ms depois
+                // do toque e o jogo e cronometrado
+                onPointerDown={clicavel ? (e) => { e.preventDefault(); onTecla(k) } : undefined}
+                disabled={!clicavel}
+                className="ns-dt-tecla"
+                style={{
+                  width: '30px', height: '32px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '11px', fontWeight: '800', fontFamily: 'monospace', padding: 0,
+                  background: isAtiva ? '#10b981' : isAlvo ? COR : isHome ? 'rgba(124,58,237,0.18)' : 'rgba(255,255,255,0.07)',
+                  border: isAlvo ? `2px solid ${COR}` : isHome ? '1px solid rgba(124,58,237,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                  color: isAtiva || isAlvo ? 'white' : isHome ? COR : 'rgba(255,255,255,0.4)',
+                  transform: isAtiva ? 'scale(0.85)' : 'scale(1)',
+                  transition: 'all 0.1s',
+                  boxShadow: isAlvo ? `0 0 10px ${COR}50` : 'none',
+                  cursor: clicavel ? 'pointer' : 'default',
+                  // sem isto o toque prolongado seleciona a letra / abre o menu do sistema
+                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', userSelect: 'none',
+                }}
+              >{k}</button>
             )
           })}
         </div>
@@ -151,7 +174,7 @@ function BarraTempo({ pct }) {
 
 // ── MODO SUMIR — Exploradores (3-5 anos) ─────────────────────────────────
 // Letra gigante aparece → anel de contagem regressiva → some → digita antes → fica mais rápido
-function ModoSumir() {
+function ModoSumir({ onConcluir }) {
   const [serieIdx, setSerieIdx] = useState(0)
   const [roundKey, setRoundKey] = useState(0)
   const [vidas, setVidas] = useState(MAX_VIDAS)
@@ -218,41 +241,48 @@ function ModoSumir() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roundKey])
 
-  // Listener de teclado
-  useEffect(() => {
-    function onKey(e) {
-      const k = e.key.toUpperCase()
-      if (!/^[A-Z]$/.test(k)) return
-      setLetraAtiva(k)
-      setTimeout(() => setLetraAtiva(null), 200)
+  // Uma unica funcao para as duas entradas possiveis: teclado fisico (desktop) e
+  // toque no teclado da tela (celular). Antes a logica vivia so dentro do listener
+  // de `keydown`, o que deixava o jogo sem nenhuma forma de entrada no celular.
+  const processarTecla = useCallback((tecla) => {
+    const k = String(tecla).toUpperCase()
+    if (!/^[A-Z]$/.test(k)) return
+    setLetraAtiva(k)
+    setTimeout(() => setLetraAtiva(null), 200)
 
-      if (statusRef.current !== 'mostrando') return
-      if (k === letraAtual) {
-        clearInterval(tickRef.current)
-        statusRef.current = 'acertou'
-        setStatus('acertou')
-        pontosRef.current += 1
-        setPontos(pontosRef.current)
-        // Partículas de acerto
-        const EMOJIS = ['⭐','✨','💫','🌟','⚡','🎉']
-        const novas = Array.from({length: 7}, (_, i) => ({
-          id: Date.now() + i,
-          x: Math.round(Math.random() * 180 - 90),
-          emoji: EMOJIS[i % EMOJIS.length],
-        }))
-        setParticulas(novas)
-        setArenaClass('ns-dt-arena-hit')
-        setTimeout(() => { setParticulas([]); setArenaClass('') }, 750)
-        // Dificuldade adaptativa: ajusta o tempo disponível com base na taxa de
-        // acerto das últimas tentativas, não só numa contagem fixa de acertos.
-        rastreadorRef.current.registrar(true)
-        velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 1800, 4500)
-        setTimeout(avancarRound, 550)
-      }
+    if (statusRef.current !== 'mostrando') return
+    if (k === letraAtual) {
+      clearInterval(tickRef.current)
+      statusRef.current = 'acertou'
+      setStatus('acertou')
+      pontosRef.current += 1
+      setPontos(pontosRef.current)
+      // Partículas de acerto
+      const EMOJIS = ['⭐','✨','💫','🌟','⚡','🎉']
+      const novas = Array.from({length: 7}, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.round(Math.random() * 180 - 90),
+        emoji: EMOJIS[i % EMOJIS.length],
+      }))
+      setParticulas(novas)
+      setArenaClass('ns-dt-arena-hit')
+      setTimeout(() => { setParticulas([]); setArenaClass('') }, 750)
+      // Dificuldade adaptativa: ajusta o tempo disponível com base na taxa de
+      // acerto das últimas tentativas, não só numa contagem fixa de acertos.
+      rastreadorRef.current.registrar(true)
+      velocidadeRef.current = ajustarVelocidade(velocidadeRef.current, rastreadorRef.current.multiplicadorTempo(), 1800, 4500)
+      setTimeout(avancarRound, 550)
     }
+  // avancarRound e estavel o bastante (so mexe em refs e no roundKey)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [letraAtual])
+
+  // Listener de teclado físico
+  useEffect(() => {
+    const onKey = e => processarTecla(e.key)
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [letraAtual])
+  }, [processarTecla])
 
   function avancarRound() {
     letraIdxRef.current += 1
@@ -280,10 +310,10 @@ function ModoSumir() {
   }
 
   if (status === 'gameover') return (
-    <GameOver pontos={pontos} unidade="letras" onReiniciar={() => reiniciar()} />
+    <GameOver pontos={pontos} unidade="letras" onReiniciar={() => reiniciar()} onConcluir={onConcluir} />
   )
   if (status === 'vitoria') return (
-    <Vitoria pontos={pontos} unidade="letras" onReiniciar={() => reiniciar()}
+    <Vitoria pontos={pontos} unidade="letras" onReiniciar={() => reiniciar()} onConcluir={onConcluir}
       onProxima={serieIdx < SERIES_LETRAS.length - 1 ? () => reiniciar(serieIdx + 1) : null} />
   )
 
@@ -359,15 +389,15 @@ function ModoSumir() {
         </div>
       </div>
 
-      {/* Teclado */}
-      <TecladoVisual letraAlvo={letraAtual} letraAtiva={letraAtiva} />
+      {/* Teclado — clicável: é a ÚNICA entrada possível no celular */}
+      <TecladoVisual letraAlvo={letraAtual} letraAtiva={letraAtiva} onTecla={processarTecla} />
     </div>
   )
 }
 
 // ── MODO ESTEIRA — Construtores (6-8 anos) ────────────────────────────────
 // Palavra + barra de tempo que esgota → digita antes → 3 vidas → fica mais rápido
-function ModoEsteira() {
+function ModoEsteira({ onConcluir }) {
   const [serieIdx, setSerieIdx] = useState(0)
   const [roundKey, setRoundKey] = useState(0)
   const [vidas, setVidas] = useState(MAX_VIDAS)
@@ -376,6 +406,7 @@ function ModoEsteira() {
   const [typed, setTyped] = useState('')
   const [status, setStatus] = useState('ativo') // ativo|acertou|errou|gameover|vitoria
   const [shake, setShake] = useState(false)
+  const [tecladoAberto, setTecladoAberto] = useState(false)
   const inputRef = useRef(null)
   const tickRef = useRef(null)
   const statusRef = useRef('ativo')
@@ -447,6 +478,7 @@ function ModoEsteira() {
   function handleInput(e) {
     if (statusRef.current !== 'ativo') return
     const val = e.target.value
+    setTecladoAberto(true) // digitou = o teclado (físico ou virtual) já está aberto
     setTyped(val); typedRef.current = val
 
     const alvo = palavraAtual.toLowerCase()
@@ -474,9 +506,9 @@ function ModoEsteira() {
     setRoundKey(k => k + 1)
   }
 
-  if (status === 'gameover') return <GameOver pontos={pontos} unidade="palavras" onReiniciar={() => reiniciar()} />
+  if (status === 'gameover') return <GameOver pontos={pontos} unidade="palavras" onReiniciar={() => reiniciar()} onConcluir={onConcluir} />
   if (status === 'vitoria') return (
-    <Vitoria pontos={pontos} unidade="palavras" onReiniciar={() => reiniciar()}
+    <Vitoria pontos={pontos} unidade="palavras" onReiniciar={() => reiniciar()} onConcluir={onConcluir}
       onProxima={serieIdx < SERIES_PALAVRAS.length - 1 ? () => reiniciar(serieIdx + 1) : null} />
   )
 
@@ -552,21 +584,47 @@ function ModoEsteira() {
           )}
         </div>
 
-        {status === 'ativo' && (
-          <input
-            ref={inputRef}
-            type="text" value={typed} onChange={handleInput}
-            placeholder="Digite a palavra..."
-            autoFocus autoCapitalize="none" autoComplete="off" autoCorrect="off" spellCheck={false}
-            style={{
-              width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '12px', padding: '12px 16px', color: 'white', fontSize: '20px',
-              fontFamily: 'monospace', fontWeight: '700', outline: 'none', boxSizing: 'border-box',
-              textAlign: 'center', letterSpacing: '3px',
-            }}
-          />
-        )}
+        {/* O input SEMPRE fica montado.
+            Antes ele era `{status === 'ativo' && <input/>}`: ao acertar ou errar uma
+            palavra o React o desmontava, o foco se perdia e o teclado virtual do
+            celular FECHAVA. Na rodada seguinte o input voltava e o codigo chamava
+            `.focus()` -- mas iOS e Android so abrem o teclado quando o foco vem de um
+            gesto do usuario, nunca por chamada de script. Resultado pratico: dava
+            para digitar a primeira palavra e mais nenhuma.
+            `readOnly` (e nao `disabled`) porque elemento desabilitado tambem perde o
+            foco; readOnly bloqueia a digitacao e mantem o teclado aberto. */}
+        <input
+          ref={inputRef}
+          type="text" value={typed} onChange={handleInput}
+          readOnly={status !== 'ativo'}
+          placeholder={status === 'ativo' ? 'Digite a palavra...' : ''}
+          inputMode="text"
+          autoFocus autoCapitalize="none" autoComplete="off" autoCorrect="off" spellCheck={false}
+          // NÃO usar onFocus: o autoFocus dispara `focus` também no celular, mas lá
+          // isso não abre o teclado virtual. Só um toque do usuário abre — então é o
+          // toque (ou uma tecla digitada, ver handleInput) que esconde a dica.
+          onPointerDown={() => setTecladoAberto(true)}
+          style={{
+            width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: '12px', padding: '12px 16px', color: 'white', fontSize: '20px',
+            fontFamily: 'monospace', fontWeight: '700', outline: 'none', boxSizing: 'border-box',
+            textAlign: 'center', letterSpacing: '3px',
+            opacity: status === 'ativo' ? 1 : 0.35, transition: 'opacity 0.2s',
+          }}
+        />
       </div>
+
+      {/* No celular o teclado so aparece depois de um toque do usuario -- o autoFocus
+          e ignorado. Sem este aviso a crianca fica olhando para uma palavra que nao
+          consegue responder. Some assim que o campo recebe foco. */}
+      {!tecladoAberto && (
+        <button
+          onClick={() => inputRef.current?.focus()}
+          style={{ width: '100%', background: 'rgba(124,58,237,0.18)', border: `1px solid ${COR}66`, borderRadius: '12px', padding: '12px', color: 'white', fontWeight: '800', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          ⌨️ Toque aqui para abrir o teclado
+        </button>
+      )}
 
       <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
         💡 Digite a palavra antes que a barra vermelha chegue ao fim!
@@ -576,7 +634,7 @@ function ModoEsteira() {
 }
 
 // ── MODO TEXTO — Criadores & Inventores ───────────────────────────────────
-function ModoTexto({ faixa }) {
+function ModoTexto({ faixa, onConcluir }) {
   const isParagrafo = faixa === 'inventores'
   const series = isParagrafo ? SERIES_PARAGRAFOS : SERIES_FRASES
   const chave = isParagrafo ? 'textos' : 'frases'
@@ -590,6 +648,7 @@ function ModoTexto({ faixa }) {
   const [precisao, setPrecisao] = useState(100)
   const [terminou, setTerminou] = useState(false)
   const [historico, setHistorico] = useState([])
+  const [tecladoAberto, setTecladoAberto] = useState(false)
   const inputRef = useRef(null)
   const inicioRef = useRef(null)
 
@@ -611,6 +670,7 @@ function ModoTexto({ faixa }) {
 
   function handleInput(e) {
     const val = e.target.value
+    setTecladoAberto(true)
     let ini = inicioRef.current
     if (!iniciou && val.length === 1) {
       const now = Date.now()
@@ -711,7 +771,20 @@ function ModoTexto({ faixa }) {
               }}
               onFocus={e => { e.target.style.borderColor = COR + '70' }}
               onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)' }}
+              // ver ModoEsteira: onFocus não serve, o autoFocus dispara no celular
+              // sem abrir o teclado virtual
+              onPointerDown={() => setTecladoAberto(true)}
             />
+            {/* Mesmo motivo do ModoEsteira: no celular o autoFocus nao abre o teclado
+                virtual, so um toque do usuario abre. */}
+            {!tecladoAberto && (
+              <button
+                onClick={() => inputRef.current?.focus()}
+                style={{ width: '100%', marginTop: '10px', background: 'rgba(124,58,237,0.18)', border: `1px solid ${COR}66`, borderRadius: '12px', padding: '12px', color: 'white', fontWeight: '800', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                ⌨️ Toque aqui para abrir o teclado
+              </button>
+            )}
           </>
         )}
 
@@ -727,7 +800,8 @@ function ModoTexto({ faixa }) {
             </div>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={reiniciar} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '11px 18px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>🔁 Repetir</button>
-              <button onClick={() => { setItemIdx(i => i + 1); reiniciar() }} style={{ background: COR, border: 'none', borderRadius: '12px', padding: '11px 18px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Próxima →</button>
+              <button onClick={() => { setItemIdx(i => i + 1); reiniciar() }} style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '11px 18px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Próxima →</button>
+              {onConcluir && <button onClick={onConcluir} style={{ background: COR, border: 'none', borderRadius: '12px', padding: '11px 18px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Concluir ✓</button>}
             </div>
           </div>
         )}
@@ -757,7 +831,7 @@ const VITORIA_PARTICULAS = [
   { id:4, x:20,  e:'💫'}, { id:5, x:55,  e:'⭐'}, { id:6, x:90,  e:'🎉'},
 ]
 
-function GameOver({ pontos, unidade, onReiniciar }) {
+function GameOver({ pontos, unidade, onReiniciar, onConcluir }) {
   return (
     <div className="ns-dt-gameover-wrap" style={{ textAlign: 'center', padding: '48px 20px' }}>
       <div style={{ fontSize: '90px', marginBottom: '16px', filter: 'drop-shadow(0 0 20px rgba(239,68,68,0.5))' }}>💔</div>
@@ -766,14 +840,21 @@ function GameOver({ pontos, unidade, onReiniciar }) {
         Você acertou <strong style={{ color: '#f59e0b', fontSize: '20px' }}>{pontos}</strong> {unidade}!
       </div>
       <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)', marginBottom: '28px' }}>Continue praticando — você vai melhorar! 💪</div>
-      <button onClick={onReiniciar} style={{ background: COR, border: 'none', borderRadius: '14px', padding: '14px 36px', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: `0 4px 20px ${COR}60` }}>
-        🔁 Jogar de novo
-      </button>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button onClick={onReiniciar} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '14px', padding: '14px 26px', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', fontFamily: 'inherit' }}>
+          🔁 Jogar de novo
+        </button>
+        {onConcluir && (
+          <button onClick={onConcluir} style={{ background: COR, border: 'none', borderRadius: '14px', padding: '14px 26px', color: 'white', fontWeight: '800', fontSize: '15px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: `0 4px 20px ${COR}60` }}>
+            Concluir ✓
+          </button>
+        )}
+      </div>
     </div>
   )
 }
 
-function Vitoria({ pontos, unidade, onReiniciar, onProxima }) {
+function Vitoria({ pontos, unidade, onReiniciar, onProxima, onConcluir }) {
   return (
     <div className="ns-dt-vitoria-wrap" style={{ textAlign: 'center', padding: '40px 20px', position: 'relative', overflow: 'visible' }}>
       {/* Partículas de celebração */}
@@ -793,7 +874,8 @@ function Vitoria({ pontos, unidade, onReiniciar, onProxima }) {
       <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.25)', marginBottom: '28px' }}>Incrível! Você está ficando um expert! 🚀</div>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
         <button onClick={onReiniciar} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '14px', padding: '12px 22px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>🔁 Repetir</button>
-        {onProxima && <button onClick={onProxima} style={{ background: COR, border: 'none', borderRadius: '14px', padding: '12px 22px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: `0 4px 16px ${COR}50` }}>Próxima série →</button>}
+        {onProxima && <button onClick={onProxima} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '14px', padding: '12px 22px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>Próxima série →</button>}
+        {onConcluir && <button onClick={onConcluir} style={{ background: COR, border: 'none', borderRadius: '14px', padding: '12px 22px', color: 'white', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', boxShadow: `0 4px 16px ${COR}50` }}>Concluir ✓</button>}
       </div>
     </div>
   )
@@ -851,9 +933,25 @@ export default function Digitacao() {
   const [iniciou, setIniciou] = useState(false)
 
   const modoInfo = MODOS.find(m => m.id === modoAtual) || MODOS[0]
+  const infoFaixa = INTRO_POR_FAIXA[faixa] || INTRO_POR_FAIXA.construtores
+
+  // A Digitação prometia XP na intro mas nunca levava à tela de encerramento:
+  // a criança jogava, perdia (ou vencia) e ficava presa sem receber nada.
+  function concluir() {
+    navigate('/encerramento', {
+      state: {
+        titulo: 'Digitação',
+        xp: infoFaixa.xp_reward,
+        coins: infoFaixa.coins_reward,
+        emoji: '⌨️',
+        tipo: 'digitacao',
+        atividade_id: 'digitacao',
+      },
+    })
+  }
 
   if (!iniciou) {
-    const info = INTRO_POR_FAIXA[faixa] || INTRO_POR_FAIXA.construtores
+    const info = infoFaixa
     return (
       <IntroAtividade
         atividade={{
@@ -916,10 +1014,10 @@ export default function Digitacao() {
         </div>
 
         <div style={{ maxWidth: '680px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', gap: '0' }}>
-          {modoAtual === 'letras'     && <ModoSumir />}
-          {modoAtual === 'palavras'   && <ModoEsteira />}
-          {modoAtual === 'frases'     && <ModoTexto faixa="criadores" />}
-          {modoAtual === 'paragrafos' && <ModoTexto faixa="inventores" />}
+          {modoAtual === 'letras'     && <ModoSumir onConcluir={concluir} />}
+          {modoAtual === 'palavras'   && <ModoEsteira onConcluir={concluir} />}
+          {modoAtual === 'frases'     && <ModoTexto faixa="criadores"  onConcluir={concluir} />}
+          {modoAtual === 'paragrafos' && <ModoTexto faixa="inventores" onConcluir={concluir} />}
 
           <button onClick={() => navigate('/diario')} style={{ marginTop: '20px', width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '12px', color: 'rgba(255,255,255,0.35)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}>
             📔 Ir para o Meu Diário

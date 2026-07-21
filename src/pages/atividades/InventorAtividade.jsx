@@ -93,7 +93,7 @@ export default function InventorAtividade() {
             <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>📊 AVALIAÇÃO</div>
             {[
               ['🎨 Criatividade', scores.criatividade || 0, '#f97316'],
-              ['âš™ï¸ Utilidade', scores.utilidade || 0, '#10b981'],
+              ['⚙️ Utilidade', scores.utilidade || 0, '#10b981'],
               ['🔧 Viabilidade', scores.viabilidade || 0, '#3b82f6'],
             ].map(([label, val, cor]) => (
               <div key={label} style={{ marginBottom: '14px' }}>
@@ -130,7 +130,7 @@ export default function InventorAtividade() {
 
           {resultado.inspiracao && (
             <div style={{ background: 'rgba(168,85,247,0.1)', borderRadius: '14px', padding: '16px 18px', border: '1px solid rgba(168,85,247,0.3)' }}>
-              <div style={{ fontSize: '11px', color: '#d8b4fe', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>ðŸŒŸ INSPIRAÇÃO</div>
+              <div style={{ fontSize: '11px', color: '#d8b4fe', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>🌟 INSPIRAÇÃO</div>
               <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{resultado.inspiracao}</p>
             </div>
           )}
@@ -186,7 +186,7 @@ export default function InventorAtividade() {
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '12px', color: 'rgba(255,255,255,0.35)', fontWeight: '600' }}>
             <span style={{ color: pronto ? '#6ee7b7' : 'rgba(255,255,255,0.35)' }}>
-              {pronto ? '✅ Pronto para avaliar!' : `âœï¸ Faltam ${minChars - ideia.trim().length} caracteres...`}
+              {pronto ? '✅ Pronto para avaliar!' : `✏️ Faltam ${minChars - ideia.trim().length} caracteres...`}
             </span>
             <span style={{ color: ideia.length > 900 ? '#fca5a5' : 'rgba(255,255,255,0.35)' }}>{ideia.length}/1000</span>
           </div>
@@ -212,7 +212,7 @@ export default function InventorAtividade() {
 
         {erroAPI && (
           <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '12px', padding: '14px', color: '#fca5a5', fontSize: '13px', textAlign: 'center' }}>
-            âš ï¸ {erroAPI}
+            ⚠️ {erroAPI}
           </div>
         )}
 

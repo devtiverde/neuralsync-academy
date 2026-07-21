@@ -108,7 +108,9 @@ export default function Planos() {
             onClick={() => window.open(kiwifyLinks.familia[periodo], '_blank')}
             style={{ background: '#7C3AED', border: 'none', borderRadius: 999, padding: '10px 22px', color: 'white', cursor: 'pointer', fontSize: 14, fontWeight: 700, boxShadow: '0 4px 14px rgba(124,58,237,0.3)', fontFamily: 'inherit' }}
           >
-            Começar agora →
+            {/* dizia só "Começar agora" e levava ao checkout do Família — quem tinha
+                acabado de ler o card do Premium era mandado para outro plano */}
+            Assinar o Família →
           </button>
         </div>
       </header>
@@ -119,7 +121,9 @@ export default function Planos() {
           🔥 Preço de Lançamento — por tempo limitado
         </div>
 
-        <h1 style={{ fontSize: 52, fontWeight: 800, letterSpacing: '-2px', marginBottom: 16, lineHeight: 1.05, color: '#1E1B4B' }}>
+        {/* clamp em vez de 52px fixo: como o html tem `overflow-x: hidden`, um título
+            largo demais era CORTADO em silêncio no celular em vez de gerar rolagem */}
+        <h1 style={{ fontSize: 'clamp(30px, 7vw, 52px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 16, lineHeight: 1.05, color: '#1E1B4B' }}>
           Cada minuto de tela<br />
           <span style={{ color: '#7C3AED' }}>pode virar inteligência</span>
         </h1>
@@ -132,9 +136,12 @@ export default function Planos() {
 
         {/* Toggle mensal/anual */}
         <div style={{ display: 'inline-flex', background: 'white', borderRadius: 14, padding: 4, border: '2px solid #7C3AED', boxShadow: '0 4px 16px rgba(124,58,237,0.15)', marginBottom: 8 }}>
-          {[['mensal', 'Mensal'], ['anual', 'Anual — Economize até 35%']].map(([id, label]) => (
+          {/* rótulo curto: "Anual — Economize até 35%" com padding de 28px empurrava
+              o botão Anual para fora da tela no celular, deixando o preço anual
+              inacessível justamente para quem mais compra pelo telefone */}
+          {[['mensal', 'Mensal'], ['anual', 'Anual −35%']].map(([id, label]) => (
             <button key={id} onClick={() => setPeriodo(id)} style={{
-              padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer',
+              padding: '12px 20px', borderRadius: 10, border: 'none', cursor: 'pointer',
               fontWeight: 800, fontSize: 14, transition: 'all 0.2s', fontFamily: 'inherit',
               background: periodo === id ? '#7C3AED' : 'transparent',
               color: periodo === id ? 'white' : '#6b7280',
@@ -365,7 +372,7 @@ export default function Planos() {
 
       {/* ── CTA FINAL ───────────────────────────────── */}
       <section style={{ padding: '80px 24px', textAlign: 'center', background: 'linear-gradient(160deg, #faf5ff, #ede9fe)' }}>
-        <h2 style={{ fontSize: 44, fontWeight: 800, letterSpacing: '-1.5px', marginBottom: 14, lineHeight: 1.1, color: '#1E1B4B' }}>
+        <h2 style={{ fontSize: 'clamp(26px, 6vw, 44px)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 14, lineHeight: 1.1, color: '#1E1B4B' }}>
           Comece hoje.<br />
           <span style={{ color: '#7C3AED' }}>7 dias de garantia.</span>
         </h2>
@@ -376,7 +383,7 @@ export default function Planos() {
           onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(124,58,237,0.45)' }}
           onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(124,58,237,0.35)' }}
         >
-          Assinar agora →
+          Assinar o Família →
         </button>
       </section>
 

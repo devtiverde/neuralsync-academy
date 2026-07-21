@@ -294,9 +294,12 @@ export default function Encerramento() {
 
       <EfeitoCelebracao tipo={efeitoEquipado} />
 
-      {/* Ambient glow */}
-      <div style={{ position: 'absolute', top: '20%', left: '30%', width: '500px', height: '500px', borderRadius: '50%', background: '#7C3AED', opacity: 0.08, filter: 'blur(120px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '10%', right: '20%', width: '350px', height: '350px', borderRadius: '50%', background: '#f59e0b', opacity: 0.07, filter: 'blur(100px)', pointerEvents: 'none' }} />
+      {/* Ambient glow — radial-gradient no lugar de `filter: blur()`.
+          Esta tela roda o <EfeitoCelebracao> com partículas animadas por cima; com o
+          filtro, cada quadro da celebração forçava o navegador a refazer o desfoque
+          de 500×500 no processador. Ver a medição em GameShell.jsx. */}
+      <div style={{ position: 'absolute', top: '0%', left: '10%', width: '800px', height: '800px', borderRadius: '50%', background: 'radial-gradient(circle, #7C3AED 0%, transparent 65%)', opacity: 0.11, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '5%', width: '520px', height: '520px', borderRadius: '50%', background: 'radial-gradient(circle, #f59e0b 0%, transparent 65%)', opacity: 0.1, pointerEvents: 'none' }} />
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px', width: '100%', animation: showContent ? 'ns-slide-up 0.5s ease' : 'none' }}>
