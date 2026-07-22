@@ -81,6 +81,11 @@ const MusicaAtividade             = lazy(() => import('./pages/atividades/Musica
 const ZonaEmocoesAtividade        = lazy(() => import('./pages/atividades/ZonaEmocoesAtividade'))
 const Seeder = lazy(() => import('./pages/admin/Seeder'))
 
+// Bancada de teste das atividades. `import.meta.env.DEV` vira `false` no build
+// de produção e o import dinâmico nunca é alcançado, então o módulo não entra
+// no bundle publicado.
+const DevAtividade = import.meta.env.DEV ? lazy(() => import('./dev/DevAtividade')) : null
+
 function PageLoader() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -91,6 +96,15 @@ function PageLoader() {
 
 function PrivateRoute() {
   const { user, loading } = useAuth()
+  // Atalho da bancada de teste de atividades (src/dev/DevAtividade.jsx).
+  // `import.meta.env.DEV` é substituído por `false` no build de produção, então
+  // este if inteiro é removido do bundle publicado — não existe caminho para
+  // burlar o login em produção. Ver comentário no topo daquele arquivo.
+  if (import.meta.env.DEV) {
+    let bypass = false
+    try { bypass = sessionStorage.getItem('ns_dev_bypass') === '1' } catch { /* modo privado */ }
+    if (bypass) return <Outlet />
+  }
   if (loading) return <PageLoader />
   return user ? <Outlet /> : <Navigate to="/auth" replace />
 }
@@ -143,11 +157,44 @@ function ResgateLinkSenha() {
   return null
 }
 
+/**
+ * Trava a tela enquanto a criança está dentro de uma atividade.
+ *
+ * Todas as atividades ocupam a tela inteira, mas com `min-height: 100vh` —
+ * que só garante o mínimo. Assim que o conteúdo do jogo passava da altura da
+ * janela, o documento crescia e a roda do mouse rolava a página: no meio de
+ * uma jogada o tabuleiro subia e saía de vista. Em janela de notebook (768px
+ * de altura) isso acontecia na maioria dos jogos.
+ *
+ * Marcar o `body` é o único ponto que pega as 25 atividades de uma vez — as 17
+ * que usam o GameShell e as 8 que montam o próprio layout com estilo inline
+ * (onde não haveria seletor de CSS possível). O CSS correspondente está em
+ * `src/styles/crianca.css`, seção "Trava de tela da atividade".
+ */
+function TravaTelaAtividade() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    const naAtividade = pathname.startsWith('/atividade/')
+    if (naAtividade) document.body.dataset.atividade = '1'
+    else delete document.body.dataset.atividade
+    // Sair da atividade por qualquer caminho (voltar, encerramento, menu
+    // lateral) precisa destravar — senão o app inteiro fica sem rolagem.
+    return () => { delete document.body.dataset.atividade }
+  }, [pathname])
+
+  return null
+}
+
 function AppContent() {
   return (
     <Suspense fallback={<PageLoader />}>
       <ResgateLinkSenha />
+      <TravaTelaAtividade />
       <Routes>
+        {/* Bancada de teste das atividades — some do build de produção */}
+        {import.meta.env.DEV && <Route path="/dev/atividade/:tipo" element={<DevAtividade />} />}
+
         {/* Rotas públicas */}
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />

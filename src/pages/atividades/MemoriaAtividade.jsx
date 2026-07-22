@@ -170,9 +170,14 @@ export default function MemoriaAtividade() {
         </div>
       }
     >
-      <div style={{ maxWidth: '700px', width: '100%', margin: '0 auto' }}>
+      {/* Coluna flex com `minHeight: 0` para o tabuleiro poder encolher até
+          caber na altura da tela. Sem isso o grid mantinha o tamanho natural
+          (as cartas eram quadradas pela LARGURA disponível) e o tabuleiro
+          media 700px — em notebook de 768px a última fileira de cartas ficava
+          abaixo da dobra, e com a tela travada virava carta inalcançável. */}
+      <div style={{ maxWidth: '700px', width: '100%', margin: '0 auto', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
         {/* Stats row */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexShrink: 0 }}>
           {[
             [movimentos, 'Movimentos', '#3b82f6'],
             [paresEncontrados + '/' + totalPares, 'Pares', '#10b981'],
@@ -185,14 +190,35 @@ export default function MemoriaAtividade() {
           ))}
         </div>
 
-        {/* Card grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: '12px' }}>
+        {/* Tabuleiro: `aspectRatio` + `maxHeight/maxWidth: 100%` fazem o grid
+            se ajustar à MENOR das duas dimensões disponíveis, mantendo as
+            cartas quadradas. Em tela larga e baixa ele encolhe pela altura; em
+            tela estreita, pela largura. É o que garante que as 16 cartas
+            apareçam inteiras sem precisar rolar. */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          gridTemplateRows: `repeat(${Math.ceil(cartas.length / cols)}, 1fr)`,
+          gap: '12px',
+          // `flex: 1` dá ao grid uma altura DEFINIDA (a sobra da coluna).
+          // Isso é o que faz as fileiras `1fr` terem tamanho real — com
+          // altura indefinida elas colapsam para o conteúdo mínimo e as
+          // cartas viram tiras de 36px. Com a altura definida, o
+          // `aspectRatio` deriva a largura e `maxWidth` impede que o
+          // tabuleiro fique mais largo que a área em telas baixas e largas.
+          flex: 1, minHeight: 0,
+          aspectRatio: `${cols} / ${Math.ceil(cartas.length / cols)}`,
+          maxWidth: '100%', margin: '0 auto',
+        }}>
           {cartas.map((carta, idx) => {
             const mostrar = carta.virada || carta.encontrada
             return (
               <div key={carta.id} onClick={() => clicarCarta(idx)} style={{ perspective: '600px', cursor: carta.encontrada ? 'default' : 'pointer' }}>
                 <div style={{
-                  position: 'relative', width: '100%', paddingBottom: '100%',
+                  // `height: 100%` e não `paddingBottom: 100%`: o truque do
+                  // padding deriva a altura da LARGURA, o que ignora a altura
+                  // disponível. Agora quem define o quadrado é o próprio grid.
+                  position: 'relative', width: '100%', height: '100%',
                   transformStyle: 'preserve-3d',
                   transform: mostrar ? 'rotateY(180deg)' : 'rotateY(0deg)',
                   transition: 'transform 0.35s ease',
@@ -227,7 +253,7 @@ export default function MemoriaAtividade() {
         </div>
 
         {totalPares > 4 && (
-          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '13px', marginTop: '20px', fontWeight: '500' }}>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '13px', marginTop: '20px', fontWeight: '500', flexShrink: 0 }}>
             Clique nas cartas para virá-las e encontrar os pares! 🧠
           </p>
         )}

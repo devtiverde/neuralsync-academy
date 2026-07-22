@@ -356,10 +356,19 @@ h1, h2, h3, .crianca-heading {
 }
 .input::placeholder { color: var(--color-text-muted); }
 
-/* ── Game shell ──────────────────────────────────── */
+/* ── Game shell ──────────────────────────────────────────────────────
+   A tela da atividade é FIXA no viewport. Antes era `min-height: 100vh`,
+   que só garante o mínimo: assim que o conteúdo do jogo passava da altura
+   da janela, o DOCUMENTO inteiro crescia e a roda do mouse rolava a página
+   com o jogo junto — a criança perdia o tabuleiro de vista no meio da
+   jogada. `position: fixed; inset: 0` faz o shell ocupar exatamente o
+   viewport e nada mais, então não existe rolagem de página dentro de uma
+   atividade. Quem rola é só o texto das laterais (ver abaixo). */
 .game-shell {
+  position: fixed;
+  inset: 0;
   display: flex;
-  min-height: 100vh;
+  overflow: hidden;
   background: var(--game-bg, #0f0a1e);
 }
 .game-sidebar-left {
@@ -370,6 +379,11 @@ h1, h2, h3, .crianca-heading {
   padding: 28px 20px;
   background: rgba(255,255,255,0.04);
   border-right: 1px solid rgba(255,255,255,0.07);
+  /* A lateral PODE rolar — é texto (história, recompensas, dicas).
+     `overscroll-behavior: contain` impede que o fim da rolagem daqui
+     "vaze" e comece a rolar o que está atrás. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .game-sidebar-right {
   width: 240px;
@@ -379,13 +393,30 @@ h1, h2, h3, .crianca-heading {
   padding: 28px 18px;
   background: rgba(255,255,255,0.03);
   border-left: 1px solid rgba(255,255,255,0.07);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
+/* Barra de rolagem discreta nas laterais — some no fundo escuro */
+.game-sidebar-left::-webkit-scrollbar,
+.game-sidebar-right::-webkit-scrollbar { width: 6px; }
+.game-sidebar-left::-webkit-scrollbar-thumb,
+.game-sidebar-right::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.14); border-radius: 99px;
+}
+.game-sidebar-left, .game-sidebar-right {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.14) transparent;
+}
+/* A coluna do jogo NÃO rola. `min-height: 0` é obrigatório: sem ele um
+   filho flex se recusa a encolher abaixo do próprio conteúdo e o
+   `overflow: hidden` nunca chega a valer. */
 .game-center {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .game-topbar {
   padding: 16px 24px;
@@ -396,11 +427,16 @@ h1, h2, h3, .crianca-heading {
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
+/* Área do jogo em si: fixa, sem rolagem. Se algum conteúdo não couber,
+   é bug de layout daquela atividade e tem que ser corrigido lá — não
+   escondido atrás de uma barra de rolagem que faz o tabuleiro sumir. */
 .game-content {
   flex: 1;
+  min-height: 0;
   padding: 32px 40px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .game-progress-bar {
   height: 6px;
@@ -443,11 +479,49 @@ h1, h2, h3, .crianca-heading {
 .quiz-option.wrong    { background: rgba(239,68,68,0.2);  border-color: #ef4444; color: #fca5a5; }
 .quiz-option.dimmed   { opacity: 0.35; }
 
+/* Em janela baixa (notebook não maximizado, 720px de altura) os 32px de
+   respiro em cima e embaixo mais o topo folgado custam ~48px — que é
+   exatamente o que faltava para o Labirinto e o Padrão caberem. Em tela
+   alta o respiro continua o mesmo. */
+@media (max-height: 800px) {
+  .game-content { padding: 14px 32px; }
+  .game-topbar  { padding: 10px 24px; }
+}
+
+/* As duas laterais somam 520px fixos. Numa janela de 1100px (que é o tamanho
+   comum de janela NÃO maximizada em notebook) sobravam 500px para o jogo — e
+   aí o tabuleiro do Robô, do Labirinto e do Padrão não cabia mais na altura.
+   A informação das laterais não se perde: o progresso está na barra do topo, a
+   história está no botão de dica, e o menu lateral dá acesso ao resto.
+   O jogo é o que importa na tela, então ele fica com o espaço. */
+@media (max-width: 1279px) {
+  .game-sidebar-right { display: none !important; }
+}
+@media (max-width: 1023px) {
+  .game-sidebar-left { display: none !important; }
+}
+
 @media (max-width: 767px) {
   .game-sidebar-left  { display: none !important; }
   .game-sidebar-right { display: none !important; }
   .game-content       { padding: 16px; }
   .game-topbar        { padding: 12px 16px; }
+
+  /* No celular as laterais somem, então a coluna do jogo é a tela inteira.
+     Aqui a rolagem interna é permitida como último recurso — em 5" nem
+     sempre dá pra fazer caber sem encolher o alvo de toque abaixo do
+     usável. Mas continua sendo rolagem DE UM PAINEL, não da página: o
+     shell segue fixo, então a barra do navegador não pula e nada sai do
+     alcance como acontecia antes. */
+  .game-content {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* `viewport-fit=cover` no index.html sem safe-area deixava o botão de
+     voltar por baixo do notch/ilha dinâmica. */
+  .game-topbar { padding-top: calc(12px + env(safe-area-inset-top)); }
 }
 
 /* ── Stat pill ───────────────────────────────────── */

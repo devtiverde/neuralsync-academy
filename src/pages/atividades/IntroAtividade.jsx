@@ -78,7 +78,10 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: t.bg, display: 'flex', alignItems: 'stretch', position: 'relative', overflow: 'hidden' }}>
+    // `height` e não `minHeight`: a tela da atividade é fixa (ver a trava em
+    // App.jsx / index.css). Com `min-height: 100vh` o documento crescia junto
+    // com a coluna da direita e a roda do mouse rolava a página inteira.
+    <div style={{ height: '100dvh', background: t.bg, display: 'flex', alignItems: 'stretch', position: 'relative', overflow: 'hidden' }}>
 
       {showModal && (
         <ParentUnlockModal
@@ -110,7 +113,10 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
       ))}
 
       {/* ── LAYOUT ──────────────────────────────── */}
-      <div className="intro-cols" style={{ display: 'flex', width: '100%', position: 'relative', zIndex: 1 }}>
+      {/* `minHeight: 0` é o que permite as colunas rolarem: sem ele um filho
+          flex se recusa a encolher abaixo do próprio conteúdo e o
+          `overflow-y: auto` das colunas nunca chega a valer. */}
+      <div className="intro-cols" style={{ display: 'flex', width: '100%', minHeight: 0, position: 'relative', zIndex: 1 }}>
 
         {/* LEFT COLUMN (desktop) */}
         <div className="intro-left" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '40px', minWidth: 0 }}>
@@ -140,7 +146,17 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="intro-right" style={{ width: '420px', flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px', background: 'rgba(0,0,0,0.25)', borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
+        {/* Esta é a coluna de TEXTO — história, recompensas, "Sabia que...",
+            botões. É a única parte da tela de atividade que pode rolar.
+            Antes era `justify-content: center` dentro de um pai com
+            `overflow: hidden`: quando o conteúdo passava da altura da janela
+            (acontecia em notebook de 768px em quase toda atividade), a
+            centralização empurrava o excesso para FORA pelos dois lados e o
+            topo ficava inalcançável — sem barra de rolagem, sem como chegar
+            nele. `safe center` centraliza só enquanto couber e volta a alinhar
+            no topo quando não cabe; o `flex-start` antes dele é o valor que
+            navegador sem suporte enxerga. */}
+        <div className="intro-right" style={{ width: '420px', flexShrink: 0, display: 'flex', flexDirection: 'column', padding: '40px 32px', background: 'rgba(0,0,0,0.25)', borderLeft: '1px solid rgba(255,255,255,0.07)', overflowY: 'auto', overscrollBehavior: 'contain', justifyContent: 'safe center' }}>
 
           {/* Child greeting */}
           {child && (
@@ -355,8 +371,24 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
 
       {/* Mobile layout override (stacked) */}
       <style>{`
+        /* A coluna esquerda (emoji grande + título) também centraliza dentro de
+           altura fixa; sem isto ela cortava o botão "Voltar" no topo em janela
+           baixa. Mesmo tratamento da direita. */
+        .intro-left { justify-content: safe center; overflow-y: auto; overscroll-behavior: contain; }
+        /* Barra de rolagem discreta — no fundo escuro a padrão do Windows
+           aparece como uma faixa clara larga e chama mais atenção que o jogo. */
+        .intro-left::-webkit-scrollbar, .intro-right::-webkit-scrollbar { width: 6px; }
+        .intro-left::-webkit-scrollbar-thumb, .intro-right::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.14); border-radius: 99px;
+        }
+        .intro-left, .intro-right { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.14) transparent; }
+
         @media (max-width: 767px) {
-          .intro-cols { flex-direction: column !important; }
+          /* No celular as duas colunas viram uma pilha só. Aí quem rola é o
+             conjunto, não cada coluna — senão viram duas áreas de rolagem
+             aninhadas e o dedo nunca sabe qual vai responder. */
+          .intro-cols { flex-direction: column !important; overflow-y: auto; overscroll-behavior: contain; }
+          .intro-left, .intro-right { overflow-y: visible !important; flex-shrink: 0; }
           .intro-right { width: 100% !important; border-left: none !important; border-top: 1px solid rgba(255,255,255,0.07) !important; }
           .intro-left { padding: 24px 20px 20px !important; }
           .intro-left h1 { font-size: 26px !important; }

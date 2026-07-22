@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
+import { ebooks, MATERIAS } from '../../data/ebooks'
 import '../../styles/pai.css'
 
 const ferramentas = [
@@ -85,16 +86,40 @@ export default function Ebook() {
       </header>
 
       <div style={{maxWidth: '600px', margin: '0 auto', padding: '32px 24px'}}>
-        <div style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', borderRadius: '24px', padding: '32px', marginBottom: '24px', textAlign: 'center', boxShadow: '0 8px 32px rgba(124,58,237,0.3)'}}>
+        {/* Destaque do ebook dos pais */}
+        <div style={{background: 'linear-gradient(135deg, #7C3AED, #6d28d9)', borderRadius: '24px', padding: '32px', marginBottom: '28px', textAlign: 'center', boxShadow: '0 8px 32px rgba(124,58,237,0.3)'}}>
           <div style={{fontSize: '60px', marginBottom: '16px'}}>📖</div>
           <h3 style={{fontSize: '22px', fontWeight: '900', color: 'white', marginBottom: '8px', letterSpacing: '-0.3px'}}>A Tela Certa</h3>
           <p style={{color: 'rgba(255,255,255,0.8)', marginBottom: '8px', fontSize: '14px', lineHeight: '1.6'}}>Como Usar a Tecnologia Para Criar uma Criança Inteligente</p>
           <p style={{color: 'rgba(255,255,255,0.6)', marginBottom: '24px', fontSize: '12px'}}>8 capítulos • Leitura: ~25 min</p>
           <div style={{display: 'flex', gap: '10px'}}>
-            <button onClick={() => navigate('/ebook/leitura')} style={{flex: 1, background: 'white', border: 'none', borderRadius: '12px', padding: '12px', color: '#7C3AED', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>📖 Ler online</button>
-            <button onClick={() => { window.open('/ebook/leitura', '_blank'); }} style={{flex: 1, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>⬇ Salvar PDF</button>
+            <button onClick={() => navigate('/ebook/leitura?id=tela-certa')} style={{flex: 1, background: 'white', border: 'none', borderRadius: '12px', padding: '12px', color: '#7C3AED', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>📖 Ler online</button>
+            <button onClick={() => { window.open('/ebook/leitura?id=tela-certa', '_blank'); }} style={{flex: 1, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif'}}>⬇ Salvar PDF</button>
           </div>
           <p style={{color: 'rgba(255,255,255,0.5)', fontSize: '11px', marginTop: '10px'}}>Para salvar PDF: abra, use Ctrl+P → Salvar como PDF</p>
+        </div>
+
+        {/* Coleção de ebooks para ler COM a criança */}
+        <h3 style={{fontWeight: '800', fontSize: '17px', marginBottom: '4px', color: '#0f0a1e'}}>📚 Para ler com seu filho</h3>
+        <p style={{fontSize: '13px', color: '#9ca3af', marginBottom: '14px', lineHeight: '1.5'}}>Ciência em palavras fáceis, por faixa etária. Cada capítulo termina com uma pergunta para conversarem juntos.</p>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '28px'}}>
+          {ebooks.filter(e => e.materia !== 'pais').map(e => {
+            const m = MATERIAS[e.materia]
+            return (
+              <button key={e.id} onClick={() => navigate('/ebook/leitura?id=' + e.id)} className="pai-card" style={{
+                padding: '16px', textAlign: 'left', cursor: 'pointer', border: `1px solid ${m.cor}22`,
+                display: 'flex', flexDirection: 'column', gap: '8px', background: 'white',
+              }}>
+                <div style={{fontSize: '34px'}}>{e.emoji}</div>
+                <div style={{fontWeight: '800', fontSize: '14px', color: '#0f0a1e', lineHeight: '1.25'}}>{e.titulo}</div>
+                <div style={{fontSize: '11px', color: '#9ca3af', lineHeight: '1.4'}}>{e.subtitulo}</div>
+                <div style={{marginTop: 'auto', display: 'flex', flexWrap: 'wrap', gap: '5px', paddingTop: '4px'}}>
+                  <span style={{background: m.cor + '18', color: m.cor, borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: '700'}}>{m.emoji} {m.label}</span>
+                  <span style={{background: '#f3f4f6', color: '#6b7280', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: '600'}}>{e.capitulos.length} cap • {e.leituraMin}min</span>
+                </div>
+              </button>
+            )
+          })}
         </div>
 
         <h3 style={{fontWeight: '800', fontSize: '17px', marginBottom: '14px', color: '#0f0a1e'}}>🎁 Seus Bônus</h3>

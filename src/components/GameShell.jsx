@@ -66,7 +66,9 @@ export default function GameShell({
   const handleVoltar = onVoltar || (() => navigate('/trilha'))
 
   return (
-    <div className="game-shell" style={{ background: t.bg, position: 'relative', overflow: 'hidden' }}>
+    // `position` NÃO vai aqui: a classe .game-shell precisa de `fixed` para
+    // travar a atividade no viewport, e style inline venceria a folha de estilo.
+    <div className="game-shell" style={{ background: t.bg }}>
 
       {/* Dentro da atividade não havia nenhuma saída além do botão voltar do jogo:
           nem início, nem troca de tela, nem sair da conta. */}
