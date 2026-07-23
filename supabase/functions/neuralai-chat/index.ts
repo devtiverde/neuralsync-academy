@@ -85,6 +85,44 @@ A sessão chegou ao fim. Faça duas coisas:
 
 type AnthropicMessage = { role: 'user' | 'assistant'; content: string }
 
+// Escapa texto para interpolar com segurança dentro do HTML do e-mail.
+// Sem isto, o nome do filho, os temas e o resumo (todos influenciados pela
+// conversa/cadastro) entram crus no HTML enviado a partir de
+// noreply@neuralsync.com.br — um vetor de injeção de HTML/link (phishing com o
+// domínio do produto). Escapar os 5 caracteres perigosos neutraliza qualquer
+// tag ou atributo injetado.
+function escapeHtml(v: unknown): string {
+  return String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Reconstrói o histórico da conversa a partir do BANCO, nunca do que o cliente
+// mandou. O `history` do corpo da requisição é controlado pelo navegador: um
+// cliente adulterado podia forjar turnos inteiros (inclusive falsas respostas
+// da "assistant") e assim contornar o SYSTEM_PROMPT — a única barreira entre a
+// Anthropic e uma criança. Lendo de neuralai_messages, o modelo só enxerga
+// mensagens reais e verificadas, na ordem real.
+async function carregarHistorico(
+  supabase: ReturnType<typeof createClient>,
+  sessionId: string,
+  limite = 20,
+): Promise<AnthropicMessage[]> {
+  const { data } = await supabase
+    .from('neuralai_messages')
+    .select('role, content')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: true })
+  const linhas = (data ?? []) as { role: string; content: string }[]
+  return linhas
+    .filter(m => m.role === 'user' || m.role === 'assistant')
+    .slice(-limite)
+    .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }))
+}
+
 async function callAnthropic(messages: AnthropicMessage[], maxTokens: number): Promise<string> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 30000)
@@ -144,18 +182,25 @@ async function enviarEmailSessao(opts: {
   if (!RESEND_API_KEY) return
 
   const engagementLabel: Record<string, string> = { alto: '🔥 Alto', medio: '⚡ Médio', baixo: '💤 Baixo' }
-  const tempos = opts.themes.length > 0 ? opts.themes.join(', ') : 'Conversa livre'
-  const engStr  = opts.engagement ? (engagementLabel[opts.engagement] || opts.engagement) : '—'
+  // Tudo que vai para o HTML abaixo é escapado: nome do filho/responsável (vêm
+  // do cadastro), temas/destaque/desafio (vêm do resumo gerado sobre a conversa).
+  const childNome  = escapeHtml(opts.childNome)
+  const parentNome = escapeHtml(opts.parentNome)
+  const highlight  = opts.highlight ? escapeHtml(opts.highlight) : null
+  const challenge  = opts.challenge ? escapeHtml(opts.challenge) : null
+  const tempos = opts.themes.length > 0 ? opts.themes.map(escapeHtml).join(', ') : 'Conversa livre'
+  // engagement é sempre um de alto/medio/baixo vindo do enum; escapado por garantia.
+  const engStr  = opts.engagement ? (engagementLabel[opts.engagement] || escapeHtml(opts.engagement)) : '—'
 
   const html = `
   <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0f0a1e; color: white; border-radius: 16px; overflow: hidden;">
     <div style="background: linear-gradient(135deg, #7C3AED, #06B6D4); padding: 28px 32px; text-align: center;">
       <div style="font-size: 48px; margin-bottom: 8px;">🤖</div>
       <h1 style="margin: 0; font-size: 22px; font-weight: 900; color: white;">Sessão NeuralAI concluída!</h1>
-      <p style="margin: 8px 0 0; color: rgba(255,255,255,0.75); font-size: 14px;">${opts.childNome} explorou muito hoje 🚀</p>
+      <p style="margin: 8px 0 0; color: rgba(255,255,255,0.75); font-size: 14px;">${childNome} explorou muito hoje 🚀</p>
     </div>
     <div style="padding: 28px 32px;">
-      <p style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 20px;">Olá, ${opts.parentNome}! Aqui está o resumo da sessão do(a) <strong style="color: #a78bfa;">${opts.childNome}</strong> com a NeuralAI.</p>
+      <p style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 20px;">Olá, ${parentNome}! Aqui está o resumo da sessão do(a) <strong style="color: #a78bfa;">${childNome}</strong> com a NeuralAI.</p>
       <div style="display: flex; gap: 12px; margin-bottom: 20px;">
         <div style="flex: 1; background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); border-radius: 12px; padding: 16px; text-align: center;">
           <div style="font-size: 24px; font-weight: 900; color: #a78bfa;">${opts.durationMinutes} min</div>
@@ -174,8 +219,8 @@ async function enviarEmailSessao(opts: {
         <div style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">🎯 TEMAS EXPLORADOS</div>
         <p style="color: rgba(255,255,255,0.75); font-size: 14px; margin: 0;">${tempos}</p>
       </div>
-      ${opts.highlight ? `<div style="background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;"><div style="font-size: 11px; color: #67e8f9; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">✨ MOMENTO DESTAQUE</div><p style="color: rgba(255,255,255,0.75); font-size: 14px; margin: 0;">${opts.highlight}</p></div>` : ''}
-      ${opts.challenge ? `<div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 16px; margin-bottom: 20px;"><div style="font-size: 11px; color: #fbbf24; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">🧩 DESAFIO ENVIADO</div><p style="color: rgba(255,255,255,0.75); font-size: 14px; margin: 0; font-style: italic;">"${opts.challenge}"</p></div>` : ''}
+      ${highlight ? `<div style="background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;"><div style="font-size: 11px; color: #67e8f9; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">✨ MOMENTO DESTAQUE</div><p style="color: rgba(255,255,255,0.75); font-size: 14px; margin: 0;">${highlight}</p></div>` : ''}
+      ${challenge ? `<div style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); border-radius: 12px; padding: 16px; margin-bottom: 20px;"><div style="font-size: 11px; color: #fbbf24; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">🧩 DESAFIO ENVIADO</div><p style="color: rgba(255,255,255,0.75); font-size: 14px; margin: 0; font-style: italic;">"${challenge}"</p></div>` : ''}
       <a href="https://app.neuralsync.com.br/relatorio-ia" style="display: block; background: linear-gradient(135deg, #7C3AED, #06B6D4); color: white; text-decoration: none; border-radius: 12px; padding: 14px 24px; text-align: center; font-weight: 700; font-size: 15px; margin-bottom: 20px;">Ver relatório completo →</a>
       <p style="color: rgba(255,255,255,0.3); font-size: 12px; text-align: center; margin: 0;">Para desativar estas notificações, acesse Configurações no NeuralSync Academy.</p>
     </div>
@@ -227,7 +272,10 @@ serve(async (req) => {
     return err('JSON inválido', 400)
   }
 
-  const { action, childId, sessionId, message, history = [] } = body
+  // `history` NÃO é mais lido do corpo de propósito — o histórico agora vem do
+  // banco (carregarHistorico). O cliente pode até continuar mandando, mas é
+  // ignorado, então não há como injetar turnos falsos.
+  const { action, childId, sessionId, message } = body
 
   if (!action || !childId) return err('Parâmetros obrigatórios: action, childId', 400)
 
@@ -347,11 +395,10 @@ serve(async (req) => {
       content: userMessage,
     })
 
-    // Histórico para o Anthropic (máx últimas 20 mensagens para controlar tokens)
-    const anthropicHistory: AnthropicMessage[] = [
-      ...history.slice(-20) as AnthropicMessage[],
-      { role: 'user', content: userMessage },
-    ]
+    // Histórico para o Anthropic vindo do BANCO (não do cliente) — já inclui a
+    // mensagem recém-salva como último turno. Ver carregarHistorico(): impede
+    // que um cliente adulterado injete turnos falsos e fure o SYSTEM_PROMPT.
+    const anthropicHistory = await carregarHistorico(supabase, sessionId, 20)
 
     const aiText = await callAnthropic(anthropicHistory, 220)
 
@@ -380,9 +427,11 @@ serve(async (req) => {
       (endedAt.getTime() - new Date(session.started_at).getTime()) / 60000
     )
 
-    // Pedir resumo + mensagem de encerramento à IA
+    // Pedir resumo + mensagem de encerramento à IA — histórico do BANCO, não do
+    // cliente (mesma proteção do action 'message').
+    const historicoReal = await carregarHistorico(supabase, sessionId, 20)
     const summaryMessages: AnthropicMessage[] = [
-      ...history.slice(-20) as AnthropicMessage[],
+      ...historicoReal,
       { role: 'user', content: SUMMARY_REQUEST },
     ]
 
