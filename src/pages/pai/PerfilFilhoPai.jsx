@@ -157,7 +157,10 @@ export default function PerfilFilhoPai() {
           </h1>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        {/* Duas colunas viram uma abaixo de 860px (regra em pai.css). Sem isso,
+            no celular as duas colunas de 183px nao cabiam o conteudo e a tela
+            inteira vazava 226px pra fora, sem barra de rolagem pra alcancar. */}
+        <div className="pai-perfil-colunas" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
 
           {/* ── LEFT COLUMN ─────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -182,7 +185,7 @@ export default function PerfilFilhoPai() {
               </div>
 
               {/* Stats row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 10, marginBottom: 24 }}>
                 {[
                   ['Nível', child?.nivel || 1, 'var(--ns-violet)'],
                   ['XP', (child?.xp || 0).toLocaleString('pt-BR'), '#f59e0b'],
@@ -212,7 +215,7 @@ export default function PerfilFilhoPai() {
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nome</label>
                   <input className="input-field" placeholder="Nome do filho" value={form.nome} onChange={e => setForm({ ...form, nome: e.target.value })} />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 12 }}>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 6, display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Idade</label>
                     <input className="input-field" type="number" placeholder="Ex: 8" min="4" max="15" value={form.idade} onChange={e => setForm({ ...form, idade: e.target.value })} />
@@ -305,7 +308,7 @@ export default function PerfilFilhoPai() {
               {loadingHistorico ? (
                 <div style={{ textAlign: 'center', padding: '24px', color: 'var(--ns-text-muted)', fontSize: 13 }}>Carregando conquistas...</div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 12 }}>
                   {BADGES.map((badge, i) => {
                     const earned = badge.check(child, historico)
                     return (

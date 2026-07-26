@@ -12,6 +12,32 @@ html, body { overflow-x: hidden; }
 .pai-menu-toggle { display: none; }
 .pai-mobile-menu { display: none; }
 
+/* -- Topbar em janela de PC nao maximizada ----------------------------------
+   Medido com Playwright a 1100px em /timer, /agenda, /notificacoes, /relatorio,
+   /relatorio-ia e /perfil-filho: o bloco `.pai-topbar-actions-desktop` comecava
+   503px FORA da borda direita. "Sair" e o e-mail do responsavel existiam no DOM
+   e nao havia como chegar neles -- `html, body { overflow-x: hidden }` (linha 6)
+   esconde a barra de rolagem, entao arrastar nao fazia nada.
+
+   Causa: a linha e [logo] [nav flex:1] [espacador flex:1] [acoes flex-shrink:0].
+   Item de flex nasce com `min-width: auto`, o que impede encolher abaixo do
+   tamanho do proprio conteudo. Como os botoes do nav sao `white-space: nowrap`,
+   o nav travava na largura total dos 9 itens e empurrava as acoes pra fora.
+   Abaixo de 860px nada disso aparece (vira hamburguer), por isso o celular
+   estava limpo e o problema so existia na faixa 860px--~1600px.
+
+   Correcao: `min-width: 0` devolve a capacidade de encolher e `overflow-x: auto`
+   transforma o excesso em rolagem de verdade. E o mesmo tratamento que
+   `.ns-topbar-nav` (crianca.css) ja recebeu pelo mesmo motivo. O menu lateral
+   continua sendo o caminho garantido pra Sair. */
+.pai-nav-desktop {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.pai-nav-desktop::-webkit-scrollbar { display: none; }
+
 @media (max-width: 860px) {
   .pai-topbar-row { padding: 0 16px !important; }
   .pai-nav-desktop { display: none !important; }
@@ -25,6 +51,16 @@ html, body { overflow-x: hidden; }
     box-shadow: 0 8px 24px rgba(124,58,237,0.12);
     max-height: calc(100vh - 64px); overflow-y: auto;
   }
+}
+
+/* -- Perfil do filho: duas colunas nao cabem no celular --------------------
+   Medido a 390px: 57 elementos inalcancaveis, 226px alem da borda. A grade
+   `1fr 1fr` do topo da pagina dava 183px por coluna, mas `1fr` equivale a
+   `minmax(auto, 1fr)` e a trilha nao encolhe abaixo do conteudo -- entao as
+   colunas estouravam e levavam "Configuracoes de sessao", "Conquistas" e todos
+   os botoes de "Acesso rapido" pra fora, sem rolagem pra chegar neles. */
+@media (max-width: 860px) {
+  .pai-perfil-colunas { grid-template-columns: 1fr !important; gap: 20px !important; }
 }
 
 /* ── Dashboard: cards que quebram em coluna única no mobile ── */

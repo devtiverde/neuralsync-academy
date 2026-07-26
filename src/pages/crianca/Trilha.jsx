@@ -293,7 +293,7 @@ export default function Trilha() {
         <div>
 
         {/* ── HEADER ─────────────────────────────────────────── */}
-        <div style={{
+        <div className="ns-trilha-cabecalho" style={{
           background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 50%, #7C3AED 100%)',
           padding: '28px 32px', display: 'flex', alignItems: 'center', gap: '20px',
           boxShadow: '0 4px 24px rgba(124,58,237,0.3)',
@@ -319,7 +319,7 @@ export default function Trilha() {
             <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px' }}>{nomeFaixa[faixa]}</p>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
+          <div className="ns-trilha-stats" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
             <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '14px', padding: '10px 18px', textAlign: 'center' }}>
               <div style={{ color: '#a78bfa', fontWeight: '900', fontSize: '22px', lineHeight: 1 }}>{pct}%</div>
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px', fontWeight: '600', marginTop: '3px' }}>concluído</div>
@@ -329,8 +329,10 @@ export default function Trilha() {
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '10px', fontWeight: '600', marginTop: '3px' }}>atividades</div>
             </div>
 
-            {/* Mini progress bar */}
-            <div style={{ width: '120px' }}>
+            {/* Mini progress bar — escondida no celular (ns-trilha-barra):
+                os 120px fixos dela eram o que empurrava o bloco pra fora da
+                tela, e o "%" ao lado já diz a mesma coisa. */}
+            <div className="ns-trilha-barra" style={{ width: '120px' }}>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginBottom: '6px', fontWeight: '600', textAlign: 'right' }}>{totalConcluidas} feitas</div>
               <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: '999px', height: '8px', overflow: 'hidden' }}>
                 <div style={{ background: 'linear-gradient(90deg, #10b981, #34d399)', width: pct + '%', height: '100%', borderRadius: '999px', transition: 'width 0.6s ease' }} />
@@ -420,7 +422,10 @@ export default function Trilha() {
                   </div>
                 </div>
                 {/* Cards dos 5 dias */}
-                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '16px 20px', display: 'grid', gridTemplateColumns: `repeat(${trilhaSemanal.dias.length},1fr)`, gap: '10px' }}>
+                {/* `1fr` sozinho e `minmax(auto,1fr)`: a coluna nao encolhe abaixo
+                    do titulo da atividade e a fileira de dias estourava 24px pra
+                    fora em telas de 360px. `minmax(0,1fr)` deixa encolher. */}
+                <div style={{ background: 'rgba(0,0,0,0.25)', padding: '16px 20px', display: 'grid', gridTemplateColumns: `repeat(${trilhaSemanal.dias.length}, minmax(0,1fr))`, gap: '10px' }}>
                   {trilhaSemanal.dias.map((diaItem, idx) => {
                     const at = activities.find(a => a.id === diaItem.atividadeId)
                     const tc = tipoConfig[diaItem.tipo] || { icon: '🎮', label: diaItem.tipo, cor: '#6b7280' }
@@ -564,7 +569,7 @@ export default function Trilha() {
                         Ver só →
                       </button>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '12px' }}>
                       {mActs.map(act => renderCard(act))}
                     </div>
                   </div>
@@ -572,7 +577,7 @@ export default function Trilha() {
               })}
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(340px, 100%), 1fr))', gap: '12px' }}>
               {atividadesVisiveis.map(act => renderCard(act))}
             </div>
           )}

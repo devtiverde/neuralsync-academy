@@ -393,7 +393,9 @@ export default function Planos() {
           <div style={{ fontWeight: 900, fontSize: 15, color: '#1E1B4B', marginBottom: 4 }}>NeuralSync Academy</div>
           <div style={{ color: '#9ca3af', fontSize: 13 }}>Tempo de tela que vira inteligência.</div>
         </div>
-        <div style={{ display: 'flex', gap: 24 }}>
+        {/* 5 links numa linha só passavam 12px da borda em 360px — o "Entrar",
+            que é justamente o último, ficava sem como alcançar. */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, rowGap: 12, justifyContent: 'center' }}>
           {[['Home', '/'], ['Planos', '/planos'], ['Termos', '/termos'], ['Privacidade', '/privacidade'], ['Entrar', '/auth']].map(([label, path]) => (
             <button key={path} onClick={() => navigate(path)} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: 13, cursor: 'pointer', fontWeight: 500, fontFamily: 'inherit' }}>{label}</button>
           ))}

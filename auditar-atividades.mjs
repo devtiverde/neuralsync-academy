@@ -152,4 +152,24 @@ for (const tela of TELAS) {
 }
 
 const limpos = TIPOS.filter(t => !problemas.some(p => p.tipo === t))
-console.log(`\n✅ Sem nenhum problema em nenhuma tela (${limpos.length}/${TIPOS.length}): ${limpos.join(', ')}\n`)
+
+// A linha de resumo já disse "✅ Sem nenhum problema (0/24)" num caso em que
+// TODAS as 24 falharam por o servidor estar em outra porta. Zero limpas é o
+// pior resultado possível e não pode ser escrito com um ✅. O código de saída
+// diferente de zero é o que impede isso de passar despercebido num script.
+const naoRodou = resultados.filter(r => r.falha).length
+
+if (naoRodou === resultados.length) {
+  console.log(`\n⛔ NENHUMA tela chegou a ser medida — as ${resultados.length} tentativas falharam.`)
+  console.log(`   O servidor de desenvolvimento está no ar em ${BASE}?`)
+  console.log(`   Uso: node auditar-atividades.mjs <porta>   (ex.: node auditar-atividades.mjs 5173)\n`)
+  process.exit(2)
+}
+
+if (limpos.length === TIPOS.length) {
+  console.log(`\n✅ As ${TIPOS.length} atividades passaram em todas as ${TELAS.length} telas.\n`)
+} else {
+  console.log(`\n${limpos.length} de ${TIPOS.length} atividades limpas em todas as telas: ${limpos.join(', ') || '(nenhuma)'}`)
+  console.log(`${TIPOS.length - limpos.length} com problema em pelo menos uma tela — detalhe acima.\n`)
+  process.exit(1)
+}

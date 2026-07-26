@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import LayoutCrianca from '../../components/LayoutCrianca'
+import ParentUnlockModal from '../../components/ParentUnlockModal'
 import { CoinVertical } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
 
@@ -21,6 +22,16 @@ export default function TimerAtivo() {
   const [ativo, setAtivo] = useState(true)
   const [coins, setCoins] = useState(0)
   const [extendido, setExtendido] = useState(false)
+  // O "+15 min" não pedia nada: a criança tocava e ganhava 15 minutos sozinha,
+  // o que anula o propósito do timer. Agora passa pela senha do responsável,
+  // o mesmo portão já usado para liberar atividade de faixa superior.
+  const [pedindoSenha, setPedindoSenha] = useState(false)
+
+  function estender() {
+    setSegundos(s => s + 15 * 60)
+    setExtendido(true)
+    setPedindoSenha(false)
+  }
 
   useEffect(() => {
     if (!ativo || segundos <= 0) return
@@ -92,11 +103,11 @@ export default function TimerAtivo() {
             fontWeight: '700', fontSize: '15px', fontFamily: 'Plus Jakarta Sans, sans-serif',
           }}>{ativo ? '⏸ Pausar' : '▶ Continuar'}</button>
           {permiteExtensao && !extendido && (
-            <button onClick={() => { setSegundos(s => s + 15 * 60); setExtendido(true) }} style={{
+            <button onClick={() => setPedindoSenha(true)} style={{
               background: 'rgba(16,185,129,0.15)', border: '1.5px solid rgba(16,185,129,0.4)', borderRadius: '14px',
               padding: '14px 20px', color: '#34d399', cursor: 'pointer',
               fontWeight: '700', fontSize: '15px', fontFamily: 'Plus Jakarta Sans, sans-serif',
-            }}>+15 min</button>
+            }}>🔓 +15 min</button>
           )}
           <button onClick={() => navigate('/encerramento', { state: { xp: Math.floor(coins * 2), coins: Math.floor(coins), titulo, tipo: 'timer' } })} style={{
             background: 'linear-gradient(135deg, #ef4444, #dc2626)',
@@ -106,6 +117,17 @@ export default function TimerAtivo() {
             boxShadow: '0 6px 20px rgba(239,68,68,0.35)',
           }}>⏹ Encerrar</button>
         </div>
+
+        {pedindoSenha && (
+          <ParentUnlockModal
+            icone="⏰"
+            titulo="Estender a sessão em 15 minutos"
+            descricao={`A sessão atual ganha mais 15 minutos. Vale só para agora — os ${duracaoMin} minutos configurados continuam valendo nas próximas.`}
+            rotuloConfirmar="✅ Adicionar 15 min"
+            onSuccess={estender}
+            onCancel={() => setPedindoSenha(false)}
+          />
+        )}
       </div>
     </LayoutCrianca>
   )

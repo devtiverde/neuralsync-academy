@@ -142,6 +142,17 @@ h1, h2, h3, .crianca-heading {
   .ns-two-col { grid-template-columns: 1fr; }
   .ns-three-col { grid-template-columns: repeat(2,1fr); }
   .ns-pad { padding: 16px; }
+  /* PerfilCrianca monta a grade inline (`1fr 300px`) em vez de usar
+     `.ns-two-col`, entao nao herdava esta quebra. */
+  .ns-perfil-colunas { grid-template-columns: 1fr !important; }
+
+  /* Cabecalho da Trilha: [voltar] [titulo] [%|contagem|barra de 120px].
+     O bloco da direita era `flex-shrink: 0`, entao em 390px ele nao encolhia e
+     saia 141px pra fora, sem rolagem. Agora a linha quebra e as pilulas descem
+     pra segunda linha; a barrinha some porque o "%" ao lado ja informa. */
+  .ns-trilha-cabecalho { flex-wrap: wrap !important; padding: 20px 16px !important; gap: 14px !important; }
+  .ns-trilha-stats { flex-shrink: 1 !important; width: 100%; justify-content: flex-start; }
+  .ns-trilha-barra { display: none !important; }
 }
 
 /* ── PerfilCrianca — hero empilha no mobile ────────── */

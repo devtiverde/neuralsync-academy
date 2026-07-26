@@ -62,11 +62,23 @@ export default function Landing() {
         '.l-section{padding:60px 20px!important}',
         '.l-section-alt{padding:60px 20px!important}',
         '.l-grid3{grid-template-columns:1fr!important}',
-        '.l-grid4{grid-template-columns:repeat(2,1fr)!important}',
+        // `1fr` e minmax(auto,1fr): a coluna nao encolhe abaixo do conteudo. Com
+        // os 28px de padding do .age-card, duas colunas em 360px estouravam 31px
+        // pra fora e os cards Construtores/Inventores ficavam inalcancaveis.
+        '.l-grid4{grid-template-columns:repeat(2,minmax(0,1fr))!important}',
+        '.age-card{padding:20px!important}',
         '.l-grid2{grid-template-columns:1fr!important;gap:32px!important}',
         '.l-planos{grid-template-columns:1fr!important}',
         '.l-panel{padding:64px 20px!important}',
         '.l-footer{padding:32px 20px!important}',
+      '}',
+      // Faixa de tablet (769px-1000px): o card ilustrativo do hero so era
+      // escondido abaixo de 768px, entao a 820px ele continuava na tela e
+      // estourava 99px pra fora, levando junto o bloco "Nova conquista!".
+      // A coluna de texto do hero ja e a mensagem principal; o card e enfeite.
+      '@media(min-width:769px) and (max-width:1000px){',
+        '.l-hero-card{display:none!important}',
+        '.l-hero-grid{display:block!important}',
       '}',
     ].join(' ')
     document.head.appendChild(style)

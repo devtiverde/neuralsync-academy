@@ -76,7 +76,9 @@ export default function EbookLeitura() {
             </div>
           )}
 
-          <div className="no-print" style={{ display: 'flex', gap: '10px', marginTop: '40px' }}>
+          {/* `flexWrap` porque "← Anterior" + "Próximo →" lado a lado passavam
+              10px da borda em 390px, e o "Próximo" ficava sem como alcançar. */}
+          <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
             {capAtual > 0 && <button className="btn-secondary" onClick={() => setCapAtual(c => c - 1)}>← Anterior</button>}
             {capAtual < capitulos.length - 1 && <button className="btn-primary" style={{ marginLeft: 'auto', background: cor }} onClick={() => setCapAtual(c => c + 1)}>Próximo →</button>}
           </div>

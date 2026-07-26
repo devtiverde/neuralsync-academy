@@ -3,7 +3,20 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { FAIXA_LABELS } from '../lib/faixaGuard'
 
-export default function ParentUnlockModal({ atividadeFaixa, atividadeTitulo, childNome, onSuccess, onCancel }) {
+/**
+ * Confirma que quem está na frente da tela é o responsável, pedindo a senha da
+ * conta já logada.
+ *
+ * Nasceu para liberar atividade de faixa superior, e por isso o texto padrão
+ * fala disso. `titulo`, `descricao`, `icone` e `rotuloConfirmar` permitem
+ * reaproveitar o mesmo modal em outros contextos — hoje também é usado para
+ * liberar tempo extra na tela de bloqueio e para estender a sessão no timer.
+ * Sem esses parâmetros o comportamento é exatamente o de antes.
+ */
+export default function ParentUnlockModal({
+  atividadeFaixa, atividadeTitulo, childNome, onSuccess, onCancel,
+  titulo, descricao, icone, rotuloConfirmar,
+}) {
   const { user } = useAuth()
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
@@ -53,18 +66,24 @@ export default function ParentUnlockModal({ atividadeFaixa, atividadeTitulo, chi
             width: '64px', height: '64px', borderRadius: '18px',
             background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)',
             fontSize: '32px', marginBottom: '16px',
-          }}>🔐</div>
+          }}>{icone || '🔐'}</div>
           <h2 style={{ color: 'white', fontSize: '20px', fontWeight: '900', margin: '0 0 8px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-            Autorização necessária
+            {titulo || 'Autorização necessária'}
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
-            <strong style={{ color: 'rgba(255,255,255,0.75)' }}>{atividadeTitulo}</strong> é uma atividade para{' '}
-            <strong style={{ color: '#a78bfa' }}>{faixaLabel}</strong>.
-          </p>
-          {childNome && (
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginTop: '6px' }}>
-              {childNome} ainda não chegou nessa fase — peça para um adulto liberar o acesso.
-            </p>
+          {descricao ? (
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{descricao}</p>
+          ) : (
+            <>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>
+                <strong style={{ color: 'rgba(255,255,255,0.75)' }}>{atividadeTitulo}</strong> é uma atividade para{' '}
+                <strong style={{ color: '#a78bfa' }}>{faixaLabel}</strong>.
+              </p>
+              {childNome && (
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginTop: '6px' }}>
+                  {childNome} ainda não chegou nessa fase — peça para um adulto liberar o acesso.
+                </p>
+              )}
+            </>
           )}
         </div>
 
@@ -125,7 +144,7 @@ export default function ParentUnlockModal({ atividadeFaixa, atividadeTitulo, chi
                 boxShadow: carregando || !senha.trim() ? 'none' : '0 6px 20px rgba(124,58,237,0.4)',
               }}
             >
-              {carregando ? '⏳ Verificando...' : '✅ Autorizar acesso'}
+              {carregando ? '⏳ Verificando...' : (rotuloConfirmar || '✅ Autorizar acesso')}
             </button>
           </div>
         </form>

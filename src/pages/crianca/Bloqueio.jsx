@@ -2,21 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
+import ParentUnlockModal from '../../components/ParentUnlockModal'
+import { dentroDoHorario, liberarPorMinutos, OPCOES_LIBERACAO } from '../../lib/horarioAcesso'
 import '../../styles/crianca.css'
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
-function dentroDoHorario(agenda) {
-  if (!agenda || !Array.isArray(agenda)) return true
-  const agora = new Date()
-  const diaIdx = agora.getDay()
-  const horaAtual = agora.getHours() * 60 + agora.getMinutes()
-  const slot = agenda[diaIdx]
-  if (!slot || !slot.ativo) return false
-  const [hIni, mIni] = (slot.inicio || '00:00').split(':').map(Number)
-  const [hFim, mFim] = (slot.fim || '23:59').split(':').map(Number)
-  return horaAtual >= hIni * 60 + mIni && horaAtual <= hFim * 60 + mFim
-}
 
 function proximaSessao(agenda) {
   try {
@@ -86,12 +77,26 @@ export default function Bloqueio() {
     const check = () => {
       try {
         const ag = JSON.parse(localStorage.getItem('ns_agenda_config') || 'null')
-        if (dentroDoHorario(ag)) navigate('/home-crianca', { replace: true })
-      } catch {}
+        if (dentroDoHorario(ag, child?.id)) navigate('/home-crianca', { replace: true })
+      } catch { /* agenda corrompida no localStorage: segue bloqueado */ }
     }
     const id = setInterval(check, 30000)
     return () => clearInterval(id)
-  }, [navigate])
+  }, [navigate, child?.id])
+
+  // ── Liberação de tempo extra pelo responsável ──────────────────────────
+  // Antes desta tela existir com este botão, a mensagem dizia "peça ao
+  // responsável para liberar" e não havia NENHUM caminho para isso: o pai teria
+  // que sair, entrar na própria conta, mexer na agenda e voltar. Na prática o
+  // controle parental era rígido no momento errado.
+  const [pedindoSenha, setPedindoSenha] = useState(false)
+  const [minutosEscolhidos, setMinutosEscolhidos] = useState(null)
+
+  function autorizado() {
+    liberarPorMinutos(child?.id, minutosEscolhidos)
+    setPedindoSenha(false)
+    navigate('/home-crianca', { replace: true })
+  }
 
   return (
     <div style={{
@@ -125,6 +130,41 @@ export default function Bloqueio() {
             <strong style={{ color: info.ativo ? '#34d399' : '#f87171' }}>{info.ativo ? `${info.inicio} – ${info.fim}` : 'Desativado'}</strong>
           </div>
         </div>
+      )}
+
+      {/* Bloco do responsável: escolher a duração já aqui evita uma tela a mais
+          depois da senha, e o pai costuma estar de pé, com pressa, ao lado da
+          criança. Três opções fechadas resolvem quase todo caso real. */}
+      <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: '18px', padding: '18px 20px', maxWidth: '360px', width: '100%', marginBottom: '20px' }}>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13px', fontWeight: '700', marginBottom: '4px' }}>🔓 Responsável, quer liberar mais tempo?</p>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px', marginBottom: '14px' }}>Pede sua senha e libera na hora, sem mexer na agenda.</p>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {OPCOES_LIBERACAO.map(min => (
+            <button
+              key={min}
+              onClick={() => { setMinutosEscolhidos(min); setPedindoSenha(true) }}
+              style={{
+                flex: '1 1 90px', minHeight: '48px',
+                background: 'rgba(255,255,255,0.14)', border: '1.5px solid rgba(255,255,255,0.3)',
+                borderRadius: '12px', padding: '12px 10px', color: 'white', cursor: 'pointer',
+                fontWeight: '800', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif',
+              }}
+            >
+              +{min} min
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {pedindoSenha && (
+        <ParentUnlockModal
+          icone="⏰"
+          titulo={`Liberar ${minutosEscolhidos} minutos`}
+          descricao={`${nome} vai poder usar a plataforma por mais ${minutosEscolhidos} minutos, mesmo fora do horário da agenda. A agenda em si não muda.`}
+          rotuloConfirmar={`✅ Liberar ${minutosEscolhidos} min`}
+          onSuccess={autorizado}
+          onCancel={() => setPedindoSenha(false)}
+        />
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '320px' }}>

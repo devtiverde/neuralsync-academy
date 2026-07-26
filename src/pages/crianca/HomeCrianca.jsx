@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { dentroDoHorario } from '../../lib/horarioAcesso'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
 import { tamanhoDaFaixa } from '../../data/mundos'
@@ -11,17 +12,6 @@ import { StatCard, XPBar, Card, Button, Badge } from '../../components/ui'
 import { RocketLaunch, Target, Fire, Trophy } from '@phosphor-icons/react'
 import '../../styles/crianca.css'
 
-function dentroDoHorario(agenda) {
-  if (!agenda || !Array.isArray(agenda)) return true
-  const agora = new Date()
-  const diaIdx = agora.getDay()
-  const horaAtual = agora.getHours() * 60 + agora.getMinutes()
-  const slot = agenda[diaIdx]
-  if (!slot || !slot.ativo) return false
-  const [hIni, mIni] = (slot.inicio || '00:00').split(':').map(Number)
-  const [hFim, mFim] = (slot.fim || '23:59').split(':').map(Number)
-  return horaAtual >= hIni * 60 + mIni && horaAtual <= hFim * 60 + mFim
-}
 
 const nomeFaixa = {
   exploradores: 'Exploradores 🔍',
@@ -90,7 +80,7 @@ export default function HomeCrianca() {
           }
         }
         if (agendaConfig && Array.isArray(agendaConfig)) {
-          if (!dentroDoHorario(agendaConfig)) { navigate('/bloqueio'); return }
+          if (!dentroDoHorario(agendaConfig, childId)) { navigate('/bloqueio'); return }
         }
       }
 

@@ -227,7 +227,10 @@ export default function QuizIALivre() {
           {/* Input de tema personalizado */}
           <div style={{ background: 'rgba(255,255,255,0.04)', border: '2px solid rgba(168,85,247,0.3)', borderRadius: '20px', padding: '24px', marginBottom: '28px' }}>
             <div style={{ fontSize: '12px', color: '#a78bfa', fontWeight: '800', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>✏️ Escreva qualquer tema</div>
-            <div style={{ display: 'flex', gap: '12px' }}>
+            {/* `flexWrap` + `minWidth: 0` no input: `<input>` tem largura mínima
+                própria (~20 caracteres) que ignora o `flex: 1`, então em 360px o
+                botão "Gerar Quiz" era empurrado 47px pra fora da tela. */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
               <input
                 ref={inputRef}
                 value={temaInput}
@@ -235,7 +238,7 @@ export default function QuizIALivre() {
                 onKeyDown={e => e.key === 'Enter' && temaInput.trim() && iniciarQuiz(temaInput)}
                 placeholder="Ex: Minecraft, Pokémon, Folclore brasileiro, Física quântica..."
                 style={{
-                  flex: 1, background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.12)',
+                  flex: '1 1 200px', minWidth: 0, background: 'rgba(255,255,255,0.06)', border: '1.5px solid rgba(255,255,255,0.12)',
                   borderRadius: '12px', padding: '14px 18px', color: 'white', fontSize: '15px',
                   fontFamily: 'Plus Jakarta Sans, sans-serif', outline: 'none', transition: 'all 0.2s',
                 }}

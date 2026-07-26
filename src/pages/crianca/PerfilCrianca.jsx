@@ -299,7 +299,11 @@ export default function PerfilCrianca() {
 
         {/* ── CONTEÚDO ── */}
         <div style={{ padding: '28px 32px' }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }}>
+          {/* A coluna de 300px é fixa e não cabe no celular — vira uma coluna só
+              abaixo de 767px pela regra `.ns-perfil-colunas` em crianca.css.
+              Sem isso, "Conquistas" e os botões de Personalizar/Ver Carteira
+              ficavam 121px fora da tela, sem rolagem pra alcançar. */}
+          <div className="ns-perfil-colunas" style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }}>
 
             {/* ── COLUNA ESQUERDA ── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

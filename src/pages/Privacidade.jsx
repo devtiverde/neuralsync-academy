@@ -16,7 +16,12 @@ export default function Privacidade() {
           .priv-h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 17px; color: #0f0a1e; margin: 28px 0 10px; }
           .priv-p { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: #374151; line-height: 1.7; margin: 0 0 12px; }
           .priv-ul { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: #374151; line-height: 1.7; padding-left: 20px; margin: 0 0 12px; }
-          .priv-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; }
+          /* A tabela tem 3 colunas de texto e nao cabe em 390px: media 25px pra
+             fora, sem rolagem (html/body tem overflow-x: hidden). O invólucro
+             rolável é o padrão pra tabela em tela estreita — mantém a tabela
+             legível em vez de espremer as colunas até quebrar palavra. */
+          .priv-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 16px; }
+          .priv-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; }
           .priv-table th { background: #f3f0ff; color: #0f0a1e; font-weight: 700; padding: 10px 12px; text-align: left; border: 1px solid #e5e7eb; }
           .priv-table td { padding: 10px 12px; border: 1px solid #e5e7eb; color: #374151; vertical-align: top; }
         `}</style>
@@ -27,7 +32,7 @@ export default function Privacidade() {
         <p className="priv-p">A NeuralSync Academy é a controladora dos dados pessoais coletados nesta plataforma, conforme o Art. 5º, VI da Lei Geral de Proteção de Dados (LGPD — Lei 13.709/2018). Para contato com o Encarregado de Dados (DPO): <strong>suporte@neuralsync.com.br</strong>.</p>
 
         <h2 className="priv-h2">2. Dados coletados</h2>
-        <table className="priv-table">
+        <div className="priv-table-wrap"><table className="priv-table">
           <thead><tr><th>Dado</th><th>Titular</th><th>Finalidade</th></tr></thead>
           <tbody>
             <tr><td>Nome e e-mail</td><td>Responsável</td><td>Autenticação e comunicação</td></tr>
@@ -37,7 +42,7 @@ export default function Privacidade() {
             <tr><td>Configurações de controle parental</td><td>Responsável</td><td>Controle de tempo de tela</td></tr>
             <tr><td>Conversas com NeuralAI</td><td>Criança (inventores)</td><td>Interação educacional — não usadas para treino de IA</td></tr>
           </tbody>
-        </table>
+        </table></div>
         <p className="priv-p">Não coletamos geolocalização, biometria, dados financeiros (pagamentos processados por parceiros) ou qualquer dado sensível desnecessário.</p>
 
         <h2 className="priv-h2">3. Base legal — Consentimento para dados de menores (Art. 14 LGPD)</h2>

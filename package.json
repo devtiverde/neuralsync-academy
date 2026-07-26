@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "checar-ids": "node scripts/checar-ids-atividades.mjs",
+    "prebuild": "node scripts/checar-ids-atividades.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
