@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { gravar } from '../../lib/gravar'
 import { tipoConfig } from '../../data/atividadesData'
 import { hasEffect, consumePowerup } from '../../lib/powerups'
 import { foiAssistido } from '../atividades/IntroAtividade'
@@ -79,6 +80,16 @@ export default function Trilha() {
   const [missaoBonusReivindicado, setMissaoBonusReivindicado] = useState(false)
   const [trilhaSemanal, setTrilhaSemanal] = useState(null)
   const [temaAtual, setTemaAtual] = useState(null)
+  // Resgate e pulo agora esperam a gravacao: estes estados travam o botao no
+  // intervalo e avisam quando nao deu, em vez de marcar como resgatado a seco.
+  const [resgatando, setResgatando] = useState(null)
+  const [pulando, setPulando] = useState(null)
+  const [falhaGravacao, setFalhaGravacao] = useState(false)
+
+  function avisarFalha() {
+    setFalhaGravacao(true)
+    setTimeout(() => setFalhaGravacao(false), 4500)
+  }
 
   const { atividades: activities } = useAtividades(faixa)
 
@@ -141,43 +152,87 @@ export default function Trilha() {
     setMissao(missionIds.map(id => activities.find(a => a.id === id)).filter(Boolean))
   }, [activities, child])
 
+  // GRAVAR PRIMEIRO, MARCAR DEPOIS.
+  //
+  // Os dois bônus abaixo são de resgate único: gravam uma marca em localStorage
+  // que impede pedir de novo. Antes, a marca era escrita mesmo quando a gravação
+  // falhava (o `await` estava lá, mas ninguém olhava o `error`) — resultado: a
+  // criança clicava em "resgatar", o servidor não recebia o XP, e ela **nunca
+  // mais** conseguia resgatar aquele bônus. Perda definitiva e silenciosa.
+  //
+  // Invertendo a ordem, uma falha vira apenas "não deu, tenta de novo".
+
   async function pularAtividade(at) {
-    if (!child?.id) return
+    if (!child?.id || pulando) return
+    setPulando(at.id)
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const hist = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
-    hist.unshift({ child_id: child.id, titulo: at.titulo, xp: 0, coins: 0, emoji: at.emoji || '⭐', tipo: at.tipo, atividade_id: at.id, timestamp: Date.now(), data: new Date().toLocaleDateString('pt-BR') })
-    localStorage.setItem('ns_historico', JSON.stringify(hist.slice(0, 50)))
-    await supabase.from('ns_historico').insert({ child_id: child.id, parent_id: user.id, titulo: at.titulo, xp: 0, coins: 0, emoji: at.emoji || '⭐', tipo: at.tipo, data: new Date().toLocaleDateString('pt-BR'), timestamp: Date.now() })
+    if (!user) { setPulando(null); return }
+
+    const agora = Date.now()
+    const dataBr = new Date().toLocaleDateString('pt-BR')
+    const ok = await gravar(
+      supabase.from('ns_historico').insert({ child_id: child.id, parent_id: user.id, titulo: at.titulo, xp: 0, coins: 0, emoji: at.emoji || '⭐', tipo: at.tipo, data: dataBr, timestamp: agora }),
+      'trilha:pular-atividade',
+    )
+    setPulando(null)
+    if (!ok) { avisarFalha(); return } // o power-up de pular continua com ela
+
+    try {
+      const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+      hist.unshift({ child_id: child.id, titulo: at.titulo, xp: 0, coins: 0, emoji: at.emoji || '⭐', tipo: at.tipo, atividade_id: at.id, timestamp: agora, data: dataBr })
+      localStorage.setItem('ns_historico', JSON.stringify(hist.slice(0, 50)))
+    } catch { /* modo privado: o servidor já tem a linha */ }
     consumePowerup(child.id, 'pu_pular')
     setConcluidas(prev => [...prev, at.id])
   }
 
   async function reivindicarDesafio() {
-    if (!child?.id || desafioReivindicado) return
+    if (!child?.id || desafioReivindicado || resgatando) return
+    setResgatando('desafio')
     const novoXp = (child.xp || 0) + 500
     const novasCoins = (child.neural_coins || 0) + 500
-    await supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id)
+
+    const ok = await gravar(
+      supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id),
+      'trilha:bonus-desafio-semanal',
+    )
+    setResgatando(null)
+    if (!ok) { avisarFalha(); return }
+
     const updated = { ...child, xp: novoXp, neural_coins: novasCoins }
-    setChild(updated); localStorage.setItem('ns_active_child', JSON.stringify(updated))
-    localStorage.setItem(`ns_desafio_${child.id}_${semanaAtual()}`, '1')
+    setChild(updated)
+    try {
+      localStorage.setItem('ns_active_child', JSON.stringify(updated))
+      localStorage.setItem(`ns_desafio_${child.id}_${semanaAtual()}`, '1')
+    } catch { /* modo privado */ }
     setDesafioReivindicado(true)
   }
 
   async function reivindicarMissao() {
-    if (!child?.id || missaoBonusReivindicado) return
+    if (!child?.id || missaoBonusReivindicado || resgatando) return
+    setResgatando('missao')
     const BONUS_XP = 75, BONUS_COINS = 75
     const novoXp = (child.xp || 0) + BONUS_XP
     const novasCoins = (child.neural_coins || 0) + BONUS_COINS
-    await supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id)
+
+    const ok = await gravar(
+      supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id),
+      'trilha:bonus-missao-do-dia',
+    )
+    setResgatando(null)
+    if (!ok) { avisarFalha(); return }
+
     const updated = { ...child, xp: novoXp, neural_coins: novasCoins }
-    setChild(updated); localStorage.setItem('ns_active_child', JSON.stringify(updated))
-    const hist = (() => { try { return JSON.parse(localStorage.getItem('ns_historico') || '[]') } catch { return [] } })()
-    hist.unshift({ child_id: child.id, titulo: 'Missão do Dia Concluída!', xp: BONUS_XP, coins: BONUS_COINS, emoji: '🎯', tipo: 'missao', data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), timestamp: Date.now() })
-    localStorage.setItem('ns_historico', JSON.stringify(hist))
-    const chave = `ns_missao_${child.id}_${hojeStr()}`
-    const saved = (() => { try { return JSON.parse(localStorage.getItem(chave) || 'null') } catch { return null } })()
-    localStorage.setItem(chave, JSON.stringify({ ...saved, bonus_claimed: true }))
+    setChild(updated)
+    try {
+      localStorage.setItem('ns_active_child', JSON.stringify(updated))
+      const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+      hist.unshift({ child_id: child.id, titulo: 'Missão do Dia Concluída!', xp: BONUS_XP, coins: BONUS_COINS, emoji: '🎯', tipo: 'missao', data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), timestamp: Date.now() })
+      localStorage.setItem('ns_historico', JSON.stringify(hist))
+      const chave = `ns_missao_${child.id}_${hojeStr()}`
+      const saved = (() => { try { return JSON.parse(localStorage.getItem(chave) || 'null') } catch { return null } })()
+      localStorage.setItem(chave, JSON.stringify({ ...saved, bonus_claimed: true }))
+    } catch { /* modo privado */ }
     setMissaoBonusReivindicado(true)
   }
 
@@ -340,6 +395,14 @@ export default function Trilha() {
             </div>
           </div>
         </div>
+
+        {/* Resgate e pulo agora podem falhar de verdade. Sem este aviso, a criança
+            clicaria de novo achando que o toque não pegou. */}
+        {falhaGravacao && (
+          <div style={{ margin: '14px 16px 0', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.35)', borderRadius: '12px', padding: '12px 18px', color: '#fca5a5', fontWeight: '700', fontSize: '14px', textAlign: 'center' }}>
+            😕 Não deu pra salvar agora. Nada foi perdido — tente de novo em instantes.
+          </div>
+        )}
 
         {/* ── BUSCA + FILTRO POR TIPO ───────────────────────────
             Dentro de um mundo o TIPO volta a ser um filtro útil e não confunde: aqui ele
@@ -510,7 +573,7 @@ export default function Trilha() {
                       {!done && (
                         <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                           {hasEffect(child?.id, 'skip') && (
-                            <button onClick={() => pularAtividade(at)} style={{ background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '9px', padding: '8px 10px', color: '#a5b4fc', fontWeight: '700', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                            <button onClick={() => pularAtividade(at)} disabled={pulando === at.id} style={{ background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '9px', padding: '8px 10px', color: '#a5b4fc', fontWeight: '700', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
                               ⏭️
                             </button>
                           )}
@@ -528,7 +591,7 @@ export default function Trilha() {
                     🎉 Bônus de hoje já resgatado!
                   </div>
                 ) : missaoCompleta ? (
-                  <button onClick={reivindicarMissao} style={{ width: '100%', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', fontWeight: '900', fontSize: '14px', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 16px rgba(16,185,129,0.4)', marginTop: '4px' }}>
+                  <button onClick={reivindicarMissao} disabled={resgatando === 'missao'} style={{ width: '100%', background: 'linear-gradient(135deg, #10b981, #059669)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', fontWeight: '900', fontSize: '14px', cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 4px 16px rgba(16,185,129,0.4)', marginTop: '4px' }}>
                     <Trophy weight="duotone" size={20} color="#F59E0B" className="ns-icon-bounce" /> Resgatar bônus: +75 XP e +75 Coins!
                   </button>
                 ) : (
@@ -598,7 +661,7 @@ export default function Trilha() {
               {desafioReivindicado ? (
                 <div style={{ fontSize: '14px', color: '#34d399', fontWeight: '800', display: 'flex', alignItems: 'center', gap: 4 }}><CheckCircle weight="duotone" size={18} color="#10B981" /> Bônus resgatado esta semana!</div>
               ) : totalConcluidas === total && total > 0 ? (
-                <button onClick={reivindicarDesafio} style={{ background: 'var(--color-action)', border: 'none', borderRadius: 'var(--radius-lg)', padding: '13px 24px', color: 'white', fontWeight: '800', fontSize: 'var(--text-sm)', cursor: 'pointer', fontFamily: 'var(--font-sans)', boxShadow: '0 4px 16px rgba(249,115,22,0.4)', minHeight: '48px' }}>
+                <button onClick={reivindicarDesafio} disabled={resgatando === 'desafio'} style={{ background: 'var(--color-action)', border: 'none', borderRadius: 'var(--radius-lg)', padding: '13px 24px', color: 'white', fontWeight: '800', fontSize: 'var(--text-sm)', cursor: 'pointer', fontFamily: 'var(--font-sans)', boxShadow: '0 4px 16px rgba(249,115,22,0.4)', minHeight: '48px' }}>
                   <Trophy weight="duotone" size={20} color="#F59E0B" className="ns-icon-bounce" /> Resgatar +500 XP e +500 Coins!
                 </button>
               ) : (

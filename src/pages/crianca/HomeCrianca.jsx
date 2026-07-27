@@ -192,8 +192,13 @@ export default function HomeCrianca() {
     <LayoutCrianca child={child}>
       <div style={{ padding: '28px 32px', minHeight: '100vh', background: 'var(--ns-dark)' }}>
 
-        {/* ── HERO BANNER ──────────────────────────────── */}
-        <div style={{
+        {/* ── HERO BANNER ────────────────────────────────
+            `ns-home-hero` faz a linha quebrar no celular (regra em crianca.css).
+            Sem isso as pílulas de moedas e streak, que são `flex-shrink: 0`,
+            começavam 203px fora da tela a 390px — e como `html, body` têm
+            `overflow-x: hidden`, não havia como arrastar até elas. É o mesmo
+            sintoma que já foi relatado como "não dá pra ver os pontos". */}
+        <div className="ns-home-hero" style={{
           background: 'linear-gradient(135deg, #3b0764 0%, #5b21b6 40%, #7C3AED 100%)',
           borderRadius: 'var(--ns-radius-xl)',
           padding: '28px 32px',
@@ -225,13 +230,13 @@ export default function HomeCrianca() {
             }}>
               Olá, {child.nome}! <RocketLaunch weight="duotone" size={20} color="#F97316" />
             </h1>
-            <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 14, padding: '14px 20px', display: 'inline-block', minWidth: 300 }}>
+            <div className="ns-home-xp" style={{ background: 'rgba(0,0,0,0.2)', borderRadius: 14, padding: '14px 20px', display: 'inline-block', minWidth: 300, maxWidth: '100%' }}>
               <XPBar current={child.xp || 0} max={xpMax} level={child.nivel || 1} dark />
             </div>
           </div>
 
           {/* right: staggered StatCards */}
-          <div style={{ display: 'flex', gap: 12, position: 'relative', zIndex: 1, flexShrink: 0 }}>
+          <div className="ns-home-stats" style={{ display: 'flex', gap: 12, position: 'relative', zIndex: 1, flexShrink: 0 }}>
             {statCards.map((s, idx) => (
               <div
                 key={idx}

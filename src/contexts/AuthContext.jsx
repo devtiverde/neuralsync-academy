@@ -4,11 +4,38 @@ import { assinaturaVigente } from '../lib/assinatura'
 
 const AuthContext = createContext({})
 
+// Bancada de teste: com `ns_dev_bypass` ligado, finge uma sessão com plano pago
+// para que as telas atrás do paywall (Loja, Ranking, Relatório, Ebook) e a
+// `/home-crianca` possam ser auditadas sem criar conta de verdade em produção —
+// antes sobravam contas `@teste-neuralsync.com` no banco por causa disso.
+//
+// `import.meta.env.DEV` vira `false` no build e o bloco todo some do bundle
+// publicado (conferido: nem `ns_dev_bypass` nem `qa@dev.local` aparecem em
+// `dist/`). É o mesmo mecanismo do `PrivateRoute` e do `src/dev/DevAtividade.jsx`.
+// ⚠️ Trocar isso por uma env var comum abriria a porta em produção: só
+// `import.meta.env.DEV` é eliminado na compilação.
+// ⚠️ Os dados falsos ficam DENTRO desta função, depois do `return` de produção.
+// Numa primeira versão eles eram constantes no topo do arquivo e o e-mail
+// `qa@dev.local` FOI PARAR NO BUNDLE PUBLICADO: a constante continuava
+// referenciada e o compilador não teve como eliminá-la. Com o `return` antecipado,
+// `import.meta.env.DEV` vira `false`, tudo abaixo é código morto e some.
+// Conferir depois de mexer aqui:  grep -r "qa@dev.local" dist/assets/
+function estadoInicialDev() {
+  if (!import.meta.env.DEV) return null
+  try { if (sessionStorage.getItem('ns_dev_bypass') !== '1') return null } catch { return null }
+  return {
+    user: { id: '00000000-0000-4000-8000-000000000000', email: 'qa@dev.local' },
+    subscription: { plano: 'premium', plano_status: 'ativo', plano_ativo_ate: '2099-12-31T00:00:00Z' },
+  }
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [subscription, setSubscription] = useState(null)
-  const [subscriptionLoaded, setSubscriptionLoaded] = useState(false)
-  const [loading, setLoading] = useState(true)
+  // Inicializar o estado direto, em vez de chamar setState dentro do efeito:
+  // evita um render extra e não acrescenta aviso de lint ao arquivo.
+  const [user, setUser] = useState(() => estadoInicialDev()?.user ?? null)
+  const [subscription, setSubscription] = useState(() => estadoInicialDev()?.subscription ?? null)
+  const [subscriptionLoaded, setSubscriptionLoaded] = useState(() => !!estadoInicialDev())
+  const [loading, setLoading] = useState(() => !estadoInicialDev())
   // 'ativando' evita a corrida: enquanto a Edge Function de ativação não respondeu,
   // ninguém pode concluir que o usuário está sem plano.
   const [ativando, setAtivando] = useState(false)
@@ -52,6 +79,10 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    // Na bancada de teste o estado já nasce preenchido (ver os `useState` acima);
+    // não há sessão real para buscar nem escuta de autenticação a registrar.
+    if (estadoInicialDev()) return
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       if (session?.user) loadSubscription(session.user.id)

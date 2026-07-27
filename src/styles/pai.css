@@ -66,7 +66,9 @@ html, body { overflow-x: hidden; }
 /* ── Dashboard: cards que quebram em coluna única no mobile ── */
 @media (max-width: 640px) {
   .pai-recomendadas-grid { grid-template-columns: 1fr !important; }
-  .pai-stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+  /* `1fr` e minmax(auto,1fr) e a coluna nao encolhe abaixo do conteudo: em 360px
+     o card "0 Atividades" estourava 6px pra fora, sem rolagem. */
+  .pai-stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
   .pai-promo-card { flex-direction: column !important; align-items: flex-start !important; }
   .pai-promo-card > button { width: 100% !important; }
 }

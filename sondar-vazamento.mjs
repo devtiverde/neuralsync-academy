@@ -20,6 +20,7 @@
  * correcoes, em vez de confiar no hash bater.
  */
 import { chromium } from 'playwright'
+import { prepararContexto } from './harness-teste.mjs'
 
 const [, , PORTA, ROTA, LARG = '390'] = process.argv
 if (!PORTA || !ROTA) {
@@ -35,15 +36,7 @@ const ctx = await navegador.newContext({
   // muda o layout e a sonda passa a medir uma tela que ninguém vê.
   isMobile: largura < 800, hasTouch: largura < 800, deviceScaleFactor: 2,
 })
-await ctx.addInitScript(() => {
-  try {
-    sessionStorage.setItem('ns_dev_bypass', '1')
-    localStorage.setItem('ns_active_child', JSON.stringify({
-      id: 'dev-child', nome: 'Teste QA', avatar: '🦊', nivel: 3, xp: 420,
-      neural_coins: 250, streak_atual: 4, faixa_etaria: 'construtores', idade: 7,
-    }))
-  } catch { /* modo privado */ }
-})
+await prepararContexto(ctx)
 
 const pagina = await ctx.newPage()
 const BASE = PORTA.startsWith('http') ? PORTA.replace(/\/$/, '') : `http://localhost:${PORTA}`

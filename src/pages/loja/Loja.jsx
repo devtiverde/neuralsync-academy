@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { activatePowerup, getActiveSummary } from '../../lib/powerups'
+import { gravarTodas } from '../../lib/gravar'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../../lib/lojaConfig'
 import '../../styles/crianca.css'
@@ -134,6 +135,10 @@ export default function Loja() {
   const [efeitoEquipado, setEfeitoEquipado] = useState(null)
   const [modalItem, setModalItem] = useState(null)
   const [compraOk, setCompraOk] = useState(false)
+  // A compra agora espera a gravação: `comprando` trava o botão nesse intervalo
+  // e `erroCompra` avisa quando não deu, em vez de fingir que deu.
+  const [comprando, setComprando] = useState(false)
+  const [erroCompra, setErroCompra] = useState(false)
   const [molduraEquipada, setMolduraEquipada] = useState(null)
   const [temaEquipado, setTemaEquipado] = useState(null)
 
@@ -200,32 +205,68 @@ export default function Loja() {
     }
   }, [])
 
-  function comprar() {
-    if (!modalItem || saldo < modalItem.preco) return
+  // GRAVA PRIMEIRO, MUDA A TELA DEPOIS.
+  //
+  // Antes era o contrário: descontava a moeda na tela, guardava o item no
+  // localStorage e só então disparava a gravação com `.then(() => {})` — um
+  // `then` vazio, que engole o erro. Quando a gravação falhava, a criança via
+  // "compra feita", ficava com o item só naquele aparelho, e ele sumia assim que
+  // o app relesse do servidor. Perda silenciosa, e ninguém reporta isso como bug.
+  //
+  // Inverter a ordem custa a espera de uma requisição (coberta pelo estado
+  // `comprando` no botão) e elimina qualquer necessidade de desfazer: ou gravou e
+  // a tela muda, ou não gravou e nada mudou.
+  async function comprar() {
+    if (!modalItem || saldo < modalItem.preco || comprando) return
+
     const novoSaldo = saldo - modalItem.preco
-    setSaldo(novoSaldo)
-    const purch = (() => { try { return JSON.parse(localStorage.getItem('ns_purchased') || '[]') } catch { return [] } })()
-    purch.push({ item_id: modalItem.id, timestamp: Date.now() })
-    localStorage.setItem('ns_purchased', JSON.stringify(purch))
-    setComprados(prev => [...prev, modalItem.id])
-    const childLocal = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
     const isAvatar = modalItem.id.startsWith('av_')
     const isPowerup = modalItem.id.startsWith('pu_')
     const categoria = isAvatar ? 'avatar' : modalItem.id.startsWith('mo_') ? 'moldura' : modalItem.id.startsWith('tm_') ? 'tema' : isPowerup ? 'powerup' : 'brinde'
-    if (isPowerup && childId) {
-      activatePowerup(childId, modalItem.id)
-      const summary = getActiveSummary(childId)
-      const puMap = {}
-      summary.forEach(s => { puMap[s.id] = s.badge })
-      setActivePu(puMap)
-    }
     const updates = { neural_coins: novoSaldo }
     if (isAvatar) updates.avatar = modalItem.emoji
-    if (childLocal) localStorage.setItem('ns_active_child', JSON.stringify({ ...childLocal, ...updates }))
+
     if (childId) {
-      supabase.from('children').update(updates).eq('id', childId).then(() => {})
-      if (!isPowerup) supabase.from('ns_purchases').insert({ child_id: childId, item_id: modalItem.id }).then(() => {})
+      setComprando(true)
+      const gravacoes = [
+        { consulta: supabase.from('children').update(updates).eq('id', childId), operacao: 'loja:debitar-moedas' },
+      ]
+      // Power-up é consumível e vive no localStorage; não tem linha em ns_purchases.
+      if (!isPowerup) {
+        gravacoes.push({
+          consulta: supabase.from('ns_purchases').insert({ child_id: childId, item_id: modalItem.id }),
+          operacao: 'loja:registrar-compra',
+        })
+      }
+
+      const ok = await gravarTodas(gravacoes)
+      setComprando(false)
+      if (!ok) {
+        setModalItem(null)
+        setErroCompra(true)
+        setTimeout(() => setErroCompra(false), 4500)
+        return
+      }
     }
+
+    // A partir daqui está gravado — pode mexer na tela.
+    setSaldo(novoSaldo)
+    try {
+      const purch = (() => { try { return JSON.parse(localStorage.getItem('ns_purchased') || '[]') } catch { return [] } })()
+      purch.push({ item_id: modalItem.id, timestamp: Date.now() })
+      localStorage.setItem('ns_purchased', JSON.stringify(purch))
+      const childLocal = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
+      if (childLocal) localStorage.setItem('ns_active_child', JSON.stringify({ ...childLocal, ...updates }))
+    } catch { /* modo privado: o servidor já tem a verdade */ }
+    setComprados(prev => [...prev, modalItem.id])
+
+    if (isPowerup && childId) {
+      activatePowerup(childId, modalItem.id)
+      const puMap = {}
+      getActiveSummary(childId).forEach(s => { puMap[s.id] = s.badge })
+      setActivePu(puMap)
+    }
+
     setModalItem(null)
     setCompraOk(categoria)
     setTimeout(() => setCompraOk(false), 2500)
@@ -380,6 +421,13 @@ export default function Loja() {
           </div>
         </div>
 
+        {/* A compra agora pode falhar de verdade — e a crianca precisa saber, em
+            vez de achar que comprou e o item sumir depois. */}
+        {erroCompra && (
+          <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.35)', borderRadius: '12px', padding: '12px 20px', textAlign: 'center', color: '#fca5a5', fontWeight: '700', fontSize: '14px', marginBottom: '16px' }}>
+            😕 Não deu pra guardar sua compra agora. Suas moedas estão intactas — tente de novo em instantes.
+          </div>
+        )}
         {compraOk && (
           <div style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '12px', padding: '12px 20px', textAlign: 'center', color: '#34d399', fontWeight: '700', fontSize: '14px', marginBottom: '16px' }}>
             {compraOk === 'avatar' ? '✅ Avatar equipado! Veja no seu Perfil →'
@@ -651,7 +699,7 @@ export default function Loja() {
             )}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setModalItem(null)} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px', padding: '12px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Cancelar</button>
-              <button onClick={comprar} style={{ flex: 1, background: 'linear-gradient(135deg, #7C3AED, #5b21b6)', border: 'none', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Comprar! ✓</button>
+              <button onClick={comprar} disabled={comprando} style={{ flex: 1, background: comprando ? 'rgba(124,58,237,0.45)' : 'linear-gradient(135deg, #7C3AED, #5b21b6)', border: 'none', borderRadius: '12px', padding: '12px', color: 'white', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{comprando ? '⏳ Comprando...' : 'Comprar! ✓'}</button>
             </div>
           </div>
         </div>

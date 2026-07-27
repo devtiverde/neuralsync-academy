@@ -22,6 +22,7 @@
  */
 import { chromium } from 'playwright'
 import { mkdirSync, writeFileSync } from 'node:fs'
+import { prepararContexto, CRIANCA_TESTE } from './harness-teste.mjs'
 
 const PORTA = process.argv[2]
 if (!PORTA) {
@@ -80,11 +81,6 @@ const TELAS = [
 // `ns_purchases` filtram por `child_id`, e um id solto como 'dev-child' faz o
 // Postgres devolver 400. Isso aparecia no relatorio como "erro de JS" em
 // perfil/loja/coins/perfil-filho — ruido do teste, nao defeito da tela.
-const CRIANCA_FAKE = {
-  id: '00000000-0000-4000-8000-000000000001', nome: 'Teste QA', avatar: '🦊', nivel: 3, xp: 420,
-  neural_coins: 250, streak_atual: 4, faixa_etaria: 'construtores', idade: 7,
-}
-
 mkdirSync(SAIDA, { recursive: true })
 const navegador = await chromium.launch()
 const resultados = []
@@ -97,14 +93,7 @@ for (const tela of TELAS) {
     deviceScaleFactor: 2,
   })
 
-  // Precisa rodar ANTES de qualquer script da página, senão o PrivateRoute já
-  // decidiu redirecionar para /auth antes de a gente gravar o bypass.
-  await ctx.addInitScript(crianca => {
-    try {
-      sessionStorage.setItem('ns_dev_bypass', '1')
-      localStorage.setItem('ns_active_child', JSON.stringify(crianca))
-    } catch { /* modo privado */ }
-  }, CRIANCA_FAKE)
+  await prepararContexto(ctx)
 
   for (const { rota, nome, area } of ROTAS) {
     const pagina = await ctx.newPage()

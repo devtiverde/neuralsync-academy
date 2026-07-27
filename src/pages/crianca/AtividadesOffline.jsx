@@ -304,7 +304,7 @@ export default function AtividadesOffline() {
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '18px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(380px, 100%), 1fr))', gap: '18px' }}>
             {ativadasFiltradas.map(ativ => (
               <CardAtividade
                 key={ativ.id}
@@ -324,7 +324,7 @@ export default function AtividadesOffline() {
                 display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap',
               }}>
                 <div style={{ fontSize: '48px' }}>🔒</div>
-                <div style={{ flex: 1, minWidth: '200px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: '#a78bfa', fontWeight: '900', fontSize: '16px', marginBottom: '6px' }}>
                     +{qtdBloqueadas} atividades exclusivas nesta categoria
                   </div>

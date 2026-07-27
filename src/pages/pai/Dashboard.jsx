@@ -302,7 +302,9 @@ export default function Dashboard() {
             <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--ns-text)', letterSpacing: '-0.5px', marginBottom: 6, fontFamily: 'var(--ns-font-body)' }}>Painel de Controle</h1>
             <p style={{ color: 'var(--ns-text-muted)', fontSize: 14, lineHeight: 1.7 }}>Acompanhe o desenvolvimento cognitivo dos seus filhos em tempo real.</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* `flexWrap` porque o selo do plano + "Adicionar filho" lado a lado
+              passavam da borda em 360px, e o botão ficava sem como alcançar. */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             {subscription?.plano && (
               <span style={{ background: plano.bg, color: plano.cor, fontSize: 12, fontWeight: 700, padding: '6px 14px', borderRadius: 999, border: `1.5px solid ${plano.cor}35` }}>
                 {plano.nome}

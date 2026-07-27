@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { gravar } from '../../lib/gravar'
 import { playSound } from '../../lib/sounds'
 import { foiAssistido } from '../atividades/IntroAtividade'
 import { getMultipliers, hasEffect, consumePowerup } from '../../lib/powerups'
@@ -13,6 +14,42 @@ import '../../styles/crianca.css'
 function salvarLocal(chave, valor) {
   try { localStorage.setItem(chave, valor); return true }
   catch (e) { console.warn('[Encerramento] falha ao salvar', chave, e); return false }
+}
+
+// ── Fila de histórico não entregue ────────────────────────────────────────────
+// Cada atividade concluída é UMA linha em `ns_historico`, e é dela que sai o
+// relatório que os pais compram. Se o insert falhar (rede oscilando no celular,
+// que é o caso comum), aquela atividade sumiria para sempre — sem erro na tela,
+// sem ninguém perceber. A fila guarda a linha e a próxima conclusão a reenvia.
+//
+// Teto de 50 para não crescer sem fim se a conta estiver com problema crônico;
+// nesse cenário o auto-reporte do `gravar` já vai ter avisado várias vezes.
+const FILA = 'ns_historico_pendente'
+
+function enfileirarHistorico(linha) {
+  try {
+    const fila = JSON.parse(localStorage.getItem(FILA) || '[]')
+    fila.push(linha)
+    salvarLocal(FILA, JSON.stringify(fila.slice(-50)))
+  } catch { /* modo privado ou quota cheia: nada a fazer além de já ter reportado */ }
+}
+
+async function reenviarHistoricoPendente() {
+  let fila
+  try { fila = JSON.parse(localStorage.getItem(FILA) || '[]') } catch { return }
+  // `Array.isArray` porque a chave pode ter sido corrompida por outra versão do
+  // app ou por edição manual — e aí o `for...of` abaixo lançaria.
+  if (!Array.isArray(fila) || !fila.length) return
+
+  const falharam = []
+  for (const linha of fila) {
+    const ok = await gravar(supabase.from('ns_historico').insert(linha), 'encerramento:reenviar-historico')
+    if (!ok) falharam.push(linha)
+  }
+  try {
+    if (falharam.length) salvarLocal(FILA, JSON.stringify(falharam))
+    else localStorage.removeItem(FILA)
+  } catch { /* modo privado */ }
 }
 
 const badgeMap = {
@@ -272,11 +309,39 @@ export default function Encerramento() {
       const novoStreakMax = Math.max(child.streak_maximo || 0, novoStreak)
       const childAtualizado = { ...child, xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }
       salvarLocal('ns_active_child', JSON.stringify(childAtualizado))
-      supabase.from('children').update({ xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }).eq('id', child.id).then(() => {})
-      supabase.auth.getUser().then(({ data: { user } }) => {
+
+      // AQUI NÃO SE DESFAZ NADA — ao contrário da Loja. A criança já jogou e já
+      // ganhou; tirar o XP da tela porque a rede falhou seria puni-la por um
+      // problema que não é dela. A tela comemora na hora e a gravação corre atrás.
+      //
+      // As duas gravações têm naturezas diferentes:
+      //
+      // `children` grava o TOTAL acumulado, lido do localStorage. Se uma falhar, a
+      // próxima atividade manda o total já corrigido — ela se cura sozinha. Basta
+      // saber que falhou.
+      //
+      // `ns_historico` insere UMA LINHA por atividade. Se falhar, aquela atividade
+      // some para sempre do relatório dos pais — e o relatório é justamente o que
+      // se vende. Por isso a linha perdida vai para uma fila e é reenviada na
+      // próxima vez que a criança concluir algo.
+      ;(async () => {
+        gravar(
+          supabase.from('children').update({ xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }).eq('id', child.id),
+          'encerramento:creditar-xp',
+        )
+
+        const { data: { user } = {} } = await supabase.auth.getUser()
         if (!user) return
-        supabase.from('ns_historico').insert({ child_id: child.id, parent_id: user.id, titulo: entrada.titulo, xp: entrada.xp, coins: entrada.coins, emoji: entrada.emoji, tipo: entrada.tipo, data: entrada.data, timestamp: entrada.timestamp }).then(() => {})
-      })
+
+        const linha = {
+          child_id: child.id, parent_id: user.id, titulo: entrada.titulo,
+          xp: entrada.xp, coins: entrada.coins, emoji: entrada.emoji,
+          tipo: entrada.tipo, data: entrada.data, timestamp: entrada.timestamp,
+        }
+        await reenviarHistoricoPendente()
+        const ok = await gravar(supabase.from('ns_historico').insert(linha), 'encerramento:gravar-historico')
+        if (!ok) enfileirarHistorico(linha)
+      })()
     }
 
     hist.unshift(entrada)

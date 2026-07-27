@@ -302,7 +302,7 @@ export default function Relatorio() {
                       </span>
                     )}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: '10px' }}>
                     {[
                       { valor: `${totalMinSemana} min`, label: 'Minutos', cor: '#7C3AED' },
                       { valor: histSemana.length, label: 'Atividades', cor: '#10b981' },
@@ -342,7 +342,7 @@ export default function Relatorio() {
               {/* ══ DIÁRIO ══════════════════════════════════════════════ */}
               {aba === 'diario' && (
                 <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: '10px', marginBottom: '16px' }}>
                     {[
                       [histHoje.length > 0 ? (histHoje.length * 10) + ' min' : '—', 'Tempo total', '#7C3AED'],
                       ['+' + totalXPHoje, 'XP ganho', '#F07A20'],
@@ -407,7 +407,7 @@ export default function Relatorio() {
 
               {aba === 'semanal' && histFilho.length > 0 && (
                 <div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px', marginBottom: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: '10px', marginBottom: '16px' }}>
                     {[
                       [diasAtivos + '/7', 'Dias ativos', '#7C3AED'],
                       [totalMinSemana + ' min', 'Tempo total', '#F07A20'],
@@ -483,7 +483,7 @@ export default function Relatorio() {
                       Sem elas, `scoresCognitivos` devolve o piso de 20% para todas as
                       categorias, o que apareceria como se fosse uma medição real. */}
                   {histSemana.length > 0 && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: '10px', marginBottom: '14px' }}>
                     <div style={{ background: '#f0fdf4', borderRadius: '14px', padding: '14px', border: '1.5px solid #bbf7d0' }}>
                       <div style={{ fontWeight: '800', fontSize: '12px', color: '#10b981', marginBottom: '8px' }}>✅ Pontos fortes</div>
                       {pontosFortesTop2.map((h, i) => (
@@ -525,7 +525,7 @@ export default function Relatorio() {
 
                 return (
                   <>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: '10px', marginBottom: '16px' }}>
                       {[
                         [diasAtivosMes + ' dias', 'Dias ativos', '#7C3AED'],
                         [hist30.length, 'Atividades', '#F07A20'],
