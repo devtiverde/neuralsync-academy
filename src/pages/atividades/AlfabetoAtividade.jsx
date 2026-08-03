@@ -31,7 +31,11 @@ const LETRAS = [
   { letra: 'V', palavra: 'Vaca',       emoji: '🐄', funfato: 'O V e o B têm sons parecidos, mas o V usa os dentes — experimente sentir a diferença!', detalhe: 'Consoante fricativa labiodental | Som: /v/ (diferente do b)' },
   { letra: 'W', palavra: 'Waffle',     emoji: '🧇', funfato: 'O W entrou no alfabeto português em 2009 — junto com K e Y para nomes estrangeiros!',  detalhe: 'Letra estrangeira — não era do alfabeto original português' },
   { letra: 'X', palavra: 'Xícara',     emoji: '☕', funfato: 'O X é a letra mais versátil — soa como CH (xá), KS (táxi), Z (exame) ou S (próximo)!', detalhe: 'Letra polissônica: /ʃ/ (xá), /ks/ (taxi), /z/ (exame), /s/ (próximo)' },
-  { letra: 'Y', palavra: 'Iogurte',    emoji: '🥛', funfato: 'O Y só aparece em palavras estrangeiras e nomes próprios — como Yan, Yara e Yoga!',    detalhe: 'Letra estrangeira | Soa como i/j | Usada em nomes e anglicismos' },
+  // "Iogurte" estava aqui e não tem Y NENHUM: em português escreve-se com I. A criança
+  // tocava no Y, via um copo de leite e ouvia uma palavra começada em I — a letra, a
+  // palavra e o desenho discordando entre si. O próprio "sabia que" desta entrada já
+  // sugeria a saída ao citar Yoga. Encontrado pelo scripts/auditar-alfabeto.mjs em 03/08/2026.
+  { letra: 'Y', palavra: 'Yoga',       emoji: '🧘', funfato: 'O Y só aparece em palavras estrangeiras e nomes próprios — como Yan, Yara e Yoga!',    detalhe: 'Letra estrangeira | Soa como i/j | Usada em nomes e anglicismos' },
   { letra: 'Z', palavra: 'Zebra',      emoji: '🦓', funfato: 'No final de palavra o Z vira S — "paz" soa como "pass" e "arroz" como "arross"!',      detalhe: 'Consoante fricativa alveolar | Som: /z/. No final: /s/ (paz)' },
 ]
 

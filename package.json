@@ -11,7 +11,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gerar-kids-resumo": "node scripts/gerar-kids-resumo.mjs"
+    "gerar-kids-resumo": "node scripts/gerar-kids-resumo.mjs",
+    "audios-deriva": "node scripts/audios-deriva.mjs",
+    "auditar-alfabeto": "node scripts/auditar-alfabeto.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
