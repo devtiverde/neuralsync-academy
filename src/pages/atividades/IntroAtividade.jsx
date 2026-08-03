@@ -46,6 +46,46 @@ const tipoTheme = {
   'zona-emocoes': { bg: 'linear-gradient(160deg,#1a0a12 0%,#3b0f28 100%)', accent: '#EC4899', soft: '#f9a8d4' },
 }
 
+/**
+ * Fundo e cor de texto do botão principal, para os 18 temas de uma vez.
+ *
+ * O PROBLEMA, MEDIDO EM 03/08/2026: o gradiente ia do accent até a cor PASTEL do
+ * tema, e o texto era branco fixo. Metade do botão mais apertado do produto ficava
+ * clara com texto branco em cima — 2,81:1, quando o mínimo WCAG é 4,5:1.
+ *
+ * E não bastava escolher branco ou escuro pela luminância: existe uma FAIXA MÉDIA
+ * (luminância entre ~0,15 e ~0,25) onde as duas opções empatam em 4,33:1, ou seja,
+ * NENHUMA passa. Vários accents caem exatamente ali (#7F77DD, #1D9E75). Escolher a
+ * "menos pior" mantinha o botão reprovando.
+ *
+ * A saída é o fundo não morar nessa faixa:
+ *  · accent escuro  → escurece mais ainda e usa texto BRANCO
+ *  · accent claro   → mantém vivo e usa texto ESCURO
+ * Nos dois casos o gradiente fica dentro da própria cor do tema, então o botão
+ * continua com a identidade da atividade — só deixa de ser ilegível.
+ *
+ * Sem canal alfa de propósito: com `${accent}99` a cor final depende do que está
+ * atrás, e aí esta conta não prevê mais o que aparece na tela.
+ */
+function luminanciaHex(hex) {
+  const h = (hex || '').replace('#', '')
+  if (h.length !== 6) return 0
+  const canal = v => { const s = parseInt(v, 16) / 255; return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4) }
+  return 0.2126 * canal(h.slice(0, 2)) + 0.7152 * canal(h.slice(2, 4)) + 0.0722 * canal(h.slice(4, 6))
+}
+function escurecer(hex, fator) {
+  const h = (hex || '').replace('#', '')
+  if (h.length !== 6) return hex
+  const c = i => Math.max(0, Math.min(255, Math.round(parseInt(h.slice(i, i + 2), 16) * fator)))
+  return '#' + [0, 2, 4].map(i => c(i).toString(16).padStart(2, '0')).join('')
+}
+function botaoDoTema(accent) {
+  const claro = luminanciaHex(accent) >= 0.30
+  return claro
+    ? { background: `linear-gradient(135deg, ${accent}, ${escurecer(accent, 0.85)})`, cor: '#0d0a1a' }
+    : { background: `linear-gradient(135deg, ${escurecer(accent, 0.78)}, ${escurecer(accent, 0.52)})`, cor: 'white' }
+}
+
 export default function IntroAtividade({ atividade, onComecar, onVoltar, refazendo = false, kidsLink = null }) {
   const navigate = useNavigate()
   const t = tipoTheme[atividade?.tipo] || tipoTheme.quiz
@@ -156,7 +196,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
                 Toda atividade já tem `descricao` — uma linha de 23 a 75 caracteres,
                 escrita justamente para ser esse resumo. Ela nunca corta. A história
                 inteira fica num lugar só, no cartão, sem reticência. */}
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: 1.6 }}>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: 1.6 }}>
               {atividade.descricao || atividade.historinha}
             </p>
           </div>
@@ -181,7 +221,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
               <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: t.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🦊</div>
               <div>
                 <div style={{ color: 'white', fontWeight: '700', fontSize: '13px' }}>Olá, {child.nome}! 🚀</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px' }}>Preparado para mais uma aventura?</div>
+                <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: '11px' }}>Preparado para mais uma aventura?</div>
               </div>
             </div>
           )}
@@ -204,7 +244,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
               <div key={lbl} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: '20px', marginBottom: '4px' }}>{ic}</div>
                 <div style={{ color: 'white', fontWeight: '900', fontSize: '13px', marginBottom: '2px' }}>{val}</div>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', fontWeight: '600' }}>{lbl}</div>
+                <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: '10px', fontWeight: '600' }}>{lbl}</div>
               </div>
             ))}
           </div>
@@ -215,7 +255,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
               <span style={{ fontSize: '18px' }}>🔁</span>
               <div>
                 <div style={{ fontSize: '11px', fontWeight: '800', color: '#fca5a5', textTransform: 'uppercase' }}>Refazendo</div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>Prática leva à perfeição!</div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.68)' }}>Prática leva à perfeição!</div>
               </div>
             </div>
           )}
@@ -255,12 +295,12 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
                 <div style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {kidsCategoria.titulo}
                 </div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.68)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {(kidsCategoria.introducao || '').substring(0, 80)}…
                 </div>
               </div>
               <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.3)' }}>→</span>
+                <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.62)' }}>→</span>
                 {!assistido && <span style={{ fontSize: '9px', color: '#fbbf24', fontWeight: '800' }}>+5 XP</span>}
               </div>
             </button>
@@ -291,25 +331,25 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '10px' }}>
                 <div style={{ fontSize: '10px', fontWeight: '800', color: t.soft, textTransform: 'uppercase', letterSpacing: '1px' }}>📖 Sabia que...</div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '700' }}>{slideIdx + 1}/{slides.length}</div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.62)', fontWeight: '700' }}>{slideIdx + 1}/{slides.length}</div>
               </div>
               <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                 <button
                   onClick={() => irParaSlide(-1)}
                   aria-label="Slide anterior"
-                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
+                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.72)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
                 >‹</button>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '28px', flexShrink: 0, lineHeight: 1 }}>{slides[slideIdx].emoji}</div>
                   <div>
                     <div style={{ fontSize: '12px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>{slides[slideIdx].titulo}</div>
-                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{slides[slideIdx].texto}</div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{slides[slideIdx].texto}</div>
                   </div>
                 </div>
                 <button
                   onClick={() => irParaSlide(1)}
                   aria-label="Próximo slide"
-                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
+                  style={{ flexShrink: 0, width: 34, minHeight: 44, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.72)', fontSize: '22px', fontWeight: '900', cursor: 'pointer', padding: 0, lineHeight: 1, fontFamily: 'inherit' }}
                 >›</button>
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4px' }}>
@@ -341,7 +381,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
                 <div style={{ color: '#fcd34d', fontWeight: '800', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
                   Faixa avançada
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', lineHeight: 1.5 }}>
+                <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: '12px', lineHeight: 1.5 }}>
                   Esta atividade é para <strong style={{ color: '#fbbf24' }}>{FAIXA_LABELS[atividadeFaixa]}</strong>. Um adulto precisa autorizar o acesso.
                 </div>
               </div>
@@ -354,7 +394,9 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
               onClick={() => setShowModal(true)}
               style={{
                 width: '100%', padding: '17px', borderRadius: '16px', border: 'none',
-                background: 'linear-gradient(135deg, #92400e, #f59e0b99)',
+                // Mesmo motivo do botão de começar: a ponta clara do âmbar deixava
+                // o texto branco fraco. As duas pontas ficam no âmbar escuro.
+                background: 'linear-gradient(135deg, #92400e, #b45309)',
                 color: 'white', fontWeight: '900', fontSize: '16px', cursor: 'pointer',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
                 boxShadow: '0 8px 32px rgba(245,158,11,0.35)',
@@ -370,8 +412,14 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
               onClick={() => { playSound('click'); onComecar() }}
               style={{
                 width: '100%', padding: '17px', borderRadius: '16px', border: 'none',
-                background: `linear-gradient(135deg, ${t.accent}, ${t.soft}99)`,
-                color: 'white', fontWeight: '900', fontSize: '16px', cursor: 'pointer',
+                // MEDIDO EM 03/08/2026: este gradiente terminava em `${t.soft}99` — a
+                // cor PASTEL do tema. Metade do botão mais importante da tela ficava
+                // clara com texto branco por cima: 2,81:1, quando o mínimo é 4,5:1.
+                // Agora as duas pontas ficam na família do accent (a segunda apenas
+                // mais funda), o que preserva o relevo do gradiente e devolve o
+                // contraste. Ver auditar-contraste.mjs.
+                background: botaoDoTema(t.accent).background,
+                color: botaoDoTema(t.accent).cor, fontWeight: '900', fontSize: '16px', cursor: 'pointer',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
                 boxShadow: `0 8px 32px ${t.accent}50`,
                 transition: 'transform 0.2s, box-shadow 0.2s',
