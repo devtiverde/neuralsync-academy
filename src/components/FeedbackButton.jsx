@@ -36,6 +36,10 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
     // contexto automático: sem isso quase todo reporte vira "não funciona" sem pista
     const contexto = {
       rota: window.location.pathname + window.location.search,
+      // guardado aqui de propósito: a RLS não deixa ninguém ler o e-mail de outra conta,
+      // nem o admin. Sem esta linha o painel mostra o reporte mas não tem como responder
+      // a pessoa. O e-mail chega no aviso do Resend como `reply_to`, mas some da tela.
+      email: user?.email ?? null,
       user_agent: navigator.userAgent,
       viewport: `${window.innerWidth}x${window.innerHeight}`,
       area,

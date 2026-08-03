@@ -5,6 +5,7 @@ import { gravar } from '../../lib/gravar'
 import { playSound } from '../../lib/sounds'
 import { foiAssistido } from '../atividades/IntroAtividade'
 import { getMultipliers, hasEffect, consumePowerup } from '../../lib/powerups'
+import { creditarAtividade, aplicarNoFilhoLocal } from '../../lib/economia'
 import { Trophy, Star, CoinVertical, RocketLaunch } from '@phosphor-icons/react'
 import Nix from '../../components/Nix'
 import '../../styles/crianca.css'
@@ -16,23 +17,19 @@ function salvarLocal(chave, valor) {
   catch (e) { console.warn('[Encerramento] falha ao salvar', chave, e); return false }
 }
 
-// ── Fila de histórico não entregue ────────────────────────────────────────────
-// Cada atividade concluída é UMA linha em `ns_historico`, e é dela que sai o
-// relatório que os pais compram. Se o insert falhar (rede oscilando no celular,
-// que é o caso comum), aquela atividade sumiria para sempre — sem erro na tela,
-// sem ninguém perceber. A fila guarda a linha e a próxima conclusão a reenvia.
+// ── Fila de histórico não entregue (só drenagem, a partir de 02/08/2026) ──────
+// Cada atividade concluída é UMA linha em `ns_historico`, e é dela que sai o relatório
+// que os pais compram. Quando o insert vinha daqui e falhava (rede oscilando no celular,
+// que é o caso comum), aquela atividade sumia para sempre, sem erro na tela.
 //
-// Teto de 50 para não crescer sem fim se a conta estiver com problema crônico;
-// nesse cenário o auto-reporte do `gravar` já vai ter avisado várias vezes.
+// A fila deixou de RECEBER: agora o crédito e a linha do histórico são gravados juntos
+// pela função `ns_creditar_atividade`, na mesma transação — ou entram os dois, ou
+// nenhum, e não há mais como creditar e perder o registro.
+//
+// O que sobrou é a drenagem, para as linhas que ficaram presas no aparelho de alguém
+// antes desta mudança. Pode sair daqui alguns meses, quando não houver mais fila em
+// campo. Ver [[neuralsync_proximo_plano]].
 const FILA = 'ns_historico_pendente'
-
-function enfileirarHistorico(linha) {
-  try {
-    const fila = JSON.parse(localStorage.getItem(FILA) || '[]')
-    fila.push(linha)
-    salvarLocal(FILA, JSON.stringify(fila.slice(-50)))
-  } catch { /* modo privado ou quota cheia: nada a fazer além de já ter reportado */ }
-}
 
 async function reenviarHistoricoPendente() {
   let fila
@@ -243,6 +240,10 @@ export default function Encerramento() {
   const { state } = useLocation()
   const [mostrarBadge, setMostrarBadge] = useState(false)
   const [levelUp, setLevelUp] = useState(null)
+  // O que o servidor de fato creditou. Enquanto não chega, a tela mostra a estimativa
+  // local — que vem dos mesmos dados e quase sempre bate. Esperar a resposta para
+  // comemorar deixaria a criança olhando uma tela parada por causa da rede.
+  const [ganhoReal, setGanhoReal] = useState(null)
   const [showContent, setShowContent] = useState(false)
 
   const tipo = state?.tipo ?? ''
@@ -288,59 +289,43 @@ export default function Encerramento() {
 
     if (child) {
       entrada.child_id = child.id
-      const novoXP = (child.xp || 0) + xp
-      const novasCoins = (child.neural_coins || 0) + coins
       const nivelAtual = child.nivel || 1
-      const novoNivel = Math.max(nivelAtual, Math.floor(novoXP / 500) + 1)
-      if (novoNivel > nivelAtual) setTimeout(() => setLevelUp({ de: nivelAtual, para: novoNivel }), 800)
-      const hoje = new Date().toDateString()
-      const ultimoAtivoKey = 'ns_ultimo_ativo_' + child.id
-      const ultimoAtivo = localStorage.getItem(ultimoAtivoKey)
-      let novoStreak = child.streak_atual || 0
-      if (ultimoAtivo !== hoje) {
-        const ontem = new Date(Date.now() - 86400000).toDateString()
-        if (ultimoAtivo === ontem || hasEffect(child.id, 'streak_shield')) {
-          novoStreak = novoStreak + 1
-        } else {
-          novoStreak = 1
-        }
-        salvarLocal(ultimoAtivoKey, hoje)
-      }
-      const novoStreakMax = Math.max(child.streak_maximo || 0, novoStreak)
-      const childAtualizado = { ...child, xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }
-      salvarLocal('ns_active_child', JSON.stringify(childAtualizado))
 
-      // AQUI NÃO SE DESFAZ NADA — ao contrário da Loja. A criança já jogou e já
-      // ganhou; tirar o XP da tela porque a rede falhou seria puni-la por um
-      // problema que não é dela. A tela comemora na hora e a gravação corre atrás.
+      // AQUI NÃO SE DESFAZ NADA — ao contrário da Loja. A criança já jogou e já ganhou;
+      // tirar o XP da tela porque a rede falhou seria puni-la por um problema que não é
+      // dela. A tela comemora na hora e a gravação corre atrás.
       //
-      // As duas gravações têm naturezas diferentes:
+      // O QUE MUDOU EM 02/08/2026: o total deixou de ser calculado aqui. Antes esta tela
+      // mandava `xp = <total>` para o banco, ou seja, o navegador decidia a pontuação —
+      // e a chave que autoriza a escrita está publicada no bundle. Agora ela informa
+      // QUAL atividade terminou e o servidor consulta quanto vale (migrations 023/024).
+      // A sequência de dias também é calculada lá, a partir do histórico: aqui ela vinha
+      // de uma data no localStorage, onde bastava editar para ganhar dias de brinde.
       //
-      // `children` grava o TOTAL acumulado, lido do localStorage. Se uma falhar, a
-      // próxima atividade manda o total já corrigido — ela se cura sozinha. Basta
-      // saber que falhou.
-      //
-      // `ns_historico` insere UMA LINHA por atividade. Se falhar, aquela atividade
-      // some para sempre do relatório dos pais — e o relatório é justamente o que
-      // se vende. Por isso a linha perdida vai para uma fila e é reenviada na
-      // próxima vez que a criança concluir algo.
+      // O `ns_historico` passou a ser inserido pela mesma função, numa transação só com
+      // o crédito — some a possibilidade de creditar e perder a linha do relatório.
       ;(async () => {
-        gravar(
-          supabase.from('children').update({ xp: novoXP, neural_coins: novasCoins, nivel: novoNivel, streak_atual: novoStreak, streak_maximo: novoStreakMax }).eq('id', child.id),
-          'encerramento:creditar-xp',
-        )
-
-        const { data: { user } = {} } = await supabase.auth.getUser()
-        if (!user) return
-
-        const linha = {
-          child_id: child.id, parent_id: user.id, titulo: entrada.titulo,
-          xp: entrada.xp, coins: entrada.coins, emoji: entrada.emoji,
-          tipo: entrada.tipo, data: entrada.data, timestamp: entrada.timestamp,
-        }
         await reenviarHistoricoPendente()
-        const ok = await gravar(supabase.from('ns_historico').insert(linha), 'encerramento:gravar-historico')
-        if (!ok) enfileirarHistorico(linha)
+
+        const r = await creditarAtividade({
+          childId: child.id,
+          atividadeId: state.atividade_id,
+          titulo: entrada.titulo,
+          emoji: entrada.emoji,
+          assistiu: bonusEstudo > 0,
+          multXp: xpMult,
+          multCoins: coinsMult,
+        })
+
+        if (!r?.ok) return   // a lib já reportou; a tela mantém o que comemorou
+
+        const atualizado = aplicarNoFilhoLocal(r)
+        if (atualizado && r.nivel > nivelAtual) {
+          setLevelUp({ de: nivelAtual, para: r.nivel })
+        }
+        // o servidor pode ter creditado valor diferente do estimado (bônus de estudo,
+        // teto de multiplicador): mostrar o que de fato entrou, não o palpite.
+        setGanhoReal({ xp: r.ganho_xp, coins: r.ganho_coins })
       })()
     }
 
@@ -384,12 +369,12 @@ export default function Encerramento() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
           <div style={{ background: 'rgba(245,158,11,0.15)', borderRadius: '18px', padding: '24px', textAlign: 'center', border: '1.5px solid rgba(245,158,11,0.4)', animation: 'ns-pop 0.4s 0.3s both' }}>
             <Star weight="duotone" size={32} color="#F59E0B" className="ns-icon-bounce" style={{ marginBottom: '8px' }} />
-            <div style={{ color: 'var(--color-reward)', fontSize: 'var(--text-3xl)', fontWeight: '800', letterSpacing: '-1px' }}>+{xp}</div>
+            <div style={{ color: 'var(--color-reward)', fontSize: 'var(--text-3xl)', fontWeight: '800', letterSpacing: '-1px' }}>+{ganhoReal?.xp ?? xp}</div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '600', marginTop: '4px' }}>XP Ganho</div>
           </div>
           <div style={{ background: 'rgba(245,158,11,0.15)', borderRadius: '18px', padding: '24px', textAlign: 'center', border: '1.5px solid rgba(245,158,11,0.4)', animation: 'ns-pop 0.4s 0.5s both' }}>
             <CoinVertical weight="duotone" size={32} color="#F59E0B" style={{ marginBottom: '8px' }} />
-            <div style={{ color: 'var(--color-reward)', fontSize: 'var(--text-3xl)', fontWeight: '800', letterSpacing: '-1px' }}>+{coins}</div>
+            <div style={{ color: 'var(--color-reward)', fontSize: 'var(--text-3xl)', fontWeight: '800', letterSpacing: '-1px' }}>+{ganhoReal?.coins ?? coins}</div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '600', marginTop: '4px' }}>NeuralCoins</div>
           </div>
         </div>

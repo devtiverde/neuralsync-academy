@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
-import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../contexts/AuthContext'
 
 const ATIVIDADE = {
   id: 'historia-interativa',
@@ -235,7 +233,6 @@ function falar(historiaId, noId, texto) {
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function HistoriaInterativaAtividade() {
   const navigate = useNavigate()
-  const { user }  = useAuth()
   const styleRef  = useRef(null)
 
   const [iniciou,          setIniciou]          = useState(false)
@@ -266,24 +263,20 @@ export default function HistoriaInterativaAtividade() {
     else setFase('capitulo')
   }, [noId, historia])
 
-  const salvarResultado = useCallback(async () => {
-    if (!user || !noAtual) return
-    try {
-      await supabase.from('historias_jogadas').insert({
-        user_id: user.id,
-        historia_id: historiaId,
-        tipo_final: noAtual.tipoFinal,
-        total_escolhas: historicoEscolhas.length,
-        completed_at: new Date().toISOString(),
-      })
-    } catch (e) {
-      console.log('historias_jogadas:', e.message)
-    }
-  }, [user, noAtual, historiaId, historicoEscolhas])
-
-  useEffect(() => {
-    if (fase === 'final') salvarResultado()
-  }, [fase]) // eslint-disable-line
+  // CÓDIGO MORTO REMOVIDO EM 02/08/2026.
+  //
+  // Aqui havia um insert em `historias_jogadas` embrulhado num try/catch silencioso. A
+  // auditoria de 26/07 confirmou que essa tabela **não existe em schema nenhum** — o
+  // insert sempre falhou, desde o primeiro dia, e o catch engolia o erro. Ninguém nunca
+  // viu nada, e nenhum relatório jamais leu esses dados.
+  //
+  // Ficou parecendo funcionalidade: quem lesse este arquivo concluiria que o final
+  // escolhido pela criança estava sendo registrado em algum lugar. Não estava.
+  //
+  // Se um dia o final escolhido virar dado de produto (o relatório dos pais é o candidato
+  // óbvio), o caminho é criar a tabela numa migration, com RLS, e gravar por lá — não
+  // ressuscitar isto. O progresso que a criança vê hoje continua vindo do
+  // `ns_hist_interativa_{childId}` no localStorage, que funciona.
 
   if (!iniciou) {
     return <IntroAtividade atividade={ATIVIDADE} onComecar={() => setIniciou(true)} onVoltar={() => navigate('/home-crianca')} />

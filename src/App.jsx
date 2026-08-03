@@ -25,6 +25,8 @@ const TrilhaPai = lazy(() => import('./pages/pai/TrilhaPai'))
 const Settings = lazy(() => import('./pages/pai/Settings'))
 const RelatorioIA = lazy(() => import('./pages/pai/RelatorioIA'))
 const PerfilFilhoPai = lazy(() => import('./pages/pai/PerfilFilhoPai'))
+const PrimeirosPassos = lazy(() => import('./pages/pai/PrimeirosPassos'))
+const Feedbacks = lazy(() => import('./pages/pai/Feedbacks'))
 
 // Área criança
 const HomeCrianca = lazy(() => import('./pages/crianca/HomeCrianca'))
@@ -220,6 +222,8 @@ function AppContent() {
           <Route path="/configuracoes" element={<Settings />} />
           <Route path="/relatorio-ia" element={<RelatorioIA />} />
           <Route path="/perfil-filho" element={<PerfilFilhoPai />} />
+          <Route path="/primeiros-passos" element={<PrimeirosPassos />} />
+          <Route path="/feedbacks" element={<Feedbacks />} />
 
           {/* Criança */}
           <Route path="/home-crianca" element={<HomeCrianca />} />

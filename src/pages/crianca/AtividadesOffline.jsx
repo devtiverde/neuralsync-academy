@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { categoriasOffline, atividadesOffline } from '../../data/atividadesOffline'
+import { creditarBonus, aplicarNoFilhoLocal } from '../../lib/economia'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import '../../styles/crianca.css'
 
@@ -185,7 +185,10 @@ export default function AtividadesOffline() {
     localStorage.setItem('ns_active_child', JSON.stringify(childAtualizado))
     setChild(childAtualizado)
 
-    supabase.from('children').update({ neural_coins: novasCoins }).eq('id', child.id).then(() => {})
+    // valor e limite por atividade decididos no servidor (migration 023): antes esta
+    // linha mandava o total de moedas, que era o caminho mais curto para inventar saldo.
+    creditarBonus({ childId: child.id, tipo: 'offline', ref: atividadeId })
+      .then(r => { if (r?.ok) { aplicarNoFilhoLocal(r); setChild(c => ({ ...c, neural_coins: r.coins })) } })
 
     setToast(`+${COINS_POR_ATIVIDADE} NeuralCoins! 🎉`)
     setTimeout(() => setToast(null), 2800)

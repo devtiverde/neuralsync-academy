@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "checar-ids": "node scripts/checar-ids-atividades.mjs",
+    "gerar-economia": "node scripts/gerar-economia-seed.mjs",
     "prebuild": "node scripts/checar-ids-atividades.mjs",
     "build": "vite build",
     "lint": "eslint .",

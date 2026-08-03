@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { dentroDoHorario } from '../../lib/horarioAcesso'
+import { sincronizarStreak } from '../../lib/economia'
+import { dentroDoHorario, sincronizarLiberacao } from '../../lib/horarioAcesso'
 import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
 import { tamanhoDaFaixa } from '../../data/mundos'
@@ -80,6 +81,9 @@ export default function HomeCrianca() {
           }
         }
         if (agendaConfig && Array.isArray(agendaConfig)) {
+          // sincroniza a liberacao ANTES de decidir: o cache local pode estar vencido
+          // (liberacao concedida noutro aparelho) ou adulterado (data futura escrita a mao).
+          await sincronizarLiberacao(childId)
           if (!dentroDoHorario(agendaConfig, childId)) { navigate('/bloqueio'); return }
         }
       }
@@ -94,7 +98,9 @@ export default function HomeCrianca() {
       const ultimoAtivo = localStorage.getItem('ns_ultimo_ativo_' + c.id)
       if (ultimoAtivo && ultimoAtivo !== hoje && ultimoAtivo !== ontem && (c.streak_atual || 0) > 0) {
         c = { ...c, streak_atual: 0 }
-        supabase.from('children').update({ streak_atual: 0 }).eq('id', c.id).then(() => {})
+        // a coluna de sequencia foi trancada na 023; quem recalcula agora e o servidor,
+        // a partir do historico real, e nao a data guardada no localStorage do aparelho.
+        sincronizarStreak(c.id)
       }
 
       setChild(c)

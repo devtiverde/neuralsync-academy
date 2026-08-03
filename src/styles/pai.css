@@ -287,3 +287,11 @@ html, body { overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .feedback-float-btn { transition: none; }
 }
+
+/* -- Safe-area do TOPO (2026-08-02) — ver a nota longa em crianca.css --------
+   Mesma correção para a área dos pais: com `viewport-fit=cover` a barra de status
+   do celular cobria o topo da topbar, escondendo parte do logo e do botão de menu. */
+.pai-topbar-row {
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: content-box;
+}

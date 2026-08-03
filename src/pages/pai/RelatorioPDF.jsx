@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando } from '../../lib/assinatura'
@@ -179,7 +179,15 @@ function gerarMetas(habilidades, perfil) {
 
 export default function RelatorioPDF() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, loading: authLoading, subscription, subscriptionLoaded } = useAuth()
+  const [filhos, setFilhos] = useState([])
+  // Filho escolhido para ESTE relatório. Vem primeiro do que a tela /relatorio mandou.
+  const [childId, setChildId] = useState(location.state?.childId || null)
+  // Id do filho a que os dados abaixo pertencem de fato. Enquanto ele for diferente de
+  // `childId` a tela ainda está buscando — e o botão de PDF fica travado, senão daria
+  // para baixar o relatório do filho anterior com o nome do novo no seletor.
+  const [relatorioDe, setRelatorioDe] = useState(null)
   const [child, setChild] = useState(null)
   const [habilidades, setHabilidades] = useState([])
   const [dadosSemanas, setDadosSemanas] = useState([])
@@ -191,13 +199,41 @@ export default function RelatorioPDF() {
   const [abaAtiva, setAbaAtiva] = useState('visao')
   const [pdfErro, setPdfErro] = useState(false)
 
+  // Carrega a lista de filhos e resolve QUAL deles é o dono deste relatório.
+  //
+  // Antes o filho vinha só de `ns_active_child` — chave escrita pela área da CRIANÇA
+  // (quem jogou por último) e pelo Dashboard, nunca pelo seletor do /relatorio. Abrir o
+  // relatório da Liz e clicar em "Relatório PDF" gerava o PDF do Claudio, porque era ele
+  // que estava naquela chave. A prioridade agora é explícita:
+  //   1. o filho escolhido no seletor desta tela
+  //   2. o filho que a tela /relatorio mandou no state da navegação
+  //   3. `ns_active_child`, e só se ele for mesmo um filho desta conta
+  //   4. o primeiro filho cadastrado
   useEffect(() => {
-    async function carregar() {
-      const activeChild = JSON.parse(localStorage.getItem('ns_active_child') || 'null')
-      const { data: childData } = activeChild?.id
-        ? await supabase.from('children').select('*').eq('id', activeChild.id).eq('parent_id', user.id).single()
-        : await supabase.from('children').select('*').eq('parent_id', user.id).limit(1).single()
+    if (!user) return
+    let cancelado = false
+    supabase.from('children').select('*').eq('parent_id', user.id).then(({ data }) => {
+      if (cancelado || !data || data.length === 0) return
+      setFilhos(data)
+      setChildId(atual => {
+        if (atual && data.some(f => f.id === atual)) return atual
+        const ativo = (() => {
+          try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null }
+        })()
+        if (ativo?.id && data.some(f => f.id === ativo.id)) return ativo.id
+        return data[0].id
+      })
+    })
+    return () => { cancelado = true }
+  }, [user])
 
+  // Recarrega TUDO quando o filho muda. A lista de deps vazia de antes era metade do bug:
+  // mesmo com o filho certo em mãos, os dados eram buscados uma única vez, no mount.
+  useEffect(() => {
+    if (!user || !childId) return
+    let cancelado = false
+    async function carregar() {
+      const childData = filhos.find(f => f.id === childId)
       if (!childData) return
 
       // Tenta buscar histórico do Supabase (dados reais persistidos)
@@ -222,6 +258,8 @@ export default function RelatorioPDF() {
       const historicoAtual = historico.filter(h => getData(h) >= ha30)
       const historicoAnterior = historico.filter(h => { const d = getData(h); return d >= ha60 && d < ha30 })
 
+      if (cancelado) return
+
       const hab  = calcularHabilidades(historicoAtual, historicoAnterior)
       const sems = calcularSemanas(historico)
       const topAtividades = calcularTopAtividades(historicoAtual)
@@ -232,9 +270,12 @@ export default function RelatorioPDF() {
       setTopAtividades(topAtividades)
       setRecomendacoes(gerarRecomendacoes(hab, perfil))
       setMetas(gerarMetas(hab, perfil))
+      // por último: só agora os 6 estados acima descrevem ESTE filho
+      setRelatorioDe(childData.id)
     }
     carregar()
-  }, [])
+    return () => { cancelado = true }
+  }, [user, childId, filhos])
 
   // `authLoading` sozinho não bastava: ele vira false antes de a assinatura ser
   // buscada, e o gate abaixo lia `subscription` ainda null como "não é Premium",
@@ -274,7 +315,14 @@ export default function RelatorioPDF() {
     ? `${Math.floor(totalMinutos / 60)}h ${totalMinutos % 60}m`
     : `${totalMinutos}m`
 
+  // Os dados na tela pertencem mesmo ao filho selecionado?
+  const pronto = !!child && relatorioDe === childId
+  const filhoSelecionado = filhos.find(f => f.id === childId)
+
   const gerarPDF = async () => {
+    // Trava final: sem isto, um clique no meio da troca de filho salvaria o PDF do
+    // anterior com o nome do novo no cabeçalho da tela.
+    if (!pronto) return
     setGerando(true)
     try {
       const { jsPDF } = await import('jspdf')
@@ -304,20 +352,48 @@ export default function RelatorioPDF() {
     }
   }
 
-  if (!child) return (
-    <div style={{background:'var(--color-bg-secondary)',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <div style={{color:'var(--color-primary)',fontWeight:'700'}}>Carregando relatório...</div>
+  // O seletor fica FORA do bloco que espera os dados: trocar de filho continua possível
+  // enquanto o relatório carrega, e a tela sempre diz de quem é o que está na frente.
+  const seletorFilhos = filhos.length > 1 && (
+    <div style={{display:'flex',gap:'8px',overflowX:'auto',scrollbarWidth:'none',WebkitOverflowScrolling:'touch',marginBottom:'20px',paddingBottom:'2px'}}>
+      {filhos.map(f => (
+        <button key={f.id} onClick={() => setChildId(f.id)} style={{
+          flexShrink:0, whiteSpace:'nowrap',
+          background: childId === f.id ? '#7C3AED' : '#f9fafb',
+          color: childId === f.id ? 'white' : '#374151',
+          border: childId === f.id ? 'none' : '1.5px solid #e5e7eb',
+          borderRadius:'20px', padding:'7px 16px', cursor:'pointer',
+          fontWeight:'700', fontSize:'13px', fontFamily:'Plus Jakarta Sans, sans-serif',
+        }}>{f.nome}</button>
+      ))}
     </div>
+  )
+
+  const cabecalho = (
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}>
+      <h2 style={{fontWeight:'900',fontSize:'22px',color:'#0f0a1e'}}>📄 Relatório Cognitivo Premium</h2>
+      <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'999px',padding:'5px 14px',fontSize:'12px',color:'white',fontWeight:'700'}}>⭐ Exclusivo Premium</div>
+    </div>
+  )
+
+  if (!pronto) return (
+    <LayoutPai>
+      <div className="pai-content">
+        {cabecalho}
+        {seletorFilhos}
+        <div style={{padding:'48px 0',textAlign:'center',color:'var(--color-primary)',fontWeight:'700'}}>
+          Carregando relatório{filhoSelecionado ? ` de ${filhoSelecionado.nome}` : ''}...
+        </div>
+      </div>
+    </LayoutPai>
   )
 
   return (
     <LayoutPai>
       <div className="pai-content">
 
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'24px'}}>
-        <h2 style={{fontWeight:'900',fontSize:'22px',color:'#0f0a1e'}}>📄 Relatório Cognitivo Premium</h2>
-        <div style={{background:'linear-gradient(135deg,#7C3AED,#6d28d9)',borderRadius:'999px',padding:'5px 14px',fontSize:'12px',color:'white',fontWeight:'700'}}>⭐ Exclusivo Premium</div>
-      </div>
+      {cabecalho}
+      {seletorFilhos}
 
       <div style={{maxWidth:'860px'}}>
 

@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { chaveDoEvento } from './chave.ts'
 
 const PAID_STATUSES     = ['paid', 'complete', 'approved', 'active']
 const CANCELED_STATUSES = ['refunded', 'chargeback', 'chargedback', 'subscription_canceled', 'canceled', 'dispute']
@@ -235,6 +236,51 @@ serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
+  // ── Idempotência (migration 022) ────────────────────────────
+  // Marcar ANTES de agir, não depois: duas entregas simultâneas do mesmo evento caem em
+  // duas instâncias da função ao mesmo tempo, e um "já processei?" feito por leitura
+  // responderia "não" nas duas. Aqui quem consegue inserir processa; a outra bate no
+  // índice único e sai. É o banco arbitrando, não a aplicação.
+  //
+  // Fica depois da autenticação de propósito — requisição não autenticada não entra na
+  // tabela, senão o endpoint público vira um jeito de enchê-la de lixo.
+  const chave = await chaveDoEvento(body, rawBody, evento, status)
+
+  const reivindicar = async (): Promise<boolean> => {
+    const { error } = await admin.from('webhook_eventos').insert({
+      chave, origem: 'kiwify', evento: evento || status || null, email, resultado: 'processando',
+    })
+    if (!error) return true
+    // 23505 = violação de chave única → já processado. Qualquer outro erro NÃO pode
+    // barrar a entrega: perder uma venda por causa da tabela de controle seria pior do
+    // que processar duas vezes. Falha aberta de propósito, e registrada no log.
+    if (error.code === '23505') return false
+    console.error('[kiwify-webhook] idempotência indisponível, seguindo mesmo assim:', error)
+    return true
+  }
+
+  const registrarResultado = async (resultado: string) => {
+    try { await admin.from('webhook_eventos').update({ resultado }).eq('chave', chave) }
+    catch { /* diagnóstico, nunca derruba a entrega */ }
+  }
+
+  // Solta a marcação quando o processamento não chegou ao fim. Sem isto uma falha
+  // passageira (Supabase fora do ar no meio) deixaria a chave presa em "processando" e
+  // o reenvio da Kiwify — que é justamente o conserto — seria descartado como repetido.
+  const soltarMarcacao = async () => {
+    try { await admin.from('webhook_eventos').delete().eq('chave', chave).eq('resultado', 'processando') }
+    catch { /* idem */ }
+  }
+
+  if (!(await reivindicar())) {
+    await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: '200 duplicado' })
+    return new Response(JSON.stringify({ ok: true, duplicado: true, chave }), {
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  try {
+
   const { data: existingUser } = await admin
     .from('users')
     .select('id')
@@ -246,6 +292,7 @@ serve(async (req) => {
     if (existingUser) {
       await admin.from('users').update({ plano_status: 'cancelado' }).eq('id', existingUser.id)
     }
+    await registrarResultado('cancelado')
     await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: '200 canceled' })
     return new Response(JSON.stringify({ ok: true, action: 'canceled' }), {
       headers: { 'Content-Type': 'application/json' },
@@ -255,6 +302,10 @@ serve(async (req) => {
   // Status não tratado (boleto gerado, pix aguardando, recusado…) — ignora sem erro.
   // Só ativa acesso com pagamento CONFIRMADO.
   if (!PAID_STATUSES.includes(status) && !PAID_EVENTS.includes(evento)) {
+    // Solta a marcação: estes eventos são os mais frequentes (todo pix e todo boleto
+    // gerado passa por aqui) e não mudam nada. Guardá-los encheria a tabela de linhas
+    // sem valor e esconderia os eventos que realmente importam numa consulta.
+    await soltarMarcacao()
     await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: `200 skip (status="${status}")` })
     return new Response(JSON.stringify({ ok: true, skip: status }), {
       headers: { 'Content-Type': 'application/json' },
@@ -272,6 +323,7 @@ serve(async (req) => {
   // Caso 1 — já tem conta: só ativa o plano.
   if (existingUser) {
     await admin.from('users').update(assinatura).eq('id', existingUser.id)
+    await registrarResultado(`updated (${plano})`)
     await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: `200 updated (${plano})` })
     return new Response(JSON.stringify({ ok: true, action: 'updated', plano, email }), {
       headers: { 'Content-Type': 'application/json' },
@@ -305,6 +357,7 @@ serve(async (req) => {
       { email, plano, plano_ativo_ate, filhos_limite, kiwify_subscriber_id },
       { onConflict: 'email' },
     )
+    await registrarResultado('pending_fallback')
     await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: '200 pending_fallback (nao criou conta)' })
     return new Response(JSON.stringify({ ok: true, action: 'pending_fallback', email }), {
       headers: { 'Content-Type': 'application/json' },
@@ -363,6 +416,7 @@ serve(async (req) => {
 
   // A conta e o plano já estão gravados mesmo se o e-mail falhar — nesse caso o
   // cliente ainda entra por "Esqueci minha senha" com o mesmo e-mail.
+  await registrarResultado(`created (${plano}, resend=${emailEnviado}, fallback=${viaFallback})`)
   await gravarDebug({
     autenticou: true, modo_auth: modoAuth,
     resposta: `200 created (${plano}, resend=${emailEnviado}, fallback=${viaFallback})`,
@@ -370,4 +424,18 @@ serve(async (req) => {
   return new Response(JSON.stringify({ ok: true, action: 'created', plano, email, emailEnviado, viaFallback }), {
     headers: { 'Content-Type': 'application/json' },
   })
+
+  } catch (e) {
+    // Estourou no meio do processamento. Soltar a marcação é o que permite ao reenvio
+    // da Kiwify consertar a venda — sem isso a chave ficaria presa em "processando" e a
+    // tentativa seguinte seria descartada como repetida, perdendo o pagamento de vez.
+    await soltarMarcacao()
+    console.error('[kiwify-webhook] erro inesperado, marcação liberada para reenvio:', e)
+    await gravarDebug({ autenticou: true, modo_auth: modoAuth, resposta: '500 erro interno' })
+    // 500 de propósito: é o que faz a Kiwify reenviar. Responder 200 aqui esconderia
+    // a falha e a entrega nunca voltaria.
+    return new Response(JSON.stringify({ ok: false, erro: 'falha ao processar' }), {
+      status: 500, headers: { 'Content-Type': 'application/json' },
+    })
+  }
 })

@@ -13,7 +13,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 // Ler só o nome canônico fazia o envio falhar em silêncio — foi o motivo de o
 // e-mail de resumo da NeuralAI nunca ter chegado. Aceita os dois nomes.
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? Deno.env.get('Resend')
-const DESTINO = Deno.env.get('FEEDBACK_EMAIL') ?? 'tiverdetec@gmail.com'
+// Caixa oficial de atendimento (a mesma do `src/config/support.js` e do `reply_to` do
+// e-mail de boas-vindas). Era `tiverdetec@gmail.com`, endereço pessoal — feedback de
+// cliente pagante tem que cair no canal da empresa, senão ninguém além do Cláudio vê.
+// O segredo `FEEDBACK_EMAIL` continua tendo precedência: se estiver cadastrado no
+// projeto com o valor antigo, ELE é que manda, e trocar aqui não muda nada.
+const DESTINO = Deno.env.get('FEEDBACK_EMAIL') ?? 'suporte@neuralsync.com.br'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',

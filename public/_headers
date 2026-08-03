@@ -3,19 +3,30 @@
 # O token de sessão do Supabase fica em localStorage, então um XSS = takeover de conta.
 # CSP é a principal mitigação disso.
 #
-# ⚠️ A CSP está em REPORT-ONLY de propósito. Ela NÃO bloqueia nada ainda — só reporta
-# violação no console do navegador. Motivo: uma CSP errada quebra a produção inteira, e
-# esta não foi validada em navegador real ainda.
+# ✅ 02/08/2026 — A CSP saiu do Report-Only e passou a BLOQUEAR.
 #
-# PARA ATIVAR DE VERDADE (fazer depois de conferir):
-#   1. Navegue pelo app logado (área pai, área criança, um jogo, Kids TV com vídeo,
-#      Loja, e a tela de Planos) com o console aberto.
-#   2. Se não aparecer nenhum "[Report Only] Refused to...", troque a linha
-#      `Content-Security-Policy-Report-Only:` por `Content-Security-Policy:`.
-#   3. Se aparecer, ajuste a diretiva citada ANTES de trocar.
+# Ela ficou meses só reportando porque uma política errada quebra a produção inteira e
+# ninguém tinha validado. A validação agora existe e é repetível: `node testar-csp.mjs`
+# sobe o `dist/` servindo ESTA política (lida deste arquivo, não copiada) e navega por
+# 31 rotas coletando violação. Resultado ao ligar: 31 rotas, zero violação.
+#
+# ⚠️ O QUE O TESTE NÃO COBRE, e vale conferir uma vez à mão:
+# o bundle de produção não tem o atalho de desenvolvimento, então as telas atrás de login
+# redirecionam antes de desenhar o conteúdo. O carregamento (bundle, fontes, Service
+# Worker, conexão com o Supabase) é medido em todas; o que só aparece logado, não.
+# Os dois candidatos a problema estão declarados de propósito — `frame-src` cobre o vídeo
+# do Kids TV e `media-src 'self'` cobre os áudios das atividades — mas o teste de verdade
+# é abrir logado, uma vez, com o console aberto: Kids TV com vídeo, uma atividade com
+# áudio, a Loja e um jogo.
+#
+# SE QUEBRAR EM PRODUÇÃO: voltar é uma palavra. Troque
+#   `Content-Security-Policy:` por `Content-Security-Policy-Report-Only:`
+# e publique de novo. Com Report-Only o app volta a funcionar na hora e a violação
+# continua aparecendo no console, para ser corrigida com calma.
 #
 # O hash em script-src é do script inline de registro do Service Worker no index.html.
 # ⚠️ Se aquele script mudar, o hash muda — recalcular, senão o SW para de registrar.
+# Conferido em 02/08: o hash abaixo bate com o script atual.
 
 /*
   X-Frame-Options: DENY
@@ -23,7 +34,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'sha256-5e9V94+BPvB4jwqEZZWPBIYg6qzV5b90BsbGbMMKo9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-5e9V94+BPvB4jwqEZZWPBIYg6qzV5b90BsbGbMMKo9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Os áudios e assets com hash no nome podem ser cacheados agressivamente
 /assets/*

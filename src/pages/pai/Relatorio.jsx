@@ -62,6 +62,13 @@ export default function Relatorio() {
   const temAcesso = temPlano(subscription, PLANOS_PAGOS)
   const carregandoPlano = assinaturaCarregando(subscriptionLoaded, authLoading)
 
+  // marca que o relatório já foi aberto — é o último passo da tela /primeiros-passos.
+  // Fica aqui, e não num clique da própria checklist, porque clicar no botão não prova
+  // que a pessoa chegou: ela pode fechar a aba no meio do caminho.
+  useEffect(() => {
+    try { localStorage.setItem('ns_viu_relatorio', '1') } catch { /* modo privativo */ }
+  }, [])
+
   const [aba, setAba] = useState('diario')
   const [filhos, setFilhos] = useState([])
   const [filhoIdx, setFilhoIdx] = useState(0)
@@ -95,9 +102,12 @@ export default function Relatorio() {
       })
   }, [filho?.id])
 
+  // O `!h.child_id ||` que existia aqui fazia todo registro sem dono aparecer no relatório
+  // de TODOS os filhos — dois filhos, mesma atividade contada duas vezes. Registro que não
+  // se sabe de quem é não pode ser atribuído a ninguém; some de todos, não aparece em todos.
   const histFilho = useMemo(() => {
     if (!filho) return historico
-    return historico.filter(h => !h.child_id || h.child_id === filho.id)
+    return historico.filter(h => h.child_id === filho.id)
   }, [historico, filho])
 
   const hoje = new Date()
@@ -229,7 +239,9 @@ export default function Relatorio() {
             </h1>
             <p style={{ color: '#6b7280', fontSize: '14px' }}>Análise cognitiva detalhada.</p>
           </div>
-          <button onClick={() => navigate('/relatorio-pdf')} className="btn-primary" style={{ padding: '9px 18px', fontSize: '13px' }}>📄 Relatório PDF</button>
+          {/* o filho selecionado VAI JUNTO: sem isto o /relatorio-pdf caía no
+              `ns_active_child`, que é o último filho que JOGOU, não o escolhido aqui */}
+          <button onClick={() => navigate('/relatorio-pdf', { state: { childId: filho?.id } })} className="btn-primary" style={{ padding: '9px 18px', fontSize: '13px' }}>📄 Relatório PDF</button>
         </div>
 
         {/* Seletor de filhos */}
@@ -578,7 +590,7 @@ export default function Relatorio() {
                       </div>
                     </div>
 
-                    <div onClick={() => navigate('/relatorio-pdf')} style={{
+                    <div onClick={() => navigate('/relatorio-pdf', { state: { childId: filho?.id } })} style={{
                       background: 'linear-gradient(135deg,#7C3AED,#6d28d9)', borderRadius: '16px', padding: '20px',
                       cursor: 'pointer', position: 'relative', overflow: 'hidden',
                     }}>

@@ -314,6 +314,7 @@ export default function AlfabetoAtividade() {
             <button
               key={l.letra}
               onClick={() => irPara(i)}
+              className="ns-alvo-toque"
               style={{
                 width: '28px', height: '28px', borderRadius: '6px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',

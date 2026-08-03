@@ -44,3 +44,9 @@ pdf-habilidades-*.png
 # saida das auditorias de responsividade (gerada, nao versionada)
 auditoria-telas/
 auditoria-atividades/
+
+# Scripts de OUTRO cliente (TI Verde) que precisam morar aqui porque o playwright
+# está instalado neste projeto e a resolução ESM sobe a partir do ARQUIVO.
+# Ver scripts-tiverde/LEIA-ME.md. Ignorados para que um `git add .` distraído não
+# leve script de cliente para dentro do repositório do produto.
+scripts-tiverde/

@@ -176,6 +176,7 @@ export default function NumerosAtividade() {
             <button
               key={i}
               onClick={() => { if (i !== currentIndex) navegar(i - currentIndex) }}
+              className="ns-alvo-toque"
               style={{
                 width: '32px', height: '32px', borderRadius: '50%', border: 'none',
                 cursor: 'pointer', fontWeight: '900', fontSize: '11px', color: 'white',

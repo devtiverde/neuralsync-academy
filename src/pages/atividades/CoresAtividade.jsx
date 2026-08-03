@@ -183,6 +183,7 @@ export default function CoresAtividade() {
             <button
               key={i}
               onClick={() => irPara(i)}
+              className="ns-alvo-toque"
               style={{
                 width: '32px', height: '32px', borderRadius: '50%',
                 cursor: 'pointer', padding: 0,

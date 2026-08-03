@@ -4,110 +4,15 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { activatePowerup, getActiveSummary } from '../../lib/powerups'
-import { gravarTodas } from '../../lib/gravar'
+import { debitarLoja } from '../../lib/economia'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../../lib/lojaConfig'
 import '../../styles/crianca.css'
 
-const catalogoAvatares = [
-  { id: 'av_explorer', nome: 'Explorer', emoji: '🧭', preco: 0 },
-  { id: 'av_cientista', nome: 'Cientista', emoji: '🔬', preco: 300 },
-  { id: 'av_astronauta', nome: 'Astronauta', emoji: '🚀', preco: 500 },
-  { id: 'av_mago', nome: 'Mago', emoji: '🧙', preco: 400 },
-  { id: 'av_artista', nome: 'Artista', emoji: '🎨', preco: 350 },
-  { id: 'av_robo', nome: 'Robô', emoji: '🤖', preco: 600, nivel: 5 },
-  { id: 'av_dino', nome: 'Dino', emoji: '🦕', preco: 450 },
-  { id: 'av_ninja', nome: 'Ninja', emoji: '🥷', preco: 550 },
-  { id: 'av_pirata', nome: 'Pirata', emoji: '🏴‍☠️', preco: 480 },
-  { id: 'av_fada', nome: 'Fada', emoji: '🧚', preco: 420 },
-  { id: 'av_dragao', nome: 'Dragão', emoji: '🐉', preco: 700, nivel: 6 },
-  { id: 'av_unicornio', nome: 'Unicórnio', emoji: '🦄', preco: 650 },
-  { id: 'av_gato', nome: 'Gato Ninja', emoji: '😼', preco: 380 },
-  { id: 'av_alien', nome: 'Alien', emoji: '👾', preco: 520 },
-  { id: 'av_superheroi', nome: 'Super-Herói', emoji: '🦸', preco: 800, nivel: 8 },
-  { id: 'av_bruxa', nome: 'Bruxa', emoji: '🧙‍♀️', preco: 430 },
-  { id: 'av_zumbi', nome: 'Zumbi', emoji: '🧟', preco: 580 },
-  { id: 'av_sereia', nome: 'Sereia', emoji: '🧜', preco: 560 },
-  { id: 'av_lenda', nome: 'Lenda 🔒', emoji: '⚡', preco: 2000, nivel: 15 },
-]
-
-const catalogoMolduras = [
-  { id: 'mo_basica', nome: 'Básica', emoji: '⬜', preco: 0 },
-  { id: 'mo_estrelas', nome: 'Estrelas', emoji: '⭐', preco: 200 },
-  { id: 'mo_fogo', nome: 'Fogo', emoji: '🔥', preco: 300 },
-  { id: 'mo_arcoiris', nome: 'Arco-íris', emoji: '🌈', preco: 400 },
-  { id: 'mo_diamante', nome: 'Diamante', emoji: '💎', preco: 700 },
-  { id: 'mo_coroa', nome: 'Coroa', emoji: '👑', preco: 900 },
-  { id: 'mo_lua', nome: 'Lua e Estrelas', emoji: '🌙', preco: 350 },
-  { id: 'mo_flor', nome: 'Flores', emoji: '🌸', preco: 280 },
-  { id: 'mo_raio', nome: 'Raios', emoji: '⚡', preco: 450 },
-  { id: 'mo_gelado', nome: 'Gelo', emoji: '❄️', preco: 380 },
-  { id: 'mo_neon', nome: 'Neon', emoji: '💫', preco: 600 },
-  { id: 'mo_lenda', nome: 'Lenda Dourada', emoji: '🏆', preco: 1500, nivel: 10 },
-]
-
-const catalogoTemas = [
-  { id: 'tm_espaco', nome: 'Espaço', emoji: '🌌', preco: 0, desc: 'Fundo galáxia roxa com estrelas animadas' },
-  { id: 'tm_floresta', nome: 'Floresta', emoji: '🌿', preco: 0, desc: 'Tons de verde com folhas ao fundo' },
-  { id: 'tm_oceano', nome: 'Oceano', emoji: '🌊', preco: 0, desc: 'Fundo aquático com bolhas animadas' },
-  { id: 'tm_fogo', nome: 'Fogo', emoji: '🔥', preco: 900, desc: 'Gradiente laranja-vermelho com chamas' },
-  { id: 'tm_neon', nome: 'Neon', emoji: '💜', preco: 750, desc: 'Visual cyberpunk com brilhos neon' },
-  { id: 'tm_inverno', nome: 'Inverno', emoji: '❄️', preco: 650, desc: 'Fundo azul gelo com flocos de neve' },
-  { id: 'tm_por_do_sol', nome: 'Pôr do Sol', emoji: '🌅', preco: 700, desc: 'Gradiente dourado e rosa vibrante' },
-  { id: 'tm_candy', nome: 'Candy', emoji: '🍭', preco: 550, desc: 'Cores pastel doces e divertidas' },
-  { id: 'tm_lava', nome: 'Lava', emoji: '🌋', preco: 850, desc: 'Vermelho profundo com efeito de lava' },
-  { id: 'tm_arcoiris', nome: 'Arco-íris', emoji: '🌈', preco: 1000, nivel: 7, desc: 'Visual totalmente colorido e animado' },
-]
-
-const catalogoTitulos = [
-  { id: 'ti_curioso', nome: 'Explorador Curioso', emoji: '🔍', preco: 0, desc: 'Título inicial de todo explorador' },
-  { id: 'ti_quiz', nome: 'Mestre dos Quiz', emoji: '🧠', preco: 400, desc: 'Para quem domina as perguntas' },
-  { id: 'ti_leitura', nome: 'Leitor Voraz', emoji: '📚', preco: 350, desc: 'Apaixonado por aprender' },
-  { id: 'ti_matematica', nome: 'Gênio da Matemática', emoji: '🔢', preco: 500, desc: 'Calculadora humana' },
-  { id: 'ti_inventor', nome: 'Inventor Supremo', emoji: '💡', preco: 600, desc: 'Mentes que criam o futuro' },
-  { id: 'ti_natureza', nome: 'Guardião da Natureza', emoji: '🌍', preco: 450, desc: 'Defensor do planeta' },
-  { id: 'ti_streak', nome: 'Campeão de Streak', emoji: '🔥', preco: 700, desc: '30 dias seguidos sem parar' },
-  { id: 'ti_estrela', nome: 'Estrela NeuralSync', emoji: '⭐', preco: 800, nivel: 5, desc: 'Os melhores da plataforma' },
-  { id: 'ti_ciencia', nome: 'Cientista Louco', emoji: '🔬', preco: 550, desc: 'Para quem ama experimentos' },
-  { id: 'ti_arte', nome: 'Artista Digital', emoji: '🎨', preco: 480, desc: 'Criatividade sem limites' },
-  { id: 'ti_codigo', nome: 'Pequeno Programador', emoji: '💻', preco: 650, desc: 'Futuro dev em treinamento' },
-  { id: 'ti_lenda', nome: 'Lenda da Academia', emoji: '👑', preco: 3000, nivel: 20, desc: 'O título mais raro da plataforma' },
-]
-
-const catalogoPowerups = [
-  { id: 'pu_xp2_1h', nome: 'XP Duplo (1h)', emoji: '⚡', preco: 200, desc: 'Ganhe o dobro de XP por 1 hora' },
-  { id: 'pu_xp2_24h', nome: 'XP Duplo (24h)', emoji: '🌟', preco: 500, desc: 'Ganhe o dobro de XP por 24 horas' },
-  { id: 'pu_coins_50', nome: 'NeuralCoins +50%', emoji: '💰', preco: 300, desc: 'Ganhe 50% mais coins por 1 hora' },
-  { id: 'pu_pular', nome: 'Pular Atividade', emoji: '⏭️', preco: 150, desc: 'Pule uma atividade sem perder o progresso' },
-  { id: 'pu_reviver', nome: 'Reviver Tentativa', emoji: '💖', preco: 100, desc: 'Continue de onde parou após erro' },
-  { id: 'pu_hint', nome: 'Dica Mágica', emoji: '🔮', preco: 80, desc: 'Receba uma dica em qualquer atividade' },
-  { id: 'pu_shield', nome: 'Escudo de Streak', emoji: '🛡️', preco: 250, desc: 'Protege seu streak por 1 dia sem jogar' },
-  { id: 'pu_xp3', nome: 'XP Triplo (30min)', emoji: '🚀', preco: 400, desc: 'Ganhe o triplo de XP por 30 minutos' },
-]
-
-const catalogoEfeitos = [
-  { id: 'ef_confete', nome: 'Confetes', emoji: '🎊', preco: 0, desc: 'Chuva de confetes coloridos ao completar' },
-  { id: 'ef_estrelas', nome: 'Chuva de Estrelas', emoji: '✨', preco: 300, desc: 'Estrelas caindo na tela ao vencer' },
-  { id: 'ef_fogos', nome: 'Fogos de Artifício', emoji: '🎆', preco: 500, desc: 'Explosão de fogos coloridos' },
-  { id: 'ef_arcoiris', nome: 'Arco-íris Mágico', emoji: '🌈', preco: 400, desc: 'Arco-íris explode pela tela' },
-  { id: 'ef_coins', nome: 'Chuva de Coins', emoji: '💰', preco: 350, desc: 'NeuralCoins caindo comemorando' },
-  { id: 'ef_emoji', nome: 'Emoji Mania', emoji: '😄', preco: 280, desc: 'Emojis animados em festa' },
-  { id: 'ef_raio', nome: 'Tempestade Elétrica', emoji: '⚡', preco: 600, nivel: 5, desc: 'Efeito de raios épico ao vencer' },
-  { id: 'ef_aurora', nome: 'Aurora Boreal', emoji: '🌌', preco: 800, nivel: 8, desc: 'Cores mágicas dançando na tela' },
-]
-
-const catalogoBrindes = [
-  { id: 'br_adesivos', nome: 'Pacote de Adesivos', emoji: '🎨', preco: 500, desc: 'Kit com 20 adesivos temáticos' },
-  { id: 'br_caderno', nome: 'Caderno de Missões', emoji: '📓', preco: 1200, desc: 'Caderno especial NeuralSync' },
-  { id: 'br_camiseta', nome: 'Camiseta NeuralSync', emoji: '👕', preco: 3000, desc: 'Camiseta exclusiva da plataforma' },
-  { id: 'br_caneca', nome: 'Caneca Espacial', emoji: '☕', preco: 1800, desc: 'Caneca temática de cerâmica' },
-  { id: 'br_mochila', nome: 'Mochila NeuralSync', emoji: '🎒', preco: 5000, desc: 'Mochila exclusiva da academia' },
-  { id: 'br_bone', nome: 'Boné NeuralSync', emoji: '🧢', preco: 2000, desc: 'Boné bordado edição limitada' },
-  { id: 'br_mousepad', nome: 'Mousepad Gamer', emoji: '🖱️', preco: 2500, desc: 'Mousepad com ilustração NeuralSync' },
-  { id: 'br_poster', nome: 'Pôster Galáxia', emoji: '🌌', preco: 900, desc: 'Pôster A3 temático para o quarto' },
-  { id: 'br_pin', nome: 'Pin Colecionável', emoji: '📌', preco: 600, desc: 'Pin metálico edição especial' },
-  { id: 'br_livro', nome: 'Box de Livros', emoji: '📦', preco: 4000, desc: '3 livros educativos curados pela equipe' },
-]
+import {
+  catalogoAvatares, catalogoMolduras, catalogoTemas, catalogoTitulos,
+  catalogoPowerups, catalogoEfeitos, catalogoBrindes,
+} from '../../data/lojaCatalogo'
 
 function resolverAvatar(av) {
   if (!av) return '🦊'
@@ -219,44 +124,51 @@ export default function Loja() {
   async function comprar() {
     if (!modalItem || saldo < modalItem.preco || comprando) return
 
-    const novoSaldo = saldo - modalItem.preco
     const isAvatar = modalItem.id.startsWith('av_')
     const isPowerup = modalItem.id.startsWith('pu_')
     const categoria = isAvatar ? 'avatar' : modalItem.id.startsWith('mo_') ? 'moldura' : modalItem.id.startsWith('tm_') ? 'tema' : isPowerup ? 'powerup' : 'brinde'
-    const updates = { neural_coins: novoSaldo }
-    if (isAvatar) updates.avatar = modalItem.emoji
 
+    // 02/08/2026 — o débito saiu do navegador.
+    // Antes esta tela calculava `neural_coins - preco` e mandava o TOTAL. Como a mesma
+    // coluna era a do XP, era também o caminho mais curto para inventar saldo: bastava
+    // mandar um número maior. Agora manda-se o ITEM; o servidor consulta o preço em
+    // `ns_loja_precos`, confere saldo, nível e se já possui, debita e registra a posse —
+    // tudo numa transação. A posse também deixou de ser gravável pelo cliente, senão
+    // daria para inserir a linha e ficar com o item sem pagar.
+    let novoSaldo = saldo - modalItem.preco
     if (childId) {
       setComprando(true)
-      const gravacoes = [
-        { consulta: supabase.from('children').update(updates).eq('id', childId), operacao: 'loja:debitar-moedas' },
-      ]
-      // Power-up é consumível e vive no localStorage; não tem linha em ns_purchases.
-      if (!isPowerup) {
-        gravacoes.push({
-          consulta: supabase.from('ns_purchases').insert({ child_id: childId, item_id: modalItem.id }),
-          operacao: 'loja:registrar-compra',
-        })
-      }
-
-      const ok = await gravarTodas(gravacoes)
+      const r = await debitarLoja({ childId, itemId: modalItem.id })
       setComprando(false)
-      if (!ok) {
+
+      if (!r?.ok) {
         setModalItem(null)
         setErroCompra(true)
         setTimeout(() => setErroCompra(false), 4500)
+        // recusa do servidor (saldo/nível/já possui) traz o saldo real junto: aproveita
+        // para corrigir a tela, que pode estar mostrando um número desatualizado.
+        if (typeof r?.coins === 'number') setSaldo(r.coins)
         return
       }
+      novoSaldo = r.coins
     }
 
     // A partir daqui está gravado — pode mexer na tela.
     setSaldo(novoSaldo)
+    if (isAvatar && childId) {
+      // avatar continua sendo do cliente: é aparência, não vale pontos
+      supabase.from('children').update({ avatar: modalItem.emoji }).eq('id', childId).then(() => {})
+    }
     try {
       const purch = (() => { try { return JSON.parse(localStorage.getItem('ns_purchased') || '[]') } catch { return [] } })()
       purch.push({ item_id: modalItem.id, timestamp: Date.now() })
       localStorage.setItem('ns_purchased', JSON.stringify(purch))
       const childLocal = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
-      if (childLocal) localStorage.setItem('ns_active_child', JSON.stringify({ ...childLocal, ...updates }))
+      if (childLocal) {
+        const atualizado = { ...childLocal, neural_coins: novoSaldo }
+        if (isAvatar) atualizado.avatar = modalItem.emoji
+        localStorage.setItem('ns_active_child', JSON.stringify(atualizado))
+      }
     } catch { /* modo privado: o servidor já tem a verdade */ }
     setComprados(prev => [...prev, modalItem.id])
 

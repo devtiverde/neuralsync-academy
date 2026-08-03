@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { gravar } from '../../lib/gravar'
+import { creditarBonus } from '../../lib/economia'
 import { tipoConfig } from '../../data/atividadesData'
 import { hasEffect, consumePowerup } from '../../lib/powerups'
 import { foiAssistido } from '../atividades/IntroAtividade'
@@ -186,49 +187,55 @@ export default function Trilha() {
     setConcluidas(prev => [...prev, at.id])
   }
 
+  // ⚠️ 02/08/2026 — o resgate único saiu do localStorage.
+  // `ns_desafio_<filho>_<semana>` era a ÚNICA barreira: apagar a chave pelo console
+  // liberava os 500 XP de novo, quantas vezes quisesse. Agora quem controla é a chave
+  // primária de `ns_bonus_resgates` no banco, e o valor também é decidido lá.
   async function reivindicarDesafio() {
     if (!child?.id || desafioReivindicado || resgatando) return
     setResgatando('desafio')
-    const novoXp = (child.xp || 0) + 500
-    const novasCoins = (child.neural_coins || 0) + 500
 
-    const ok = await gravar(
-      supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id),
-      'trilha:bonus-desafio-semanal',
-    )
+    const r = await creditarBonus({ childId: child.id, tipo: 'desafio' })
     setResgatando(null)
-    if (!ok) { avisarFalha(); return }
+    if (!r) { avisarFalha(); return }
 
-    const updated = { ...child, xp: novoXp, neural_coins: novasCoins }
-    setChild(updated)
-    try {
-      localStorage.setItem('ns_active_child', JSON.stringify(updated))
-      localStorage.setItem(`ns_desafio_${child.id}_${semanaAtual()}`, '1')
-    } catch { /* modo privado */ }
+    // 'ja_resgatado' não é erro: é o banco dizendo que esta semana já foi. Marcar a tela
+    // como resgatada é a resposta certa — insistir mostraria um botão que nunca funciona.
+    if (r.ok) {
+      const updated = { ...child, xp: r.xp, neural_coins: r.coins, nivel: r.nivel }
+      setChild(updated)
+      try { localStorage.setItem('ns_active_child', JSON.stringify(updated)) } catch { /* modo privado */ }
+    } else if (r.motivo !== 'ja_resgatado') {
+      avisarFalha(); return
+    }
+    try { localStorage.setItem(`ns_desafio_${child.id}_${semanaAtual()}`, '1') } catch { /* modo privado */ }
     setDesafioReivindicado(true)
   }
 
   async function reivindicarMissao() {
     if (!child?.id || missaoBonusReivindicado || resgatando) return
     setResgatando('missao')
-    const BONUS_XP = 75, BONUS_COINS = 75
-    const novoXp = (child.xp || 0) + BONUS_XP
-    const novasCoins = (child.neural_coins || 0) + BONUS_COINS
-
-    const ok = await gravar(
-      supabase.from('children').update({ xp: novoXp, neural_coins: novasCoins }).eq('id', child.id),
-      'trilha:bonus-missao-do-dia',
-    )
+    // mesma mudança do desafio: o valor e o "já resgatei" agora são do servidor.
+    // A janela aqui é o dia brasileiro, calculado lá — não o fuso do aparelho, que
+    // um relógio adiantado transformava em vários resgates por dia.
+    const r = await creditarBonus({ childId: child.id, tipo: 'missao' })
     setResgatando(null)
-    if (!ok) { avisarFalha(); return }
+    if (!r) { avisarFalha(); return }
 
-    const updated = { ...child, xp: novoXp, neural_coins: novasCoins }
-    setChild(updated)
+    if (r.ok) {
+      const updated = { ...child, xp: r.xp, neural_coins: r.coins, nivel: r.nivel }
+      setChild(updated)
+      try {
+        localStorage.setItem('ns_active_child', JSON.stringify(updated))
+        const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
+        hist.unshift({ child_id: child.id, titulo: 'Missão do Dia Concluída!', xp: r.ganho_xp, coins: r.ganho_coins, emoji: '🎯', tipo: 'missao', data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), timestamp: Date.now() })
+        localStorage.setItem('ns_historico', JSON.stringify(hist))
+      } catch { /* modo privado */ }
+    } else if (r.motivo !== 'ja_resgatado') {
+      avisarFalha(); return
+    }
+
     try {
-      localStorage.setItem('ns_active_child', JSON.stringify(updated))
-      const hist = JSON.parse(localStorage.getItem('ns_historico') || '[]')
-      hist.unshift({ child_id: child.id, titulo: 'Missão do Dia Concluída!', xp: BONUS_XP, coins: BONUS_COINS, emoji: '🎯', tipo: 'missao', data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), timestamp: Date.now() })
-      localStorage.setItem('ns_historico', JSON.stringify(hist))
       const chave = `ns_missao_${child.id}_${hojeStr()}`
       const saved = (() => { try { return JSON.parse(localStorage.getItem(chave) || 'null') } catch { return null } })()
       localStorage.setItem(chave, JSON.stringify({ ...saved, bonus_claimed: true }))

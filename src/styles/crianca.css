@@ -776,3 +776,44 @@ h1, h2, h3, .crianca-heading {
   .ns-topbar-pills { gap: 4px !important; }
   .ns-pill-num { padding: 6px 5px !important; }
 }
+
+/* -- Safe-area do TOPO (2026-08-02) ------------------------------------------
+   O `index.html` usa `viewport-fit=cover`, que faz o app desenhar POR BAIXO do
+   entalhe e da barra de status do celular. O rodapé já tinha tratamento
+   (`.menu-bottom` e o menu lateral usam `safe-area-inset-bottom`), e a topbar
+   dentro do jogo também. A topbar da área da criança e a da área dos pais não —
+   e são elas que aparecem em todas as outras telas.
+
+   O sintoma em iPhone com entalhe e em Android com furo na tela: o nome da
+   criança, as moedas e o botão de menu ficam PARCIALMENTE COBERTOS pela barra de
+   status. Não é corte de layout, é sobreposição do sistema — por isso nunca
+   apareceu nas auditorias de vazamento horizontal, que medem largura.
+
+   Aplicado como padding EXTRA, somado ao que já existe: em aparelho sem entalhe
+   `env()` vale 0 e nada muda. */
+.ns-topbar-row {
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: content-box;
+}
+
+/* -- Alvo de toque mínimo (2026-08-02) ---------------------------------------
+   Achado pela auditoria `auditar-toque.mjs`: as tiras de navegação do Alfabeto
+   (26 letras a 28×28), dos Números e das Cores (32×32) são pequenas demais para
+   o dedo de quem tem 4 ou 5 anos — e são exatamente as atividades dessa faixa.
+
+   A criança erra o alvo, nada acontece, e ela conclui que travou. Não gera erro
+   nenhum: por isso passou limpo por todas as auditorias anteriores, que medem
+   vazamento de layout e erro de JavaScript.
+
+   `pointer: coarse` aplica só onde o apontador é grosso (dedo). No computador,
+   com mouse, o desenho continua compacto como estava — não há motivo para
+   engordar o que já se acerta.
+
+   44px é a recomendação das duas plataformas (Apple HIG e Material) para alvo
+   de toque; para criança pequena é piso, não teto. */
+@media (pointer: coarse) {
+  .ns-alvo-toque {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}

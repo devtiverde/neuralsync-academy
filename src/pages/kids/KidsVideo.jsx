@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useKids } from '../../hooks/useKids'
-import { supabase } from '../../lib/supabase'
+import { creditarBonus, aplicarNoFilhoLocal } from '../../lib/economia'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import '../../styles/crianca.css'
 
@@ -40,7 +40,7 @@ export default function KidsVideo() {
   }, [loading, fase, videoId])
 
   useEffect(() => {
-    if (fase === 'resultado') salvarCoins(coins + 30)
+    if (fase === 'resultado') salvarCoins()
   }, [fase])
 
   if (loading) return (
@@ -64,11 +64,14 @@ export default function KidsVideo() {
     }, 1500)
   }
 
-  function salvarCoins(total) {
+  // O valor passou a ser fixo e decidido no servidor. Antes vinha do resultado do quiz
+  // calculado aqui e era gravado como TOTAL de moedas — dava para mandar qualquer número.
+  // O `ref` é a categoria: o bônus vale uma vez por categoria assistida, não por vez que
+  // a criança refizer o mesmo quiz.
+  function salvarCoins() {
     if (!child) return
-    const novasCoins = (child.neural_coins || 0) + total
-    localStorage.setItem('ns_active_child', JSON.stringify({ ...child, neural_coins: novasCoins }))
-    supabase.from('children').update({ neural_coins: novasCoins }).eq('id', child.id).then(() => {})
+    creditarBonus({ childId: child.id, tipo: 'kids', ref: categoriaKey ?? 'video' })
+      .then(r => { if (r?.ok) aplicarNoFilhoLocal(r) })
   }
 
   const cor = categoriaData?.cor || '#7C3AED'

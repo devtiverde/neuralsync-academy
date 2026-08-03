@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import LayoutPai from '../../components/LayoutPai'
 import { NEURALAI_CONFIG } from '../../config/neuralai'
+import { SUPPORT } from '../../config/support'
 import { GearSix } from '@phosphor-icons/react'
 import '../../styles/pai.css'
 
@@ -67,6 +68,7 @@ export default function Settings() {
   const [toast,            setToast]             = useState(null)
   const [confirmarExcluir, setConfirmarExcluir]  = useState(false)
   const [excluindo,        setExcluindo]         = useState(false)
+  const [erroExcluir,      setErroExcluir]       = useState('')
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return }
@@ -86,15 +88,40 @@ export default function Settings() {
       })
   }, [user])
 
+  // Exclusão de conta — LGPD, Art. 18, VI.
+  //
+  // Antes esta função apagava três tabelas e parava. A conta continuava viva em
+  // `auth.users`: a pessoa entrava de novo, com o mesmo e-mail e a mesma senha, num
+  // produto que tinha acabado de dizer que apagou tudo dela. E como nenhum erro era
+  // conferido, bastava um passo falhar para ela ir embora achando que foi apagada.
+  //
+  // Agora quem apaga é `ns_excluir_minha_conta` (migration 025), que roda no servidor
+  // porque `auth.users` não é — e não deve ser — alcançável pelo navegador. A função não
+  // recebe parâmetro: apaga quem chamou, e mais ninguém.
   const excluirConta = async () => {
     setExcluindo(true)
-    const { data: filhos } = await supabase.from('children').select('id').eq('parent_id', user.id)
-    const ids = (filhos || []).map(f => f.id)
-    if (ids.length > 0) {
-      await supabase.from('ns_historico').delete().in('child_id', ids)
-      await supabase.from('children').delete().in('id', ids)
+    setErroExcluir('')
+
+    const { error } = await supabase.rpc('ns_excluir_minha_conta')
+    if (error) {
+      setExcluindo(false)
+      setErroExcluir('Não consegui excluir a conta agora. Nada foi apagado — tente de novo, ou escreva para ' + SUPPORT.email + '.')
+      return
     }
-    await supabase.from('users').delete().eq('id', user.id)
+
+    // O que ficou no navegador é responsabilidade daqui: o diário da criança, o
+    // histórico em cache, o filho ativo, as compras. Apagar por prefixo, e não por lista
+    // de chaves, porque a lista cresceu 8 vezes desde que este código foi escrito e uma
+    // enumeração à mão vai ficar desatualizada de novo.
+    try {
+      Object.keys(localStorage)
+        .filter(k => k.startsWith('ns_'))
+        .forEach(k => localStorage.removeItem(k))
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('ns_'))
+        .forEach(k => sessionStorage.removeItem(k))
+    } catch { /* modo privado: não há o que limpar */ }
+
     await supabase.auth.signOut()
     navigate('/auth')
   }
@@ -301,8 +328,13 @@ export default function Settings() {
                 <div style={{ background: '#fef2f2', borderRadius: 12, padding: '18px 20px' }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: '#991b1b', marginBottom: 8 }}>⚠️ Tem certeza absoluta?</p>
                   <p style={{ fontSize: 13, color: '#374151', marginBottom: 16, lineHeight: 1.5 }}>
-                    Isso <strong>apagará permanentemente</strong> sua conta, todos os perfis de filhos cadastrados e o histórico de atividades. Esta ação não pode ser desfeita.
+                    Isso <strong>apagará permanentemente</strong> seu login, os perfis dos seus filhos, o histórico de atividades, as compras, o diário e as conversas com a NeuralAI — no servidor e neste aparelho. Você não conseguirá entrar de novo com este e-mail. Esta ação não pode ser desfeita.
                   </p>
+                  {erroExcluir && (
+                    <p style={{ fontSize: 13, color: '#991b1b', fontWeight: 700, background: '#fee2e2', border: '1px solid #fecaca', borderRadius: 10, padding: '10px 12px', marginBottom: 14, lineHeight: 1.5 }}>
+                      {erroExcluir}
+                    </p>
+                  )}
                   <div style={{ display: 'flex', gap: 10 }}>
                     <button
                       onClick={excluirConta}

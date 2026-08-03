@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import ParentUnlockModal from '../../components/ParentUnlockModal'
-import { dentroDoHorario, liberarPorMinutos, OPCOES_LIBERACAO } from '../../lib/horarioAcesso'
+import { dentroDoHorario, liberarPorMinutos, sincronizarLiberacao, OPCOES_LIBERACAO } from '../../lib/horarioAcesso'
 import '../../styles/crianca.css'
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -72,6 +72,16 @@ export default function Bloqueio() {
   const proxima = proximaSessao(agenda)
   const info = infoAgendaHoje(agenda)
 
+  // Puxa do servidor a liberação em vigor antes de qualquer decisão. É o que desfaz um
+  // cache adulterado — e também o que faz a liberação concedida no celular do pai valer
+  // aqui no tablet da criança, que antes não acontecia.
+  useEffect(() => {
+    if (!child?.id) return
+    sincronizarLiberacao(child.id).then(min => {
+      if (min > 0) navigate('/home-crianca', { replace: true })
+    })
+  }, [child?.id, navigate])
+
   // Recheck automático a cada 30s — libera quando o horário configurado chegar
   useEffect(() => {
     const check = () => {
@@ -92,9 +102,20 @@ export default function Bloqueio() {
   const [pedindoSenha, setPedindoSenha] = useState(false)
   const [minutosEscolhidos, setMinutosEscolhidos] = useState(null)
 
-  function autorizado() {
-    liberarPorMinutos(child?.id, minutosEscolhidos)
+  // A liberação virou gravação no servidor (migration 023), então esperar a resposta
+  // deixou de ser opcional: navegar antes faria a home ler o cache ainda vazio e mandar
+  // a criança de volta para cá — pingue-pongue exatamente entre as duas telas que este
+  // arquivo existe para manter em acordo.
+  const [erroLiberar, setErroLiberar] = useState(false)
+
+  async function autorizado() {
+    const ok = await liberarPorMinutos(child?.id, minutosEscolhidos)
     setPedindoSenha(false)
+    if (!ok) {
+      setErroLiberar(true)
+      setTimeout(() => setErroLiberar(false), 4500)
+      return
+    }
     navigate('/home-crianca', { replace: true })
   }
 
@@ -105,6 +126,11 @@ export default function Bloqueio() {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', padding: '24px', textAlign: 'center',
     }}>
+      {erroLiberar && (
+        <div style={{ background: 'rgba(220,38,38,0.9)', color: 'white', borderRadius: '12px', padding: '12px 18px', marginBottom: '18px', fontSize: '14px', fontWeight: 700, maxWidth: '420px' }}>
+          Não consegui liberar agora. Confira a conexão e tente de novo.
+        </div>
+      )}
       <div style={{ fontSize: '72px', marginBottom: '20px' }}>🌙</div>
       <h2 style={{ color: 'white', fontSize: '28px', fontWeight: '900', marginBottom: '10px', letterSpacing: '-0.5px' }}>Ei, {nome}!</h2>
       <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px', marginBottom: '6px' }}>Agora não é hora de usar a plataforma.</p>

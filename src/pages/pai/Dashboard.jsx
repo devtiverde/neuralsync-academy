@@ -5,10 +5,9 @@ import { useAuth } from '../../contexts/AuthContext'
 import { SUPPORT } from '../../config/support'
 import { assinaturaVigente } from '../../lib/assinatura'
 import LayoutPai from '../../components/LayoutPai'
+import { lerProgresso, montarPassos, CHAVE_DISPENSA } from '../../lib/primeirosPassos'
 import { Button, Card } from '../../components/ui'
 import { CheckCircle, Brain, GearSix } from '@phosphor-icons/react'
-import { atividadesPorFaixa, fase2PorFaixa, fase3PorFaixa } from '../../data/atividadesData'
-import { atividadesExtraPorFaixa, fase2ExtraPorFaixa, fase3ExtraPorFaixa, fase4ExtraPorFaixa, fase5ExtraPorFaixa, inglesExtraPorFaixa, formasExtraPorFaixa, numerosExtraPorFaixa, coresExtraPorFaixa, alfabetoExtraPorFaixa } from '../../data/atividadesExtra'
 import '../../styles/pai.css'
 
 const AVATAR_MAP = {
@@ -62,25 +61,43 @@ const RECOMENDADAS = {
   ],
 }
 
-function encontrarAtividade(tipo, faixa) {
+// ⚡ Os dados das atividades entram por `import()` dinâmico, e não no topo do arquivo.
+//
+// MEDIDO EM 02/08/2026: este painel tem 9 kB comprimidos e o `atividadesExtra.js` tem
+// 231 kB — vinte e cinco vezes o tamanho da tela. Com o import estático, TODO pai que
+// entrava no painel (a primeira tela depois de pagar, e a mais aberta do produto)
+// baixava e interpretava esses 231 kB antes de ver qualquer coisa. Tudo isso para
+// preencher três cartões de sugestão que quase ninguém clica.
+//
+// Agora os dados só chegam quando o pai CLICA num cartão. O clique paga a espera de uma
+// requisição, o que é aceitável — ele acabou de decidir abrir a atividade —, enquanto o
+// carregamento do painel deixa de pagar por todo mundo.
+//
+// O mesmo tratamento já tinha sido dado ao `useAtividades` (a home da criança). Este
+// arquivo tinha ficado para trás e desfazia metade do ganho.
+async function encontrarAtividade(tipo, faixa) {
   if (!tipo) return null
+  const [dataMod, extraMod] = await Promise.all([
+    import('../../data/atividadesData'),
+    import('../../data/atividadesExtra'),
+  ])
   const todasFaixas = ['exploradores', 'construtores', 'criadores', 'inventores']
   const faixas = [faixa, ...todasFaixas.filter(f => f !== faixa)]
   for (const f of faixas) {
     const lista = [
-      ...(atividadesPorFaixa[f] || []),
-      ...(fase2PorFaixa[f] || []),
-      ...(fase3PorFaixa[f] || []),
-      ...(atividadesExtraPorFaixa[f] || []),
-      ...(fase2ExtraPorFaixa[f] || []),
-      ...(fase3ExtraPorFaixa[f] || []),
-      ...(fase4ExtraPorFaixa[f] || []),
-      ...(fase5ExtraPorFaixa[f] || []),
-      ...(inglesExtraPorFaixa[f] || []),
-      ...(formasExtraPorFaixa[f] || []),
-      ...(numerosExtraPorFaixa[f] || []),
-      ...(coresExtraPorFaixa[f]  || []),
-      ...(alfabetoExtraPorFaixa[f] || []),
+      ...(dataMod.atividadesPorFaixa[f] || []),
+      ...(dataMod.fase2PorFaixa[f] || []),
+      ...(dataMod.fase3PorFaixa[f] || []),
+      ...(extraMod.atividadesExtraPorFaixa[f] || []),
+      ...(extraMod.fase2ExtraPorFaixa[f] || []),
+      ...(extraMod.fase3ExtraPorFaixa[f] || []),
+      ...(extraMod.fase4ExtraPorFaixa[f] || []),
+      ...(extraMod.fase5ExtraPorFaixa[f] || []),
+      ...(extraMod.inglesExtraPorFaixa[f] || []),
+      ...(extraMod.formasExtraPorFaixa[f] || []),
+      ...(extraMod.numerosExtraPorFaixa[f] || []),
+      ...(extraMod.coresExtraPorFaixa[f]  || []),
+      ...(extraMod.alfabetoExtraPorFaixa[f] || []),
     ]
     const found = lista.find(a => a.tipo === tipo)
     if (found) return found
@@ -115,6 +132,25 @@ export default function Dashboard() {
   const [avisoExpDispensado, setAvisoExpDispensado] = useState(
     () => localStorage.getItem('ns_aviso_exploradores') === 'dispensado'
   )
+  const [progressoInicial, setProgressoInicial] = useState(null)
+  const [ppDispensado, setPpDispensado] = useState(
+    () => localStorage.getItem(CHAVE_DISPENSA) === 'dispensado'
+  )
+
+  // Usa a MESMA leitura da tela /primeiros-passos. Recontar aqui com outra regra faria a
+  // faixa dizer "faltam 2" e a tela mostrar 3 — divergência que aparece só na frente do
+  // cliente. (Mesmo motivo de `dentroDoHorario` ter virado arquivo único.)
+  useEffect(() => {
+    if (!user || ppDispensado) return
+    let vivo = true
+    lerProgresso(user.id).then(p => {
+      if (!vivo) return
+      const passos = montarPassos(p, () => {})
+      const feitos = passos.filter(x => x.feito).length
+      setProgressoInicial({ completo: feitos === passos.length, faltam: passos.length - feitos })
+    })
+    return () => { vivo = false }
+  }, [user, ppDispensado, children.length])
 
   useEffect(() => {
     // `ativando` é essencial: a Edge Function de ativação tem cold start, e sem esperar
@@ -361,6 +397,35 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* ── CHAMADA DOS PRIMEIROS PASSOS ──────────── */}
+        {/* Some sozinha quando os 6 passos estiverem feitos. O botão de dispensar existe
+            porque quem já sabe usar não deve ver isso pra sempre — mas o item continua
+            no menu lateral, então dispensar não esconde o caminho. */}
+        {progressoInicial && !progressoInicial.completo && !ppDispensado && (
+          <div style={{ background: '#f3f0ff', border: '1.5px solid #ddd6fe', borderRadius: 14, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>🧭</span>
+            <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+              <p style={{ fontWeight: 700, fontSize: 14, color: '#5b21b6', marginBottom: 3 }}>
+                Faltam {progressoInicial.faltam} {progressoInicial.faltam === 1 ? 'passo' : 'passos'} para deixar tudo configurado
+              </p>
+              <p style={{ fontSize: 13, color: '#7c5cc4', lineHeight: 1.6 }}>
+                Tempo de tela, horários da semana e o primeiro relatório — em ordem, leva poucos minutos.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/primeiros-passos')}
+              style={{ background: '#7C3AED', border: 'none', borderRadius: 10, padding: '10px 18px', color: 'white', fontSize: 13.5, fontWeight: 700, cursor: 'pointer', fontFamily: 'Plus Jakarta Sans, sans-serif', flexShrink: 0 }}
+            >
+              Continuar
+            </button>
+            <button
+              onClick={() => { localStorage.setItem(CHAVE_DISPENSA, 'dispensado'); setPpDispensado(true) }}
+              aria-label="Dispensar"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: '#c4b5fd', flexShrink: 0, lineHeight: 1 }}
+            >×</button>
+          </div>
+        )}
+
         {/* ── AVISO EXPLORADORES ────────────────────── */}
         {!avisoExpDispensado && children.some(c => normalizarFaixa(c.faixa_etaria, c.idade) === 'exploradores') && (
           <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: 14, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
@@ -550,9 +615,9 @@ export default function Dashboard() {
             <div className="pai-recomendadas-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
               {RECOMENDADAS[faixaPrioritaria].map((at, i) => (
                 <Card key={at.label} variant="light" style={{ padding: 22, minWidth: 0, animationDelay: `${i * 60}ms`, cursor: 'pointer' }}
-                  onClick={() => {
+                  onClick={async () => {
                     localStorage.setItem('ns_active_child', JSON.stringify(children[0]))
-                    const atv = encontrarAtividade(at.tipo, faixaPrioritaria)
+                    const atv = await encontrarAtividade(at.tipo, faixaPrioritaria)
                     if (atv) navigate(at.path, { state: { atividade: atv } })
                     else navigate(at.path)
                   }}>

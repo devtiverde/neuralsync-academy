@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 /**
  * Menu lateral suspenso, presente em TODAS as telas.
@@ -31,6 +32,7 @@ const LINKS_CRIANCA = [
 
 const LINKS_PAI = [
   { icon: '📊', label: 'Painel',        path: '/dashboard' },
+  { icon: '🧭', label: 'Primeiros passos', path: '/primeiros-passos' },
   { icon: '🗓️', label: 'Trilha',        path: '/trilha-pai' },
   { icon: '⏱️', label: 'Timer',         path: '/timer' },
   { icon: '📅', label: 'Agenda',        path: '/agenda' },
@@ -46,6 +48,11 @@ export default function MenuLateral({ tipo = 'crianca' }) {
   const { signOut } = useAuth()
   const [aberto, setAberto] = useState(false)
   const [touch, setTouch] = useState(false)
+  // lê o cache já na inicialização: fazer isso dentro do efeito custaria um render extra
+  // em toda navegação, e o menu monta em todas as telas do app.
+  const [ehAdmin, setEhAdmin] = useState(() => {
+    try { return sessionStorage.getItem('ns_eh_admin') === '1' } catch { return false }
+  })
   const fecharTimer = useRef(null)
 
   useEffect(() => {
@@ -70,7 +77,33 @@ export default function MenuLateral({ tipo = 'crianca' }) {
 
   useEffect(() => () => clearTimeout(fecharTimer.current), [])
 
-  const links = tipo === 'pai' ? LINKS_PAI : LINKS_CRIANCA
+  // O painel de feedbacks só aparece para quem é administrador. Um pai comum vendo o item
+  // e batendo na tela de "sem acesso" é ruído. A resposta fica no sessionStorage porque o
+  // menu monta em TODA tela do app — sem cache seria uma consulta por navegação.
+  useEffect(() => {
+    if (tipo !== 'pai') return
+    // já respondido nesta aba (o valor foi lido na inicialização do estado) — não repergunta
+    let cache = null
+    try { cache = sessionStorage.getItem('ns_eh_admin') } catch { /* modo privativo */ }
+    if (cache !== null) return
+    let vivo = true
+    supabase.auth.getUser().then(({ data }) => {
+      const id = data?.user?.id
+      if (!id) return
+      return supabase.from('ns_admins').select('user_id').eq('user_id', id).maybeSingle()
+        .then(({ data: linha }) => {
+          if (!vivo) return
+          const sim = !!linha
+          sessionStorage.setItem('ns_eh_admin', sim ? '1' : '0')
+          setEhAdmin(sim)
+        })
+    }).catch(() => {})
+    return () => { vivo = false }
+  }, [tipo])
+
+  const links = tipo === 'pai'
+    ? (ehAdmin ? [...LINKS_PAI, { icon: '💬', label: 'Feedbacks', path: '/feedbacks' }] : LINKS_PAI)
+    : LINKS_CRIANCA
   const corBase = tipo === 'pai' ? '#7C3AED' : '#a78bfa'
 
   const abrir = () => { clearTimeout(fecharTimer.current); setAberto(true) }
