@@ -7,10 +7,11 @@
     "dev": "vite",
     "checar-ids": "node scripts/checar-ids-atividades.mjs",
     "gerar-economia": "node scripts/gerar-economia-seed.mjs",
-    "prebuild": "node scripts/checar-ids-atividades.mjs",
+    "prebuild": "node scripts/checar-ids-atividades.mjs && node scripts/gerar-kids-resumo.mjs --verificar",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gerar-kids-resumo": "node scripts/gerar-kids-resumo.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

@@ -1,7 +1,14 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { playSound } from '../../lib/sounds'
-import { kidsData } from '../../data/kidsData'
+// ⚡ `kidsResumo` no lugar de `kidsData`: esta tela abre ANTES DE TODA atividade e
+// só usa três campos do Kids TV (emoji, título e os 80 primeiros caracteres da
+// introdução) num cartão. O `kidsData.js` inteiro são 21 kB gzip de seções, fatos e
+// quizzes de 18 categorias — viajavam para o celular da criança a cada abertura de
+// atividade sem serem lidos aqui. O resumo tem 4,2 kB crus.
+// É GERADO (`npm run gerar-kids-resumo`) e o `prebuild` quebra o build se ficar
+// desatualizado — arquivo gerado envelhece em silêncio se ninguém vigiar.
+import { kidsResumo } from '../../data/kidsResumo'
 import { INTRO_SLIDES } from '../../data/introSlides'
 import { podeAcessar, isDesbloqueado, desbloquear, getFaixaFromId, FAIXA_LABELS } from '../../lib/faixaGuard'
 import ParentUnlockModal from '../../components/ParentUnlockModal'
@@ -68,7 +75,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
     setShowModal(false)
   }
 
-  const kidsCategoria = kidsLink ? kidsData[kidsLink] : null
+  const kidsCategoria = kidsLink ? kidsResumo[kidsLink] : null
 
   function handleEstudarAntes() {
     playSound('click')
