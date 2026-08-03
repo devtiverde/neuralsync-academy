@@ -75,29 +75,44 @@ const RECOMENDADAS = {
 //
 // O mesmo tratamento já tinha sido dado ao `useAtividades` (a home da criança). Este
 // arquivo tinha ficado para trás e desfazia metade do ganho.
+//
+// ⚡⚡ 03/08/2026 — e agora carrega UMA FAIXA POR VEZ, sob demanda.
+// As atividades extra foram divididas em `src/data/extra/<faixa>.js`. Importar o
+// barril `atividadesExtra.js` aqui traria as quatro de volta (244 kB) — pior do que
+// o monólito de antes, porque a divisão custa uns 5% de compressão. Como a busca já
+// tentava a faixa do filho PRIMEIRO e quase sempre acha nela, o certo é buscar a
+// faixa, procurar, e só ir atrás da próxima se não achou. No caso comum isso baixa
+// ~59 kB em vez de 244.
+const EXTRA_POR_FAIXA = {
+  exploradores: () => import('../../data/extra/exploradores.js'),
+  construtores: () => import('../../data/extra/construtores.js'),
+  criadores:    () => import('../../data/extra/criadores.js'),
+  inventores:   () => import('../../data/extra/inventores.js'),
+}
+
 async function encontrarAtividade(tipo, faixa) {
   if (!tipo) return null
-  const [dataMod, extraMod] = await Promise.all([
-    import('../../data/atividadesData'),
-    import('../../data/atividadesExtra'),
-  ])
-  const todasFaixas = ['exploradores', 'construtores', 'criadores', 'inventores']
-  const faixas = [faixa, ...todasFaixas.filter(f => f !== faixa)]
+  const dataMod = await import('../../data/atividadesData')
+  const todasFaixas = Object.keys(EXTRA_POR_FAIXA)
+  // Faixa desconhecida (ou ausente) simplesmente não entra na frente da fila.
+  const faixas = [...new Set([faixa, ...todasFaixas])].filter(f => EXTRA_POR_FAIXA[f])
+
   for (const f of faixas) {
+    const extra = await EXTRA_POR_FAIXA[f]()
     const lista = [
       ...(dataMod.atividadesPorFaixa[f] || []),
       ...(dataMod.fase2PorFaixa[f] || []),
       ...(dataMod.fase3PorFaixa[f] || []),
-      ...(extraMod.atividadesExtraPorFaixa[f] || []),
-      ...(extraMod.fase2ExtraPorFaixa[f] || []),
-      ...(extraMod.fase3ExtraPorFaixa[f] || []),
-      ...(extraMod.fase4ExtraPorFaixa[f] || []),
-      ...(extraMod.fase5ExtraPorFaixa[f] || []),
-      ...(extraMod.inglesExtraPorFaixa[f] || []),
-      ...(extraMod.formasExtraPorFaixa[f] || []),
-      ...(extraMod.numerosExtraPorFaixa[f] || []),
-      ...(extraMod.coresExtraPorFaixa[f]  || []),
-      ...(extraMod.alfabetoExtraPorFaixa[f] || []),
+      ...(extra.atividadesExtraPorFaixa || []),
+      ...(extra.fase2ExtraPorFaixa || []),
+      ...(extra.fase3ExtraPorFaixa || []),
+      ...(extra.fase4ExtraPorFaixa || []),
+      ...(extra.fase5ExtraPorFaixa || []),
+      ...(extra.inglesExtraPorFaixa || []),
+      ...(extra.formasExtraPorFaixa || []),
+      ...(extra.numerosExtraPorFaixa || []),
+      ...(extra.coresExtraPorFaixa || []),
+      ...(extra.alfabetoExtraPorFaixa || []),
     ]
     const found = lista.find(a => a.tipo === tipo)
     if (found) return found
