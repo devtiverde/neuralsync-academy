@@ -59,12 +59,21 @@ export default function DevAtividade() {
   const { tipo } = useParams()
   const [params] = useSearchParams()
   const faixaAlvo = params.get('faixa')
+  // `?id=` mira UMA atividade específica. Sem isto a bancada abre sempre a primeira
+  // do tipo, e auditoria que só vê a primeira não vale muito: os casos que quebram
+  // são justamente os extremos (a história mais longa, o desenho com mais regiões).
+  const idAlvo = params.get('id')
 
   const atividade = useMemo(() => {
-    const candidatas = todasAtividades().filter(a => a.tipo === tipo)
+    const todas = todasAtividades()
+    if (idAlvo) {
+      const exata = todas.find(a => a.id === idAlvo)
+      if (exata) return exata
+    }
+    const candidatas = todas.filter(a => a.tipo === tipo)
     const daFaixa = faixaAlvo ? candidatas.filter(a => a._faixa === faixaAlvo) : candidatas
     return (daFaixa[0] || candidatas[0] || atividadeSintetica(tipo))
-  }, [tipo, faixaAlvo])
+  }, [tipo, faixaAlvo, idAlvo])
 
   // A criança ativa é lida do localStorage por várias atividades (faixa etária,
   // avatar, XP). Sem ela algumas caem em ramos de erro que não são o que se quer

@@ -146,8 +146,18 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
             <h1 style={{ color: 'white', fontSize: '36px', fontWeight: '900', lineHeight: 1.15, letterSpacing: '-1px', marginBottom: '14px' }}>
               {atividade.titulo}
             </h1>
+            {/* MEDIDO EM 03/08/2026: aqui ficava a `historinha` cortada em 120
+                caracteres, e 286 das 393 atividades (73%) passam disso — ou seja, a
+                história aparecia MUTILADA na regra, não na exceção. E aparecia duas
+                vezes: pela metade neste hero e inteira no cartão "A missão" ao lado.
+                A criança de 4-5 anos lê o texto grande do meio da tela, chega no "…"
+                e não tem por que supor que o resto está numa coluna à direita.
+
+                Toda atividade já tem `descricao` — uma linha de 23 a 75 caracteres,
+                escrita justamente para ser esse resumo. Ela nunca corta. A história
+                inteira fica num lugar só, no cartão, sem reticência. */}
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: 1.6 }}>
-              {(atividade.historinha || '').substring(0, 120)}{atividade.historinha?.length > 120 ? '…' : ''}
+              {atividade.descricao || atividade.historinha}
             </p>
           </div>
         </div>
