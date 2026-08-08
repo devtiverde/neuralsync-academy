@@ -2284,8 +2284,8 @@ export const colorirExtraPorFaixa = [
             tipo: "circle",
             props: {
               cx: 150,
-              cy: 150,
-              r: 55
+              cy: 118,
+              r: 52
             }
           },
           {
@@ -2293,38 +2293,62 @@ export const colorirExtraPorFaixa = [
             tipo: "radial",
             props: {
               cx: 150,
-              cy: 150,
-              rInner: 58,
-              rOuter: 95,
-              n: 8
+              cy: 118,
+              rInner: 50,
+              rOuter: 112,
+              n: 6,
+              largura: 0.44
+            }
+          },
+          {
+            id: "colina_esquerda",
+            tipo: "ellipse",
+            props: {
+              cx: 62,
+              cy: 262,
+              rx: 52,
+              ry: 34
+            }
+          },
+          {
+            id: "colina_direita",
+            tipo: "ellipse",
+            props: {
+              cx: 238,
+              cy: 262,
+              rx: 52,
+              ry: 34
             }
           },
           {
             id: "olho_esquerdo",
             tipo: "circle",
+            decorativo: true,
             props: {
-              cx: 130,
-              cy: 140,
-              r: 8
+              cx: 132,
+              cy: 108,
+              r: 9
             }
           },
           {
             id: "olho_direito",
             tipo: "circle",
+            decorativo: true,
             props: {
-              cx: 170,
-              cy: 140,
-              r: 8
+              cx: 168,
+              cy: 108,
+              r: 9
             }
           },
           {
             id: "boca",
             tipo: "rect",
+            decorativo: true,
             props: {
-              x: 125,
-              y: 165,
-              width: 50,
-              height: 10,
+              x: 128,
+              y: 136,
+              width: 44,
+              height: 11,
               rx: 5
             }
           }
@@ -2362,47 +2386,37 @@ export const colorirExtraPorFaixa = [
             id: "telhado",
             tipo: "polygon",
             props: {
-              points: "60,150 150,80 240,150"
+              points: "58,150 150,76 242,150"
             }
           },
           {
             id: "chamine",
             tipo: "rect",
             props: {
-              x: 190,
-              y: 95,
-              width: 20,
-              height: 40
+              x: 186,
+              y: 88,
+              width: 30,
+              height: 50
             }
           },
           {
             id: "porta",
             tipo: "rect",
             props: {
-              x: 135,
-              y: 190,
-              width: 30,
-              height: 60
+              x: 126,
+              y: 182,
+              width: 48,
+              height: 68
             }
           },
           {
-            id: "janela_esquerda",
+            id: "janela",
             tipo: "rect",
             props: {
-              x: 90,
-              y: 170,
-              width: 30,
-              height: 30
-            }
-          },
-          {
-            id: "janela_direita",
-            tipo: "rect",
-            props: {
-              x: 180,
-              y: 170,
-              width: 30,
-              height: 30
+              x: 82,
+              y: 172,
+              width: 38,
+              height: 42
             }
           }
         ]
@@ -2429,9 +2443,9 @@ export const colorirExtraPorFaixa = [
             id: "caule",
             tipo: "rect",
             props: {
-              x: 145,
-              y: 180,
-              width: 10,
+              x: 136,
+              y: 186,
+              width: 28,
               height: 90
             }
           },
@@ -2439,14 +2453,14 @@ export const colorirExtraPorFaixa = [
             id: "folha_esquerda",
             tipo: "polygon",
             props: {
-              points: "145,220 108,233 145,248"
+              points: "136,206 84,226 136,248"
             }
           },
           {
             id: "folha_direita",
             tipo: "polygon",
             props: {
-              points: "155,220 192,233 155,248"
+              points: "164,206 216,226 164,248"
             }
           },
           {
@@ -2454,10 +2468,11 @@ export const colorirExtraPorFaixa = [
             tipo: "radial",
             props: {
               cx: 150,
-              cy: 140,
-              rInner: 26,
-              rOuter: 58,
-              n: 6
+              cy: 110,
+              rInner: 30,
+              rOuter: 80,
+              n: 6,
+              largura: 0.46
             }
           },
           {
@@ -2465,8 +2480,8 @@ export const colorirExtraPorFaixa = [
             tipo: "circle",
             props: {
               cx: 150,
-              cy: 140,
-              r: 25
+              cy: 110,
+              r: 30
             }
           }
         ]

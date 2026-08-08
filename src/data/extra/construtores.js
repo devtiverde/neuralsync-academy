@@ -2278,7 +2278,7 @@ export const colorirExtraPorFaixa = [
             id: "cauda",
             tipo: "polygon",
             props: {
-              points: "205,150 250,113 250,187"
+              points: "205,150 252,108 252,192"
             }
           },
           {
@@ -2295,42 +2295,47 @@ export const colorirExtraPorFaixa = [
             id: "barbatana_superior",
             tipo: "polygon",
             props: {
-              points: "120,108 145,78 165,110"
+              points: "112,108 145,62 172,110"
             }
           },
           {
             id: "barbatana_inferior",
             tipo: "polygon",
             props: {
-              points: "120,192 145,222 165,190"
+              points: "112,192 145,238 172,190"
             }
           },
           {
             id: "olho",
             tipo: "circle",
+            decorativo: true,
             props: {
               cx: 100,
-              cy: 140,
-              r: 8
+              cy: 138,
+              r: 9
             }
           },
           {
             id: "bolha1",
             tipo: "circle",
+            decorativo: true,
             props: {
-              cx: 250,
-              cy: 90,
-              r: 6
-            }
+              cx: 252,
+              cy: 88,
+              r: 7
+            },
+            cor: "#BAE6FD"
           },
           {
             id: "bolha2",
             tipo: "circle",
+            decorativo: true,
             props: {
-              cx: 266,
-              cy: 70,
-              r: 4
-            }
+              cx: 270,
+              cy: 66,
+              r: 5
+            },
+            cor: "#BAE6FD"
           }
         ]
       }
@@ -2356,39 +2361,39 @@ export const colorirExtraPorFaixa = [
             id: "chama",
             tipo: "polygon",
             props: {
-              points: "138,200 150,242 162,200"
+              points: "130,198 150,252 170,198"
             }
           },
           {
             id: "aleta_esquerda",
             tipo: "polygon",
             props: {
-              points: "130,175 98,222 130,200"
+              points: "126,168 88,226 126,198"
             }
           },
           {
             id: "aleta_direita",
             tipo: "polygon",
             props: {
-              points: "170,175 202,222 170,200"
+              points: "174,168 212,226 174,198"
             }
           },
           {
             id: "corpo",
             tipo: "rect",
             props: {
-              x: 130,
+              x: 126,
               y: 90,
-              width: 40,
+              width: 48,
               height: 110,
-              rx: 20
+              rx: 22
             }
           },
           {
             id: "ponta",
             tipo: "polygon",
             props: {
-              points: "130,90 170,90 150,38"
+              points: "126,90 174,90 150,32"
             }
           },
           {
@@ -2397,7 +2402,7 @@ export const colorirExtraPorFaixa = [
             props: {
               cx: 150,
               cy: 130,
-              r: 14
+              r: 17
             }
           }
         ]
@@ -2424,60 +2429,61 @@ export const colorirExtraPorFaixa = [
             id: "asa_sup_esq",
             tipo: "ellipse",
             props: {
-              cx: 108,
+              cx: 104,
               cy: 118,
-              rx: 45,
-              ry: 32
+              rx: 46,
+              ry: 33
             }
           },
           {
             id: "asa_sup_dir",
             tipo: "ellipse",
             props: {
-              cx: 192,
+              cx: 196,
               cy: 118,
-              rx: 45,
-              ry: 32
+              rx: 46,
+              ry: 33
             }
           },
           {
             id: "asa_inf_esq",
             tipo: "ellipse",
             props: {
-              cx: 113,
-              cy: 174,
-              rx: 35,
-              ry: 25
+              cx: 110,
+              cy: 176,
+              rx: 36,
+              ry: 26
             }
           },
           {
             id: "asa_inf_dir",
             tipo: "ellipse",
             props: {
-              cx: 187,
-              cy: 174,
-              rx: 35,
-              ry: 25
+              cx: 190,
+              cy: 176,
+              rx: 36,
+              ry: 26
             }
           },
           {
             id: "corpo",
             tipo: "rect",
             props: {
-              x: 145,
+              x: 137,
               y: 100,
-              width: 10,
+              width: 26,
               height: 110,
-              rx: 5
+              rx: 13
             }
           },
           {
             id: "cabeca",
             tipo: "circle",
+            decorativo: true,
             props: {
               cx: 150,
-              cy: 95,
-              r: 10
+              cy: 92,
+              r: 12
             }
           }
         ]

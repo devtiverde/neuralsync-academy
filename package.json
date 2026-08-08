@@ -14,7 +14,9 @@
     "gerar-kids-resumo": "node scripts/gerar-kids-resumo.mjs",
     "audios-deriva": "node scripts/audios-deriva.mjs",
     "auditar-alfabeto": "node scripts/auditar-alfabeto.mjs",
-    "conferir-jwt": "node conferir-verify-jwt.mjs"
+    "conferir-jwt": "node conferir-verify-jwt.mjs",
+    "auditar-colorir": "node scripts/auditar-colorir.mjs",
+    "render-colorir": "node scripts/render-colorir.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",

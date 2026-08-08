@@ -2350,6 +2350,16 @@ export const colorirExtraPorFaixa = [
             }
           },
           {
+            id: "predio5",
+            tipo: "rect",
+            props: {
+              x: 0,
+              y: 175,
+              width: 36,
+              height: 95
+            }
+          },
+          {
             id: "predio1",
             tipo: "rect",
             props: {
@@ -2357,6 +2367,16 @@ export const colorirExtraPorFaixa = [
               y: 140,
               width: 50,
               height: 130
+            }
+          },
+          {
+            id: "predio2",
+            tipo: "rect",
+            props: {
+              x: 100,
+              y: 90,
+              width: 55,
+              height: 180
             }
           },
           {
@@ -2380,34 +2400,96 @@ export const colorirExtraPorFaixa = [
             }
           },
           {
-            id: "predio2",
+            id: "predio6",
             tipo: "rect",
             props: {
-              x: 100,
-              y: 90,
-              width: 55,
-              height: 180
+              x: 274,
+              y: 145,
+              width: 26,
+              height: 125
             }
           },
           {
-            id: "janela_predio2_1",
+            id: "chao",
             tipo: "rect",
             props: {
-              x: 112,
-              y: 110,
-              width: 12,
-              height: 12
+              x: 0,
+              y: 270,
+              width: 300,
+              height: 30
             }
           },
           {
-            id: "janela_predio2_2",
+            id: "janela1",
             tipo: "rect",
+            decorativo: true,
+            props: {
+              x: 110,
+              y: 106,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
+          },
+          {
+            id: "janela2",
+            tipo: "rect",
+            decorativo: true,
             props: {
               x: 132,
-              y: 110,
-              width: 12,
-              height: 12
-            }
+              y: 106,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
+          },
+          {
+            id: "janela3",
+            tipo: "rect",
+            decorativo: true,
+            props: {
+              x: 110,
+              y: 136,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
+          },
+          {
+            id: "janela4",
+            tipo: "rect",
+            decorativo: true,
+            props: {
+              x: 132,
+              y: 136,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
+          },
+          {
+            id: "janela5",
+            tipo: "rect",
+            decorativo: true,
+            props: {
+              x: 110,
+              y: 166,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
+          },
+          {
+            id: "janela6",
+            tipo: "rect",
+            decorativo: true,
+            props: {
+              x: 132,
+              y: 166,
+              width: 14,
+              height: 14
+            },
+            cor: "#FDE68A"
           }
         ]
       }
@@ -2445,7 +2527,7 @@ export const colorirExtraPorFaixa = [
             props: {
               cx: 40,
               cy: 150,
-              r: 28
+              r: 30
             }
           },
           {
@@ -2454,23 +2536,23 @@ export const colorirExtraPorFaixa = [
             props: {
               cx: 100,
               cy: 150,
-              r: 12
+              r: 15
             }
           },
           {
             id: "planeta2",
             tipo: "circle",
             props: {
-              cx: 140,
+              cx: 142,
               cy: 150,
-              r: 16
+              r: 17
             }
           },
           {
             id: "planeta3",
             tipo: "circle",
             props: {
-              cx: 185,
+              cx: 182,
               cy: 150,
               r: 14
             }
@@ -2479,17 +2561,17 @@ export const colorirExtraPorFaixa = [
             id: "anel_planeta4",
             tipo: "ellipse",
             props: {
-              cx: 230,
+              cx: 234,
               cy: 150,
-              rx: 38,
-              ry: 9
+              rx: 36,
+              ry: 16
             }
           },
           {
             id: "planeta4",
             tipo: "circle",
             props: {
-              cx: 230,
+              cx: 234,
               cy: 150,
               r: 20
             }
@@ -2498,9 +2580,9 @@ export const colorirExtraPorFaixa = [
             id: "planeta5",
             tipo: "circle",
             props: {
-              cx: 275,
+              cx: 285,
               cy: 150,
-              r: 10
+              r: 15
             }
           }
         ]
@@ -2547,65 +2629,65 @@ export const colorirExtraPorFaixa = [
             id: "cabo_esquerdo",
             tipo: "polygon",
             props: {
-              points: "67,60 150,130 73,130"
+              points: "68,56 150,124 78,124"
             }
           },
           {
             id: "cabo_direito",
             tipo: "polygon",
             props: {
-              points: "233,60 150,130 227,130"
+              points: "232,56 150,124 222,124"
             }
           },
           {
             id: "torre_esquerda",
             tipo: "rect",
             props: {
-              x: 60,
-              y: 60,
-              width: 14,
-              height: 80
+              x: 54,
+              y: 56,
+              width: 28,
+              height: 86
             }
           },
           {
             id: "torre_direita",
             tipo: "rect",
             props: {
-              x: 226,
-              y: 60,
-              width: 14,
-              height: 80
+              x: 218,
+              y: 56,
+              width: 28,
+              height: 86
             }
           },
           {
             id: "pilar_esquerdo",
             tipo: "rect",
             props: {
-              x: 70,
-              y: 140,
-              width: 18,
-              height: 90
+              x: 58,
+              y: 164,
+              width: 28,
+              height: 76
             }
           },
           {
             id: "pilar_direito",
             tipo: "rect",
             props: {
-              x: 212,
-              y: 140,
-              width: 18,
-              height: 90
+              x: 214,
+              y: 164,
+              width: 28,
+              height: 76
             }
           },
           {
             id: "tabuleiro",
             tipo: "rect",
             props: {
-              x: 40,
-              y: 130,
-              width: 220,
-              height: 18,
-              rx: 4
+              x: 38,
+              y: 132,
+              width: 224,
+              height: 32,
+              rx: 6
             }
           }
         ]

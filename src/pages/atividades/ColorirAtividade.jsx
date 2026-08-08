@@ -20,9 +20,9 @@ const PALETA_CORES = [
   { nome: 'Marrom',   hex: '#92400E' },
 ]
 
-function radialTrianglePoints(cx, cy, rInner, rOuter, n, i) {
+function radialTrianglePoints(cx, cy, rInner, rOuter, n, i, largura = 0.32) {
   const step = (2 * Math.PI) / n
-  const half = step * 0.32
+  const half = step * largura
   const mid = step * i
   const apex  = [cx + rOuter * Math.cos(mid),          cy + rOuter * Math.sin(mid)]
   const base1 = [cx + rInner * Math.cos(mid - half),   cy + rInner * Math.sin(mid - half)]
@@ -31,7 +31,15 @@ function radialTrianglePoints(cx, cy, rInner, rOuter, n, i) {
 }
 
 function RegiaoSVG({ regiao, cor, onClick }) {
-  const comum = { fill: cor, stroke: CONTORNO, strokeWidth: 3, style: { cursor: 'pointer', transition: 'fill 0.15s' }, onClick }
+  // Região decorativa é TRAÇO, não área de pintura: olho, boca, botão, maçã.
+  // Antes toda região era pintável, então o olho do peixe (15×15px no celular)
+  // virava alvo obrigatório — e ficava cinza na tela até alguém acertar o dedo
+  // nele. Numa página de colorir de verdade esses detalhes já vêm desenhados.
+  // Não recebe clique, não entra na contagem de progresso.
+  const decorativo = !!regiao.decorativo
+  const comum = decorativo
+    ? { fill: regiao.cor || CONTORNO, stroke: CONTORNO, strokeWidth: 1.5, style: { pointerEvents: 'none' } }
+    : { fill: cor, stroke: CONTORNO, strokeWidth: 3, style: { cursor: 'pointer', transition: 'fill 0.15s' }, onClick }
 
   if (regiao.tipo === 'circle')  return <circle cx={regiao.props.cx} cy={regiao.props.cy} r={regiao.props.r} {...comum} />
   if (regiao.tipo === 'rect')    return <rect x={regiao.props.x} y={regiao.props.y} width={regiao.props.width} height={regiao.props.height} rx={regiao.props.rx || 0} {...comum} />
@@ -39,10 +47,13 @@ function RegiaoSVG({ regiao, cor, onClick }) {
   if (regiao.tipo === 'polygon') return <polygon points={regiao.props.points} {...comum} />
   if (regiao.tipo === 'radial') {
     const { cx, cy, rInner, rOuter, n } = regiao.props
+    // `largura` (0–0.5 do passo angular) engorda as pontas. O padrão 0.32 deixava
+    // o triângulo do sol com 37×28px no celular — a criança mira numa farpa.
+    const largura = regiao.props.largura ?? 0.32
     return (
-      <g onClick={onClick} style={{ cursor: 'pointer' }}>
+      <g onClick={decorativo ? undefined : onClick} style={{ cursor: decorativo ? 'default' : 'pointer', pointerEvents: decorativo ? 'none' : undefined }}>
         {Array.from({ length: n }).map((_, i) => (
-          <polygon key={i} points={radialTrianglePoints(cx, cy, rInner, rOuter, n, i)} fill={cor} stroke={CONTORNO} strokeWidth={2} />
+          <polygon key={i} points={radialTrianglePoints(cx, cy, rInner, rOuter, n, i, largura)} fill={decorativo ? (regiao.cor || CONTORNO) : cor} stroke={CONTORNO} strokeWidth={2} />
         ))}
       </g>
     )
@@ -65,7 +76,18 @@ export default function ColorirAtividade() {
 
   const desenho = atividade?.dados?.desenho
   const regioes = desenho?.regioes || []
-  const total = regioes.length
+
+  // Os decorativos vão para o FIM da ordem de desenho, independente de como o
+  // dado veio: no SVG quem é desenhado depois fica por cima. Sem isso, pintar o
+  // rosto do sol cobriria os olhos e a boca, e o desenho pareceria quebrado.
+  // Ordenar aqui — e não confiar na ordem do dado — evita que uma atividade
+  // nova recrie o problema em silêncio.
+  const ordenadas = [...regioes].sort((a, b) => (a.decorativo ? 1 : 0) - (b.decorativo ? 1 : 0))
+
+  // Só o que é pintável conta para o progresso e para as estrelas. Se o
+  // decorativo entrasse na conta, a barra nunca chegaria a 100% e a tela de
+  // "ficou lindo" jamais apareceria.
+  const total = regioes.filter(r => !r.decorativo).length
   const pintadas = Object.keys(coresAplicadas).length
   const progresso = total ? (pintadas / total) * 100 : 0
   const limiar3 = Math.ceil(total * 0.9)
@@ -106,7 +128,7 @@ export default function ColorirAtividade() {
           </div>
 
           <svg width={220} height={220} viewBox={`0 0 ${desenho.viewBox} ${desenho.viewBox}`} style={{ borderRadius: '20px', background: 'rgba(255,255,255,0.06)' }}>
-            {regioes.map(r => <RegiaoSVG key={r.id} regiao={r} cor={coresAplicadas[r.id] || COR_VAZIA} onClick={() => {}} />)}
+            {ordenadas.map(r => <RegiaoSVG key={r.id} regiao={r} cor={coresAplicadas[r.id] || COR_VAZIA} onClick={() => {}} />)}
           </svg>
 
           {estrelas > 0 && (
@@ -166,7 +188,7 @@ export default function ColorirAtividade() {
 
         <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '24px', padding: '20px', width: '100%', display: 'flex', justifyContent: 'center', border: '1.5px solid rgba(255,255,255,0.1)' }}>
           <svg width="100%" height="auto" viewBox={`0 0 ${desenho.viewBox} ${desenho.viewBox}`} style={{ maxWidth: '400px' }}>
-            {regioes.map(r => (
+            {ordenadas.map(r => (
               <RegiaoSVG key={r.id} regiao={r} cor={coresAplicadas[r.id] || COR_VAZIA} onClick={() => pintarRegiao(r.id)} />
             ))}
           </svg>

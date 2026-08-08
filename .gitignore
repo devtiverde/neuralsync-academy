@@ -50,3 +50,6 @@ auditoria-atividades/
 # Ver scripts-tiverde/LEIA-ME.md. Ignorados para que um `git add .` distraído não
 # leve script de cliente para dentro do repositório do produto.
 scripts-tiverde/
+
+# saída de renderização das ferramentas de conferência visual
+scripts/saida/

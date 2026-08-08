@@ -2308,44 +2308,44 @@ export const colorirExtraPorFaixa = [
             id: "braco_esquerdo",
             tipo: "rect",
             props: {
-              x: 55,
-              y: 140,
-              width: 30,
-              height: 15,
-              rx: 7
+              x: 48,
+              y: 136,
+              width: 42,
+              height: 30,
+              rx: 12
             }
           },
           {
             id: "braco_direito",
             tipo: "rect",
             props: {
-              x: 215,
-              y: 140,
-              width: 30,
-              height: 15,
-              rx: 7
+              x: 210,
+              y: 136,
+              width: 42,
+              height: 30,
+              rx: 12
             }
           },
           {
             id: "perna_esquerda",
             tipo: "rect",
             props: {
-              x: 105,
-              y: 225,
-              width: 25,
-              height: 40,
-              rx: 6
+              x: 102,
+              y: 222,
+              width: 32,
+              height: 48,
+              rx: 8
             }
           },
           {
             id: "perna_direita",
             tipo: "rect",
             props: {
-              x: 170,
-              y: 225,
-              width: 25,
-              height: 40,
-              rx: 6
+              x: 166,
+              y: 222,
+              width: 32,
+              height: 48,
+              rx: 8
             }
           },
           {
@@ -2357,24 +2357,6 @@ export const colorirExtraPorFaixa = [
               width: 120,
               height: 90,
               rx: 14
-            }
-          },
-          {
-            id: "botao1",
-            tipo: "circle",
-            props: {
-              cx: 130,
-              cy: 170,
-              r: 10
-            }
-          },
-          {
-            id: "botao2",
-            tipo: "circle",
-            props: {
-              cx: 170,
-              cy: 170,
-              r: 10
             }
           },
           {
@@ -2391,40 +2373,69 @@ export const colorirExtraPorFaixa = [
           {
             id: "antena",
             tipo: "rect",
+            decorativo: true,
             props: {
-              x: 145,
-              y: 35,
-              width: 10,
-              height: 25,
-              rx: 5
+              x: 146,
+              y: 34,
+              width: 8,
+              height: 26,
+              rx: 4
             }
           },
           {
             id: "antena_bola",
             tipo: "circle",
+            decorativo: true,
             props: {
               cx: 150,
-              cy: 32,
-              r: 8
-            }
+              cy: 30,
+              r: 9
+            },
+            cor: "#F87171"
           },
           {
             id: "olho_esquerdo",
             tipo: "circle",
+            decorativo: true,
             props: {
-              cx: 130,
+              cx: 132,
               cy: 90,
-              r: 10
-            }
+              r: 11
+            },
+            cor: "#7DD3FC"
           },
           {
             id: "olho_direito",
             tipo: "circle",
+            decorativo: true,
+            props: {
+              cx: 168,
+              cy: 90,
+              r: 11
+            },
+            cor: "#7DD3FC"
+          },
+          {
+            id: "botao1",
+            tipo: "circle",
+            decorativo: true,
+            props: {
+              cx: 130,
+              cy: 172,
+              r: 10
+            },
+            cor: "#FCD34D"
+          },
+          {
+            id: "botao2",
+            tipo: "circle",
+            decorativo: true,
             props: {
               cx: 170,
-              cy: 90,
+              cy: 172,
               r: 10
-            }
+            },
+            cor: "#FCD34D"
           }
         ]
       }
@@ -2488,18 +2499,18 @@ export const colorirExtraPorFaixa = [
             id: "maca1",
             tipo: "circle",
             props: {
-              cx: 115,
-              cy: 150,
-              r: 8
+              cx: 112,
+              cy: 152,
+              r: 15
             }
           },
           {
             id: "maca2",
             tipo: "circle",
             props: {
-              cx: 185,
+              cx: 188,
               cy: 140,
-              r: 8
+              r: 15
             }
           },
           {
@@ -2507,8 +2518,8 @@ export const colorirExtraPorFaixa = [
             tipo: "circle",
             props: {
               cx: 150,
-              cy: 100,
-              r: 8
+              cy: 98,
+              r: 15
             }
           }
         ]
@@ -2553,14 +2564,14 @@ export const colorirExtraPorFaixa = [
             id: "janela_esquerda",
             tipo: "polygon",
             props: {
-              points: "108,138 124,108 150,108 150,138"
+              points: "106,136 124,106 148,106 148,136"
             }
           },
           {
             id: "janela_direita",
             tipo: "polygon",
             props: {
-              points: "154,138 154,108 180,108 196,138"
+              points: "152,136 152,106 176,106 194,136"
             }
           },
           {
@@ -2585,9 +2596,9 @@ export const colorirExtraPorFaixa = [
             id: "farol",
             tipo: "circle",
             props: {
-              cx: 235,
+              cx: 232,
               cy: 160,
-              r: 10
+              r: 14
             }
           }
         ]
