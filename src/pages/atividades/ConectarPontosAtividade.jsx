@@ -283,7 +283,7 @@ export default function ConectarPontosAtividade() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 28, margin: '0 0 4px' }}>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 28, margin: '0 0 4px' }}>
           {completo ? `${desenho?.emoji} Perfeito!` : `Desenhe: ${desenho?.emoji} ${desenho?.nome}`}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>

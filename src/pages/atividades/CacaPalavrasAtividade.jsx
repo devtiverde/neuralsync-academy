@@ -254,7 +254,7 @@ export default function CacaPalavrasAtividade() {
   /* ── TEMA ── */
   if (fase === 'tema') return (
     <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif' }}>
-      <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 28, marginBottom: 8, textAlign: 'center' }}>Escolha um tema</h2>
+      <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 28, marginBottom: 8, textAlign: 'center' }}>Escolha um tema</h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 32, textAlign: 'center' }}>Que categoria de palavras você quer caçar?</p>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
         {Object.entries(TEMAS).map(([key, t]) => (
@@ -266,13 +266,13 @@ export default function CacaPalavrasAtividade() {
             borderRadius: 20, transition: 'border-color .2s, box-shadow .2s',
           }}>
             <div style={{ fontSize: 48, marginBottom: 8 }}>{t.emoji}</div>
-            <div style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 16 }}>{t.label}</div>
+            <div style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 16 }}>{t.label}</div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 4 }}>{t.palavras.length} palavras</div>
           </div>
         ))}
       </div>
       {temaSel && (
-        <button onClick={() => setFase('dificuldade')} style={{ marginTop: 32, background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}>
+        <button onClick={() => setFase('dificuldade')} style={{ marginTop: 32, background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}>
           Próximo →
         </button>
       )}
@@ -282,7 +282,7 @@ export default function CacaPalavrasAtividade() {
   /* ── DIFICULDADE ── */
   if (fase === 'dificuldade') return (
     <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif' }}>
-      <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 28, marginBottom: 8 }}>Dificuldade</h2>
+      <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 28, marginBottom: 8 }}>Dificuldade</h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 32 }}>Tema: {tema?.emoji} {tema?.label}</p>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
         {Object.entries(DIFS).map(([key, d]) => (
@@ -294,7 +294,7 @@ export default function CacaPalavrasAtividade() {
             borderRadius: 20, transition: 'border-color .2s, box-shadow .2s',
           }}>
             <div style={{ fontSize: 44, marginBottom: 8 }}>{d.emoji}</div>
-            <div style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 18, marginBottom: 6 }}>{d.label}</div>
+            <div style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 18, marginBottom: 6 }}>{d.label}</div>
             <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{d.desc}</div>
           </div>
         ))}
@@ -302,7 +302,7 @@ export default function CacaPalavrasAtividade() {
       <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
         <button onClick={() => setFase('tema')} style={{ background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '12px 24px', fontSize: 15, cursor: 'pointer', fontFamily: 'Nunito, sans-serif' }}>← Voltar</button>
         {difSel && (
-          <button onClick={iniciarJogo} style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}>Jogar! 🔍</button>
+          <button onClick={iniciarJogo} style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}>Jogar! 🔍</button>
         )}
       </div>
     </div>
@@ -406,12 +406,12 @@ export default function CacaPalavrasAtividade() {
       {gameOver && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,10,30,0.96)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div style={{ fontSize: 64, marginBottom: 16 }}>⏰</div>
-          <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 32, marginBottom: 8 }}>Tempo esgotado!</h2>
+          <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 32, marginBottom: 8 }}>Tempo esgotado!</h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginBottom: 32 }}>
             Você encontrou <strong style={{ color: 'white' }}>{encontradasCount}</strong> de {totalPalavras} palavras
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
-            <button onClick={iniciarJogo} style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 32px', fontSize: 16, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}>
+            <button onClick={iniciarJogo} style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 32px', fontSize: 16, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}>
               Tentar novamente
             </button>
             <button

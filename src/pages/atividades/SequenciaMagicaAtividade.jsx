@@ -176,7 +176,7 @@ export default function SequenciaMagicaAtividade() {
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, margin: '0 0 4px' }}>
           {gameOver ? 'Resultado' : label}
         </p>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 32, margin: 0 }}>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 32, margin: 0 }}>
           {gameOver ? '😅 Fim de Jogo!' : `Nível ${nivel}`}
         </h2>
         {!gameOver && (
@@ -190,7 +190,7 @@ export default function SequenciaMagicaAtividade() {
       {gameOver ? (
         <div style={{ textAlign: 'center', maxWidth: 360 }}>
           <div style={{ fontSize: 64, marginBottom: 16 }}>😅</div>
-          <p style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 24, marginBottom: 8 }}>
+          <p style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 24, marginBottom: 8 }}>
             Você chegou ao Nível {nivel}!
           </p>
           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginBottom: 32 }}>

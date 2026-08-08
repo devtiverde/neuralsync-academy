@@ -184,7 +184,7 @@ export default function QuebracabecaAtividade() {
   if (fase === 'selecao') {
     return (
       <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif' }}>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 28, marginBottom: 8, textAlign: 'center' }}>Escolha um puzzle</h2>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 28, marginBottom: 8, textAlign: 'center' }}>Escolha um puzzle</h2>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, marginBottom: 32, textAlign: 'center' }}>Qual desafio você quer montar?</p>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
           {PUZZLES.map(p => (
@@ -200,7 +200,7 @@ export default function QuebracabecaAtividade() {
               }}
             >
               <div style={{ fontSize: 52, marginBottom: 8 }}>{p.emoji}</div>
-              <div style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 16, marginBottom: 4 }}>{p.nome}</div>
+              <div style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 16, marginBottom: 4 }}>{p.nome}</div>
               <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{p.pecas.length} peças</div>
             </div>
           ))}
@@ -208,7 +208,7 @@ export default function QuebracabecaAtividade() {
         {puzzleSel && (
           <button
             onClick={() => { const p = PUZZLES.find(x => x.id === puzzleSel); if (p) iniciarPuzzle(p) }}
-            style={{ marginTop: 32, background: 'var(--ns-violet, #7C3AED)', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}
+            style={{ marginTop: 32, background: 'var(--ns-violet, #7C3AED)', color: 'white', border: 'none', borderRadius: 14, padding: '14px 40px', fontSize: 18, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}
           >
             Montar esse! 🧩
           </button>
@@ -222,7 +222,7 @@ export default function QuebracabecaAtividade() {
   return (
     <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 16px', fontFamily: 'Nunito, sans-serif' }}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 26, margin: '0 0 4px' }}>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 26, margin: '0 0 4px' }}>
           {brilhoConcluido ? '🎉 Puzzle completo!' : puzzleAtual.nome}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
@@ -293,7 +293,7 @@ export default function QuebracabecaAtividade() {
                   >
                     {peca
                       ? <span style={{ fontSize: 36 }}>{peca.label}</span>
-                      : <span style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'Fredoka One, cursive', fontSize: 22 }}>?</span>
+                      : <span style={{ color: 'rgba(255,255,255,0.2)', fontFamily: 'var(--ns-font-display)', fontSize: 22 }}>?</span>
                     }
                   </div>
                 )

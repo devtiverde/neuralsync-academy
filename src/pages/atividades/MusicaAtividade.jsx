@@ -119,7 +119,7 @@ function tocarUm(som, aoMarcar, marca) {
 
 const ACCENT = '#a855f7'
 const ACCENT_SOFT = 'rgba(168,85,247,0.18)'
-const FONTE_TITULO = "'Fredoka One', cursive"
+const FONTE_TITULO = 'var(--ns-font-display)'
 const FONTE_UI = 'var(--ns-font-ui, "Plus Jakarta Sans", sans-serif)'
 
 function useMovimentoReduzido() {

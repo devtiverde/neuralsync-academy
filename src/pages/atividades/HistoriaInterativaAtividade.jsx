@@ -285,7 +285,7 @@ export default function HistoriaInterativaAtividade() {
   /* ── SELEÇÃO DE HISTÓRIA ── */
   if (fase === 'selecao') return (
     <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif' }}>
-      <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 30, marginBottom: 8, textAlign: 'center' }}>Qual aventura você quer viver?</h2>
+      <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 30, marginBottom: 8, textAlign: 'center' }}>Qual aventura você quer viver?</h2>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, marginBottom: 36, textAlign: 'center' }}>Suas escolhas mudam o final da história!</p>
       <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
         {Object.entries(HISTORIAS).map(([key, h]) => {
@@ -293,11 +293,11 @@ export default function HistoriaInterativaAtividade() {
           return (
             <div key={key} style={{ width: 260, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 24, padding: 28, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 56, textAlign: 'center' }}>{h.emoji}</div>
-              <h3 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 20, textAlign: 'center', margin: 0 }}>{h.titulo}</h3>
+              <h3 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 20, textAlign: 'center', margin: 0 }}>{h.titulo}</h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.6, textAlign: 'center', margin: 0 }}>{primeirasLinhas}</p>
               <button
                 onClick={() => { setHistoriaId(key); setNoId('inicio'); setHistoricoEscolhas([]); setFase('capitulo') }}
-                style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '12px 24px', fontSize: 16, fontFamily: 'Fredoka One, cursive', cursor: 'pointer', marginTop: 4 }}
+                style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '12px 24px', fontSize: 16, fontFamily: 'var(--ns-font-display)', cursor: 'pointer', marginTop: 4 }}
               >
                 Começar aventura →
               </button>
@@ -416,7 +416,7 @@ export default function HistoriaInterativaAtividade() {
         </div>
 
         {/* Tipo final */}
-        <div style={{ color: '#F59E0B', fontFamily: 'Fredoka One, cursive', fontSize: 28, marginBottom: 12, textAlign: 'center', zIndex: 1 }}>
+        <div style={{ color: '#F59E0B', fontFamily: 'var(--ns-font-display)', fontSize: 28, marginBottom: 12, textAlign: 'center', zIndex: 1 }}>
           {noAtual.tipoFinal === 'heroi'       ? '🏆 Coração Generoso'      :
            noAtual.tipoFinal === 'aventureiro' ? '🌟 Espírito Aventureiro'  :
            noAtual.tipoFinal === 'sabio'       ? '📚 Mente Sábia'           :
@@ -470,7 +470,7 @@ export default function HistoriaInterativaAtividade() {
                 }
               })
             }}
-            style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 28px', fontSize: 16, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}
+            style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 28px', fontSize: 16, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}
           >
             Ver meu resultado →
           </button>
@@ -484,12 +484,12 @@ export default function HistoriaInterativaAtividade() {
   return (
     <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Nunito, sans-serif', textAlign: 'center', gap: 16 }}>
       <div style={{ fontSize: 64 }}>📖</div>
-      <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 24, margin: 0 }}>Essa página da história sumiu!</h2>
+      <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 24, margin: 0 }}>Essa página da história sumiu!</h2>
       <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, margin: 0 }}>Escolha outra aventura para continuar.</p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
         <button
           onClick={() => { pararNarracao(); setNoId('inicio'); setHistoricoEscolhas([]); setFase('selecao') }}
-          style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 28px', fontSize: 16, fontFamily: 'Fredoka One, cursive', cursor: 'pointer' }}
+          style={{ background: '#7C3AED', color: 'white', border: 'none', borderRadius: 14, padding: '14px 28px', fontSize: 16, fontFamily: 'var(--ns-font-display)', cursor: 'pointer' }}
         >
           🔄 Escolher outra história
         </button>

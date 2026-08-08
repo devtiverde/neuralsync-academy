@@ -56,7 +56,7 @@ export default class ErrorBoundary extends Component {
       }}>
         <div style={{ maxWidth: '420px', textAlign: 'center' }}>
           <div style={{ fontSize: '60px', marginBottom: '16px' }}>🛠️</div>
-          <h1 style={{ fontSize: '24px', fontFamily: "'Fredoka One', cursive", fontWeight: 400, margin: '0 0 10px' }}>
+          <h1 style={{ fontSize: '24px', fontFamily: 'var(--ns-font-display)', fontWeight: 400, margin: '0 0 10px' }}>
             Ops, algo travou aqui
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', lineHeight: 1.6, margin: '0 0 24px' }}>

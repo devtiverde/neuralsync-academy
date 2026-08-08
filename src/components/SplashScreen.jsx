@@ -11,7 +11,7 @@ export default function SplashScreen() {
       <Nix pose="think" size={88} />
       <h1 style={{
         color: 'white',
-        fontFamily: "'Fredoka One', cursive",
+        fontFamily: 'var(--ns-font-display)',
         fontSize: 28, margin: 0, textAlign: 'center',
         textShadow: '0 2px 16px rgba(0,0,0,0.5)',
       }}>

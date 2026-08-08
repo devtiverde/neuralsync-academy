@@ -226,7 +226,7 @@ export default function PerfilCrianca() {
             <div style={{ flex: 1, minWidth: '180px' }}>
               <h2 style={{
                 color: 'white', fontSize: '28px', fontWeight: '900',
-                fontFamily: 'var(--ns-font-display, Fredoka One, cursive)',
+                fontFamily: 'var(--ns-font-display)',
                 marginBottom: '4px', letterSpacing: '0.3px', lineHeight: 1.1,
               }}>
                 {child.nome}

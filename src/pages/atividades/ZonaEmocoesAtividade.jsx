@@ -139,7 +139,7 @@ export default function ZonaEmocoesAtividade() {
           maxWidth: 420,
         }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>💗</div>
-          <h3 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 26, margin: '0 0 8px' }}>
+          <h3 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 26, margin: '0 0 8px' }}>
             Você conheceu todas as cenas!
           </h3>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, marginBottom: 12 }}>
@@ -202,7 +202,7 @@ export default function ZonaEmocoesAtividade() {
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, margin: '0 0 4px' }}>
           Cena {cenaIdx + 1} de {CENAS.length}
         </p>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 24, margin: 0 }}>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 24, margin: 0 }}>
           Zona das Emoções
         </h2>
       </div>

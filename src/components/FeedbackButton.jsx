@@ -120,7 +120,7 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
             {enviado ? (
               <div style={{ textAlign: 'center', padding: '28px 0' }}>
                 <div style={{ fontSize: '52px', marginBottom: '12px' }}>💜</div>
-                <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontFamily: "'Fredoka One', cursive", fontWeight: 400 }}>
+                <h3 style={{ margin: '0 0 8px', fontSize: '20px', fontFamily: 'var(--ns-font-display)', fontWeight: 400 }}>
                   Recebemos!
                 </h3>
                 <p style={{ margin: 0, opacity: 0.7, fontSize: '15px' }}>
@@ -131,7 +131,7 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '18px' }}>
                   <div>
-                    <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontFamily: "'Fredoka One', cursive", fontWeight: 400 }}>
+                    <h3 style={{ margin: '0 0 4px', fontSize: '20px', fontFamily: 'var(--ns-font-display)', fontWeight: 400 }}>
                       Fale com a gente
                     </h3>
                     <p style={{ margin: 0, opacity: 0.65, fontSize: '14px' }}>

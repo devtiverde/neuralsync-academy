@@ -228,7 +228,7 @@ export default function HomeCrianca() {
             <h1 style={{
               color: 'white',
               fontSize: 32,
-              fontFamily: "'Fredoka One', cursive",
+              fontFamily: 'var(--ns-font-display)',
               fontWeight: 400,
               letterSpacing: '0.5px',
               marginBottom: 20,
@@ -300,7 +300,7 @@ export default function HomeCrianca() {
                       fontWeight: 400,
                       fontSize: 20,
                       color: 'white',
-                      fontFamily: "'Fredoka One', cursive",
+                      fontFamily: 'var(--ns-font-display)',
                       marginBottom: 6,
                       lineHeight: 1.2,
                     }}>
@@ -337,7 +337,7 @@ export default function HomeCrianca() {
                 Tema/categoria deixou de existir como eixo de navegação. */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: "'Fredoka One', cursive" }}>O que você quer jogar?</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 400, color: 'white', fontFamily: 'var(--ns-font-display)' }}>O que você quer jogar?</h3>
                 <div style={{ display: 'flex', gap: 6 }}>
                   {[{ id: 'blocos', icon: '⊞', label: 'Blocos' }, { id: 'lista', icon: '☰', label: 'Lista' }].map(v => (
                     <button
@@ -379,7 +379,7 @@ export default function HomeCrianca() {
                       onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)' }}
                     >
                       <div style={{ fontSize: T.icone, lineHeight: 1, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.35))' }}>{t.icon}</div>
-                      <div style={{ fontSize: T.label, fontFamily: "'Fredoka One', cursive", color: 'white', textAlign: 'center', lineHeight: 1.15, textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}>{t.label}</div>
+                      <div style={{ fontSize: T.label, fontFamily: 'var(--ns-font-display)', color: 'white', textAlign: 'center', lineHeight: 1.15, textShadow: '0 1px 4px rgba(0,0,0,0.45)' }}>{t.label}</div>
                       {T.sub && t.qtd != null && (
                         <div style={{ background: 'rgba(0,0,0,0.28)', borderRadius: 99, padding: '2px 9px', fontSize: 10, color: 'rgba(255,255,255,0.9)', fontWeight: 700 }}>{t.qtd} ativ.</div>
                       )}
@@ -411,7 +411,7 @@ export default function HomeCrianca() {
                         fontSize: Math.round(T.icone * 0.55),
                       }}>{t.icon}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: Math.max(15, T.label), fontFamily: "'Fredoka One', cursive", color: 'white', lineHeight: 1.2 }}>{t.label}</div>
+                        <div style={{ fontSize: Math.max(15, T.label), fontFamily: 'var(--ns-font-display)', color: 'white', lineHeight: 1.2 }}>{t.label}</div>
                         {t.qtd != null && (
                           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 600, marginTop: 2 }}>{t.qtd} atividades</div>
                         )}
@@ -428,7 +428,7 @@ export default function HomeCrianca() {
                   tipos de atividade, o que ajudava a embaralhar os conceitos). */}
               {destinos.length > 0 && (
                 <>
-                  <h3 style={{ fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.75)', fontFamily: "'Fredoka One', cursive", margin: '26px 0 12px' }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 400, color: 'rgba(255,255,255,0.75)', fontFamily: 'var(--ns-font-display)', margin: '26px 0 12px' }}>
                     Descobrir
                   </h3>
                   <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(T.tile * 0.72)}px, 1fr))`, gap: Math.max(8, T.gap - 4) }}>
@@ -456,7 +456,7 @@ export default function HomeCrianca() {
                           </span>
                         )}
                         <div style={{ fontSize: Math.round(T.icone * 0.62), lineHeight: 1 }}>{item.icon}</div>
-                        <div style={{ fontSize: Math.max(12, T.label - 2), fontFamily: "'Fredoka One', cursive", color: 'white', textAlign: 'center', lineHeight: 1.15 }}>{item.label}</div>
+                        <div style={{ fontSize: Math.max(12, T.label - 2), fontFamily: 'var(--ns-font-display)', color: 'white', textAlign: 'center', lineHeight: 1.15 }}>{item.label}</div>
                       </button>
                     ))}
                   </div>
@@ -478,7 +478,7 @@ export default function HomeCrianca() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <div style={{ fontSize: 20, fontFamily: "'Fredoka One', cursive", color: '#fb923c', marginBottom: 6 }}>
+                  <div style={{ fontSize: 20, fontFamily: 'var(--ns-font-display)', color: '#fb923c', marginBottom: 6 }}>
                     <Fire weight="duotone" size={20} color="#F97316" className="ns-icon-bounce" /> {child.streak_atual || 0} dias seguidos!
                   </div>
                   <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
@@ -511,7 +511,7 @@ export default function HomeCrianca() {
             {/* Ranking */}
             <Card variant="dark" style={{ padding: 20 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'var(--ns-font-ui)', display: 'flex', alignItems: 'center', gap: 4 }}><Trophy weight="duotone" size={16} color="#F59E0B" className="ns-icon-bounce" /> Ranking</div>
-              <div style={{ fontFamily: "'Fredoka One', cursive", fontSize: 20, color: '#fbbf24', marginBottom: 6 }}>
+              <div style={{ fontFamily: 'var(--ns-font-display)', fontSize: 20, color: '#fbbf24', marginBottom: 6 }}>
                 {posicaoRanking === 1 && '🥇 1º lugar!'}
                 {posicaoRanking === 2 && '🥈 2º lugar!'}
                 {posicaoRanking === 3 && '🥉 3º lugar!'}

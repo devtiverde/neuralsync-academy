@@ -89,7 +89,7 @@ export default function Nix({ pose = 'idle', size = 96, glow = true, sparks = po
           position: 'absolute', top: -size * 0.08, right: -size * 0.05,
           width: size * 0.26, height: size * 0.24, borderRadius: `${size * 0.08}px ${size * 0.08}px ${size * 0.08}px ${size * 0.02}px`,
           background: '#FBBF24', color: '#3b2a00',
-          fontFamily: "'Fredoka One', cursive", fontSize: size * 0.16,
+          fontFamily: 'var(--ns-font-display)', fontSize: size * 0.16,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>?</div>
       )}

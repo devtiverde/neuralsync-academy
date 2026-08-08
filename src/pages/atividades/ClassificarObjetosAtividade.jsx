@@ -204,7 +204,7 @@ export default function ClassificarObjetosAtividade() {
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, margin: '0 0 4px' }}>
           Round {roundIdx + 1} de {ROUNDS.length}
         </p>
-        <h2 style={{ color: 'white', fontFamily: 'Fredoka One, cursive', fontSize: 26, margin: 0 }}>
+        <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 26, margin: 0 }}>
           {round.criterio}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, margin: '6px 0 0' }}>
@@ -303,7 +303,7 @@ export default function ClassificarObjetosAtividade() {
             >
               <span style={{
                 color: corCat,
-                fontFamily: 'Fredoka One, cursive',
+                fontFamily: 'var(--ns-font-display)',
                 fontSize: 16,
                 letterSpacing: 0.3,
               }}>
@@ -361,7 +361,7 @@ export default function ClassificarObjetosAtividade() {
             <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
             <h3 style={{
               color: 'white',
-              fontFamily: 'Fredoka One, cursive',
+              fontFamily: 'var(--ns-font-display)',
               fontSize: 26,
               margin: '0 0 8px',
             }}>

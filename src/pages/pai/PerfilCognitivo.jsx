@@ -64,7 +64,7 @@ export default function PerfilCognitivo() {
                           letterSpacing: 2, textTransform: 'uppercase', margin: '0 0 4px' }}>
                 Relatório Cognitivo
               </p>
-              <h2 style={{ color: 'white', fontFamily: "'Fredoka One', cursive", fontSize: 24, margin: '0 0 4px' }}>
+              <h2 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 24, margin: '0 0 4px' }}>
                 {child.nome}
               </h2>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>
