@@ -133,7 +133,12 @@
   --ns-text:      #1E1B4B;
   --ns-text-muted:#6b7280;
 
-  --ns-font-display: 'Fredoka One', cursive;
+  /* O último item da lista é o que o usuário vê quando a fonte de terceiro não chega — e chegar
+     depende da rede. Terminar em `cursive` fazia o iPhone desenhar a interface toda em letra
+     MANUSCRITA (Snell Roundhand). `ui-rounded` cai no SF Pro Rounded no iOS/macOS, que é
+     arredondado como a Fredoka; nos outros sistemas segue para a fonte da interface. Nenhuma
+     fonte genérica de sistema é manuscrita, então a falha deixa de virar susto. */
+  --ns-font-display: 'Fredoka One', ui-rounded, 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
   --ns-font-body:    'Plus Jakarta Sans', sans-serif;
   --ns-font-ui:      'Space Grotesk', sans-serif;
 
