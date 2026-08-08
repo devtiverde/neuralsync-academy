@@ -14,4 +14,28 @@
 verify_jwt = false
 
 # As demais funções são chamadas pelo próprio app, com o usuário logado, e por
-# isso mantêm a verificação de JWT ligada (padrão).
+# isso mantêm a verificação de JWT ligada. O padrão do Supabase já é `true`, mas
+# aqui elas ficam DECLARADAS: assim o estado desejado de cada função mora no
+# repositório e não depende de ninguém lembrar de omitir uma flag no deploy.
+#
+# 🔴 Descoberto em 08/08/2026 por `node conferir-verify-jwt.mjs`: o `ai-proxy`
+# estava rodando em produção com a verificação DESLIGADA. Ele se defende por
+# dentro (exige Authorization, valida o usuário, exige plano premium ativo e
+# limita a 30 chamadas/dia), então não era porta aberta para a chave da
+# Anthropic — mas a camada de fora estava faltando, e sem ela toda requisição
+# anônima da internet chega a executar a função e a consultar o banco antes de
+# ser recusada. Os dois chamadores (`src/lib/claude.js` e `RelatorioIA.jsx`) já
+# mandam `Authorization: Bearer <access_token>`, então ligar não quebra nada.
+# Conserto = redeploy sem a flag `--no-verify-jwt`.
+
+[functions.feedback-notify]
+verify_jwt = true
+
+[functions.ai-proxy]
+verify_jwt = true
+
+[functions.neuralai-chat]
+verify_jwt = true
+
+[functions.activate-pending-plan]
+verify_jwt = true
