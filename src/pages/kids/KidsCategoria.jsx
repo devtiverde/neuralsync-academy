@@ -104,16 +104,41 @@ function HistoriaIlustrada({ historia, cor, categoria }) {
 
       {/* cena */}
       <div style={{ padding: '24px 22px 18px' }}>
-        {/* emoji da cena em destaque */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        {/* Vídeo da cena, quando a esposa já gravou; senão, o emoji de sempre.
+            🔑 `youtube-nocookie.com`: é uma superfície NOVA num produto infantil,
+            e a CSP já libera os dois domínios. O `KidsVideo.jsx` ainda usa
+            `www.youtube.com` — trocar lá é decisão do Cláudio, é uma palavra.
+            🔑 `rel=0` limita a sugestão do fim ao MESMO canal desde 2018. Como
+            estes vídeos são do canal NeuralSync, aqui ele finalmente protege de
+            verdade — com vídeo de terceiro ele não protegia nada.
+            A proporção 16:9 vem de `aspectRatio`, não de altura fixa: altura
+            fixa deixaria tarja preta em cima e embaixo no celular. */}
+        {cena.video_id ? (
           <div style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: '110px', height: '110px', borderRadius: '32px',
-            background: `linear-gradient(135deg, ${cor}28, ${cor}45)`,
-            border: `2px solid ${cor}50`, fontSize: '60px', lineHeight: 1,
-            boxShadow: `0 8px 32px ${cor}30`,
-          }}>{cena.emoji}</div>
-        </div>
+            marginBottom: '20px', borderRadius: '18px', overflow: 'hidden',
+            border: `2px solid ${cor}50`, boxShadow: `0 8px 32px ${cor}30`,
+            aspectRatio: '16 / 9', background: '#000',
+          }}>
+            <iframe
+              key={cena.video_id}
+              src={`https://www.youtube-nocookie.com/embed/${cena.video_id}?rel=0&modestbranding=1`}
+              title={`${historia.titulo} — ${cena.titulo}`}
+              style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: '110px', height: '110px', borderRadius: '32px',
+              background: `linear-gradient(135deg, ${cor}28, ${cor}45)`,
+              border: `2px solid ${cor}50`, fontSize: '60px', lineHeight: 1,
+              boxShadow: `0 8px 32px ${cor}30`,
+            }}>{cena.emoji}</div>
+          </div>
+        )}
 
         {/* badge cena + título */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', justifyContent: 'center' }}>

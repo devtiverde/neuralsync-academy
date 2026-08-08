@@ -1,3 +1,7 @@
+// `video_id` é OPCIONAL em cada cena. Onde existe, a cena mostra o vídeo do
+// canal NeuralSync Kids TV no lugar do emoji; onde não existe, o emoji continua
+// como sempre. Assim a gravação vai entrando história por história, sem que
+// nenhuma outra mude de comportamento.
 export const kidsStorias = {
   dinossauros: {
     titulo: 'Luna e o Dente de Banana',
@@ -6,18 +10,21 @@ export const kidsStorias = {
         emoji: '🦴',
         scene: 'Cena 1',
         titulo: 'A Descoberta',
+        video_id: 'zNrztG-J9oU',
         texto: 'Luna espetou o pincel na poeira vermelha do deserto quando ouviu um som diferente — pom! Seu instrumento bateu em algo duro embaixo da terra. Com o coração acelerado, ela foi tirando a terra com cuidado, camada por camada. Depois de uma hora, apareceu: um dente enorme, amarelado, do tamanho de uma banana. "Vovô!" ela gritou. "Encontrei um T-Rex!" Os olhos do avô brilharam igual aos dela.',
       },
       {
         emoji: '🦕',
         scene: 'Cena 2',
         titulo: 'O Gigante',
+        video_id: 'Mfm-XmBTbVA',
         texto: 'No museu, Luna ficou de queixo caído olhando para o Brachiosaurus. O pescoço do bicho chegava quase no teto — mais comprido que um ônibus escolar! "Como ele não tombava com esse pescoço todo?" ela perguntou. O paleontólogo sorriu: "Ossos ocos, como pássaros. Leve por dentro, gigante por fora. Para manter 80 toneladas, precisava engolir 400 kg de plantas por dia — é como comer um carro, mas de folhas!"',
       },
       {
         emoji: '💫',
         scene: 'Cena 3',
         titulo: 'A Grande Noite',
+        video_id: 'Tgvjx59-LbM',
         texto: 'Luna fechou os olhos e imaginou: 66 milhões de anos atrás, uma pedra de 10 km caiu do céu e explodiu igual a um bilhão de bombas. A poeira cobriu o sol por anos. Os dinossauros grandes desapareceram... mas os pequenos, com penas, sobreviveram. "Professora," disse Luna, "os dinossauros não foram extintos. Eles viraram pássaros!" A professora assentiu. "Exatamente. O pombo que você xinga de praga é parente do T-Rex."',
       },
     ],
