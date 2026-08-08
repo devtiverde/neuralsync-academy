@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowsOut, ArrowsIn } from '@phosphor-icons/react'
 import { getHintUses, consumePowerup } from '../lib/powerups'
 import { Badge, Button } from './ui'
 import MenuLateral from './MenuLateral'
@@ -61,18 +62,42 @@ export default function GameShell({
   const [hintModal, setHintModal] = useState(false)
   const [hintUses, setHintUses] = useState(0)
 
+  // Modo foco: esconde as duas colunas, a alça do menu lateral e o título para
+  // sobrar tela pro jogo. A preferência é lida do localStorage na PRIMEIRA
+  // renderização (função no useState, não useEffect): quem gosta de tela cheia
+  // gosta em toda atividade, e ligar depois da montagem faria a tela piscar
+  // com o cromo antes de sumir.
+  const [foco, setFoco] = useState(() => {
+    try { return localStorage.getItem('ns_foco_atividade') === '1' } catch { return false }
+  })
+
   useEffect(() => { if (child?.id) setHintUses(getHintUses(child.id)) }, [])
+
+  useEffect(() => {
+    try { localStorage.setItem('ns_foco_atividade', foco ? '1' : '0') } catch { /* modo privado */ }
+  }, [foco])
+
+  // Esc sai do foco. Sem isso o único jeito de voltar é achar de novo um botão
+  // de 36px, e o reflexo de quem está em tela cheia é apertar Esc.
+  useEffect(() => {
+    if (!foco) return
+    const aoTeclar = e => { if (e.key === 'Escape') setFoco(false) }
+    window.addEventListener('keydown', aoTeclar)
+    return () => window.removeEventListener('keydown', aoTeclar)
+  }, [foco])
 
   const handleVoltar = onVoltar || (() => navigate('/trilha'))
 
   return (
     // `position` NÃO vai aqui: a classe .game-shell precisa de `fixed` para
     // travar a atividade no viewport, e style inline venceria a folha de estilo.
-    <div className="game-shell" style={{ background: t.bg }}>
+    <div className={`game-shell${foco ? ' game-shell--foco' : ''}`} style={{ background: t.bg }}>
 
       {/* Dentro da atividade não havia nenhuma saída além do botão voltar do jogo:
-          nem início, nem troca de tela, nem sair da conta. */}
-      <MenuLateral tipo="crianca" />
+          nem início, nem troca de tela, nem sair da conta.
+          No modo foco ele sai de cena — mas o botão de voltar do topbar fica,
+          então nunca se chega a uma tela sem saída. */}
+      {!foco && <MenuLateral tipo="crianca" />}
 
       {/* ── Ambient glow blobs ──────────────────────
           Eram círculos sólidos com `filter: blur(120px)`/`blur(100px)`. Um filtro de
@@ -111,7 +136,7 @@ export default function GameShell({
               {avatar(child.avatar)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: 'white', fontFamily: "'Fredoka One', cursive", fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.nome}</div>
+              <div style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.nome}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: 'var(--ns-font-ui)' }}>Nível {child.nivel || 1} • {child.xp || 0} XP</div>
             </div>
           </div>
@@ -122,7 +147,7 @@ export default function GameShell({
           <>
             <div style={{ textAlign: 'center', marginBottom: 20 }}>
               <div style={{ fontSize: 64, lineHeight: 1, marginBottom: 12, animation: 'ns-bounce 3s ease-in-out infinite' }}>{atividade.emoji}</div>
-              <div style={{ color: 'white', fontFamily: "'Fredoka One', cursive", fontSize: 16, marginBottom: 6, lineHeight: 1.3 }}>{atividade.titulo}</div>
+              <div style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 16, marginBottom: 6, lineHeight: 1.3 }}>{atividade.titulo}</div>
               <div style={{ display: 'inline-block', background: t.accent + '30', border: `1px solid ${t.accent}50`, borderRadius: 99, padding: '3px 12px', color: t.accent, fontSize: 11, fontWeight: 700, fontFamily: 'var(--ns-font-ui)' }}>
                 {atividade.habilidade}
               </div>
@@ -164,8 +189,13 @@ export default function GameShell({
         {/* Topbar compacto */}
         <div className="game-topbar">
           {/* back button */}
+          {/* `ns-alvo-toque` (44px sob `pointer: coarse`) porque no modo foco
+              este botão é a ÚNICA saída da atividade. 36px é alvo de mouse;
+              no dedo é o mesmo erro das tiras de navegação de 02/08 — a
+              criança toca, nada acontece, e conclui que travou. */}
           <button
             onClick={handleVoltar}
+            className="ns-alvo-toque"
             style={{
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.12)',
@@ -182,7 +212,7 @@ export default function GameShell({
 
           {/* title + progress bar */}
           <div style={{ flex: 1 }}>
-            <div style={{ color: 'white', fontFamily: "'Fredoka One', cursive", fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div className="game-topbar-titulo" style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {atividade?.titulo || ''}
             </div>
             <div className="game-progress-bar">
@@ -218,6 +248,19 @@ export default function GameShell({
               </button>
             )}
             <Badge variant="xp">+{atividade?.xp_reward || 0} XP</Badge>
+
+            {/* Alterna o modo foco. `aria-pressed` porque é um interruptor que
+                permanece ligado, não uma ação — e o estado ligado precisa ser
+                visível no próprio botão, senão só se percebe pelo que sumiu. */}
+            <button
+              className="ns-foco-btn ns-alvo-toque"
+              onClick={() => setFoco(f => !f)}
+              aria-pressed={foco}
+              title={foco ? 'Sair da tela cheia (Esc)' : 'Tela cheia'}
+              aria-label={foco ? 'Sair da tela cheia' : 'Tela cheia'}
+            >
+              {foco ? <ArrowsIn size={17} weight="bold" /> : <ArrowsOut size={17} weight="bold" />}
+            </button>
           </div>
         </div>
 
@@ -285,7 +328,7 @@ export default function GameShell({
           <div style={{ background: 'linear-gradient(135deg, #1a0a3e, #0c0520)', border: '1px solid rgba(168,85,247,0.3)', borderRadius: 'var(--ns-radius-xl)', padding: 28, maxWidth: 380, width: '100%', boxShadow: 'var(--ns-shadow-glow-violet)' }}>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 48, marginBottom: 8 }}>🔮</div>
-              <h3 style={{ color: 'white', fontFamily: "'Fredoka One', cursive", fontSize: 22, marginBottom: 6 }}>Dica Mágica</h3>
+              <h3 style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 22, marginBottom: 6 }}>Dica Mágica</h3>
             </div>
             {atividade?.historinha ? (
               <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, lineHeight: 1.7, background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: '14px', marginBottom: 16 }}>

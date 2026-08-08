@@ -544,6 +544,57 @@ h1, h2, h3, .crianca-heading {
   .game-topbar { padding-top: calc(12px + env(safe-area-inset-top)); }
 }
 
+/* ── Modo foco: a atividade ocupa a tela inteira ──────────────────
+   As duas colunas, a alça do menu lateral e o título comem espaço que é do
+   jogo. Em janela de notebook isso decide se o tabuleiro do Labirinto cabe;
+   no celular o topo folgado é a diferença entre ver o jogo e rolar atrás dele.
+
+   🔑 O BOTÃO DE VOLTAR E A BARRA DE PROGRESSO PERMANECEM. Esconder tudo
+   deixaria a criança sem saída dentro de uma tela cheia — que é exatamente o
+   buraco que o MenuLateral foi criado para tapar em 21/07. Modo foco tira o
+   enfeite, não a saída.
+
+   A especificidade (0,2,0) vence as regras de `.game-content`/`.game-topbar`
+   das media queries acima (0,1,0) em qualquer largura, então o modo foco vale
+   igual no desktop e no celular sem precisar repetir bloco por breakpoint.
+   Por isso o `env(safe-area-inset-top)` tem que ser REPETIDO aqui: sem ele
+   esta regra sobrescreveria a da linha 544 e a barra de status do iPhone
+   voltaria a cobrir o botão de voltar. `env()` vale 0 onde não há entalhe. */
+.game-shell--foco .game-sidebar-left,
+.game-shell--foco .game-sidebar-right { display: none; }
+
+.game-shell--foco .game-topbar {
+  padding: 8px 14px;
+  padding-top: calc(8px + env(safe-area-inset-top));
+  gap: 10px;
+}
+
+.game-shell--foco .game-topbar-titulo { display: none; }
+
+.game-shell--foco .game-content { padding: 12px 16px; }
+
+/* Botão de alternar o modo foco. Estado ligado fica visível no próprio botão
+   (não só no que sumiu da tela), senão a criança não sabe o que desfazer. */
+.ns-foco-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  width: 36px; height: 36px;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.ns-foco-btn:hover { background: rgba(255,255,255,0.16); color: #fff; }
+.ns-foco-btn[aria-pressed="true"] {
+  background: rgba(168,85,247,0.22);
+  border-color: rgba(168,85,247,0.45);
+  color: #d8b4fe;
+}
+
 /* ── Stat pill ───────────────────────────────────── */
 .stat-pill {
   background: var(--color-primary-ghost);
