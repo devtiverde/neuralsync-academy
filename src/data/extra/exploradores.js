@@ -6350,3 +6350,365 @@ export const silabasExtraPorFaixa = [
     }
   }
 ]
+
+// ──────────────────────────────────────────────────────────────────────
+// QUIZ — EXPANSÃO (08/08/2026)
+// Fecha a faixa em 15 quizzes. Temas escolhidos para NÃO repetir os 7 que já
+// existiam (animais ×2, frutas, corpo, espaço, profissões, formas e cores).
+// Linguagem de 4–5 anos: pergunta curta, alternativa concreta, nada de
+// pegadinha. O `fato` é para o adulto ler em voz alta junto.
+// ──────────────────────────────────────────────────────────────────────
+export const quizExtraPorFaixa = [
+  {
+    id: "exp_quiz_transportes",
+    tipo: "quiz",
+    titulo: "Meios de Transporte",
+    descricao: "Como as pessoas e as coisas vão de um lugar para o outro?",
+    emoji: "🚗",
+    habilidade: "Observação",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "A cidade acordou e todo mundo precisa chegar em algum lugar! 🚗 Uns vão de carro, outros de ônibus, e tem quem vá voando. Vamos descobrir quem anda onde?",
+    perguntas: [
+      {
+        pergunta: "Qual destes anda em cima de trilhos?",
+        opcoes: ["O trem", "O barco", "A bicicleta", "O avião"],
+        correta: 0,
+        fato: "🚂 O trem tem rodas de metal que se encaixam nos trilhos. Por isso ele não precisa de volante: o caminho já está desenhado no chão!"
+      },
+      {
+        pergunta: "Onde o barco anda?",
+        opcoes: ["Na água", "No céu", "Na areia", "Nos trilhos"],
+        correta: 0,
+        fato: "⛵ O barco flutua porque ele é oco por dentro, cheio de ar. Uma pedra do mesmo tamanho afundaria!"
+      },
+      {
+        pergunta: "Quantas rodas tem uma bicicleta?",
+        opcoes: ["Duas", "Uma", "Três", "Quatro"],
+        correta: 0,
+        fato: "🚲 Duas rodas! A bicicleta só fica em pé quando está andando — parada ela cai. É por isso que aprender a pedalar dá tanto trabalho no começo."
+      },
+      {
+        pergunta: "O que voa bem alto, acima das nuvens?",
+        opcoes: ["O avião", "O carro", "O trem", "O barco"],
+        correta: 0,
+        fato: "✈️ O avião voa mais alto que as nuvens porque lá em cima o ar é mais fino e ele gasta menos combustível para seguir em frente."
+      },
+      {
+        pergunta: "Qual transporte leva MUITAS pessoas de uma vez?",
+        opcoes: ["O ônibus", "A bicicleta", "A moto", "O patinete"],
+        correta: 0,
+        fato: "🚌 Um ônibus cheio leva umas 40 pessoas. Se cada uma fosse de carro, seriam 40 carros na rua — por isso o ônibus ajuda a cidade a ter menos trânsito."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_casa",
+    tipo: "quiz",
+    titulo: "Coisas da Minha Casa",
+    descricao: "Para que serve cada coisa que tem na sua casa?",
+    emoji: "🏠",
+    habilidade: "Observação",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Sua casa está cheia de coisas que ajudam todo dia! 🏠 A geladeira, a vassoura, o chuveiro... Você sabe para que serve cada uma?",
+    perguntas: [
+      {
+        pergunta: "O que a geladeira faz com a comida?",
+        opcoes: ["Deixa ela gelada", "Deixa ela quente", "Deixa ela colorida", "Deixa ela grande"],
+        correta: 0,
+        fato: "🧊 A geladeira deixa a comida gelada, e no frio os bichinhos invisíveis que estragam a comida crescem bem devagar. Por isso o leite dura mais lá dentro."
+      },
+      {
+        pergunta: "Onde a gente lava as mãos?",
+        opcoes: ["Na pia", "No sofá", "Na janela", "No armário"],
+        correta: 0,
+        fato: "🚰 A água da pia vem por canos que passam por dentro da parede. Ela faz uma viagem bem longa antes de chegar na sua mão!"
+      },
+      {
+        pergunta: "O que serve para varrer o chão?",
+        opcoes: ["A vassoura", "A colher", "O travesseiro", "A tesoura"],
+        correta: 0,
+        fato: "🧹 A vassoura junta a sujeira porque as cerdas dela são muitas e bem juntinhas — cada fiozinho empurra um pouquinho de poeira."
+      },
+      {
+        pergunta: "Onde a gente dorme?",
+        opcoes: ["Na cama", "No fogão", "Na pia", "Na porta"],
+        correta: 0,
+        fato: "🛏️ Dormir não é só descansar: é enquanto você dorme que o seu corpo cresce mais e o seu cérebro guarda o que você aprendeu no dia."
+      },
+      {
+        pergunta: "O que acende quando fica escuro?",
+        opcoes: ["A lâmpada", "A cadeira", "O tapete", "A toalha"],
+        correta: 0,
+        fato: "💡 A lâmpada acende com eletricidade, que chega na sua casa por fios. Quando você aperta o interruptor, está deixando a eletricidade passar."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_tempo",
+    tipo: "quiz",
+    titulo: "Sol, Chuva e Vento",
+    descricao: "Como está o tempo lá fora hoje?",
+    emoji: "☀️",
+    habilidade: "Observação da Natureza",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Todo dia o céu conta uma história diferente! ☀️ Às vezes tem sol, às vezes chove, às vezes o vento bagunça tudo. Vamos aprender a ler o céu?",
+    perguntas: [
+      {
+        pergunta: "O que cai do céu quando está chovendo?",
+        opcoes: ["Gotas de água", "Pedrinhas", "Folhas", "Areia"],
+        correta: 0,
+        fato: "🌧️ A chuva é água que subiu do mar e dos rios, virou nuvem lá em cima e voltou. É sempre a mesma água, dando voltas!"
+      },
+      {
+        pergunta: "O que aparece no céu bem cedinho, de manhã?",
+        opcoes: ["O sol", "A lua cheia", "As estrelas", "Os fogos"],
+        correta: 0,
+        fato: "🌅 O sol parece que se levanta, mas quem se mexe é a Terra: ela vai girando devagarinho e traz a gente para o lado iluminado."
+      },
+      {
+        pergunta: "O que o vento faz com as folhas das árvores?",
+        opcoes: ["Balança elas", "Pinta elas", "Come elas", "Congela elas"],
+        correta: 0,
+        fato: "🍃 O vento é ar se mexendo. Você não consegue ver o ar, mas dá para ver o que ele faz: a folha balançando é o vento aparecendo."
+      },
+      {
+        pergunta: "O que a gente usa para não se molhar na chuva?",
+        opcoes: ["Guarda-chuva", "Óculos de sol", "Ventilador", "Chinelo"],
+        correta: 0,
+        fato: "☂️ O guarda-chuva é feito de um tecido que a água não atravessa. A gota escorrega por ele e cai no chão em vez de cair em você."
+      },
+      {
+        pergunta: "Quando faz muito frio, a gente veste o quê?",
+        opcoes: ["Casaco", "Maiô", "Óculos escuros", "Chapéu de praia"],
+        correta: 0,
+        fato: "🧥 O casaco não esquenta sozinho: ele segura pertinho de você o calorzinho que o seu próprio corpo faz."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_bichinhos",
+    tipo: "quiz",
+    titulo: "Bichinhos do Jardim",
+    descricao: "Quem mora no meio das plantas?",
+    emoji: "🐛",
+    habilidade: "Observação da Natureza",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Se você olhar bem de pertinho no jardim, vai ver que ele está cheio de moradores pequeninos! 🐛 Formiga, joaninha, minhoca... vamos conhecer?",
+    perguntas: [
+      {
+        pergunta: "Quem carrega folhinhas em fila pelo chão?",
+        opcoes: ["As formigas", "Os peixes", "Os passarinhos", "Os gatos"],
+        correta: 0,
+        fato: "🐜 A formiga carrega pedaços muito maiores que ela. E elas andam em fila porque cada uma deixa um cheirinho no caminho para a próxima seguir."
+      },
+      {
+        pergunta: "Qual bichinho tem bolinhas pretas nas costas vermelhas?",
+        opcoes: ["A joaninha", "A minhoca", "A abelha", "O caracol"],
+        correta: 0,
+        fato: "🐞 A joaninha é amiga das plantas: ela come os bichinhos que estragam as folhas. Jardineiro nenhum quer que ela vá embora!"
+      },
+      {
+        pergunta: "Quem faz mel?",
+        opcoes: ["A abelha", "A formiga", "A borboleta", "A aranha"],
+        correta: 0,
+        fato: "🐝 A abelha visita muitas flores e leva o néctar para a colmeia. De quebra, ela espalha o pó das flores e ajuda a nascer fruta."
+      },
+      {
+        pergunta: "A lagarta cresce e vira o quê?",
+        opcoes: ["Borboleta", "Passarinho", "Peixe", "Sapo"],
+        correta: 0,
+        fato: "🦋 A lagarta se fecha num casulo e sai de lá borboleta. É o mesmo bichinho, com um corpo completamente novo."
+      },
+      {
+        pergunta: "Quem vive dentro da terra e ajuda as plantas?",
+        opcoes: ["A minhoca", "O peixe", "A galinha", "O morcego"],
+        correta: 0,
+        fato: "🪱 A minhoca cava caminhos na terra, e por esses buraquinhos entram ar e água até a raiz. Terra com minhoca é terra boa."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_comida",
+    tipo: "quiz",
+    titulo: "Comida que Faz Bem",
+    descricao: "O que o seu corpo mais gosta de comer?",
+    emoji: "🥕",
+    habilidade: "Autocuidado",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Seu corpo é como um carrinho: ele precisa de combustível para brincar o dia todo! 🥕 Vamos descobrir quais comidas dão mais energia?",
+    perguntas: [
+      {
+        pergunta: "Qual destes é um legume?",
+        opcoes: ["A cenoura", "O bolo", "O sorvete", "O biscoito"],
+        correta: 0,
+        fato: "🥕 A cenoura é a raiz da planta — a parte que fica enterrada. É por isso que ela é comprida e pontuda de um lado."
+      },
+      {
+        pergunta: "O que a gente precisa beber várias vezes por dia?",
+        opcoes: ["Água", "Refrigerante", "Chocolate", "Suco de caixinha"],
+        correta: 0,
+        fato: "💧 Mais da metade do seu corpo é água. Por isso, quando você fica com sede, é o corpo pedindo para repor."
+      },
+      {
+        pergunta: "De onde vem o leite?",
+        opcoes: ["Da vaca", "Da árvore", "Da pedra", "Do mar"],
+        correta: 0,
+        fato: "🐄 O leite da vaca é o mesmo que ela dá para o bezerro dela. Ele tem cálcio, que é o que deixa os ossos e os dentes fortes."
+      },
+      {
+        pergunta: "Comer muito doce todo dia faz o quê com os dentes?",
+        opcoes: ["Faz mal a eles", "Deixa eles maiores", "Deixa eles azuis", "Não muda nada"],
+        correta: 0,
+        fato: "🦷 O açúcar que fica no dente vira comida para bactérias, e o que elas soltam é que faz o buraquinho da cárie. Escovar tira o açúcar antes disso."
+      },
+      {
+        pergunta: "Qual refeição a gente faz logo que acorda?",
+        opcoes: ["O café da manhã", "A janta", "A ceia", "O lanche da noite"],
+        correta: 0,
+        fato: "🍞 Você passou a noite inteira sem comer. O café da manhã é o que dá energia para o corpo e para a cabeça começarem o dia."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_higiene",
+    tipo: "quiz",
+    titulo: "Cuidando de Mim",
+    descricao: "Como se cuidar todos os dias?",
+    emoji: "🪥",
+    habilidade: "Autocuidado",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Cuidar do corpo é igual cuidar de um brinquedo que você ama: todo dia um pouquinho! 🪥 Vamos ver o que faz parte desse cuidado?",
+    perguntas: [
+      {
+        pergunta: "O que a gente usa para escovar os dentes?",
+        opcoes: ["Escova e pasta", "Garfo e faca", "Pente e tesoura", "Sabão em pó"],
+        correta: 0,
+        fato: "🪥 O melhor é escovar depois das refeições e antes de dormir. À noite a boca produz menos saliva, então o que ficou lá faz mais estrago."
+      },
+      {
+        pergunta: "Quando a gente deve lavar as mãos?",
+        opcoes: ["Antes de comer", "Só no domingo", "Só quando chove", "Nunca"],
+        correta: 0,
+        fato: "🧼 O sabão faz a sujeira e os germes escorregarem da pele para a água. Por isso esfregar bem é mais importante do que a água ser quente."
+      },
+      {
+        pergunta: "Para que serve o banho?",
+        opcoes: ["Para tirar a sujeira do corpo", "Para ficar com sono", "Para crescer mais rápido", "Para ficar com fome"],
+        correta: 0,
+        fato: "🛁 Durante o dia a pele junta poeira e suor. O banho tira tudo isso e ainda ajuda o corpo a relaxar na hora de dormir."
+      },
+      {
+        pergunta: "Quando você espirra, o certo é cobrir com o quê?",
+        opcoes: ["O braço dobrado", "As duas mãos", "Nada", "O cabelo"],
+        correta: 0,
+        fato: "🤧 Cobrir com o braço dobrado é melhor que com a mão: a mão é o que toca em maçaneta, brinquedo e na mão dos outros depois."
+      },
+      {
+        pergunta: "Quantas horas mais ou menos uma criança precisa dormir?",
+        opcoes: ["Umas 10 a 12 horas", "Uma hora", "Duas horas", "Trinta minutos"],
+        correta: 0,
+        fato: "😴 Criança pequena precisa de bem mais sono que adulto — em torno de 10 a 12 horas. É dormindo que o corpo mais cresce."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_oceano",
+    tipo: "quiz",
+    titulo: "No Fundo do Mar",
+    descricao: "Quem mora lá embaixo da água?",
+    emoji: "🐟",
+    habilidade: "Observação da Natureza",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Lá no fundo do mar existe um mundo inteiro que a gente quase nunca vê! 🐟 Peixes coloridos, estrelas que andam devagar, bichos enormes. Vamos mergulhar?",
+    perguntas: [
+      {
+        pergunta: "Com o que o peixe respira dentro da água?",
+        opcoes: ["Com as guelras", "Com o nariz", "Com a boca só", "Com as barbatanas"],
+        correta: 0,
+        fato: "🐠 As guelras ficam dos lados da cabeça do peixe e tiram o ar que está misturado na água. É por isso que ele não precisa subir para respirar."
+      },
+      {
+        pergunta: "Quantos braços tem o polvo?",
+        opcoes: ["Oito", "Dois", "Quatro", "Vinte"],
+        correta: 0,
+        fato: "🐙 São oito braços, cheios de ventosas que grudam. E o polvo consegue mudar de cor para se esconder no fundo do mar."
+      },
+      {
+        pergunta: "Qual destes é o maior animal do mundo?",
+        opcoes: ["A baleia-azul", "O tubarão", "O golfinho", "A tartaruga"],
+        correta: 0,
+        fato: "🐋 A baleia-azul é o maior animal que já existiu — maior até que os dinossauros. E ela come uns bichinhos minúsculos chamados krill."
+      },
+      {
+        pergunta: "A água do mar é como?",
+        opcoes: ["Salgada", "Doce como suco", "Com gás", "Quente sempre"],
+        correta: 0,
+        fato: "🌊 O sal do mar veio das pedras: a chuva lava a terra, leva um pouquinho de sal para os rios, e os rios levam tudo para o mar."
+      },
+      {
+        pergunta: "A tartaruga marinha põe os ovos onde?",
+        opcoes: ["Na areia da praia", "Dentro da água", "Em cima das árvores", "Nas pedras do fundo"],
+        correta: 0,
+        fato: "🐢 Ela sai do mar, cava um buraco na areia e enterra os ovos. Quando os filhotinhos nascem, correm sozinhos até a água."
+      }
+    ]
+  },
+  {
+    id: "exp_quiz_sons",
+    tipo: "quiz",
+    titulo: "Sons e Música",
+    descricao: "O que faz barulho e o que faz música?",
+    emoji: "🎵",
+    habilidade: "Percepção Auditiva",
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: "Feche os olhos e escute: tem som por todo lado! 🎵 O passarinho, a chuva, a buzina, o violão. Vamos brincar de reconhecer sons?",
+    perguntas: [
+      {
+        pergunta: "Qual destes é um instrumento musical?",
+        opcoes: ["O violão", "A colher", "O sapato", "A janela"],
+        correta: 0,
+        fato: "🎸 O violão faz som porque as cordas balançam bem rápido quando você toca nelas. Corda mais fina faz som mais fininho."
+      },
+      {
+        pergunta: "Com que parte do corpo a gente escuta?",
+        opcoes: ["Com os ouvidos", "Com os olhos", "Com as mãos", "Com os pés"],
+        correta: 0,
+        fato: "👂 Dentro do ouvido tem uma peninha bem fina que balança quando o som chega. É esse balanço que vira som na sua cabeça."
+      },
+      {
+        pergunta: "Que som o cachorro faz?",
+        opcoes: ["Au-au", "Miau", "Muuu", "Quá-quá"],
+        correta: 0,
+        fato: "🐶 O cachorro late para avisar, chamar ou pedir atenção. Cada latido é diferente — o dono aprende a diferenciar com o tempo."
+      },
+      {
+        pergunta: "O que a gente faz quando um som está alto demais?",
+        opcoes: ["Abaixa o volume", "Aumenta mais", "Chega mais perto", "Grita junto"],
+        correta: 0,
+        fato: "🔊 Som muito alto por muito tempo pode machucar o ouvido de verdade, e esse machucado não sara. Abaixar o volume é cuidar de você."
+      },
+      {
+        pergunta: "Bater palma faz som porque as mãos fazem o quê?",
+        opcoes: ["Se batem e balançam o ar", "Ficam quentes", "Ficam vermelhas", "Ficam molhadas"],
+        correta: 0,
+        fato: "👏 A palma empurra o ar de repente, e esse empurrão viaja até o seu ouvido. Todo som é ar sendo empurrado!"
+      }
+    ]
+  }
+]

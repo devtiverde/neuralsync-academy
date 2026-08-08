@@ -87,3 +87,9 @@ export const silabasExtraPorFaixa = {
   criadores: criadores.silabasExtraPorFaixa,
   inventores: inventores.silabasExtraPorFaixa,
 }
+export const quizExtraPorFaixa = {
+  exploradores: exploradores.quizExtraPorFaixa,
+  construtores: construtores.quizExtraPorFaixa,
+  criadores: criadores.quizExtraPorFaixa,
+  inventores: inventores.quizExtraPorFaixa,
+}

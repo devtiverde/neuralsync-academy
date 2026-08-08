@@ -70,6 +70,7 @@ export function useAtividades(faixaEtaria) {
         ...(colorir2Mod.colorirExtra2PorFaixa[f] || []),
         ...(musicaMod.musicaExtraPorFaixa[f]     || []),
         ...(extraMod.silabasExtraPorFaixa       || []),
+        ...(extraMod.quizExtraPorFaixa          || []),
       ]
 
       const { data } = await supabase

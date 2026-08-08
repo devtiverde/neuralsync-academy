@@ -7092,3 +7092,319 @@ export const silabasExtraPorFaixa = [
     }
   }
 ]
+
+// ──────────────────────────────────────────────────────────────────────
+// QUIZ — EXPANSÃO (08/08/2026)
+// Fecha a faixa em 15 quizzes. Temas novos, sem repetir os 8 que já existiam
+// (ciências ×2, Brasil, matemática ×2, inventores, biomas, corpo).
+// ──────────────────────────────────────────────────────────────────────
+export const quizExtraPorFaixa = [
+  {
+    id: "con_quiz_espaco",
+    tipo: "quiz",
+    titulo: "Sistema Solar",
+    descricao: "Um passeio pelos planetas que giram em volta do Sol!",
+    emoji: "🪐",
+    habilidade: "Pensamento Científico",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "A nave está pronta e o combustível cheio! 🪐 Sua missão é visitar os oito planetas e trazer informação de cada um. Prepare-se para a decolagem!",
+    perguntas: [
+      {
+        pergunta: "Quantos planetas tem o Sistema Solar?",
+        opcoes: ["Oito", "Sete", "Nove", "Doze"],
+        correta: 0,
+        fato: "🪐 São oito. Plutão era o nono até 2006, quando os astrônomos criaram a categoria 'planeta anão' e ele passou para lá — ele não some, só mudou de time."
+      },
+      {
+        pergunta: "Qual é o maior planeta do Sistema Solar?",
+        opcoes: ["Júpiter", "Terra", "Marte", "Saturno"],
+        correta: 0,
+        fato: "🌕 Júpiter é tão grande que caberiam mais de mil Terras dentro dele. E ele é feito quase todo de gás — não dá para pousar."
+      },
+      {
+        pergunta: "Por que Marte é chamado de planeta vermelho?",
+        opcoes: ["O solo dele tem ferro enferrujado", "Ele é feito de fogo", "Ele fica perto do Sol", "Ele reflete o Sol"],
+        correta: 0,
+        fato: "🔴 O solo de Marte tem óxido de ferro — a mesma coisa que deixa um prego velho alaranjado. Marte está literalmente enferrujado."
+      },
+      {
+        pergunta: "O que o Sol é, na verdade?",
+        opcoes: ["Uma estrela", "Um planeta", "Uma lua", "Um cometa"],
+        correta: 0,
+        fato: "☀️ O Sol é uma estrela comum, de tamanho médio. Ele só parece enorme porque é a estrela mais perto de nós — as outras estão longe demais."
+      },
+      {
+        pergunta: "Quanto tempo a Terra leva para dar uma volta em volta do Sol?",
+        opcoes: ["Um ano", "Um dia", "Um mês", "Uma semana"],
+        correta: 0,
+        fato: "🌍 Um ano é exatamente isso: uma volta completa. E o giro da Terra em torno de si mesma, que dura um dia, é o que faz o Sol nascer e se pôr."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_dinossauros",
+    tipo: "quiz",
+    titulo: "Mundo dos Dinossauros",
+    descricao: "Os gigantes que viveram muito antes de nós!",
+    emoji: "🦕",
+    habilidade: "Pensamento Científico",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "Você é paleontólogo por um dia! 🦕 Encontrou ossos gigantes enterrados e precisa descobrir de quem eram. Cada resposta certa é uma peça do quebra-cabeça.",
+    perguntas: [
+      {
+        pergunta: "Como os cientistas descobrem sobre os dinossauros?",
+        opcoes: ["Estudando fósseis", "Assistindo filmes", "Perguntando aos avós", "Olhando o céu"],
+        correta: 0,
+        fato: "🦴 Fóssil é o osso (ou a pegada) que virou pedra ao longo de milhões de anos. É a única prova direta que restou desses animais."
+      },
+      {
+        pergunta: "O que comia um dinossauro herbívoro?",
+        opcoes: ["Plantas", "Outros dinossauros", "Peixes", "Pedras"],
+        correta: 0,
+        fato: "🌿 Herbívoro come planta. Muitos deles engoliam pedrinhas de propósito: as pedras ficavam no estômago e ajudavam a triturar as folhas duras."
+      },
+      {
+        pergunta: "Que animais de hoje são parentes dos dinossauros?",
+        opcoes: ["As aves", "Os cachorros", "Os peixes", "Os macacos"],
+        correta: 0,
+        fato: "🐦 As aves descendem de um grupo de dinossauros. Quando você vê um passarinho no quintal, está vendo um parente vivo do T. rex."
+      },
+      {
+        pergunta: "O que a maioria dos cientistas acha que causou a extinção dos dinossauros?",
+        opcoes: ["A queda de um asteroide", "Uma guerra entre eles", "Falta de água só", "Eles viraram peixes"],
+        correta: 0,
+        fato: "☄️ Um asteroide enorme caiu onde hoje é o México, há uns 66 milhões de anos. A poeira tapou o Sol por muito tempo e as plantas não conseguiram crescer."
+      },
+      {
+        pergunta: "Todos os dinossauros eram gigantes?",
+        opcoes: ["Não, tinha uns do tamanho de uma galinha", "Sim, todos eram enormes", "Sim, todos maiores que um ônibus", "Não, todos eram pequenos"],
+        correta: 0,
+        fato: "🐔 Existiam dinossauros pequenininhos, alguns do tamanho de uma galinha. Os gigantes ficaram famosos, mas eram só uma parte do grupo."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_agua",
+    tipo: "quiz",
+    titulo: "O Ciclo da Água",
+    descricao: "A mesma água dá voltas no planeta há bilhões de anos!",
+    emoji: "💧",
+    habilidade: "Pensamento Científico",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "A água que você bebeu hoje já foi chuva, já foi rio e já foi nuvem — talvez já tenha sido bebida por um dinossauro! 💧 Vamos seguir essa viagem?",
+    perguntas: [
+      {
+        pergunta: "O que acontece com a água quando ela esquenta muito?",
+        opcoes: ["Vira vapor e sobe", "Vira gelo", "Vira pedra", "Desaparece para sempre"],
+        correta: 0,
+        fato: "♨️ Isso é evaporação. A água não some: ela vira vapor, um gás invisível, e sobe até onde o ar é frio o bastante para virar nuvem."
+      },
+      {
+        pergunta: "Do que é feita uma nuvem?",
+        opcoes: ["De gotinhas de água", "De algodão", "De fumaça", "De ar puro"],
+        correta: 0,
+        fato: "☁️ A nuvem é um monte de gotinhas minúsculas boiando. Quando elas se juntam e ficam pesadas demais para o ar segurar, cai chuva."
+      },
+      {
+        pergunta: "A água congela a quantos graus?",
+        opcoes: ["0 °C", "10 °C", "50 °C", "100 °C"],
+        correta: 0,
+        fato: "🧊 Zero grau para congelar e 100 para ferver — a escala Celsius foi criada usando exatamente esses dois pontos da água."
+      },
+      {
+        pergunta: "Para onde vai a água dos rios?",
+        opcoes: ["Para o mar", "Para o céu direto", "Para dentro das pedras", "Ela para no meio do caminho"],
+        correta: 0,
+        fato: "🏞️ Quase todos os rios terminam no mar. Lá a água evapora de novo, e o ciclo recomeça — por isso a água do planeta nunca acaba, só muda de lugar."
+      },
+      {
+        pergunta: "Quanto da água do planeta é doce e dá para beber?",
+        opcoes: ["Bem pouquinho", "Metade", "Quase tudo", "Nenhuma"],
+        correta: 0,
+        fato: "🚰 A maior parte da água da Terra é salgada. A doce é uma fatia pequena, e boa parte dela ainda está congelada nos polos — por isso não se desperdiça."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_oceanos",
+    tipo: "quiz",
+    titulo: "Vida no Oceano",
+    descricao: "O maior habitat do planeta fica debaixo d'água!",
+    emoji: "🐋",
+    habilidade: "Pensamento Científico",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "Você embarcou num submarino de pesquisa! 🐋 Quanto mais fundo desce, mais estranhos ficam os bichos. Vamos catalogar o que encontrarmos?",
+    perguntas: [
+      {
+        pergunta: "A baleia é um peixe?",
+        opcoes: ["Não, é um mamífero", "Sim, é um peixe grande", "Não, é um réptil", "Sim, é o maior peixe"],
+        correta: 0,
+        fato: "🐳 A baleia é mamífero: respira ar pelo pulmão, é de sangue quente e amamenta o filhote. Por isso ela precisa subir à superfície."
+      },
+      {
+        pergunta: "O que é um recife de coral?",
+        opcoes: ["Uma estrutura feita por animais vivos", "Uma pedra colorida", "Uma planta do mar", "Areia empilhada"],
+        correta: 0,
+        fato: "🪸 Coral é bicho, não pedra nem planta. Cada 'galho' é feito por milhares de animaizinhos que constroem uma casinha dura em volta de si."
+      },
+      {
+        pergunta: "Por que o fundo do oceano é escuro?",
+        opcoes: ["A luz do Sol não chega até lá", "Porque a água é preta", "Porque não tem Sol lá em cima", "Por causa da areia"],
+        correta: 0,
+        fato: "🔦 A luz vai sendo absorvida conforme desce. Abaixo de uns 200 metros já é penumbra, e mais fundo é escuridão total — por isso muitos bichos de lá produzem a própria luz."
+      },
+      {
+        pergunta: "Qual é o maior perigo que o plástico traz para os animais marinhos?",
+        opcoes: ["Eles confundem com comida", "Ele faz barulho", "Ele esquenta a água", "Ele deixa a água doce"],
+        correta: 0,
+        fato: "♻️ Uma sacola boiando parece água-viva para uma tartaruga. Ela come, o plástico não é digerido e entope o estômago."
+      },
+      {
+        pergunta: "De onde vem boa parte do oxigênio que respiramos?",
+        opcoes: ["De algas e plâncton do mar", "Só das florestas", "Das pedras", "Das nuvens"],
+        correta: 0,
+        fato: "🌊 Uma parte enorme do oxigênio do planeta é produzida por algas e plâncton no oceano — o mar trabalha tanto quanto as florestas."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_energia",
+    tipo: "quiz",
+    titulo: "Energia e Eletricidade",
+    descricao: "De onde vem a energia que acende a sua casa?",
+    emoji: "⚡",
+    habilidade: "Pensamento Científico",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "Acabou a luz no bairro inteiro! ⚡ Você foi chamado para entender de onde vem a eletricidade e por que ela às vezes falta. Vamos investigar?",
+    perguntas: [
+      {
+        pergunta: "No Brasil, a maior parte da eletricidade vem de quê?",
+        opcoes: ["Das hidrelétricas", "Do carvão", "Do vento só", "Das pilhas"],
+        correta: 0,
+        fato: "💧 A hidrelétrica usa a força da água caindo para girar uma turbina. É por isso que, em ano de seca, se fala tanto em risco de falta de energia."
+      },
+      {
+        pergunta: "O que a placa solar faz?",
+        opcoes: ["Transforma luz do Sol em eletricidade", "Esquenta a casa", "Reflete o Sol", "Guarda água quente"],
+        correta: 0,
+        fato: "☀️ A placa solar converte luz direto em eletricidade. Ela funciona mesmo em dia nublado — só produz menos."
+      },
+      {
+        pergunta: "Por que não se deve mexer em tomada com a mão molhada?",
+        opcoes: ["A água conduz eletricidade", "A água enferruja a tomada", "A mão escorrega", "Não tem problema nenhum"],
+        correta: 0,
+        fato: "⚠️ A água com os sais que ela carrega conduz eletricidade muito bem, e a nossa pele molhada oferece bem menos resistência. É um risco sério de choque."
+      },
+      {
+        pergunta: "O que é uma fonte de energia renovável?",
+        opcoes: ["Uma que não acaba, como o vento", "Uma que é barata", "Uma que é muito forte", "Uma que vem de fábrica"],
+        correta: 0,
+        fato: "🌬️ Sol, vento e água se renovam sozinhos. Já o petróleo e o carvão levaram milhões de anos para se formar — quando acabam, não voltam."
+      },
+      {
+        pergunta: "Qual atitude economiza energia em casa?",
+        opcoes: ["Apagar a luz ao sair do cômodo", "Deixar a geladeira aberta", "Ligar tudo ao mesmo tempo", "Tomar banho bem demorado"],
+        correta: 0,
+        fato: "💡 Economizar energia não é só economizar dinheiro: menos energia gasta significa menos usina precisando funcionar."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_portugues",
+    tipo: "quiz",
+    titulo: "Palavras e Letras",
+    descricao: "Como as palavras funcionam por dentro!",
+    emoji: "📚",
+    habilidade: "Linguagem",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "As palavras são feitas de peças, igual um brinquedo de montar! 📚 Quem entende as peças consegue escrever qualquer coisa. Vamos desmontar algumas?",
+    perguntas: [
+      {
+        pergunta: "Quantas vogais tem o alfabeto português?",
+        opcoes: ["Cinco", "Três", "Sete", "Dez"],
+        correta: 0,
+        fato: "🔤 A, E, I, O, U. Toda sílaba do português tem pelo menos uma vogal — não existe sílaba só de consoante."
+      },
+      {
+        pergunta: "Qual destas palavras está no plural?",
+        opcoes: ["Cachorros", "Cachorro", "Cão", "Latido"],
+        correta: 0,
+        fato: "📝 Plural quer dizer mais de um. Na maioria das palavras basta acrescentar S, mas algumas mudam mais: 'pão' vira 'pães'."
+      },
+      {
+        pergunta: "O que é um substantivo?",
+        opcoes: ["A palavra que dá nome às coisas", "A palavra que indica ação", "A palavra que descreve", "A palavra que liga frases"],
+        correta: 0,
+        fato: "🏷️ Substantivo nomeia: casa, alegria, João. Se você consegue pôr 'o' ou 'a' na frente e faz sentido, geralmente é substantivo."
+      },
+      {
+        pergunta: "Quantas sílabas tem a palavra BORBOLETA?",
+        opcoes: ["Quatro", "Três", "Cinco", "Duas"],
+        correta: 0,
+        fato: "🦋 BOR-BO-LE-TA, quatro. Dá para contar batendo palma junto com a fala: cada palma é uma sílaba."
+      },
+      {
+        pergunta: "Qual sinal a gente põe no fim de uma pergunta?",
+        opcoes: ["?", ".", "!", ","],
+        correta: 0,
+        fato: "❓ O ponto de interrogação avisa quem lê que aquilo é uma pergunta — e é ele que faz a voz subir no fim da frase."
+      }
+    ]
+  },
+  {
+    id: "con_quiz_reciclagem",
+    tipo: "quiz",
+    titulo: "Reciclar e Cuidar",
+    descricao: "Para onde vai o lixo que você joga fora?",
+    emoji: "♻️",
+    habilidade: "Consciência Ambiental",
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 10,
+    historinha: "Todo dia sua casa produz lixo — e ele vai para algum lugar! ♻️ Sua missão é descobrir o que dá para reaproveitar e o que não dá. Vamos separar?",
+    perguntas: [
+      {
+        pergunta: "Qual destes materiais pode ser reciclado?",
+        opcoes: ["Garrafa PET", "Papel higiênico usado", "Espelho quebrado", "Fralda"],
+        correta: 0,
+        fato: "♻️ A garrafa PET vira fio de tecido, outra garrafa e até enchimento de casaco. Papel sujo e fralda vão para o lixo comum."
+      },
+      {
+        pergunta: "O que é compostagem?",
+        opcoes: ["Transformar restos de comida em adubo", "Queimar o lixo", "Enterrar o plástico", "Lavar as embalagens"],
+        correta: 0,
+        fato: "🌱 Casca de fruta e restos de verdura viram terra rica em poucas semanas. Isso tira do lixo comum uma parte enorme do que a casa produz."
+      },
+      {
+        pergunta: "Quanto tempo uma garrafa plástica leva para se decompor na natureza?",
+        opcoes: ["Centenas de anos", "Uma semana", "Um mês", "Um ano"],
+        correta: 0,
+        fato: "⏳ Estimativas falam em centenas de anos. Na prática ela se quebra em pedaços cada vez menores, o microplástico, que continua lá."
+      },
+      {
+        pergunta: "Qual é a ordem dos 3 Rs?",
+        opcoes: ["Reduzir, Reutilizar, Reciclar", "Reciclar, Reduzir, Reutilizar", "Reutilizar, Reciclar, Reduzir", "Reduzir, Reciclar, Reutilizar"],
+        correta: 0,
+        fato: "1️⃣ A ordem importa: o melhor é não gerar o lixo (reduzir), depois usar de novo (reutilizar), e só então reciclar — reciclar também gasta energia."
+      },
+      {
+        pergunta: "Onde se deve descartar pilhas e baterias velhas?",
+        opcoes: ["Em pontos de coleta específicos", "No lixo comum", "Na pia", "No lixo de papel"],
+        correta: 0,
+        fato: "🔋 Pilha tem metais pesados que contaminam solo e água. Muitos mercados e lojas têm caixa própria para receber."
+      }
+    ]
+  }
+]

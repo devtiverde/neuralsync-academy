@@ -6935,3 +6935,320 @@ export const numerosExtraPorFaixa = [
 
 // ── Sílabas ──
 export const silabasExtraPorFaixa = []
+
+// ──────────────────────────────────────────────────────────────────────
+// QUIZ — EXPANSÃO (08/08/2026)
+// Fecha a faixa em 15 quizzes. Temas novos, sem repetir os 8 que já existiam
+// (programação, física, filosofia ×2, epistemologia, civilizações, tecnologia,
+// lógica).
+// ──────────────────────────────────────────────────────────────────────
+export const quizExtraPorFaixa = [
+  {
+    id: "inv_quiz_genetica",
+    tipo: "quiz",
+    titulo: "Genética e DNA",
+    descricao: "O manual de instruções que existe dentro de cada célula sua.",
+    emoji: "🧬",
+    habilidade: "Pensamento Científico",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Dentro de praticamente cada célula do seu corpo existe o mesmo texto de 3 bilhões de letras. 🧬 Ele explica por que você se parece com sua família — e por que não é idêntico a ninguém.",
+    perguntas: [
+      {
+        pergunta: "O que é o DNA?",
+        opcoes: ["A molécula que carrega a informação genética", "Um tipo de proteína", "Uma célula do sangue", "Um órgão microscópico"],
+        correta: 0,
+        fato: "🧬 O DNA tem forma de dupla hélice, descrita em 1953 com base decisiva nos dados de difração de raios X de Rosalind Franklin."
+      },
+      {
+        pergunta: "Quantos pares de cromossomos tem uma célula humana típica?",
+        opcoes: ["23 pares", "46 pares", "12 pares", "10 pares"],
+        correta: 0,
+        fato: "🔢 São 23 pares, 46 no total: metade veio da mãe e metade do pai. Por isso você tem duas versões de quase todo gene."
+      },
+      {
+        pergunta: "O que é um gene?",
+        opcoes: ["Um trecho de DNA com instrução para uma característica", "Uma célula inteira", "Um cromossomo", "Um tipo de vírus"],
+        correta: 0,
+        fato: "📖 Se o DNA é o livro, o gene é um capítulo. Muitos genes contêm a receita de uma proteína, e é a proteína que faz o trabalho na célula."
+      },
+      {
+        pergunta: "Por que gêmeos idênticos não são exatamente iguais?",
+        opcoes: ["Ambiente e experiências também influenciam", "O DNA deles é diferente desde o início", "Um deles perde genes", "Eles têm cromossomos a mais"],
+        correta: 0,
+        fato: "👯 Mesmo com DNA praticamente igual, alimentação, doenças e experiências mudam quais genes ficam ativos. É o campo da epigenética."
+      },
+      {
+        pergunta: "O que é uma mutação genética?",
+        opcoes: ["Uma alteração na sequência do DNA", "Uma doença sempre grave", "Um poder especial", "A perda de um cromossomo apenas"],
+        correta: 0,
+        fato: "🔄 Mutação não é sinônimo de doença: a maioria é neutra, algumas são prejudiciais e algumas são vantajosas. É essa variação que a evolução usa como matéria-prima."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_ia",
+    tipo: "quiz",
+    titulo: "Inteligência Artificial",
+    descricao: "Como as máquinas aprendem — e onde elas erram.",
+    emoji: "🤖",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Você usa IA todo dia, às vezes sem perceber. 🤖 Entender como ela funciona é a diferença entre usar a ferramenta e ser usado por ela. Vamos abrir a caixa?",
+    perguntas: [
+      {
+        pergunta: "Como um modelo de aprendizado de máquina 'aprende'?",
+        opcoes: ["Ajustando parâmetros a partir de muitos exemplos", "Sendo programado regra por regra", "Copiando a internet inteira literalmente", "Perguntando a especialistas"],
+        correta: 0,
+        fato: "📈 Em vez de alguém escrever a regra, o modelo ajusta milhões de números até acertar os exemplos de treino. Ninguém consegue apontar onde uma ideia específica ficou guardada."
+      },
+      {
+        pergunta: "O que é viés (bias) em um sistema de IA?",
+        opcoes: ["Uma distorção herdada dos dados de treino", "Um erro de digitação", "Uma falha de hardware", "Um vírus"],
+        correta: 0,
+        fato: "⚖️ Se os dados de treino refletem uma desigualdade do mundo, o modelo reproduz e às vezes amplifica essa desigualdade — sem que ninguém tenha programado isso."
+      },
+      {
+        pergunta: "Por que uma IA de linguagem pode afirmar algo falso com confiança?",
+        opcoes: ["Ela prevê texto plausível, não consulta a verdade", "Ela mente de propósito", "Ela sempre erra números", "Ela está sem internet"],
+        correta: 0,
+        fato: "🎭 Esses modelos otimizam plausibilidade, não veracidade. Uma resposta errada pode soar tão bem escrita quanto uma certa — por isso conferir a fonte continua sendo com você."
+      },
+      {
+        pergunta: "O que é dado de treino?",
+        opcoes: ["O material a partir do qual o modelo aprende", "O resultado que ele produz", "A velocidade do computador", "O código-fonte"],
+        correta: 0,
+        fato: "🗂️ A qualidade do dado limita o teto do modelo. É a origem do ditado da computação: 'entra lixo, sai lixo'."
+      },
+      {
+        pergunta: "Qual destas é uma preocupação ética real com IA?",
+        opcoes: ["Uso de imagem e voz de pessoas sem autorização", "As máquinas ficarem tristes", "O computador esquentar", "A internet ficar lenta"],
+        correta: 0,
+        fato: "🛡️ Deepfake de voz e rosto já é usado em golpes. Combinar ceticismo com verificação por outro canal é a defesa mais prática que existe hoje."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_seguranca",
+    tipo: "quiz",
+    titulo: "Segurança Digital",
+    descricao: "Como golpes funcionam — e como não cair neles.",
+    emoji: "🔐",
+    habilidade: "Cidadania Digital",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "A maior parte dos ataques não quebra a tecnologia: convence uma pessoa. 🔐 Quem conhece o truque para de cair nele. Vamos estudar os golpes por dentro?",
+    perguntas: [
+      {
+        pergunta: "O que é phishing?",
+        opcoes: ["Enganar alguém para entregar dados ou senha", "Um vírus que apaga arquivos", "Uma falha do roteador", "Um tipo de criptografia"],
+        correta: 0,
+        fato: "🎣 O nome vem de 'fishing', pescar: manda-se isca para muita gente esperando que alguém morda. A mensagem imita um banco, uma loja ou um chefe."
+      },
+      {
+        pergunta: "Qual é o sinal mais comum de uma mensagem de golpe?",
+        opcoes: ["Urgência e ameaça de perder algo agora", "Erro de português apenas", "Ser enviada de manhã", "Ter imagens coloridas"],
+        correta: 0,
+        fato: "⏰ A pressa é a ferramenta principal: quem está com medo de perder a conta não para para conferir. Desconfiar de urgência é a defesa mais barata."
+      },
+      {
+        pergunta: "Por que não se deve repetir a mesma senha em vários sites?",
+        opcoes: ["Um vazamento derruba todas as contas de uma vez", "A senha fica mais lenta", "Os sites cobram por isso", "Ela expira mais rápido"],
+        correta: 0,
+        fato: "🔑 Atacantes testam automaticamente e-mail e senha vazados de um site em dezenas de outros. Chama-se credential stuffing e funciona justamente pela repetição."
+      },
+      {
+        pergunta: "O que a verificação em duas etapas acrescenta?",
+        opcoes: ["Um segundo fator além da senha", "Uma senha mais longa", "Um antivírus", "Uma conta reserva"],
+        correta: 0,
+        fato: "📱 Mesmo que a senha vaze, falta o segundo fator. Aplicativo autenticador é mais seguro que SMS, porque o número de telefone pode ser clonado."
+      },
+      {
+        pergunta: "Um site com cadeado e HTTPS é necessariamente confiável?",
+        opcoes: ["Não — só garante que a conexão é criptografada", "Sim, é sempre seguro", "Sim, foi verificado pelo governo", "Não, o cadeado indica golpe"],
+        correta: 0,
+        fato: "🔒 O cadeado diz que ninguém no meio do caminho lê o que você envia. Ele não diz nada sobre quem está do outro lado — site de golpe também tem cadeado."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_economia",
+    tipo: "quiz",
+    titulo: "Economia e Finanças",
+    descricao: "Juros, inflação e por que o dinheiro muda de valor.",
+    emoji: "📈",
+    habilidade: "Educação Financeira",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Cem reais hoje e cem reais daqui a dez anos não são a mesma coisa. 📈 Entender por quê é o que separa quem decide de quem só reage. Vamos aos conceitos?",
+    perguntas: [
+      {
+        pergunta: "O que é inflação?",
+        opcoes: ["A alta geral e contínua dos preços", "O aumento do seu salário", "A queda dos juros", "A falta de dinheiro no banco"],
+        correta: 0,
+        fato: "📉 Com inflação, a mesma nota compra menos. É por isso que comparar preços de épocas diferentes sem corrigir pela inflação leva a conclusões erradas."
+      },
+      {
+        pergunta: "Qual é a diferença entre juros simples e compostos?",
+        opcoes: ["No composto, o juro também rende juro", "No simples o valor é maior", "São a mesma coisa", "O composto só existe em dívidas"],
+        correta: 0,
+        fato: "🌱 No composto o montante cresce sobre o montante já acrescido. Isso trabalha a seu favor quando você investe — e contra você quando você deve."
+      },
+      {
+        pergunta: "O que significa diversificar investimentos?",
+        opcoes: ["Não concentrar tudo em um único lugar", "Investir sempre no mais rentável", "Guardar em casa", "Comprar e vender todo dia"],
+        correta: 0,
+        fato: "🧺 A ideia é simples: se tudo estiver em um só lugar, um único problema leva tudo junto. Diversificar reduz o estrago de um erro isolado."
+      },
+      {
+        pergunta: "O que é o PIB de um país?",
+        opcoes: ["O valor de tudo que ele produz num período", "O dinheiro guardado no banco central", "A dívida do país", "A soma dos salários apenas"],
+        correta: 0,
+        fato: "🏭 PIB mede produção, não bem-estar. Um país pode ter PIB alto e desigualdade grande — por isso ele nunca é lido sozinho."
+      },
+      {
+        pergunta: "Se uma promessa de investimento garante lucro alto e sem risco, o que isso indica?",
+        opcoes: ["Forte sinal de golpe", "Uma boa oportunidade rara", "Um investimento do governo", "Que é isento de imposto"],
+        correta: 0,
+        fato: "🚩 Retorno alto sempre vem acompanhado de risco. 'Garantido e altíssimo' é a assinatura clássica de pirâmide financeira."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_quimica",
+    tipo: "quiz",
+    titulo: "Química do Cotidiano",
+    descricao: "As reações que acontecem na sua cozinha e no seu corpo.",
+    emoji: "⚗️",
+    habilidade: "Pensamento Científico",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Cozinhar é química aplicada, e enferrujar também. ⚗️ Você convive com reações o tempo todo. Vamos nomear o que já está acontecendo à sua volta?",
+    perguntas: [
+      {
+        pergunta: "O que é um átomo?",
+        opcoes: ["A menor unidade que mantém as propriedades de um elemento", "A menor partícula que existe", "Uma molécula pequena", "Um tipo de célula"],
+        correta: 0,
+        fato: "⚛️ O átomo não é indivisível como o nome sugere: tem prótons, nêutrons e elétrons. Mas dividi-lo muda o elemento — deixa de ser aquele material."
+      },
+      {
+        pergunta: "O que a fórmula H₂O indica?",
+        opcoes: ["Dois hidrogênios ligados a um oxigênio", "Dois oxigênios e um hidrogênio", "Água com gás", "Hidrogênio puro"],
+        correta: 0,
+        fato: "💧 A molécula de água é angular, não reta, e isso a torna polar. Essa polaridade é a razão de a água dissolver tanta coisa."
+      },
+      {
+        pergunta: "Por que o ferro enferruja?",
+        opcoes: ["Ele reage com oxigênio e umidade", "Ele esquenta demais", "Ele perde peso", "Ele absorve luz"],
+        correta: 0,
+        fato: "🔩 Ferrugem é óxido de ferro. Como ela se solta em vez de formar camada protetora, o ferro continua sendo corroído por baixo — o alumínio faz o contrário."
+      },
+      {
+        pergunta: "O que acontece ao misturar bicarbonato de sódio com vinagre?",
+        opcoes: ["Reagem liberando gás carbônico e esfriam um pouco", "Explodem com calor forte", "Nada acontece", "Formam um sólido duro"],
+        correta: 0,
+        fato: "🧪 A espuma é gás carbônico. E, ao contrário do que a efervescência sugere, a reação é endotérmica: ela ABSORVE calor e a mistura esfria."
+      },
+      {
+        pergunta: "O que a escala de pH mede?",
+        opcoes: ["Quão ácida ou básica é uma solução", "A temperatura", "A densidade", "A quantidade de sal"],
+        correta: 0,
+        fato: "🌡️ A escala vai de 0 a 14 e é logarítmica: pH 4 é dez vezes mais ácido que pH 5, não um pouquinho. O sangue humano fica perto de 7,4."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_estatistica",
+    tipo: "quiz",
+    titulo: "Estatística e Probabilidade",
+    descricao: "Como números enganam quem não sabe lê-los.",
+    emoji: "🎲",
+    habilidade: "Raciocínio Quantitativo",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Todo dia alguém te mostra um número para te convencer de alguma coisa. 🎲 Saber estatística é saber perguntar 'de onde veio esse número?'. Vamos treinar?",
+    perguntas: [
+      {
+        pergunta: "Se você jogar uma moeda honesta e sair cara 5 vezes seguidas, qual a chance da próxima ser cara?",
+        opcoes: ["50%", "Menos de 50%", "Mais de 50%", "Quase 0%"],
+        correta: 0,
+        fato: "🪙 A moeda não tem memória. Achar que 'já deu muita cara, agora vem coroa' é a falácia do apostador — um dos erros de raciocínio mais comuns que existem."
+      },
+      {
+        pergunta: "Qual é a diferença entre média e mediana?",
+        opcoes: ["A mediana é o valor do meio e resiste a valores extremos", "São sempre iguais", "A média é sempre maior", "A mediana só serve para números pares"],
+        correta: 0,
+        fato: "📊 Numa sala com nove pessoas de renda comum e um bilionário, a média fica absurda e a mediana continua representando a sala. Por isso renda se costuma reportar pela mediana."
+      },
+      {
+        pergunta: "Correlação entre duas coisas prova que uma causa a outra?",
+        opcoes: ["Não — pode haver coincidência ou uma terceira causa", "Sim, sempre", "Sim, se for forte", "Só quando são números grandes"],
+        correta: 0,
+        fato: "🔗 Venda de sorvete e afogamento sobem juntos, e nenhum causa o outro: o calor causa os dois. Procurar a terceira variável é reflexo básico."
+      },
+      {
+        pergunta: "O que é uma amostra representativa?",
+        opcoes: ["Um subconjunto que reflete bem o grupo todo", "A maior amostra possível", "Os primeiros que responderem", "Quem se voluntaria"],
+        correta: 0,
+        fato: "🎯 Tamanho não corrige viés: uma amostra enorme mal escolhida erra com confiança. Pesquisa feita só com quem se voluntaria costuma ser enviesada."
+      },
+      {
+        pergunta: "Um gráfico cujo eixo Y não começa no zero pode causar o quê?",
+        opcoes: ["Exagerar visualmente uma diferença pequena", "Deixar o gráfico mais preciso", "Corrigir a escala", "Nada, é indiferente"],
+        correta: 0,
+        fato: "📉 Cortar o eixo transforma uma variação de 2% numa montanha. É legítimo em alguns casos, mas quem lê precisa reparar no eixo antes de se impressionar."
+      }
+    ]
+  },
+  {
+    id: "inv_quiz_evolucao",
+    tipo: "quiz",
+    titulo: "Evolução e Seleção Natural",
+    descricao: "Como a vida mudou ao longo de bilhões de anos.",
+    emoji: "🧭",
+    habilidade: "Pensamento Científico",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Nenhum ser vivo decide evoluir. 🧭 A evolução não tem plano nem destino — e entender isso derruba quase todos os mal-entendidos sobre o assunto. Vamos com calma?",
+    perguntas: [
+      {
+        pergunta: "O que é seleção natural?",
+        opcoes: ["Indivíduos mais adaptados ao ambiente deixam mais descendentes", "Os animais escolhem mudar", "Os mais fortes sempre vencem", "A natureza planeja as espécies"],
+        correta: 0,
+        fato: "🌿 'Mais apto' quer dizer mais adequado àquele ambiente, não mais forte. Em ambiente escasso, o pequeno que come menos pode ser o mais apto."
+      },
+      {
+        pergunta: "De onde vem a variação sobre a qual a seleção natural age?",
+        opcoes: ["De mutações e da recombinação genética", "Do esforço dos indivíduos", "Do clima diretamente", "Da vontade da espécie"],
+        correta: 0,
+        fato: "🎲 A variação surge ao acaso, ANTES de ser útil. O ambiente não encomenda a característica: ele apenas favorece quem já a tinha."
+      },
+      {
+        pergunta: "Quem propôs a teoria da evolução por seleção natural?",
+        opcoes: ["Charles Darwin e Alfred Russel Wallace", "Gregor Mendel", "Louis Pasteur", "Isaac Newton"],
+        correta: 0,
+        fato: "📜 Wallace chegou à mesma ideia de forma independente, e os dois apresentaram o trabalho juntos em 1858. Darwin publicou 'A Origem das Espécies' no ano seguinte."
+      },
+      {
+        pergunta: "O ser humano descende do macaco atual?",
+        opcoes: ["Não — humanos e macacos atuais têm um ancestral comum", "Sim, do chimpanzé", "Sim, do gorila", "Não, não há parentesco"],
+        correta: 0,
+        fato: "🐒 Somos primos, não descendentes. O ancestral comum com o chimpanzé viveu há milhões de anos e não era nem humano nem chimpanzé."
+      },
+      {
+        pergunta: "Por que bactérias se tornam resistentes a antibióticos?",
+        opcoes: ["As resistentes sobrevivem e se multiplicam", "Elas aprendem com o remédio", "O remédio as deixa mais fortes", "Elas trocam de espécie"],
+        correta: 0,
+        fato: "💊 É seleção natural acontecendo em dias. Interromper o tratamento antes da hora deixa vivas justamente as mais resistentes — por isso se completa a caixa."
+      }
+    ]
+  }
+]

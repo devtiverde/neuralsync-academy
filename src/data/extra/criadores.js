@@ -6648,3 +6648,364 @@ export const numerosExtraPorFaixa = [
 
 // ── Sílabas ──
 export const silabasExtraPorFaixa = []
+
+// ──────────────────────────────────────────────────────────────────────
+// QUIZ — EXPANSÃO (08/08/2026)
+// Fecha a faixa em 15 quizzes. Temas novos, sem repetir os 7 que já existiam
+// (história do Brasil, ciências avançadas, geografia, matemática, mente, arte,
+// ecologia).
+// ──────────────────────────────────────────────────────────────────────
+export const quizExtraPorFaixa = [
+  {
+    id: "cri_quiz_corpo",
+    tipo: "quiz",
+    titulo: "Sistemas do Corpo Humano",
+    descricao: "Como os órgãos trabalham juntos dentro de você!",
+    emoji: "🫀",
+    habilidade: "Pensamento Científico",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Seu corpo é uma cidade com milhões de habitantes trabalhando 24 horas por dia. 🫀 Cada sistema tem uma função, e nenhum funciona sozinho. Vamos conhecer a equipe?",
+    perguntas: [
+      {
+        pergunta: "Qual é a função principal do sistema circulatório?",
+        opcoes: ["Levar oxigênio e nutrientes às células", "Digerir os alimentos", "Produzir pensamentos", "Sustentar o corpo"],
+        correta: 0,
+        fato: "🩸 O coração bate cerca de 100 mil vezes por dia. O sangue leva oxigênio na ida e recolhe gás carbônico na volta — é um sistema de entrega e coleta ao mesmo tempo."
+      },
+      {
+        pergunta: "Onde acontece a maior parte da absorção dos nutrientes?",
+        opcoes: ["No intestino delgado", "No estômago", "Na boca", "No fígado"],
+        correta: 0,
+        fato: "🌀 O intestino delgado tem uns 6 metros e é forrado por dobras minúsculas. Se fosse esticado e aberto, a área de absorção seria enorme — muito maior que a de um prato."
+      },
+      {
+        pergunta: "O que o sistema respiratório troca nos pulmões?",
+        opcoes: ["Oxigênio por gás carbônico", "Água por sal", "Sangue por ar", "Açúcar por gordura"],
+        correta: 0,
+        fato: "🫁 A troca acontece nos alvéolos, bolsinhas de parede finíssima. O oxigênio passa para o sangue e o gás carbônico faz o caminho contrário para ser expirado."
+      },
+      {
+        pergunta: "Qual sistema controla e coordena todos os outros?",
+        opcoes: ["O sistema nervoso", "O sistema ósseo", "O sistema urinário", "O sistema muscular"],
+        correta: 0,
+        fato: "🧠 O cérebro é só 2% do peso do corpo, mas consome perto de 20% da energia. Pensar cansa de verdade — não é impressão."
+      },
+      {
+        pergunta: "Para que servem os ossos, além de sustentar o corpo?",
+        opcoes: ["Proteger órgãos e produzir células do sangue", "Armazenar água", "Filtrar o ar", "Produzir hormônios do humor"],
+        correta: 0,
+        fato: "🦴 Dentro de alguns ossos existe a medula óssea, que fabrica as células do sangue. O crânio e as costelas ainda funcionam como armadura."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_astronomia",
+    tipo: "quiz",
+    titulo: "Astronomia",
+    descricao: "Estrelas, galáxias e as distâncias absurdas do universo!",
+    emoji: "🔭",
+    habilidade: "Pensamento Científico",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Você apontou o telescópio para o céu e percebeu uma coisa estranha: está olhando para o passado. 🔭 A luz demora para chegar. Vamos entender o que isso significa?",
+    perguntas: [
+      {
+        pergunta: "O que é um ano-luz?",
+        opcoes: ["Uma distância", "Um tempo", "Uma velocidade", "Um tipo de estrela"],
+        correta: 0,
+        fato: "📏 Ano-luz é a distância que a luz percorre em um ano — quase 9,5 trilhões de quilômetros. Apesar do nome, mede espaço, não tempo."
+      },
+      {
+        pergunta: "Em que galáxia fica o nosso Sistema Solar?",
+        opcoes: ["Via Láctea", "Andrômeda", "Nebulosa de Órion", "Grande Nuvem"],
+        correta: 0,
+        fato: "🌌 A Via Láctea tem centenas de bilhões de estrelas. Aquela faixa esbranquiçada que se vê no céu escuro é o disco dela visto de dentro."
+      },
+      {
+        pergunta: "Por que a Lua tem fases?",
+        opcoes: ["Vemos partes diferentes do lado iluminado dela", "A Terra faz sombra nela todo mês", "Ela muda de tamanho", "Ela se apaga aos poucos"],
+        correta: 0,
+        fato: "🌗 A metade da Lua voltada para o Sol está sempre iluminada. O que muda é o quanto dessa metade nós conseguimos ver daqui, conforme ela orbita."
+      },
+      {
+        pergunta: "O que é um buraco negro?",
+        opcoes: ["Uma região de gravidade tão forte que nem a luz escapa", "Um buraco vazio no espaço", "Uma estrela apagada e fria", "Uma passagem para outro universo comprovada"],
+        correta: 0,
+        fato: "🕳️ A gravidade ali é tão intensa que nada que entra volta, nem a luz — por isso é 'negro'. A primeira imagem de um buraco negro foi divulgada em 2019."
+      },
+      {
+        pergunta: "Quando você olha para uma estrela distante, está vendo o quê?",
+        opcoes: ["Como ela era no passado", "Como ela é agora", "Como ela será", "Um reflexo do Sol"],
+        correta: 0,
+        fato: "⏳ A luz de uma estrela a 500 anos-luz saiu de lá há 500 anos. Se ela tivesse explodido ontem, ninguém aqui saberia por mais cinco séculos."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_tecnologia",
+    tipo: "quiz",
+    titulo: "Como a Tecnologia Funciona",
+    descricao: "O que acontece por dentro dos aparelhos que você usa!",
+    emoji: "💻",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Você usa celular, internet e aplicativos todo dia — mas o que acontece lá dentro? 💻 Hoje você abre a caixa preta e descobre como a mágica funciona.",
+    perguntas: [
+      {
+        pergunta: "Em que sistema os computadores guardam a informação?",
+        opcoes: ["Binário, só com 0 e 1", "Decimal, de 0 a 9", "Em letras", "Em cores"],
+        correta: 0,
+        fato: "0️⃣1️⃣ Tudo — texto, foto, música — vira sequência de 0 e 1, porque no fundo o circuito só sabe responder 'passa corrente' ou 'não passa'."
+      },
+      {
+        pergunta: "O que é um algoritmo?",
+        opcoes: ["Uma sequência de passos para resolver algo", "Um tipo de computador", "Um vírus", "Uma linguagem de programação"],
+        correta: 0,
+        fato: "📋 Uma receita de bolo é um algoritmo: passos em ordem que levam a um resultado. Programar é escrever receitas que a máquina consegue seguir."
+      },
+      {
+        pergunta: "O que a memória RAM faz?",
+        opcoes: ["Guarda o que está em uso agora", "Guarda arquivos para sempre", "Mostra as imagens na tela", "Conecta com a internet"],
+        correta: 0,
+        fato: "⚡ A RAM é rápida mas esquece tudo ao desligar. O que fica salvo mora no disco (SSD ou HD), que é mais lento e tem memória permanente."
+      },
+      {
+        pergunta: "O que significa dizer que um arquivo está 'na nuvem'?",
+        opcoes: ["Está no computador de outra empresa, acessível pela internet", "Está flutuando sem lugar", "Está só no seu celular", "Está criptografado"],
+        correta: 0,
+        fato: "☁️ Nuvem é o computador de outra pessoa. Seus arquivos estão fisicamente em servidores dentro de grandes galpões, que consomem muita energia."
+      },
+      {
+        pergunta: "Para que serve uma senha forte?",
+        opcoes: ["Dificultar que alguém adivinhe ou quebre por tentativa", "Deixar o site mais rápido", "Economizar bateria", "Guardar mais arquivos"],
+        correta: 0,
+        fato: "🔐 Senha longa vale mais que senha complicada e curta. E repetir a mesma senha em vários sites é o maior risco: se um vaza, todos caem juntos."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_dinheiro",
+    tipo: "quiz",
+    titulo: "Dinheiro e Escolhas",
+    descricao: "Poupar, gastar e decidir — igual às suas NeuralCoins!",
+    emoji: "💰",
+    habilidade: "Educação Financeira",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Você já sabe poupar NeuralCoins para comprar aquele item caro da Loja. 💰 O dinheiro de verdade funciona igual — e algumas ideias simples mudam tudo.",
+    perguntas: [
+      {
+        pergunta: "Qual é a diferença entre querer e precisar?",
+        opcoes: ["Precisar é o essencial; querer é o desejo", "São a mesma coisa", "Querer é mais importante", "Precisar é só o que é caro"],
+        correta: 0,
+        fato: "🧭 Comida, moradia e remédio são necessidades. Um jogo novo é desejo — e não tem nada de errado em ter desejos, desde que as necessidades venham antes."
+      },
+      {
+        pergunta: "O que significa poupar?",
+        opcoes: ["Guardar uma parte agora para usar depois", "Nunca gastar nada", "Gastar tudo de uma vez", "Pedir emprestado"],
+        correta: 0,
+        fato: "🏦 Poupar é trocar um prazer pequeno agora por um maior depois. É exatamente o que você faz quando não compra 3 itens baratos para juntar e comprar o caro."
+      },
+      {
+        pergunta: "O que é um orçamento?",
+        opcoes: ["Um plano do quanto entra e do quanto sai", "Uma dívida", "Um tipo de banco", "Uma promoção"],
+        correta: 0,
+        fato: "📊 Orçamento é comparar entrada com saída. Enquanto a saída for menor que a entrada, sobra — e é da sobra que nasce qualquer plano maior."
+      },
+      {
+        pergunta: "Se você compra algo parcelado, o que costuma acontecer?",
+        opcoes: ["Você paga aos poucos, e às vezes mais no total", "Você paga menos no total sempre", "Você não paga nada", "O preço nunca muda"],
+        correta: 0,
+        fato: "💳 'Sem juros' existe, mas parcelar prende sua renda futura: o dinheiro do mês que vem já tem dono antes de você recebê-lo."
+      },
+      {
+        pergunta: "Por que comparar preços antes de comprar?",
+        opcoes: ["O mesmo produto pode custar bem diferente", "Para demorar mais", "Porque é obrigatório", "Para o vendedor gostar de você"],
+        correta: 0,
+        fato: "🔍 Comparar é o jeito mais simples de ganhar dinheiro sem trabalhar mais: o que você não gasta a mais continua sendo seu."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_musica",
+    tipo: "quiz",
+    titulo: "Música e Som",
+    descricao: "A física escondida atrás de uma melodia!",
+    emoji: "🎼",
+    habilidade: "Percepção e Arte",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Música é matemática que dá para ouvir. 🎼 Por trás de cada nota tem uma vibração, um número e uma regra. Vamos ver o que sustenta a canção?",
+    perguntas: [
+      {
+        pergunta: "O que é o som, fisicamente?",
+        opcoes: ["Vibração que se propaga por um meio", "Uma onda de luz", "Um tipo de calor", "Partículas de ar paradas"],
+        correta: 0,
+        fato: "🔊 O som precisa de matéria para viajar — ar, água, metal. É por isso que no espaço, onde há vácuo, não existe som nenhum."
+      },
+      {
+        pergunta: "O que faz uma nota ser mais aguda que outra?",
+        opcoes: ["Vibrar mais vezes por segundo", "Ser mais alta em volume", "Durar mais tempo", "Ter mais instrumentos"],
+        correta: 0,
+        fato: "🎵 Frequência mais alta, som mais agudo. A corda fina do violão vibra mais rápido que a grossa — por isso soa mais fina."
+      },
+      {
+        pergunta: "Quantas notas musicais tem a escala básica?",
+        opcoes: ["Sete", "Cinco", "Dez", "Doze"],
+        correta: 0,
+        fato: "🎹 Dó, ré, mi, fá, sol, lá, si. No piano, as sete teclas brancas — e as pretas são as notas intermediárias, que completam doze no total."
+      },
+      {
+        pergunta: "O que é o ritmo de uma música?",
+        opcoes: ["A organização dos sons no tempo", "A altura das notas", "O volume", "O instrumento usado"],
+        correta: 0,
+        fato: "🥁 Ritmo é padrão no tempo. Dá para reconhecer uma música só pelo ritmo, batendo na mesa, sem nenhuma nota — o cérebro completa o resto."
+      },
+      {
+        pergunta: "Por que um violão e um piano tocando a mesma nota soam diferentes?",
+        opcoes: ["Cada instrumento produz vibrações extras próprias", "Um está mais alto", "Um toca mais rápido", "A nota não é a mesma"],
+        correta: 0,
+        fato: "🎸 Isso se chama timbre. Junto da nota principal vêm vibrações menores, diferentes em cada instrumento — é a 'impressão digital' do som."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_esportes",
+    tipo: "quiz",
+    titulo: "Esporte e Movimento",
+    descricao: "O que acontece no corpo quando você se movimenta!",
+    emoji: "🏅",
+    habilidade: "Corpo e Saúde",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Todo atleta é um cientista do próprio corpo. 🏅 Ele sabe quando descansar, o que comer e por que aquecer. Vamos entender essas regras?",
+    perguntas: [
+      {
+        pergunta: "Por que é importante aquecer antes de praticar esporte?",
+        opcoes: ["Prepara músculos e articulações e reduz risco de lesão", "Deixa o jogo mais longo", "Faz emagrecer mais", "Aumenta a altura"],
+        correta: 0,
+        fato: "🏃 O aquecimento aumenta o fluxo de sangue no músculo e deixa o tecido mais elástico. Músculo frio estica menos e rompe mais fácil."
+      },
+      {
+        pergunta: "O que acontece com a respiração durante o exercício?",
+        opcoes: ["Fica mais rápida, para levar mais oxigênio", "Fica mais lenta", "Para completamente", "Não muda"],
+        correta: 0,
+        fato: "🫁 O músculo em atividade consome mais oxigênio e produz mais gás carbônico. Respirar mais rápido é o corpo acelerando a troca."
+      },
+      {
+        pergunta: "Por que se deve beber água durante a atividade física?",
+        opcoes: ["Para repor o que se perde no suor", "Para encher o estômago", "Para esfriar a garganta só", "Não é necessário"],
+        correta: 0,
+        fato: "💧 O suor é o sistema de refrigeração do corpo: ele evapora e leva calor embora. Sem repor a água, o corpo perde a capacidade de se resfriar."
+      },
+      {
+        pergunta: "O descanso entre os treinos serve para quê?",
+        opcoes: ["O músculo se recuperar e ficar mais forte", "Perder o que ganhou", "Nada, é perda de tempo", "Só para o atleta se distrair"],
+        correta: 0,
+        fato: "😴 O músculo não cresce durante o treino: ele cresce no descanso, reconstruindo o que foi desgastado. Treinar sem descansar atrapalha o resultado."
+      },
+      {
+        pergunta: "Qual destes é um esporte coletivo?",
+        opcoes: ["Vôlei", "Natação individual", "Salto em altura", "Xadrez"],
+        correta: 0,
+        fato: "🏐 Esporte coletivo treina algo que o individual não treina: coordenar a própria ação com a de outras pessoas em tempo real."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_literatura",
+    tipo: "quiz",
+    titulo: "Livros e Histórias",
+    descricao: "Como uma boa história é construída por dentro!",
+    emoji: "📖",
+    habilidade: "Linguagem",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Toda história que já te prendeu tem uma engrenagem escondida. 📖 Quem enxerga a engrenagem lê melhor — e escreve melhor também. Vamos abrir o motor?",
+    perguntas: [
+      {
+        pergunta: "Quem é o protagonista de uma história?",
+        opcoes: ["O personagem principal", "Quem escreve o livro", "O vilão", "Quem narra sempre"],
+        correta: 0,
+        fato: "🎭 A palavra vem do grego: 'proto' (primeiro) + 'agonistes' (aquele que luta). O protagonista é quem enfrenta o conflito central."
+      },
+      {
+        pergunta: "O que é o enredo?",
+        opcoes: ["A sequência de acontecimentos", "O lugar onde se passa", "A opinião do autor", "O nome dos personagens"],
+        correta: 0,
+        fato: "🧵 Enredo é o encadeamento: uma coisa causa a outra. História em que os fatos apenas se sucedem, sem causar nada, costuma parecer sem graça."
+      },
+      {
+        pergunta: "O que caracteriza a poesia em relação à prosa?",
+        opcoes: ["O uso de versos, ritmo e imagens", "Ser sempre triste", "Ter que rimar sempre", "Ser sempre curta"],
+        correta: 0,
+        fato: "✒️ Nem toda poesia rima — o verso livre é poesia sem rima nem métrica fixa. O que define é o trabalho com ritmo, som e imagem."
+      },
+      {
+        pergunta: "O que é uma metáfora?",
+        opcoes: ["Uma comparação sem usar 'como'", "Um exagero", "Uma repetição", "Um som imitado"],
+        correta: 0,
+        fato: "🌊 'Seus olhos são dois oceanos' é metáfora. Se fosse 'olhos como oceanos', com o 'como' explícito, seria comparação."
+      },
+      {
+        pergunta: "Quem foi Monteiro Lobato na literatura brasileira?",
+        opcoes: ["Criador do Sítio do Picapau Amarelo", "Autor de Dom Casmurro", "Poeta modernista", "Escritor de Vidas Secas"],
+        correta: 0,
+        fato: "📚 Monteiro Lobato criou Emília, Narizinho e Pedrinho, e é considerado um dos fundadores da literatura infantil brasileira."
+      }
+    ]
+  },
+  {
+    id: "cri_quiz_clima",
+    tipo: "quiz",
+    titulo: "Clima e Tempo",
+    descricao: "Por que chove aqui e faz seca ali?",
+    emoji: "🌦️",
+    habilidade: "Pensamento Científico",
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 12,
+    historinha: "Você virou meteorologista por um dia. 🌦️ Precisa prever o tempo de amanhã e explicar o clima da sua região. As duas coisas não são a mesma. Vamos separar?",
+    perguntas: [
+      {
+        pergunta: "Qual é a diferença entre tempo e clima?",
+        opcoes: ["Tempo é o de agora; clima é o padrão de muitos anos", "São sinônimos", "Clima é o de hoje", "Tempo dura um mês"],
+        correta: 0,
+        fato: "📅 Tempo é o que você vê pela janela hoje. Clima é a média de décadas — por isso um dia frio não desmente o aquecimento do planeta."
+      },
+      {
+        pergunta: "O que causa as estações do ano?",
+        opcoes: ["A inclinação do eixo da Terra", "A distância variável até o Sol", "A velocidade da Terra", "As nuvens"],
+        correta: 0,
+        fato: "🌍 A Terra é inclinada uns 23,5°. Quando um hemisfério aponta mais para o Sol, ele recebe luz mais direta e vive o verão — enquanto o outro está no inverno."
+      },
+      {
+        pergunta: "Quando os dois hemisférios têm estações opostas, isso significa o quê?",
+        opcoes: ["No Natal, é verão no Brasil e inverno na Europa", "As duas metades têm verão junto", "O Brasil não tem estações", "Só o norte tem inverno"],
+        correta: 0,
+        fato: "🎄 É por isso que o imaginário de Natal com neve não bate com a realidade brasileira: em dezembro, aqui é verão."
+      },
+      {
+        pergunta: "O que é o efeito estufa?",
+        opcoes: ["Gases que retêm calor na atmosfera", "Buraco na camada de ozônio", "Chuva ácida", "Vento quente do deserto"],
+        correta: 0,
+        fato: "🌡️ O efeito estufa natural é essencial: sem ele a Terra seria congelada. O problema é o excesso de gases, que retém calor demais."
+      },
+      {
+        pergunta: "Por que faz mais frio no alto de uma montanha?",
+        opcoes: ["O ar é mais rarefeito e retém menos calor", "Fica mais longe do Sol", "Tem mais vento sempre", "A neve esfria o ar"],
+        correta: 0,
+        fato: "⛰️ Estar 3 km mais perto do Sol não muda nada (ele está a 150 milhões de km). O que muda é o ar: mais fino lá em cima, ele segura menos calor."
+      }
+    ]
+  }
+]

@@ -4,7 +4,7 @@
 -- Gerado por scripts/gerar-economia-seed.mjs a partir de:
 --   src/data/atividadesData.js · src/data/atividadesExtra.js · src/data/lojaCatalogo.js
 --
--- Atividades: 393   ·   Itens da Loja: 79
+-- Atividades: 423   ·   Itens da Loja: 79
 --
 -- Ao acrescentar atividade ou mexer em preço: rodar `npm run gerar-economia` e aplicar
 -- este arquivo de novo. Sem isso o servidor não conhece a atividade nova e a criança
@@ -92,14 +92,21 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('con_padrao_matematica', 'padrao', 80, 80),
   ('con_padrao_natureza', 'padrao', 85, 85),
   ('con_padrao_tabuada', 'padrao', 80, 80),
+  ('con_quiz_agua', 'quiz', 80, 80),
   ('con_quiz_biomas', 'quiz', 80, 80),
   ('con_quiz_brasil', 'quiz', 80, 80),
   ('con_quiz_ciencias', 'quiz', 80, 80),
   ('con_quiz_ciencias2', 'quiz', 80, 80),
   ('con_quiz_corpo', 'quiz', 80, 80),
+  ('con_quiz_dinossauros', 'quiz', 80, 80),
+  ('con_quiz_energia', 'quiz', 80, 80),
+  ('con_quiz_espaco', 'quiz', 80, 80),
   ('con_quiz_inventores', 'quiz', 80, 80),
   ('con_quiz_matematica', 'quiz', 80, 80),
   ('con_quiz_matematica2', 'quiz', 80, 80),
+  ('con_quiz_oceanos', 'quiz', 80, 80),
+  ('con_quiz_portugues', 'quiz', 80, 80),
+  ('con_quiz_reciclagem', 'quiz', 80, 80),
   ('con_quizia', 'quizia', 80, 80),
   ('con_quizia_2', 'quizia', 90, 90),
   ('con_quizia_3', 'quizia', 90, 90),
@@ -194,12 +201,20 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('cri_padrao_progressoes', 'padrao', 100, 100),
   ('cri_padrao_tecnologia', 'padrao', 105, 105),
   ('cri_quiz_arte', 'quiz', 100, 100),
+  ('cri_quiz_astronomia', 'quiz', 100, 100),
   ('cri_quiz_ciencias2', 'quiz', 100, 100),
+  ('cri_quiz_clima', 'quiz', 100, 100),
+  ('cri_quiz_corpo', 'quiz', 100, 100),
+  ('cri_quiz_dinheiro', 'quiz', 100, 100),
   ('cri_quiz_ecologia', 'quiz', 110, 110),
+  ('cri_quiz_esportes', 'quiz', 100, 100),
   ('cri_quiz_geografia', 'quiz', 100, 100),
   ('cri_quiz_historia', 'quiz', 100, 100),
+  ('cri_quiz_literatura', 'quiz', 100, 100),
   ('cri_quiz_matematica', 'quiz', 100, 100),
   ('cri_quiz_mente', 'quiz', 100, 100),
+  ('cri_quiz_musica', 'quiz', 100, 100),
+  ('cri_quiz_tecnologia', 'quiz', 100, 100),
   ('cri_quizia', 'quizia', 100, 100),
   ('cri_quizia_2', 'quizia', 105, 105),
   ('cri_quizia_3', 'quizia', 105, 105),
@@ -289,11 +304,19 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('exp_padrao_numeros', 'padrao', 60, 60),
   ('exp_quiz_animais', 'quiz', 50, 50),
   ('exp_quiz_animais2', 'quiz', 60, 60),
+  ('exp_quiz_bichinhos', 'quiz', 60, 60),
+  ('exp_quiz_casa', 'quiz', 60, 60),
+  ('exp_quiz_comida', 'quiz', 60, 60),
   ('exp_quiz_corpo', 'quiz', 60, 60),
   ('exp_quiz_espaco', 'quiz', 60, 60),
   ('exp_quiz_formas', 'quiz', 50, 50),
   ('exp_quiz_frutas', 'quiz', 60, 60),
+  ('exp_quiz_higiene', 'quiz', 60, 60),
+  ('exp_quiz_oceano', 'quiz', 60, 60),
   ('exp_quiz_profissoes', 'quiz', 55, 55),
+  ('exp_quiz_sons', 'quiz', 60, 60),
+  ('exp_quiz_tempo', 'quiz', 60, 60),
+  ('exp_quiz_transportes', 'quiz', 60, 60),
   ('exp_quizia', 'quizia', 70, 70),
   ('exp_quizia_2', 'quizia', 75, 75),
   ('exp_quizia_3', 'quizia', 75, 75),
@@ -386,12 +409,19 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('inv_padrao_matematica_avancada', 'padrao', 120, 120),
   ('inv_padrao_sistemas', 'padrao', 125, 125),
   ('inv_quiz_civilizacoes', 'quiz', 130, 130),
+  ('inv_quiz_economia', 'quiz', 130, 130),
   ('inv_quiz_epistemologia', 'quiz', 130, 130),
+  ('inv_quiz_estatistica', 'quiz', 130, 130),
+  ('inv_quiz_evolucao', 'quiz', 130, 130),
   ('inv_quiz_filosofia', 'quiz', 140, 140),
   ('inv_quiz_filosofia2', 'quiz', 120, 120),
   ('inv_quiz_fisica', 'quiz', 120, 120),
+  ('inv_quiz_genetica', 'quiz', 130, 130),
+  ('inv_quiz_ia', 'quiz', 130, 130),
   ('inv_quiz_logica', 'quiz', 130, 130),
   ('inv_quiz_programacao', 'quiz', 120, 120),
+  ('inv_quiz_quimica', 'quiz', 130, 130),
+  ('inv_quiz_seguranca', 'quiz', 130, 130),
   ('inv_quiz_tech', 'quiz', 120, 120),
   ('inv_quizia', 'quizia', 130, 130),
   ('inv_quizia_2', 'quizia', 120, 120),
@@ -494,5 +524,5 @@ ON CONFLICT (item_id) DO UPDATE
   SET preco = excluded.preco, nivel_min = excluded.nivel_min;
 
 -- Conferência rápida depois de aplicar:
---   select count(*) from public.ns_recompensas;  -- esperado: 393
+--   select count(*) from public.ns_recompensas;  -- esperado: 423
 --   select count(*) from public.ns_loja_precos;  -- esperado: 79

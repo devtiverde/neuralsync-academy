@@ -474,6 +474,41 @@ const map = {
   // ── SÍLABAS ────────────────────────────────────────
   exp_silabas:                 'formas_cores',
   con_silabas:                 'formas_cores',
+
+  // ── QUIZ — expansão de 08/08/2026 (30 novos, fecha 15 por faixa) ──────
+  exp_quiz_transportes:        'transporte',
+  exp_quiz_casa:               'tecnologia',
+  exp_quiz_tempo:              'planeta_terra',
+  exp_quiz_bichinhos:          'animais',
+  exp_quiz_comida:             'frutas',
+  exp_quiz_higiene:            'corpo_humano',
+  exp_quiz_oceano:             'golfinhos',
+  exp_quiz_sons:               'arte',
+
+  con_quiz_espaco:             'planeta_terra',
+  con_quiz_dinossauros:        'dinossauros',
+  con_quiz_agua:               'planeta_terra',
+  con_quiz_oceanos:            'golfinhos',
+  con_quiz_energia:            'fisica',
+  con_quiz_portugues:          'arte',
+  con_quiz_reciclagem:         'planeta_terra',
+
+  cri_quiz_corpo:              'corpo_humano',
+  cri_quiz_astronomia:         'planeta_terra',
+  cri_quiz_tecnologia:         'tecnologia',
+  cri_quiz_dinheiro:           'matematica',
+  cri_quiz_musica:             'arte',
+  cri_quiz_esportes:           'esportes',
+  cri_quiz_literatura:         'arte',
+  cri_quiz_clima:              'planeta_terra',
+
+  inv_quiz_genetica:           'corpo_humano',
+  inv_quiz_ia:                 'tecnologia',
+  inv_quiz_seguranca:          'tecnologia',
+  inv_quiz_economia:           'matematica',
+  inv_quiz_quimica:            'fisica',
+  inv_quiz_estatistica:        'matematica',
+  inv_quiz_evolucao:           'animais',
 }
 
 export function getKidsLink(atividadeId) {
