@@ -22,6 +22,8 @@ const PORTA = process.argv[2] || '5173'
 const BASE = PORTA.startsWith('http') ? PORTA : `http://localhost:${PORTA}`
 // Atraso da Edge Function de ativação. 0 = quente; 2500 = partida a frio real.
 const ATRASOS = process.argv[3] ? [Number(process.argv[3])] : [0, 800, 2500]
+// Marca do cenário em que a Edge Function não responde nunca (não é um atraso).
+const MUDO = 'mudo'
 
 const UID = '00000000-0000-4000-8000-0000000000aa'
 const EMAIL = 'teste-login@exemplo.com'
@@ -117,6 +119,11 @@ async function tentar(browser, atrasoAtivacao, comSessaoVelha = false) {
 
   await ctx.route('**/functions/v1/**', async route => {
     chamadas.push('function ' + new URL(route.request().url()).pathname)
+    // 🔑 'mudo' = a requisição SAI E NUNCA VOLTA. É o cenário que faltava: os atrasos
+    // de 0/800/2500ms sempre RESPONDIAM, então mediam lentidão, não ausência de
+    // resposta — e o bug real era uma promessa que nunca resolvia. Um teste que só
+    // modela resposta lenta dá 6/6 com o botão travado em produção.
+    if (atrasoAtivacao === MUDO) return
     if (atrasoAtivacao) await espera(atrasoAtivacao)
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ activated: false }) })
   })
@@ -148,12 +155,19 @@ async function tentar(browser, atrasoAtivacao, comSessaoVelha = false) {
   await page.click('button[type="submit"]')
 
   // Espera generosa: o que se quer saber é onde ele PARA, não quão rápido chega.
-  await page.waitForTimeout(3000 + atrasoAtivacao)
+  // No cenário mudo a espera é curta DE PROPÓSITO: o login tem que entrar sem
+  // depender da ativação: se só passasse depois dos 15s do teto do fetch, a pessoa
+  // já teria dado refresh — que é exatamente o sintoma relatado.
+  await page.waitForTimeout(3000 + (atrasoAtivacao === MUDO ? 0 : atrasoAtivacao))
   const destino = new URL(page.url()).pathname
   const texto = await page.locator('body').innerText().catch(() => '')
+  // O botão preso em "Carregando..." é o sintoma que o usuário relata. Ele fica na
+  // tela de login, então só existe quando o login NÃO saiu do lugar.
+  const botaoPreso = await page.locator('button[type="submit"]')
+    .innerText().then(t => t.includes('Carregando')).catch(() => false)
 
   await ctx.close()
-  return { destino, rotas, erros, chamadas, texto: texto.slice(0, 160).replace(/\s+/g, ' ') }
+  return { destino, rotas, erros, chamadas, botaoPreso, texto: texto.slice(0, 160).replace(/\s+/g, ' ') }
 }
 
 async function main() {
@@ -163,14 +177,19 @@ async function main() {
   const CENARIOS = []
   for (const atraso of ATRASOS) CENARIOS.push({ atraso, velha: false })
   for (const atraso of ATRASOS) CENARIOS.push({ atraso, velha: true })
+  // O cenário que reproduz o relato: a ativação nunca responde.
+  CENARIOS.push({ atraso: MUDO, velha: false })
+  CENARIOS.push({ atraso: MUDO, velha: true })
 
   for (const { atraso, velha } of CENARIOS) {
     const r = await tentar(browser, atraso, velha)
-    const ok = r.destino === '/dashboard' && r.erros.length === 0
+    const ok = r.destino === '/dashboard' && r.erros.length === 0 && !r.botaoPreso
     if (!ok) falhas++
-    console.log(`${ok ? '✅' : '❌'} ${velha ? 'COM sessão vencida' : 'navegador limpo'}, ativação ${atraso}ms → parou em ${r.destino}`)
+    const rotulo = atraso === MUDO ? 'ativação MUDA (nunca responde)' : `ativação ${atraso}ms`
+    console.log(`${ok ? '✅' : '❌'} ${velha ? 'COM sessão vencida' : 'navegador limpo'}, ${rotulo} → parou em ${r.destino}`)
     console.log(`   caminho: ${[...new Set(r.rotas)].join(' → ')}`)
     if (!ok) {
+      if (r.botaoPreso) console.log('   🔴 o botão continua em "Carregando..." — é o sintoma relatado')
       console.log(`   tela: "${r.texto}"`)
       if (r.erros.length) console.log(`   erro de JS: ${r.erros[0]}`)
       console.log(`   chamadas: ${r.chamadas.join(' | ')}`)
