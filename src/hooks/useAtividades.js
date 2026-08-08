@@ -71,6 +71,7 @@ export function useAtividades(faixaEtaria) {
         ...(musicaMod.musicaExtraPorFaixa[f]     || []),
         ...(extraMod.silabasExtraPorFaixa       || []),
         ...(extraMod.quizExtraPorFaixa          || []),
+        ...(extraMod.raciocinioExtraPorFaixa    || []),
       ]
 
       const { data } = await supabase

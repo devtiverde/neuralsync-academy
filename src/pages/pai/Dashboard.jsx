@@ -114,6 +114,7 @@ async function encontrarAtividade(tipo, faixa) {
       ...(extra.coresExtraPorFaixa || []),
       ...(extra.alfabetoExtraPorFaixa || []),
       ...(extra.quizExtraPorFaixa || []),
+      ...(extra.raciocinioExtraPorFaixa || []),
     ]
     const found = lista.find(a => a.tipo === tipo)
     if (found) return found

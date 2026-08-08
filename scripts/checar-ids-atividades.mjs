@@ -46,6 +46,7 @@ const FONTES = [
   ['musicaExtraPorFaixa',      musicaMod.musicaExtraPorFaixa],
   ['silabasExtraPorFaixa',     extraMod.silabasExtraPorFaixa],
   ['quizExtraPorFaixa',        extraMod.quizExtraPorFaixa],
+  ['raciocinioExtraPorFaixa',  extraMod.raciocinioExtraPorFaixa],
 ]
 
 const colisoes = []

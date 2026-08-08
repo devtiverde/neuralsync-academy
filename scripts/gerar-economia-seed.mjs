@@ -28,6 +28,17 @@ const dados = await carregar('src/data/atividadesData.js')
 const extra = await carregar('src/data/atividadesExtra.js')
 const loja  = await carregar('src/data/lojaCatalogo.js')
 
+// 🔴 `atividadesExtra.js` é um barril — e ele NÃO cobre tudo. `colorirExtra2` e
+// `musicaExtra` são módulos próprios, importados direto pelo `useAtividades`, e por
+// isso ficaram de fora daqui desde que foram criados: 28 atividades (16 colorir +
+// 12 musica) que a criança JOGA e pelas quais não recebe nada. `ns_creditar_atividade`
+// falha FECHADA para atividade fora do seed, então o sintoma é a tela comemorar e o
+// XP não subir — sem erro em lugar nenhum.
+// Descoberto em 08/08/2026 comparando este total (500) com o do `npm run checar-ids`
+// (528). 🔑 Dois contadores que deveriam bater e não batem é o que denuncia.
+const colorir2 = await carregar('src/data/colorirExtra2.js')
+const musica   = await carregar('src/data/musicaExtra.js')
+
 // Todo grupo exportado que seja `{ faixa: [atividades] }`. Pegar por varredura, e não
 // por lista fixa, é de propósito: o projeto já tem 12 grupos (`fase2`, `fase3Extra`,
 // `inglesExtra`…) e uma lista fixa silenciosamente esqueceria o próximo.
@@ -42,7 +53,7 @@ function coletar(modulo) {
   return fora
 }
 
-const atividades = [...coletar(dados), ...coletar(extra)]
+const atividades = [...coletar(dados), ...coletar(extra), ...coletar(colorir2), ...coletar(musica)]
 
 const porId = new Map()
 const divergentes = []

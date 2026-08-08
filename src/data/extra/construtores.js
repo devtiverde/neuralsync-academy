@@ -7408,3 +7408,606 @@ export const quizExtraPorFaixa = [
     ]
   }
 ]
+
+// ── Raciocínio — sequências e padrões (expansão 08/08/2026) ──
+// Aqui o padrão deixa de ser visual e vira ARITMÉTICA: tabuada, pares e ímpares,
+// quadrados, triangulares. A `dica` de cada matriz diz a REGRA, não a resposta —
+// a criança ainda precisa aplicá-la.
+export const raciocinioExtraPorFaixa = [
+  {
+    id: "con_seq_impares",
+    tipo: "sequencia",
+    titulo: "Números Ímpares",
+    descricao: "Os números que não formam pares!",
+    emoji: "1️⃣",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "Na fila da cantina, os números ímpares são os que sempre sobram sem par! 1️⃣ Eles pulam de dois em dois: 1, 3, 5, 7... Descubra qual ímpar vem agora.",
+    contexto_matematico: "Um número é ÍMPAR quando não dá para dividir em dois montinhos iguais — sempre sobra um. Por isso os ímpares pulam de 2 em 2: entre dois ímpares mora sempre um par.",
+    sequencias: [
+      { items: ["1", "3", "5", "7", "❓"], resposta: "9", opcoes: ["8", "9", "10", "11"] },
+      { items: ["11", "13", "15", "17", "❓"], resposta: "19", opcoes: ["18", "19", "20", "21"] },
+      { items: ["3", "5", "❓", "9", "11"], resposta: "7", opcoes: ["6", "7", "8", "10"] },
+      { items: ["21", "19", "17", "15", "❓"], resposta: "13", opcoes: ["12", "13", "14", "16"] },
+      { items: ["25", "27", "29", "31", "❓"], resposta: "33", opcoes: ["32", "33", "34", "35"] }
+    ]
+  },
+  {
+    id: "con_seq_cincos",
+    tipo: "sequencia",
+    titulo: "De 5 em 5",
+    descricao: "Pulando de cinco em cinco!",
+    emoji: "🖐️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "Contar de 5 em 5 é fácil: é só contar as mãos! 🖐️ Uma mão são 5 dedos, duas mãos são 10... Descubra quantos dedos faltam na conta.",
+    contexto_matematico: "Todo número da tabuada do 5 termina em 0 ou em 5 — nunca em outro algarismo. Esse é um jeito rápido de saber se um número é múltiplo de 5 sem fazer conta nenhuma.",
+    sequencias: [
+      { items: ["5", "10", "15", "20", "❓"], resposta: "25", opcoes: ["24", "25", "26", "30"] },
+      { items: ["50", "45", "40", "35", "❓"], resposta: "30", opcoes: ["25", "30", "32", "34"] },
+      { items: ["15", "20", "❓", "30", "35"], resposta: "25", opcoes: ["22", "24", "25", "28"] },
+      { items: ["60", "65", "70", "75", "❓"], resposta: "80", opcoes: ["78", "80", "85", "90"] },
+      { items: ["100", "95", "90", "85", "❓"], resposta: "80", opcoes: ["75", "78", "80", "82"] }
+    ]
+  },
+  {
+    id: "con_seq_dezenas2",
+    tipo: "sequencia",
+    titulo: "Dezenas e Centenas",
+    descricao: "Saltos grandes de 10 em 10 e de 100 em 100!",
+    emoji: "💯",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "O elevador do prédio gigante não para em todos os andares! 💯 Ele sobe de 10 em 10, e o expresso sobe de 100 em 100. Em qual andar ele para agora?",
+    contexto_matematico: "Somar 10 muda só o algarismo das dezenas; somar 100 muda só o das centenas. Por isso esses saltos são fáceis de fazer de cabeça — o resto do número nem se mexe.",
+    sequencias: [
+      { items: ["10", "20", "30", "40", "❓"], resposta: "50", opcoes: ["45", "50", "55", "60"] },
+      { items: ["100", "200", "300", "400", "❓"], resposta: "500", opcoes: ["450", "500", "550", "600"] },
+      { items: ["90", "80", "70", "60", "❓"], resposta: "50", opcoes: ["40", "50", "55", "65"] },
+      { items: ["25", "35", "45", "55", "❓"], resposta: "65", opcoes: ["60", "65", "70", "75"] },
+      { items: ["1000", "900", "800", "700", "❓"], resposta: "600", opcoes: ["500", "600", "650", "750"] }
+    ]
+  },
+  {
+    id: "con_seq_quadrados2",
+    tipo: "sequencia",
+    titulo: "Números Quadrados",
+    descricao: "Números que formam quadradinhos perfeitos!",
+    emoji: "⬜",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Com 4 pecinhas dá para montar um quadrado 2×2. Com 9, um quadrado 3×3! ⬜ Esses números têm nome: são os números QUADRADOS. Descubra o próximo!",
+    contexto_matematico: "Um número quadrado é o resultado de multiplicar um número por ele mesmo: 1×1=1, 2×2=4, 3×3=9, 4×4=16. A diferença entre dois quadrados seguidos sempre cresce de 2 em 2: 3, 5, 7, 9...",
+    sequencias: [
+      { items: ["1", "4", "9", "16", "❓"], resposta: "25", opcoes: ["20", "24", "25", "36"] },
+      { items: ["4", "9", "16", "25", "❓"], resposta: "36", opcoes: ["30", "35", "36", "49"] },
+      { items: ["1", "4", "❓", "16", "25"], resposta: "9", opcoes: ["6", "8", "9", "12"] },
+      { items: ["9", "16", "25", "36", "❓"], resposta: "49", opcoes: ["42", "45", "49", "64"] },
+      { items: ["16", "25", "36", "49", "❓"], resposta: "64", opcoes: ["56", "60", "64", "81"] }
+    ]
+  },
+  {
+    id: "con_seq_triangulares",
+    tipo: "sequencia",
+    titulo: "Números Triangulares",
+    descricao: "Números que empilham em forma de triângulo!",
+    emoji: "🔺",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Empilhe bolinhas assim: 1 em cima, 2 embaixo, 3 embaixo... vira um triângulo! 🔺 O total de bolinhas de cada triângulo é um número triangular. Descubra o próximo!",
+    contexto_matematico: "Cada número triangular é o anterior mais uma fileira nova: 1, +2 = 3, +3 = 6, +4 = 10, +5 = 15. Os pinos do boliche (10) e as bolas de sinuca (15) são números triangulares — por isso arrumam certinho em triângulo.",
+    sequencias: [
+      { items: ["1", "3", "6", "10", "❓"], resposta: "15", opcoes: ["12", "14", "15", "16"] },
+      { items: ["3", "6", "10", "15", "❓"], resposta: "21", opcoes: ["18", "20", "21", "25"] },
+      { items: ["6", "10", "15", "21", "❓"], resposta: "28", opcoes: ["25", "27", "28", "36"] },
+      { items: ["1", "3", "❓", "10", "15"], resposta: "6", opcoes: ["4", "5", "6", "8"] },
+      { items: ["10", "15", "21", "28", "❓"], resposta: "36", opcoes: ["32", "34", "36", "45"] }
+    ]
+  },
+  {
+    id: "con_seq_tabuadas",
+    tipo: "sequencia",
+    titulo: "Tabuada em Fila",
+    descricao: "As tabuadas do 3, do 4 e do 6 viraram sequência!",
+    emoji: "✖️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "As tabuadas saíram do caderno e viraram uma fila de números! ✖️ Cada fila pula sempre o mesmo tanto. Descubra o salto e complete.",
+    contexto_matematico: "Uma tabuada é só uma soma repetida: a do 3 soma 3 toda vez, a do 4 soma 4. Descobrir o salto entre dois números vizinhos é descobrir de qual tabuada a fila é.",
+    sequencias: [
+      { items: ["3", "6", "9", "12", "❓"], resposta: "15", opcoes: ["14", "15", "16", "18"] },
+      { items: ["4", "8", "12", "16", "❓"], resposta: "20", opcoes: ["18", "20", "22", "24"] },
+      { items: ["6", "12", "18", "24", "❓"], resposta: "30", opcoes: ["28", "30", "32", "36"] },
+      { items: ["3", "6", "❓", "12", "15"], resposta: "9", opcoes: ["7", "8", "9", "10"] },
+      { items: ["40", "32", "24", "16", "❓"], resposta: "8", opcoes: ["0", "4", "8", "12"] }
+    ]
+  },
+  {
+    id: "con_seq_relogio",
+    tipo: "sequencia",
+    titulo: "As Horas do Dia",
+    descricao: "O relógio também segue uma sequência!",
+    emoji: "🕐",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "O relógio da estação marca os horários dos trens! 🕐 Eles saem em intervalos certinhos. Descubra a que horas sai o próximo trem.",
+    contexto_matematico: "A hora tem 60 minutos, e não 100 — por isso depois de 45min vem 60min, que é 1 hora inteira. Esse jeito de contar de 60 em 60 vem da Babilônia, há mais de 4 mil anos.",
+    sequencias: [
+      { items: ["1h", "2h", "3h", "4h", "❓"], resposta: "5h", opcoes: ["5h", "6h", "7h", "8h"] },
+      { items: ["2h", "4h", "6h", "8h", "❓"], resposta: "10h", opcoes: ["9h", "10h", "11h", "12h"] },
+      { items: ["10h", "9h", "8h", "7h", "❓"], resposta: "6h", opcoes: ["4h", "5h", "6h", "7h"] },
+      { items: ["15min", "30min", "45min", "❓"], resposta: "60min", opcoes: ["50min", "55min", "60min", "75min"] },
+      { items: ["3h", "6h", "9h", "❓"], resposta: "12h", opcoes: ["10h", "11h", "12h", "15h"] }
+    ]
+  },
+  {
+    id: "con_seq_dinheiro",
+    tipo: "sequencia",
+    titulo: "Contando o Cofrinho",
+    descricao: "O dinheiro do cofrinho cresce seguindo um padrão!",
+    emoji: "🪙",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "Toda semana você guarda um pouco no cofrinho! 🪙 O valor cresce seguindo uma regra. Descubra quanto vai ter na próxima semana.",
+    contexto_matematico: "Guardar sempre a MESMA quantia faz o dinheiro crescer em linha reta. Guardar o DOBRO a cada vez faz crescer muito mais rápido — é a diferença entre somar e multiplicar.",
+    sequencias: [
+      { items: ["R$2", "R$4", "R$6", "R$8", "❓"], resposta: "R$10", opcoes: ["R$9", "R$10", "R$12", "R$16"] },
+      { items: ["R$5", "R$10", "R$15", "R$20", "❓"], resposta: "R$25", opcoes: ["R$22", "R$25", "R$30", "R$35"] },
+      { items: ["R$50", "R$40", "R$30", "R$20", "❓"], resposta: "R$10", opcoes: ["R$5", "R$10", "R$15", "R$0"] },
+      { items: ["R$1", "R$2", "R$4", "R$8", "❓"], resposta: "R$16", opcoes: ["R$10", "R$12", "R$16", "R$32"] },
+      { items: ["R$10", "R$20", "R$30", "❓", "R$50"], resposta: "R$40", opcoes: ["R$35", "R$40", "R$45", "R$60"] }
+    ]
+  },
+  {
+    id: "con_seq_calendario",
+    tipo: "sequencia",
+    titulo: "Dias e Meses",
+    descricao: "O calendário repete sempre na mesma ordem!",
+    emoji: "📅",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "O calendário é uma sequência gigante que nunca para! 📅 Os dias da semana e os meses do ano se repetem na mesma ordem, sempre. Qual vem agora?",
+    contexto_matematico: "A semana tem 7 dias e o ano tem 12 meses. Como 365 não é múltiplo de 7, o dia da semana do seu aniversário muda todo ano — e por isso o calendário nunca se repete igual.",
+    sequencias: [
+      { items: ["SEG", "TER", "QUA", "QUI", "❓"], resposta: "SEX", opcoes: ["SEX", "SAB", "DOM", "SEG"] },
+      { items: ["JAN", "FEV", "MAR", "ABR", "❓"], resposta: "MAI", opcoes: ["MAI", "JUN", "JUL", "AGO"] },
+      { items: ["SAB", "DOM", "SAB", "DOM", "❓"], resposta: "SAB", opcoes: ["SAB", "DOM", "SEG", "SEX"] },
+      { items: ["JAN", "MAR", "MAI", "JUL", "❓"], resposta: "SET", opcoes: ["AGO", "SET", "OUT", "NOV"] },
+      { items: ["DEZ", "NOV", "OUT", "SET", "❓"], resposta: "AGO", opcoes: ["JUL", "AGO", "JUN", "MAI"] }
+    ]
+  },
+  {
+    id: "con_seq_medidas",
+    tipo: "sequencia",
+    titulo: "Medindo o Mundo",
+    descricao: "Centímetros, gramas e litros também formam sequências!",
+    emoji: "📏",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 8,
+    historinha: "Na cozinha e na oficina tudo se mede! 📏 As receitas e as peças seguem medidas que crescem numa ordem certa. Descubra a medida que falta.",
+    contexto_matematico: "As medidas do sistema métrico andam de 10 em 10: 10 milímetros fazem 1 centímetro, 100 centímetros fazem 1 metro. Por isso mudar de unidade é só andar com a vírgula.",
+    sequencias: [
+      { items: ["1cm", "2cm", "3cm", "4cm", "❓"], resposta: "5cm", opcoes: ["5cm", "6cm", "7cm", "8cm"] },
+      { items: ["10cm", "20cm", "30cm", "40cm", "❓"], resposta: "50cm", opcoes: ["45cm", "50cm", "60cm", "70cm"] },
+      { items: ["1kg", "2kg", "4kg", "8kg", "❓"], resposta: "16kg", opcoes: ["10kg", "12kg", "16kg", "32kg"] },
+      { items: ["100g", "200g", "300g", "400g", "❓"], resposta: "500g", opcoes: ["450g", "500g", "600g", "800g"] },
+      { items: ["1L", "2L", "3L", "❓", "5L"], resposta: "4L", opcoes: ["4L", "6L", "8L", "10L"] }
+    ]
+  },
+  {
+    id: "con_padrao_tabuada5",
+    tipo: "padrao",
+    titulo: "Grade das Tabuadas",
+    descricao: "Uma tabuada inteira dentro do quadrado!",
+    emoji: "✖️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "A tabuada cabe inteirinha num quadrado de 9 casas! ✖️ Basta ler de linha em linha, de cima para baixo. Descubra o número que apagou do cantinho.",
+    puzzles: [
+      {
+        matriz: ["5", "10", "15", "20", "25", "30", "35", "40", "❓"],
+        resposta: "45",
+        opcoes: ["42", "45", "50", "55"],
+        dica: "Some 5 a cada casa, seguindo as linhas."
+      },
+      {
+        matriz: ["2", "4", "6", "8", "10", "12", "14", "16", "❓"],
+        resposta: "18",
+        opcoes: ["17", "18", "20", "22"],
+        dica: "Cada casa é 2 a mais que a anterior."
+      },
+      {
+        matriz: ["3", "6", "9", "12", "15", "18", "21", "24", "❓"],
+        resposta: "27",
+        opcoes: ["25", "27", "30", "32"],
+        dica: "É a tabuada do 3, do começo ao fim."
+      },
+      {
+        matriz: ["10", "20", "30", "40", "50", "60", "70", "80", "❓"],
+        resposta: "90",
+        opcoes: ["85", "90", "95", "100"],
+        dica: "De 10 em 10, sempre."
+      },
+      {
+        matriz: ["7", "14", "21", "28", "35", "42", "49", "56", "❓"],
+        resposta: "63",
+        opcoes: ["60", "63", "64", "70"],
+        dica: "A tabuada do 7 — o salto é sempre 7."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_somas",
+    tipo: "padrao",
+    titulo: "Grade das Somas",
+    descricao: "A terceira casa é a soma das duas primeiras!",
+    emoji: "➕",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Esta grade tem uma regra escondida: em cada linha, o último número é a soma dos dois anteriores! ➕ Descubra a regra numa linha e use nas outras.",
+    puzzles: [
+      {
+        matriz: ["1", "2", "3", "2", "3", "5", "3", "4", "❓"],
+        resposta: "7",
+        opcoes: ["5", "6", "7", "12"],
+        dica: "Em cada LINHA: primeiro + segundo = terceiro."
+      },
+      {
+        matriz: ["2", "2", "4", "3", "3", "6", "4", "4", "❓"],
+        resposta: "8",
+        opcoes: ["6", "8", "10", "16"],
+        dica: "Os dois primeiros são iguais — some os dois."
+      },
+      {
+        matriz: ["5", "1", "6", "5", "2", "7", "5", "3", "❓"],
+        resposta: "8",
+        opcoes: ["7", "8", "9", "15"],
+        dica: "O 5 fica parado e o do meio cresce de 1 em 1."
+      },
+      {
+        matriz: ["10", "5", "15", "10", "4", "14", "10", "3", "❓"],
+        resposta: "13",
+        opcoes: ["12", "13", "14", "30"],
+        dica: "Some as duas primeiras casas da linha."
+      },
+      {
+        matriz: ["1", "1", "2", "2", "2", "4", "3", "3", "❓"],
+        resposta: "6",
+        opcoes: ["5", "6", "9", "12"],
+        dica: "Soma dos dois primeiros — que aqui é o dobro."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_diferencas",
+    tipo: "padrao",
+    titulo: "Grade das Diferenças",
+    descricao: "A terceira casa é o que sobra da subtração!",
+    emoji: "➖",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Aqui a regra é o contrário da soma! ➖ Em cada linha, o último número é o primeiro MENOS o segundo. Descubra quanto sobra na última linha.",
+    puzzles: [
+      {
+        matriz: ["5", "2", "3", "6", "2", "4", "7", "2", "❓"],
+        resposta: "5",
+        opcoes: ["4", "5", "6", "9"],
+        dica: "Em cada linha: primeiro − segundo = terceiro."
+      },
+      {
+        matriz: ["10", "1", "9", "10", "2", "8", "10", "3", "❓"],
+        resposta: "7",
+        opcoes: ["6", "7", "13", "30"],
+        dica: "O 10 fica parado e o que se tira cresce."
+      },
+      {
+        matriz: ["8", "3", "5", "9", "3", "6", "10", "3", "❓"],
+        resposta: "7",
+        opcoes: ["5", "7", "13", "30"],
+        dica: "Tire 3 do primeiro número da linha."
+      },
+      {
+        matriz: ["20", "10", "10", "20", "5", "15", "20", "15", "❓"],
+        resposta: "5",
+        opcoes: ["5", "10", "35", "300"],
+        dica: "Sempre 20 menos o número do meio."
+      },
+      {
+        matriz: ["12", "4", "8", "11", "4", "7", "10", "4", "❓"],
+        resposta: "6",
+        opcoes: ["5", "6", "14", "40"],
+        dica: "Tire 4 do primeiro número de cada linha."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_dobros",
+    tipo: "padrao",
+    titulo: "Grade dos Dobros",
+    descricao: "Cada casa é o dobro da anterior!",
+    emoji: "🔁",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Nesta grade tudo dobra! 🔁 Andando para o lado, cada número vira o dobro do anterior. Descubra o dobro que falta.",
+    puzzles: [
+      {
+        matriz: ["1", "2", "4", "2", "4", "8", "3", "6", "❓"],
+        resposta: "12",
+        opcoes: ["9", "10", "12", "18"],
+        dica: "Andando para a direita, cada número dobra."
+      },
+      {
+        matriz: ["5", "10", "20", "6", "12", "24", "7", "14", "❓"],
+        resposta: "28",
+        opcoes: ["21", "24", "28", "35"],
+        dica: "Dobre o número do meio da linha."
+      },
+      {
+        matriz: ["2", "4", "8", "3", "6", "12", "4", "8", "❓"],
+        resposta: "16",
+        opcoes: ["12", "14", "16", "32"],
+        dica: "Cada linha dobra duas vezes seguidas."
+      },
+      {
+        matriz: ["10", "20", "40", "20", "40", "80", "30", "60", "❓"],
+        resposta: "120",
+        opcoes: ["90", "100", "120", "180"],
+        dica: "O dobro de 60."
+      },
+      {
+        matriz: ["1", "2", "4", "4", "8", "16", "8", "16", "❓"],
+        resposta: "32",
+        opcoes: ["24", "32", "64", "128"],
+        dica: "Dobre o 16."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_multiplicar",
+    tipo: "padrao",
+    titulo: "Grade de Multiplicar",
+    descricao: "A terceira casa é a multiplicação das duas!",
+    emoji: "✳️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 10,
+    historinha: "Esta grade multiplica! ✳️ Em cada linha, os dois primeiros números se multiplicam e o resultado fica na terceira casa. Complete a última.",
+    puzzles: [
+      {
+        matriz: ["2", "3", "6", "2", "4", "8", "2", "5", "❓"],
+        resposta: "10",
+        opcoes: ["7", "9", "10", "25"],
+        dica: "Em cada linha: primeiro × segundo = terceiro."
+      },
+      {
+        matriz: ["3", "3", "9", "3", "4", "12", "3", "5", "❓"],
+        resposta: "15",
+        opcoes: ["8", "12", "15", "35"],
+        dica: "Multiplique 3 pelo número do meio."
+      },
+      {
+        matriz: ["4", "2", "8", "4", "3", "12", "4", "4", "❓"],
+        resposta: "16",
+        opcoes: ["8", "12", "16", "44"],
+        dica: "Quatro vezes quatro."
+      },
+      {
+        matriz: ["5", "2", "10", "5", "3", "15", "5", "4", "❓"],
+        resposta: "20",
+        opcoes: ["9", "15", "20", "54"],
+        dica: "Cinco vezes o número do meio."
+      },
+      {
+        matriz: ["6", "2", "12", "6", "3", "18", "6", "4", "❓"],
+        resposta: "24",
+        opcoes: ["10", "18", "24", "64"],
+        dica: "Seis vezes quatro."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_metades",
+    tipo: "padrao",
+    titulo: "Grade das Metades",
+    descricao: "Cada casa é a metade da anterior!",
+    emoji: "🍰",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 10,
+    historinha: "Aqui o bolo é dividido ao meio a cada casa! 🍰 Andando para a direita, o número vira sempre a metade. Descubra a última metade.",
+    puzzles: [
+      {
+        matriz: ["8", "4", "2", "16", "8", "4", "32", "16", "❓"],
+        resposta: "8",
+        opcoes: ["4", "8", "16", "64"],
+        dica: "Andando para a direita, cada número cai pela metade."
+      },
+      {
+        matriz: ["4", "2", "1", "12", "6", "3", "20", "10", "❓"],
+        resposta: "5",
+        opcoes: ["2", "4", "5", "6"],
+        dica: "A metade de 10."
+      },
+      {
+        matriz: ["40", "20", "10", "80", "40", "20", "60", "30", "❓"],
+        resposta: "15",
+        opcoes: ["10", "12", "15", "20"],
+        dica: "A metade de 30."
+      },
+      {
+        matriz: ["100", "50", "25", "200", "100", "50", "400", "200", "❓"],
+        resposta: "100",
+        opcoes: ["50", "75", "100", "150"],
+        dica: "A metade de 200."
+      },
+      {
+        matriz: ["24", "12", "6", "48", "24", "12", "16", "8", "❓"],
+        resposta: "4",
+        opcoes: ["2", "3", "4", "8"],
+        dica: "A metade de 8."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_dezenas3",
+    tipo: "padrao",
+    titulo: "Grade das Casas Decimais",
+    descricao: "Unidade, dezena e centena em cada linha!",
+    emoji: "🔟",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 10,
+    historinha: "Cada linha mostra o mesmo número em três tamanhos: unidade, dezena e centena! 🔟 O zero é que faz toda a diferença. Complete a última casa.",
+    puzzles: [
+      {
+        matriz: ["1", "10", "100", "2", "20", "200", "3", "30", "❓"],
+        resposta: "300",
+        opcoes: ["30", "300", "3000", "33"],
+        dica: "Cada casa para a direita ganha um zero."
+      },
+      {
+        matriz: ["5", "50", "500", "6", "60", "600", "7", "70", "❓"],
+        resposta: "700",
+        opcoes: ["70", "700", "7000", "77"],
+        dica: "Sete, setenta, setecentos."
+      },
+      {
+        matriz: ["4", "40", "400", "8", "80", "800", "9", "90", "❓"],
+        resposta: "900",
+        opcoes: ["90", "900", "9000", "99"],
+        dica: "Nove com dois zeros."
+      },
+      {
+        matriz: ["100", "10", "1", "200", "20", "2", "300", "30", "❓"],
+        resposta: "3",
+        opcoes: ["3", "30", "300", "0"],
+        dica: "Aqui é o contrário: cada casa PERDE um zero."
+      },
+      {
+        matriz: ["1", "10", "100", "10", "100", "1000", "2", "20", "❓"],
+        resposta: "200",
+        opcoes: ["20", "200", "2000", "22"],
+        dica: "Dois com dois zeros."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_patas",
+    tipo: "padrao",
+    titulo: "Grade das Patas",
+    descricao: "Quantas patas tem cada bicho?",
+    emoji: "🐾",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "O veterinário está contando as patas de cada bicho! 🐾 Na grade, a última casa de cada linha diz quantas patas o animal tem. Quantas tem o último?",
+    puzzles: [
+      {
+        matriz: ["🐔", "🐔", "2", "🐕", "🐕", "4", "🕷️", "🕷️", "❓"],
+        resposta: "8",
+        opcoes: ["4", "6", "8", "10"],
+        dica: "A última casa diz o número de PATAS. Aranha tem oito."
+      },
+      {
+        matriz: ["🐍", "🐍", "0", "🐦", "🐦", "2", "🐄", "🐄", "❓"],
+        resposta: "4",
+        opcoes: ["0", "2", "4", "6"],
+        dica: "Quantas patas tem uma vaca?"
+      },
+      {
+        matriz: ["🦀", "🦀", "10", "🐜", "🐜", "6", "🐙", "🐙", "❓"],
+        resposta: "8",
+        opcoes: ["6", "8", "10", "12"],
+        dica: "O polvo tem oito braços."
+      },
+      {
+        matriz: ["🐘", "🐘", "4", "🦅", "🦅", "2", "🦂", "🦂", "❓"],
+        resposta: "8",
+        opcoes: ["4", "6", "8", "10"],
+        dica: "O escorpião é aracnídeo, como a aranha."
+      },
+      {
+        matriz: ["🐸", "🐸", "4", "🦆", "🦆", "2", "🐞", "🐞", "❓"],
+        resposta: "6",
+        opcoes: ["2", "4", "6", "8"],
+        dica: "Todo inseto tem seis patas."
+      }
+    ]
+  },
+  {
+    id: "con_padrao_pares_impares",
+    tipo: "padrao",
+    titulo: "Grade Par e Ímpar",
+    descricao: "Pares de um lado, ímpares do outro!",
+    emoji: "⚖️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 90,
+    coins_reward: 90,
+    tempo_estimado: 9,
+    historinha: "Os números pares e ímpares se organizaram numa grade! ⚖️ Cada uma tem sua regra de crescer. Descubra qual número fecha o quadrado.",
+    puzzles: [
+      {
+        matriz: ["1", "3", "5", "7", "9", "11", "13", "15", "❓"],
+        resposta: "17",
+        opcoes: ["16", "17", "18", "19"],
+        dica: "Só ímpares, sempre pulando de 2 em 2."
+      },
+      {
+        matriz: ["2", "4", "6", "8", "10", "12", "14", "16", "❓"],
+        resposta: "18",
+        opcoes: ["17", "18", "20", "22"],
+        dica: "Só pares, de 2 em 2."
+      },
+      {
+        matriz: ["1", "2", "3", "3", "4", "5", "5", "6", "❓"],
+        resposta: "7",
+        opcoes: ["6", "7", "8", "9"],
+        dica: "Cada linha começa 2 depois da anterior e anda de 1 em 1."
+      },
+      {
+        matriz: ["10", "9", "8", "7", "6", "5", "4", "3", "❓"],
+        resposta: "2",
+        opcoes: ["0", "1", "2", "3"],
+        dica: "Contando ao contrário, de 1 em 1."
+      },
+      {
+        matriz: ["2", "3", "5", "4", "5", "9", "6", "7", "❓"],
+        resposta: "13",
+        opcoes: ["11", "12", "13", "42"],
+        dica: "Par + ímpar da mesma linha = a terceira casa."
+      }
+    ]
+  }
+]

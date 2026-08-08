@@ -6712,3 +6712,615 @@ export const quizExtraPorFaixa = [
     ]
   }
 ]
+
+// ── Raciocínio — sequências e padrões (expansão 08/08/2026) ──
+// Nesta faixa o padrão tem que ser VISÍVEL, não deduzido: alternância simples
+// (AB, ABC, AAB) e contagem de 1 em 1 ou de 2 em 2. Nada que dependa de ler.
+export const raciocinioExtraPorFaixa = [
+  {
+    id: "exp_seq_frutas",
+    tipo: "sequencia",
+    titulo: "Frutas na Esteira",
+    descricao: "As frutas passam sempre na mesma ordem. Qual vem agora?",
+    emoji: "🍎",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "Na fábrica de sucos, as frutas passam na esteira sempre na mesma ordem! 🍎 O robozinho separador precisa saber qual vem agora para não errar o suco. Você consegue ajudar?",
+    sequencias: [
+      { items: ["🍎", "🍌", "🍎", "🍌", "❓"], resposta: "🍎", opcoes: ["🍎", "🍌", "🍇", "🍓"] },
+      { items: ["🍇", "🍓", "🍊", "🍇", "🍓", "❓"], resposta: "🍊", opcoes: ["🍇", "🍓", "🍊", "🍉"] },
+      { items: ["🍌", "🍌", "🍎", "🍌", "🍌", "❓"], resposta: "🍎", opcoes: ["🍌", "🍎", "🍐", "🍒"] },
+      { items: ["🍉", "🍒", "🍉", "🍒", "❓"], resposta: "🍉", opcoes: ["🍒", "🍉", "🥝", "🍑"] },
+      { items: ["🥝", "🍍", "🥭", "🥝", "🍍", "❓"], resposta: "🥭", opcoes: ["🥝", "🍍", "🥭", "🍌"] }
+    ]
+  },
+  {
+    id: "exp_seq_transportes",
+    tipo: "sequencia",
+    titulo: "Trenzinho de Veículos",
+    descricao: "Os veículos entram na fila sempre na mesma ordem!",
+    emoji: "🚗",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "A garagem de brinquedos organiza os veículos numa fila mágica! 🚗 Cada um sabe exatamente onde ficar. Descubra qual veículo está faltando na fila.",
+    sequencias: [
+      { items: ["🚗", "🚌", "🚗", "🚌", "❓"], resposta: "🚗", opcoes: ["🚗", "🚌", "🚲", "🚂"] },
+      { items: ["🚲", "🛴", "🚲", "🛴", "❓"], resposta: "🚲", opcoes: ["🛴", "🚲", "🚗", "✈️"] },
+      { items: ["✈️", "🚀", "🚁", "✈️", "🚀", "❓"], resposta: "🚁", opcoes: ["✈️", "🚀", "🚁", "🚗"] },
+      { items: ["🚂", "🚂", "🚌", "🚂", "🚂", "❓"], resposta: "🚌", opcoes: ["🚂", "🚌", "🚗", "🚕"] },
+      { items: ["⛵", "🚤", "⛵", "🚤", "❓"], resposta: "⛵", opcoes: ["🚤", "⛵", "🚗", "🚁"] }
+    ]
+  },
+  {
+    id: "exp_seq_clima",
+    tipo: "sequencia",
+    titulo: "O Tempo lá Fora",
+    descricao: "Sol, chuva e nuvem se revezam no céu!",
+    emoji: "☀️",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "O céu tem um jeito engraçado de se organizar hoje! ☀️ Sol, nuvem e chuva estão se revezando numa ordem certinha. Descubra o que vem depois!",
+    sequencias: [
+      { items: ["☀️", "☁️", "☀️", "☁️", "❓"], resposta: "☀️", opcoes: ["☀️", "☁️", "🌧️", "🌈"] },
+      { items: ["🌧️", "🌈", "🌧️", "🌈", "❓"], resposta: "🌧️", opcoes: ["🌈", "🌧️", "☀️", "❄️"] },
+      { items: ["☀️", "☁️", "🌧️", "☀️", "☁️", "❓"], resposta: "🌧️", opcoes: ["☀️", "☁️", "🌧️", "🌈"] },
+      { items: ["❄️", "❄️", "☀️", "❄️", "❄️", "❓"], resposta: "☀️", opcoes: ["❄️", "☀️", "☁️", "🌧️"] },
+      { items: ["🌙", "☀️", "🌙", "☀️", "❓"], resposta: "🌙", opcoes: ["☀️", "🌙", "⭐", "☁️"] }
+    ]
+  },
+  {
+    id: "exp_seq_brinquedos",
+    tipo: "sequencia",
+    titulo: "Fila de Brinquedos",
+    descricao: "Os brinquedos se arrumam sozinhos na estante!",
+    emoji: "🧸",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "Quando ninguém está olhando, os brinquedos se arrumam na estante sozinhos! 🧸 E eles adoram ficar numa ordem repetida. Qual brinquedo vem agora?",
+    sequencias: [
+      { items: ["🧸", "🎈", "🧸", "🎈", "❓"], resposta: "🧸", opcoes: ["🧸", "🎈", "🎁", "🪀"] },
+      { items: ["⚽", "🏀", "⚽", "🏀", "❓"], resposta: "⚽", opcoes: ["🏀", "⚽", "🎾", "🏐"] },
+      { items: ["🪀", "🎲", "🧩", "🪀", "🎲", "❓"], resposta: "🧩", opcoes: ["🪀", "🎲", "🧩", "🧸"] },
+      { items: ["🎁", "🎁", "🎈", "🎁", "🎁", "❓"], resposta: "🎈", opcoes: ["🎁", "🎈", "🧸", "🎀"] },
+      { items: ["🚂", "🧩", "🚂", "🧩", "❓"], resposta: "🚂", opcoes: ["🧩", "🚂", "🎲", "🧸"] }
+    ]
+  },
+  {
+    id: "exp_seq_contando2",
+    tipo: "sequencia",
+    titulo: "Contando de 2 em 2",
+    descricao: "Pule um número a cada passo!",
+    emoji: "🔢",
+    habilidade: "Lógica Matemática",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "O sapinho só consegue pular em cima das pedras de dois em dois! 🐸 Ele pula na 2, na 4, na 6... Descubra em qual pedra ele cai depois!",
+    contexto_matematico: "Contar de 2 em 2 é o começo da tabuada do 2. Todo número onde o sapinho cai é um número PAR — dá para dividir em dois montinhos iguais.",
+    sequencias: [
+      { items: ["2", "4", "6", "8", "❓"], resposta: "10", opcoes: ["9", "10", "11", "12"] },
+      { items: ["1", "2", "3", "4", "❓"], resposta: "5", opcoes: ["5", "6", "7", "8"] },
+      { items: ["10", "8", "6", "4", "❓"], resposta: "2", opcoes: ["0", "1", "2", "3"] },
+      { items: ["5", "6", "7", "8", "❓"], resposta: "9", opcoes: ["9", "10", "11", "12"] },
+      { items: ["2", "4", "6", "❓", "10"], resposta: "8", opcoes: ["7", "8", "9", "12"] }
+    ]
+  },
+  {
+    id: "exp_seq_letras",
+    tipo: "sequencia",
+    titulo: "Letras em Ordem",
+    descricao: "O alfabeto tem uma ordem certinha!",
+    emoji: "🔤",
+    habilidade: "Linguagem",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "As letrinhas estão marchando na ordem do alfabeto! 🔤 Uma delas se distraiu e saiu da fila. Descubra qual letra está faltando!",
+    sequencias: [
+      { items: ["A", "B", "C", "D", "❓"], resposta: "E", opcoes: ["E", "F", "G", "H"] },
+      { items: ["A", "B", "❓", "D", "E"], resposta: "C", opcoes: ["C", "F", "G", "Z"] },
+      { items: ["E", "F", "G", "H", "❓"], resposta: "I", opcoes: ["I", "J", "K", "L"] },
+      { items: ["A", "A", "B", "A", "A", "❓"], resposta: "B", opcoes: ["A", "B", "C", "D"] },
+      { items: ["W", "X", "Y", "❓"], resposta: "Z", opcoes: ["Z", "V", "A", "U"] }
+    ]
+  },
+  {
+    id: "exp_seq_instrumentos",
+    tipo: "sequencia",
+    titulo: "Banda que Repete",
+    descricao: "Cada instrumento toca na sua vez!",
+    emoji: "🥁",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "A bandinha da escola toca sempre na mesma ordem! 🥁 Tambor, depois violão, depois tambor de novo... Quem é o próximo a tocar?",
+    sequencias: [
+      { items: ["🥁", "🎸", "🥁", "🎸", "❓"], resposta: "🥁", opcoes: ["🥁", "🎸", "🎺", "🎻"] },
+      { items: ["🎺", "🎻", "🎺", "🎻", "❓"], resposta: "🎺", opcoes: ["🎻", "🎺", "🥁", "🪘"] },
+      { items: ["🎹", "🎸", "🥁", "🎹", "🎸", "❓"], resposta: "🥁", opcoes: ["🎹", "🎸", "🥁", "🎤"] },
+      { items: ["🎤", "🎤", "🎸", "🎤", "🎤", "❓"], resposta: "🎸", opcoes: ["🎤", "🎸", "🥁", "🎺"] },
+      { items: ["🪘", "🎷", "🪘", "🎷", "❓"], resposta: "🪘", opcoes: ["🎷", "🪘", "🎸", "🎹"] }
+    ]
+  },
+  {
+    id: "exp_seq_flores",
+    tipo: "sequencia",
+    titulo: "Jardim Organizado",
+    descricao: "As flores foram plantadas seguindo um desenho!",
+    emoji: "🌻",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "A jardineira plantou as flores seguindo um desenho bonito! 🌻 Ela repetiu as mesmas flores na mesma ordem o canteiro inteiro. Qual flor vem no lugar vazio?",
+    sequencias: [
+      { items: ["🌻", "🌷", "🌻", "🌷", "❓"], resposta: "🌻", opcoes: ["🌻", "🌷", "🌹", "🌼"] },
+      { items: ["🌹", "🌼", "🌹", "🌼", "❓"], resposta: "🌹", opcoes: ["🌼", "🌹", "🌸", "🌻"] },
+      { items: ["🌸", "🌺", "🌻", "🌸", "🌺", "❓"], resposta: "🌻", opcoes: ["🌸", "🌺", "🌻", "🌷"] },
+      { items: ["🌷", "🌷", "🌵", "🌷", "🌷", "❓"], resposta: "🌵", opcoes: ["🌷", "🌵", "🌻", "🍀"] },
+      { items: ["🍀", "🌿", "🍀", "🌿", "❓"], resposta: "🍀", opcoes: ["🌿", "🍀", "🌱", "🌳"] }
+    ]
+  },
+  {
+    id: "exp_seq_comidas",
+    tipo: "sequencia",
+    titulo: "Cardápio da Semana",
+    descricao: "O cardápio se repete sempre igual!",
+    emoji: "🍕",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "O restaurante dos bichinhos tem um cardápio que se repete toda semana! 🍕 Cada dia tem sua comida certa. Qual é o prato que vem agora?",
+    sequencias: [
+      { items: ["🍕", "🍔", "🍕", "🍔", "❓"], resposta: "🍕", opcoes: ["🍕", "🍔", "🌭", "🍟"] },
+      { items: ["🍞", "🧀", "🍞", "🧀", "❓"], resposta: "🍞", opcoes: ["🧀", "🍞", "🥛", "🍎"] },
+      { items: ["🥕", "🥦", "🌽", "🥕", "🥦", "❓"], resposta: "🌽", opcoes: ["🥕", "🥦", "🌽", "🍅"] },
+      { items: ["🍪", "🍪", "🥛", "🍪", "🍪", "❓"], resposta: "🥛", opcoes: ["🍪", "🥛", "🍰", "🍫"] },
+      { items: ["🍎", "🥪", "🍎", "🥪", "❓"], resposta: "🍎", opcoes: ["🥪", "🍎", "🍌", "🥤"] }
+    ]
+  },
+  {
+    id: "exp_seq_mar",
+    tipo: "sequencia",
+    titulo: "Bichos do Mar em Fila",
+    descricao: "Os bichinhos do mar nadam numa ordem certinha!",
+    emoji: "🐠",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "No fundo do mar existe um desfile! 🐠 Os bichinhos nadam sempre na mesma ordem, um atrás do outro. Quem é o próximo a passar?",
+    sequencias: [
+      { items: ["🐠", "🐙", "🐠", "🐙", "❓"], resposta: "🐠", opcoes: ["🐠", "🐙", "🦀", "🐢"] },
+      { items: ["🦀", "🐢", "🦀", "🐢", "❓"], resposta: "🦀", opcoes: ["🐢", "🦀", "🐬", "🐳"] },
+      { items: ["🐬", "🐳", "🦈", "🐬", "🐳", "❓"], resposta: "🦈", opcoes: ["🐬", "🐳", "🦈", "🐠"] },
+      { items: ["🐚", "🐚", "⭐", "🐚", "🐚", "❓"], resposta: "⭐", opcoes: ["🐚", "⭐", "🐠", "🪸"] },
+      { items: ["🦐", "🦑", "🦐", "🦑", "❓"], resposta: "🦐", opcoes: ["🦑", "🦐", "🦀", "🐟"] }
+    ]
+  },
+  {
+    id: "exp_seq_dinossauros",
+    tipo: "sequencia",
+    titulo: "Pegadas de Dinossauro",
+    descricao: "As pegadas contam quem passou por ali!",
+    emoji: "🦕",
+    habilidade: "Reconhecimento de Padrões",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 7,
+    historinha: "Um grupo de dinossauros passou por aqui e deixou pegadas! 🦕 Eles caminhavam sempre na mesma ordem. Descubra qual dinossauro deixou a pegada que falta!",
+    sequencias: [
+      { items: ["🦕", "🦖", "🦕", "🦖", "❓"], resposta: "🦕", opcoes: ["🦕", "🦖", "🐊", "🦎"] },
+      { items: ["🥚", "🦕", "🥚", "🦕", "❓"], resposta: "🥚", opcoes: ["🦕", "🥚", "🦖", "🌋"] },
+      { items: ["🦖", "🌋", "🌿", "🦖", "🌋", "❓"], resposta: "🌿", opcoes: ["🦖", "🌋", "🌿", "🥚"] },
+      { items: ["🦕", "🦕", "🦖", "🦕", "🦕", "❓"], resposta: "🦖", opcoes: ["🦕", "🦖", "🐢", "🦎"] },
+      { items: ["🐊", "🦎", "🐊", "🦎", "❓"], resposta: "🐊", opcoes: ["🦎", "🐊", "🦕", "🐍"] }
+    ]
+  },
+  {
+    id: "exp_padrao_frutas",
+    tipo: "padrao",
+    titulo: "Quadro de Frutas",
+    descricao: "Cada linha tem as mesmas frutas trocando de lugar!",
+    emoji: "🍓",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "A feira montou um quadro de frutas muito esperto! 🍓 Em cada linha aparecem as mesmas três frutas, só que trocando de lugar. Descubra qual fruta falta no cantinho!",
+    puzzles: [
+      {
+        matriz: ["🍎", "🍌", "🍇", "🍌", "🍇", "🍎", "🍇", "🍎", "❓"],
+        resposta: "🍌",
+        opcoes: ["🍎", "🍌", "🍇", "🍓"],
+        dica: "Em cada linha aparecem as MESMAS 3 frutas, só que em ordem diferente."
+      },
+      {
+        matriz: ["🍓", "🍊", "🍓", "🍊", "🍓", "🍊", "🍓", "🍊", "❓"],
+        resposta: "🍓",
+        opcoes: ["🍓", "🍊", "🍇", "🍉"],
+        dica: "Elas se revezam sem parar: uma, outra, uma, outra..."
+      },
+      {
+        matriz: ["🍉", "🍉", "🍉", "🍒", "🍒", "🍒", "🥝", "🥝", "❓"],
+        resposta: "🥝",
+        opcoes: ["🍉", "🍒", "🥝", "🍌"],
+        dica: "Cada LINHA inteira é de uma fruta só."
+      },
+      {
+        matriz: ["🍎", "🍎", "🍌", "🍎", "🍎", "🍌", "🍎", "🍎", "❓"],
+        resposta: "🍌",
+        opcoes: ["🍎", "🍌", "🍇", "🍑"],
+        dica: "Duas iguais e uma diferente — e isso se repete em toda linha."
+      },
+      {
+        matriz: ["🍇", "🍓", "🍍", "🍓", "🍍", "🍇", "🍍", "🍇", "❓"],
+        resposta: "🍓",
+        opcoes: ["🍇", "🍓", "🍍", "🍊"],
+        dica: "As mesmas 3 frutas em cada linha, cada vez começando por outra."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_contar",
+    tipo: "padrao",
+    titulo: "Quadro de Contar",
+    descricao: "Os números estão em ordem no quadrado!",
+    emoji: "🔢",
+    habilidade: "Lógica Matemática",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "A professora escreveu os números num quadrado mágico! 🔢 Eles seguem a ordem certinha, de linha em linha. Só que o último apagou. Qual é ele?",
+    puzzles: [
+      {
+        matriz: ["1", "2", "3", "4", "5", "6", "7", "8", "❓"],
+        resposta: "9",
+        opcoes: ["7", "8", "9", "10"],
+        dica: "Conte de 1 em 1, seguindo as linhas de cima para baixo."
+      },
+      {
+        matriz: ["2", "4", "6", "8", "10", "12", "14", "16", "❓"],
+        resposta: "18",
+        opcoes: ["17", "18", "19", "20"],
+        dica: "Cada número é 2 a mais que o anterior."
+      },
+      {
+        matriz: ["1", "1", "1", "2", "2", "2", "3", "3", "❓"],
+        resposta: "3",
+        opcoes: ["1", "2", "3", "4"],
+        dica: "Cada linha repete o mesmo número três vezes."
+      },
+      {
+        matriz: ["10", "9", "8", "7", "6", "5", "4", "3", "❓"],
+        resposta: "2",
+        opcoes: ["1", "2", "3", "0"],
+        dica: "Aqui os números vão DIMINUINDO de 1 em 1."
+      },
+      {
+        matriz: ["1", "2", "1", "2", "1", "2", "1", "2", "❓"],
+        resposta: "1",
+        opcoes: ["1", "2", "3", "4"],
+        dica: "Só o 1 e o 2 se revezando o tempo todo."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_bichos",
+    tipo: "padrao",
+    titulo: "Quadro dos Bichinhos",
+    descricao: "Cada bichinho tem seu lugar certo no quadro!",
+    emoji: "🐶",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "Os bichinhos da fazenda tiraram uma foto de família em três fileiras! 🐶 Cada um ficou no seu lugar certo. Um deles se escondeu na hora do clique — quem foi?",
+    puzzles: [
+      {
+        matriz: ["🐶", "🐱", "🐭", "🐱", "🐭", "🐶", "🐭", "🐶", "❓"],
+        resposta: "🐱",
+        opcoes: ["🐶", "🐱", "🐭", "🐹"],
+        dica: "Os mesmos 3 bichinhos em cada linha, cada vez em outra ordem."
+      },
+      {
+        matriz: ["🐮", "🐮", "🐮", "🐷", "🐷", "🐷", "🐔", "🐔", "❓"],
+        resposta: "🐔",
+        opcoes: ["🐮", "🐷", "🐔", "🐴"],
+        dica: "Cada linha é de um bichinho só."
+      },
+      {
+        matriz: ["🐰", "🐢", "🐰", "🐢", "🐰", "🐢", "🐰", "🐢", "❓"],
+        resposta: "🐰",
+        opcoes: ["🐰", "🐢", "🐿️", "🦔"],
+        dica: "Coelho e tartaruga se revezando do começo ao fim."
+      },
+      {
+        matriz: ["🐝", "🐝", "🦋", "🐝", "🐝", "🦋", "🐝", "🐝", "❓"],
+        resposta: "🦋",
+        opcoes: ["🐝", "🦋", "🐞", "🕷️"],
+        dica: "Duas abelhas e uma borboleta, sempre nessa ordem."
+      },
+      {
+        matriz: ["🦁", "🐯", "🐻", "🐯", "🐻", "🦁", "🐻", "🦁", "❓"],
+        resposta: "🐯",
+        opcoes: ["🦁", "🐯", "🐻", "🐨"],
+        dica: "Os 3 bichos grandes aparecem uma vez em cada linha."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_formas",
+    tipo: "padrao",
+    titulo: "Quadro de Formas",
+    descricao: "As formas se organizam num quadrado!",
+    emoji: "🔷",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "As formas geométricas montaram um quadro juntas! 🔷 Cada uma sabe onde ficar para o desenho ficar bonito. Qual forma está faltando no canto?",
+    puzzles: [
+      {
+        matriz: ["🔴", "🔵", "🔴", "🔵", "🔴", "🔵", "🔴", "🔵", "❓"],
+        resposta: "🔴",
+        opcoes: ["🔴", "🔵", "🟡", "🟢"],
+        dica: "Vermelho e azul se revezando sem parar."
+      },
+      {
+        matriz: ["🔺", "🔺", "🔺", "🟦", "🟦", "🟦", "⭕", "⭕", "❓"],
+        resposta: "⭕",
+        opcoes: ["🔺", "🟦", "⭕", "⬛"],
+        dica: "Cada linha tem uma forma só, repetida três vezes."
+      },
+      {
+        matriz: ["⭐", "🔷", "⭐", "🔷", "⭐", "🔷", "⭐", "🔷", "❓"],
+        resposta: "⭐",
+        opcoes: ["⭐", "🔷", "🔶", "🟣"],
+        dica: "Estrela, losango, estrela, losango..."
+      },
+      {
+        matriz: ["🟩", "🟨", "🟥", "🟨", "🟥", "🟩", "🟥", "🟩", "❓"],
+        resposta: "🟨",
+        opcoes: ["🟩", "🟨", "🟥", "🟦"],
+        dica: "As mesmas 3 cores em cada linha, mudando de ordem."
+      },
+      {
+        matriz: ["⬛", "⬜", "⬛", "⬜", "⬛", "⬜", "⬛", "⬜", "❓"],
+        resposta: "⬛",
+        opcoes: ["⬛", "⬜", "🟫", "🟪"],
+        dica: "Preto e branco alternando, como um tabuleiro."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_casa",
+    tipo: "padrao",
+    titulo: "Quadro da Casa",
+    descricao: "As coisas da casa têm seu lugar no quadro!",
+    emoji: "🏠",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "Na hora de arrumar a casa, tudo ganhou um lugar certinho no quadro! 🏠 Cada objeto tem sua posição. Descubra o que falta guardar no último espaço.",
+    puzzles: [
+      {
+        matriz: ["🛏️", "🪑", "🛏️", "🪑", "🛏️", "🪑", "🛏️", "🪑", "❓"],
+        resposta: "🛏️",
+        opcoes: ["🛏️", "🪑", "🚪", "🪟"],
+        dica: "Cama e cadeira se revezando o tempo todo."
+      },
+      {
+        matriz: ["🍴", "🍴", "🍴", "🥄", "🥄", "🥄", "🍽️", "🍽️", "❓"],
+        resposta: "🍽️",
+        opcoes: ["🍴", "🥄", "🍽️", "🥤"],
+        dica: "Cada linha guarda um tipo de talher."
+      },
+      {
+        matriz: ["🚪", "🪟", "🛋️", "🪟", "🛋️", "🚪", "🛋️", "🚪", "❓"],
+        resposta: "🪟",
+        opcoes: ["🚪", "🪟", "🛋️", "🪴"],
+        dica: "Os mesmos 3 objetos em cada linha, trocando de lugar."
+      },
+      {
+        matriz: ["🧸", "🧸", "📚", "🧸", "🧸", "📚", "🧸", "🧸", "❓"],
+        resposta: "📚",
+        opcoes: ["🧸", "📚", "🖍️", "🎒"],
+        dica: "Dois ursinhos e um livro, repetindo."
+      },
+      {
+        matriz: ["💡", "🕯️", "💡", "🕯️", "💡", "🕯️", "💡", "🕯️", "❓"],
+        resposta: "💡",
+        opcoes: ["💡", "🕯️", "🔦", "🪔"],
+        dica: "Lâmpada e vela alternando."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_cores2",
+    tipo: "padrao",
+    titulo: "Quadro do Arco-Íris",
+    descricao: "As cores se organizam no quadrado!",
+    emoji: "🌈",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "O arco-íris resolveu se organizar num quadrado! 🌈 As cores ficaram bem-comportadas, cada uma no seu lugar. Que cor está faltando?",
+    puzzles: [
+      {
+        matriz: ["🟥", "🟧", "🟨", "🟧", "🟨", "🟥", "🟨", "🟥", "❓"],
+        resposta: "🟧",
+        opcoes: ["🟥", "🟧", "🟨", "🟩"],
+        dica: "As 3 cores quentes aparecem uma vez por linha."
+      },
+      {
+        matriz: ["🟦", "🟦", "🟦", "🟩", "🟩", "🟩", "🟪", "🟪", "❓"],
+        resposta: "🟪",
+        opcoes: ["🟦", "🟩", "🟪", "🟫"],
+        dica: "Cada linha inteira é de uma cor só."
+      },
+      {
+        matriz: ["🟨", "🟪", "🟨", "🟪", "🟨", "🟪", "🟨", "🟪", "❓"],
+        resposta: "🟨",
+        opcoes: ["🟨", "🟪", "🟧", "🟦"],
+        dica: "Amarelo e roxo se revezando."
+      },
+      {
+        matriz: ["🟩", "🟩", "🟥", "🟩", "🟩", "🟥", "🟩", "🟩", "❓"],
+        resposta: "🟥",
+        opcoes: ["🟩", "🟥", "🟦", "🟨"],
+        dica: "Dois verdes e um vermelho, sempre nessa ordem."
+      },
+      {
+        matriz: ["⬜", "🟦", "⬜", "🟦", "⬜", "🟦", "⬜", "🟦", "❓"],
+        resposta: "⬜",
+        opcoes: ["⬜", "🟦", "🟥", "⬛"],
+        dica: "Branco e azul, um depois do outro."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_espaco",
+    tipo: "padrao",
+    titulo: "Quadro do Céu",
+    descricao: "Sol, lua e estrela têm seu lugar no céu!",
+    emoji: "⭐",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "O céu da noite se organizou num quadro brilhante! ⭐ Sol, lua e estrelas ficaram cada um no seu canto. Descubra quem falta acender!",
+    puzzles: [
+      {
+        matriz: ["☀️", "🌙", "⭐", "🌙", "⭐", "☀️", "⭐", "☀️", "❓"],
+        resposta: "🌙",
+        opcoes: ["☀️", "🌙", "⭐", "☁️"],
+        dica: "Sol, lua e estrela aparecem uma vez em cada linha."
+      },
+      {
+        matriz: ["⭐", "⭐", "⭐", "🌙", "🌙", "🌙", "☀️", "☀️", "❓"],
+        resposta: "☀️",
+        opcoes: ["⭐", "🌙", "☀️", "🪐"],
+        dica: "Cada linha tem só um tipo de luz."
+      },
+      {
+        matriz: ["🌍", "🪐", "🌍", "🪐", "🌍", "🪐", "🌍", "🪐", "❓"],
+        resposta: "🌍",
+        opcoes: ["🌍", "🪐", "🌕", "🚀"],
+        dica: "Terra e Saturno se revezando."
+      },
+      {
+        matriz: ["🚀", "🚀", "🛸", "🚀", "🚀", "🛸", "🚀", "🚀", "❓"],
+        resposta: "🛸",
+        opcoes: ["🚀", "🛸", "🌟", "👨‍🚀"],
+        dica: "Dois foguetes e um disco voador, repetindo."
+      },
+      {
+        matriz: ["🌑", "🌓", "🌕", "🌓", "🌕", "🌑", "🌕", "🌑", "❓"],
+        resposta: "🌓",
+        opcoes: ["🌑", "🌓", "🌕", "🌗"],
+        dica: "As 3 luas aparecem uma vez em cada linha."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_roupas",
+    tipo: "padrao",
+    titulo: "Quadro do Guarda-Roupa",
+    descricao: "As roupas foram dobradas em ordem!",
+    emoji: "👕",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "Na hora de guardar as roupas, tudo foi dobrado numa ordem caprichada! 👕 Cada peça no seu lugar, linha por linha. Qual peça ficou de fora?",
+    puzzles: [
+      {
+        matriz: ["👕", "👖", "👕", "👖", "👕", "👖", "👕", "👖", "❓"],
+        resposta: "👕",
+        opcoes: ["👕", "👖", "🧦", "🧥"],
+        dica: "Camiseta e calça alternando."
+      },
+      {
+        matriz: ["🧦", "🧦", "🧦", "👟", "👟", "👟", "🧢", "🧢", "❓"],
+        resposta: "🧢",
+        opcoes: ["🧦", "👟", "🧢", "🧤"],
+        dica: "Cada linha tem só um tipo de peça."
+      },
+      {
+        matriz: ["🧥", "👗", "🧣", "👗", "🧣", "🧥", "🧣", "🧥", "❓"],
+        resposta: "👗",
+        opcoes: ["🧥", "👗", "🧣", "👔"],
+        dica: "As mesmas 3 peças em cada linha, trocando de ordem."
+      },
+      {
+        matriz: ["👟", "👟", "🧦", "👟", "👟", "🧦", "👟", "👟", "❓"],
+        resposta: "🧦",
+        opcoes: ["👟", "🧦", "👞", "🥾"],
+        dica: "Dois tênis e uma meia, repetindo."
+      },
+      {
+        matriz: ["🧤", "🧣", "🧤", "🧣", "🧤", "🧣", "🧤", "🧣", "❓"],
+        resposta: "🧤",
+        opcoes: ["🧤", "🧣", "🧥", "🧢"],
+        dica: "Luva e cachecol, um depois do outro."
+      }
+    ]
+  },
+  {
+    id: "exp_padrao_jardim",
+    tipo: "padrao",
+    titulo: "Quadro do Jardim",
+    descricao: "O canteiro foi plantado seguindo um desenho!",
+    emoji: "🌱",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 70,
+    coins_reward: 70,
+    tempo_estimado: 8,
+    historinha: "O canteiro do jardim foi plantado em três fileiras bem organizadas! 🌱 Cada planta no lugar certo. Falta plantar uma — descubra qual!",
+    puzzles: [
+      {
+        matriz: ["🌻", "🌵", "🌻", "🌵", "🌻", "🌵", "🌻", "🌵", "❓"],
+        resposta: "🌻",
+        opcoes: ["🌻", "🌵", "🌳", "🍄"],
+        dica: "Girassol e cacto se revezando."
+      },
+      {
+        matriz: ["🌳", "🌳", "🌳", "🌴", "🌴", "🌴", "🌲", "🌲", "❓"],
+        resposta: "🌲",
+        opcoes: ["🌳", "🌴", "🌲", "🎋"],
+        dica: "Cada fileira tem uma árvore só."
+      },
+      {
+        matriz: ["🍄", "🌿", "🌱", "🌿", "🌱", "🍄", "🌱", "🍄", "❓"],
+        resposta: "🌿",
+        opcoes: ["🍄", "🌿", "🌱", "🍀"],
+        dica: "As 3 plantinhas aparecem uma vez em cada fileira."
+      },
+      {
+        matriz: ["🌷", "🌷", "🐛", "🌷", "🌷", "🐛", "🌷", "🌷", "❓"],
+        resposta: "🐛",
+        opcoes: ["🌷", "🐛", "🐝", "🦋"],
+        dica: "Duas tulipas e uma lagarta, sempre nessa ordem."
+      },
+      {
+        matriz: ["🍀", "🌾", "🍀", "🌾", "🍀", "🌾", "🍀", "🌾", "❓"],
+        resposta: "🍀",
+        opcoes: ["🍀", "🌾", "🌿", "🎍"],
+        dica: "Trevo e trigo alternando."
+      }
+    ]
+  }
+]

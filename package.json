@@ -16,6 +16,8 @@
     "auditar-alfabeto": "node scripts/auditar-alfabeto.mjs",
     "conferir-jwt": "node conferir-verify-jwt.mjs",
     "auditar-colorir": "node scripts/auditar-colorir.mjs",
+    "inventario": "node scripts/inventario-atividades.mjs",
+    "auditar-raciocinio": "node scripts/auditar-sequencia-padrao.mjs",
     "render-colorir": "node scripts/render-colorir.mjs",
     "preparar-sql-economia": "node scripts/preparar-sql-economia.mjs"
   },

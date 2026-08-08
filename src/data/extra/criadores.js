@@ -7009,3 +7009,606 @@ export const quizExtraPorFaixa = [
     ]
   }
 ]
+
+// ── Raciocínio — sequências e padrões (expansão 08/08/2026) ──
+// Nesta faixa entram famílias de números com NOME (primos, Fibonacci, cúbicos) e
+// as três escritas do mesmo valor (fração, decimal, porcentagem). O `contexto_matematico`
+// aparece na tela de encerramento e é onde mora o "por que isso importa".
+export const raciocinioExtraPorFaixa = [
+  {
+    id: "cri_seq_primos",
+    tipo: "sequencia",
+    titulo: "Números Primos",
+    descricao: "Os números que só se dividem por 1 e por eles mesmos!",
+    emoji: "🔐",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "Existem números que se recusam a ser divididos! 🔐 Os primos só aceitam divisão por 1 e por eles mesmos. Eles não seguem um salto fixo — você precisa reconhecê-los. Qual é o próximo?",
+    contexto_matematico: "Os primos são os 'átomos' dos números: todo número inteiro é um produto de primos, de um jeito só. É por isso que eles protegem sua senha na internet — multiplicar dois primos gigantes é fácil, mas descobrir quais eram, a partir do resultado, é praticamente impossível.",
+    sequencias: [
+      { items: ["2", "3", "5", "7", "❓"], resposta: "11", opcoes: ["8", "9", "10", "11"] },
+      { items: ["11", "13", "17", "19", "❓"], resposta: "23", opcoes: ["20", "21", "22", "23"] },
+      { items: ["2", "3", "❓", "7", "11"], resposta: "5", opcoes: ["4", "5", "6", "9"] },
+      { items: ["13", "17", "19", "23", "❓"], resposta: "29", opcoes: ["25", "27", "29", "31"] },
+      { items: ["5", "7", "11", "13", "❓"], resposta: "17", opcoes: ["15", "16", "17", "19"] }
+    ]
+  },
+  {
+    id: "cri_seq_fibonacci",
+    tipo: "sequencia",
+    titulo: "Sequência de Fibonacci",
+    descricao: "Cada número é a soma dos dois anteriores!",
+    emoji: "🐚",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "Existe uma sequência que aparece nas conchas, nos girassóis e nas pinhas! 🐚 A regra é simples: some os dois últimos para achar o próximo. Descubra o número que falta.",
+    contexto_matematico: "Fibonacci descreveu essa sequência em 1202, estudando coelhos. Dividindo um número pelo anterior, o resultado se aproxima de 1,618 — a proporção áurea, que aparece nas pétalas das flores e nas espirais das galáxias.",
+    sequencias: [
+      { items: ["1", "1", "2", "3", "❓"], resposta: "5", opcoes: ["4", "5", "6", "8"] },
+      { items: ["2", "3", "5", "8", "❓"], resposta: "13", opcoes: ["11", "12", "13", "16"] },
+      { items: ["5", "8", "13", "21", "❓"], resposta: "34", opcoes: ["26", "30", "34", "42"] },
+      { items: ["1", "1", "2", "❓", "5"], resposta: "3", opcoes: ["3", "4", "6", "8"] },
+      { items: ["13", "21", "34", "55", "❓"], resposta: "89", opcoes: ["68", "79", "89", "99"] }
+    ]
+  },
+  {
+    id: "cri_seq_potencias3",
+    tipo: "sequencia",
+    titulo: "Potências de 3",
+    descricao: "Multiplicando por 3 a cada passo!",
+    emoji: "📈",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "Uma notícia se espalha assim: cada pessoa conta para 3 outras! 📈 Em cinco rodadas já são centenas. Descubra quantas pessoas sabem na próxima rodada.",
+    contexto_matematico: "Multiplicar sempre pelo mesmo número chama-se crescimento EXPONENCIAL — e ele engana o olho: parece devagar no começo e vira uma explosão. É assim que uma notícia viraliza e é assim que uma epidemia se espalha.",
+    sequencias: [
+      { items: ["1", "3", "9", "27", "❓"], resposta: "81", opcoes: ["54", "72", "81", "108"] },
+      { items: ["3", "9", "27", "81", "❓"], resposta: "243", opcoes: ["162", "200", "243", "324"] },
+      { items: ["1", "3", "❓", "27", "81"], resposta: "9", opcoes: ["6", "9", "12", "18"] },
+      { items: ["9", "27", "81", "243", "❓"], resposta: "729", opcoes: ["486", "600", "729", "981"] },
+      { items: ["2", "6", "18", "54", "❓"], resposta: "162", opcoes: ["108", "150", "162", "216"] }
+    ]
+  },
+  {
+    id: "cri_seq_cubos",
+    tipo: "sequencia",
+    titulo: "Números Cúbicos",
+    descricao: "Números que formam cubos perfeitos!",
+    emoji: "🧊",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "Com 8 cubinhos monta-se um cubo 2×2×2. Com 27, um cubo 3×3×3! 🧊 Esses são os números cúbicos. Descubra quantos cubinhos vêm no próximo.",
+    contexto_matematico: "Um número cúbico é um número multiplicado por ele mesmo três vezes: 4×4×4 = 64. Enquanto o quadrado mede ÁREA, o cubo mede VOLUME — é por isso que dobrar o lado de uma caixa multiplica o que cabe dentro por 8, não por 2.",
+    sequencias: [
+      { items: ["1", "8", "27", "64", "❓"], resposta: "125", opcoes: ["100", "110", "125", "216"] },
+      { items: ["8", "27", "64", "125", "❓"], resposta: "216", opcoes: ["180", "200", "216", "343"] },
+      { items: ["1", "8", "❓", "64", "125"], resposta: "27", opcoes: ["16", "20", "27", "36"] },
+      { items: ["27", "64", "125", "216", "❓"], resposta: "343", opcoes: ["289", "300", "343", "512"] },
+      { items: ["64", "125", "216", "343", "❓"], resposta: "512", opcoes: ["441", "480", "512", "729"] }
+    ]
+  },
+  {
+    id: "cri_seq_decimais",
+    tipo: "sequencia",
+    titulo: "Números Decimais",
+    descricao: "Sequências com vírgula!",
+    emoji: "🔬",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "No laboratório, a balança mede com casas decimais! 🔬 As medidas crescem em passos exatos, menores que 1. Descubra a próxima medida.",
+    contexto_matematico: "A vírgula não muda nada na lógica: 0,5 + 0,5 = 1,0 pela mesma regra que 5 + 5 = 10. O que muda é o TAMANHO do passo — decimais permitem medir entre dois números inteiros, que é onde o mundo real quase sempre está.",
+    sequencias: [
+      { items: ["0,5", "1,0", "1,5", "2,0", "❓"], resposta: "2,5", opcoes: ["2,2", "2,5", "3,0", "3,5"] },
+      { items: ["0,25", "0,50", "0,75", "❓"], resposta: "1,00", opcoes: ["0,85", "1,00", "1,25", "1,50"] },
+      { items: ["1,1", "1,2", "1,3", "1,4", "❓"], resposta: "1,5", opcoes: ["1,5", "1,6", "2,0", "2,4"] },
+      { items: ["10,0", "9,5", "9,0", "8,5", "❓"], resposta: "8,0", opcoes: ["7,5", "8,0", "8,2", "7,0"] },
+      { items: ["0,1", "0,2", "0,4", "0,8", "❓"], resposta: "1,6", opcoes: ["1,0", "1,2", "1,6", "3,2"] }
+    ]
+  },
+  {
+    id: "cri_seq_negativos2",
+    tipo: "sequencia",
+    titulo: "Abaixo do Zero",
+    descricao: "Sequências que atravessam o zero!",
+    emoji: "🌡️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "O termômetro da estação polar registra a temperatura de hora em hora! 🌡️ Ela cai e sobe em passos regulares, passando pelo zero. Qual é a próxima medida?",
+    contexto_matematico: "Os números negativos existem porque zero não é o fim da reta — é só um ponto no meio dela. Sem eles não daria para falar de temperatura abaixo de zero, de dívida, nem de andar de subsolo.",
+    sequencias: [
+      { items: ["-5", "-3", "-1", "1", "❓"], resposta: "3", opcoes: ["2", "3", "4", "5"] },
+      { items: ["-10", "-8", "-6", "-4", "❓"], resposta: "-2", opcoes: ["-3", "-2", "0", "2"] },
+      { items: ["5", "3", "1", "-1", "❓"], resposta: "-3", opcoes: ["-2", "-3", "-4", "-5"] },
+      { items: ["-1", "-2", "-3", "-4", "❓"], resposta: "-5", opcoes: ["-5", "-6", "0", "5"] },
+      { items: ["-9", "-6", "-3", "0", "❓"], resposta: "3", opcoes: ["1", "3", "6", "-3"] }
+    ]
+  },
+  {
+    id: "cri_seq_porcentagem",
+    tipo: "sequencia",
+    titulo: "Porcentagens em Ordem",
+    descricao: "Do 0% ao 100%, em passos certos!",
+    emoji: "📊",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "A barra de download avança em porcentagem! 📊 Cada etapa sobe um tanto fixo — ou dobra. Descubra em quanto está a próxima etapa.",
+    contexto_matematico: "Por cento significa 'a cada cem'. 25% é o mesmo que 1/4 e que 0,25 — três escritas do mesmo valor. Saber trocar entre elas é o que permite comparar um desconto de 30% com outro de 1/4 sem se enganar.",
+    sequencias: [
+      { items: ["10%", "20%", "30%", "40%", "❓"], resposta: "50%", opcoes: ["45%", "50%", "60%", "70%"] },
+      { items: ["25%", "50%", "75%", "❓"], resposta: "100%", opcoes: ["80%", "90%", "100%", "125%"] },
+      { items: ["100%", "90%", "80%", "70%", "❓"], resposta: "60%", opcoes: ["50%", "60%", "65%", "75%"] },
+      { items: ["5%", "10%", "20%", "40%", "❓"], resposta: "80%", opcoes: ["50%", "60%", "80%", "100%"] },
+      { items: ["12%", "24%", "36%", "48%", "❓"], resposta: "60%", opcoes: ["55%", "60%", "72%", "96%"] }
+    ]
+  },
+  {
+    id: "cri_seq_angulos",
+    tipo: "sequencia",
+    titulo: "Ângulos em Sequência",
+    descricao: "Os ângulos também seguem padrões!",
+    emoji: "📐",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "O ponteiro do relógio gira em ângulos exatos! 📐 E os polígonos também guardam somas de ângulos que crescem numa ordem certa. Descubra o ângulo que falta.",
+    contexto_matematico: "A soma dos ângulos internos cresce 180° a cada lado novo: triângulo 180°, quadrilátero 360°, pentágono 540°. O motivo é bonito — todo polígono de n lados pode ser cortado em exatamente n−2 triângulos.",
+    sequencias: [
+      { items: ["180°", "360°", "540°", "720°", "❓"], resposta: "900°", opcoes: ["810°", "900°", "990°", "1080°"] },
+      { items: ["60°", "120°", "180°", "240°", "❓"], resposta: "300°", opcoes: ["280°", "300°", "320°", "360°"] },
+      { items: ["90°", "180°", "270°", "❓"], resposta: "360°", opcoes: ["300°", "330°", "360°", "450°"] },
+      { items: ["30°", "45°", "60°", "❓"], resposta: "75°", opcoes: ["70°", "75°", "80°", "90°"] },
+      { items: ["360°", "180°", "90°", "❓"], resposta: "45°", opcoes: ["30°", "45°", "60°", "0°"] }
+    ]
+  },
+  {
+    id: "cri_seq_razoes",
+    tipo: "sequencia",
+    titulo: "Razões e Proporções",
+    descricao: "Duas quantidades que crescem juntas!",
+    emoji: "⚖️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "A receita do bolo é para 2 pessoas, mas vêm 10! ⚖️ Os ingredientes precisam crescer juntos, na mesma proporção. Descubra a razão que falta.",
+    contexto_matematico: "Uma razão só se mantém se os dois lados forem multiplicados pelo MESMO número: 1:2 é igual a 5:10 porque os dois foram multiplicados por 5. Somar não funciona — 1:2 não é igual a 2:3.",
+    sequencias: [
+      { items: ["1:2", "2:4", "3:6", "4:8", "❓"], resposta: "5:10", opcoes: ["5:9", "5:10", "6:10", "5:12"] },
+      { items: ["1:3", "2:6", "3:9", "❓"], resposta: "4:12", opcoes: ["4:10", "4:12", "5:12", "4:15"] },
+      { items: ["2:1", "4:2", "6:3", "❓"], resposta: "8:4", opcoes: ["8:3", "8:4", "9:4", "10:4"] },
+      { items: ["1:1", "2:2", "3:3", "❓"], resposta: "4:4", opcoes: ["4:3", "4:4", "4:5", "5:4"] },
+      { items: ["5:10", "10:20", "15:30", "❓"], resposta: "20:40", opcoes: ["20:30", "20:40", "25:40", "20:45"] }
+    ]
+  },
+  {
+    id: "cri_seq_tempo2",
+    tipo: "sequencia",
+    titulo: "Convertendo o Tempo",
+    descricao: "Segundos, horas, dias e anos!",
+    emoji: "⏳",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 10,
+    historinha: "A missão espacial conta o tempo em várias unidades ao mesmo tempo! ⏳ Cada etapa dura um múltiplo exato da anterior. Descubra a duração da próxima.",
+    contexto_matematico: "O tempo é a única medida do dia a dia que NÃO é decimal: 60 segundos, 60 minutos, 24 horas, 7 dias. Essa mistura vem de povos diferentes — os babilônios contavam de 60 em 60 e os romanos fixaram a semana de 7 dias.",
+    sequencias: [
+      { items: ["60s", "120s", "180s", "240s", "❓"], resposta: "300s", opcoes: ["280s", "300s", "320s", "360s"] },
+      { items: ["1min", "2min", "4min", "8min", "❓"], resposta: "16min", opcoes: ["10min", "12min", "16min", "32min"] },
+      { items: ["24h", "48h", "72h", "❓"], resposta: "96h", opcoes: ["84h", "96h", "100h", "120h"] },
+      { items: ["7d", "14d", "21d", "❓"], resposta: "28d", opcoes: ["24d", "28d", "30d", "35d"] },
+      { items: ["12h", "24h", "36h", "48h", "❓"], resposta: "60h", opcoes: ["54h", "60h", "72h", "96h"] }
+    ]
+  },
+  {
+    id: "cri_padrao_potencias",
+    tipo: "padrao",
+    titulo: "Grade das Potências",
+    descricao: "Número, quadrado e cubo em cada linha!",
+    emoji: "🧊",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 11,
+    historinha: "Cada linha desta grade mostra um número, o quadrado dele e o cubo dele! 🧊 A regra é a mesma nas três linhas. Complete a última casa.",
+    puzzles: [
+      {
+        matriz: ["2", "4", "8", "3", "9", "27", "4", "16", "❓"],
+        resposta: "64",
+        opcoes: ["32", "48", "64", "81"],
+        dica: "Linha: n, n×n, n×n×n. Aqui n = 4."
+      },
+      {
+        matriz: ["1", "1", "1", "2", "4", "8", "5", "25", "❓"],
+        resposta: "125",
+        opcoes: ["75", "100", "125", "225"],
+        dica: "5 × 5 × 5."
+      },
+      {
+        matriz: ["2", "4", "8", "4", "16", "64", "3", "9", "❓"],
+        resposta: "27",
+        opcoes: ["12", "18", "27", "81"],
+        dica: "O cubo de 3."
+      },
+      {
+        matriz: ["10", "100", "1000", "2", "4", "8", "6", "36", "❓"],
+        resposta: "216",
+        opcoes: ["108", "180", "216", "296"],
+        dica: "6 × 6 × 6."
+      },
+      {
+        matriz: ["5", "25", "125", "3", "9", "27", "7", "49", "❓"],
+        resposta: "343",
+        opcoes: ["245", "294", "343", "392"],
+        dica: "7 × 7 × 7."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_fracoes",
+    tipo: "padrao",
+    titulo: "Grade das Três Escritas",
+    descricao: "Fração, decimal e porcentagem do mesmo valor!",
+    emoji: "🍕",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 12,
+    historinha: "O mesmo pedaço de pizza pode ser escrito de três jeitos! 🍕 Fração, decimal e porcentagem dizem a MESMA coisa. Complete a terceira escrita.",
+    puzzles: [
+      {
+        matriz: ["1/2", "0,5", "50%", "1/4", "0,25", "25%", "3/4", "0,75", "❓"],
+        resposta: "75%",
+        opcoes: ["34%", "70%", "75%", "80%"],
+        dica: "As 3 casas da linha são o MESMO valor escrito de outro jeito."
+      },
+      {
+        matriz: ["1/5", "0,2", "20%", "2/5", "0,4", "40%", "3/5", "0,6", "❓"],
+        resposta: "60%",
+        opcoes: ["35%", "60%", "65%", "80%"],
+        dica: "0,6 em porcentagem."
+      },
+      {
+        matriz: ["1/10", "0,1", "10%", "3/10", "0,3", "30%", "7/10", "0,7", "❓"],
+        resposta: "70%",
+        opcoes: ["7%", "17%", "70%", "77%"],
+        dica: "Sete décimos."
+      },
+      {
+        matriz: ["1/1", "1,0", "100%", "1/2", "0,5", "50%", "1/4", "0,25", "❓"],
+        resposta: "25%",
+        opcoes: ["14%", "25%", "40%", "45%"],
+        dica: "Um quarto do total."
+      },
+      {
+        matriz: ["2/10", "0,2", "20%", "5/10", "0,5", "50%", "8/10", "0,8", "❓"],
+        resposta: "80%",
+        opcoes: ["8%", "18%", "80%", "88%"],
+        dica: "Oito décimos."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_primos2",
+    tipo: "padrao",
+    titulo: "Grade dos Primos",
+    descricao: "Os primos em ordem dentro do quadrado!",
+    emoji: "🔐",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 11,
+    historinha: "Os números primos entraram na grade em ordem crescente! 🔐 Eles não têm salto fixo — é preciso reconhecer quem é primo. Qual fecha o quadrado?",
+    puzzles: [
+      {
+        matriz: ["2", "3", "5", "7", "11", "13", "17", "19", "❓"],
+        resposta: "23",
+        opcoes: ["21", "22", "23", "25"],
+        dica: "O próximo primo depois de 19. Cuidado: 21 = 3×7."
+      },
+      {
+        matriz: ["3", "5", "7", "11", "13", "17", "19", "23", "❓"],
+        resposta: "29",
+        opcoes: ["25", "27", "29", "31"],
+        dica: "25 = 5×5 e 27 = 3×9, então nenhum dos dois é primo."
+      },
+      {
+        matriz: ["2", "3", "5", "3", "5", "7", "5", "7", "❓"],
+        resposta: "11",
+        opcoes: ["9", "10", "11", "13"],
+        dica: "Cada linha começa um primo depois da anterior."
+      },
+      {
+        matriz: ["29", "23", "19", "17", "13", "11", "7", "5", "❓"],
+        resposta: "3",
+        opcoes: ["1", "2", "3", "4"],
+        dica: "Os primos em ordem DECRESCENTE."
+      },
+      {
+        matriz: ["11", "13", "17", "19", "23", "29", "31", "37", "❓"],
+        resposta: "41",
+        opcoes: ["39", "40", "41", "43"],
+        dica: "39 = 3×13, então não serve."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_operacoes",
+    tipo: "padrao",
+    titulo: "Grade das Operações",
+    descricao: "Descubra QUAL operação a grade está usando!",
+    emoji: "🎛️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 12,
+    historinha: "Aqui a regra muda de grade para grade! 🎛️ Pode ser soma, subtração, multiplicação ou divisão. Descubra qual é olhando as duas primeiras linhas.",
+    puzzles: [
+      {
+        matriz: ["10", "2", "20", "8", "3", "24", "7", "4", "❓"],
+        resposta: "28",
+        opcoes: ["11", "21", "28", "32"],
+        dica: "Teste as duas primeiras linhas: 10 e 2 dão 20. É multiplicação."
+      },
+      {
+        matriz: ["20", "5", "4", "18", "3", "6", "24", "4", "❓"],
+        resposta: "6",
+        opcoes: ["4", "6", "8", "20"],
+        dica: "20 dividido por 5 dá 4. É divisão."
+      },
+      {
+        matriz: ["15", "5", "10", "20", "8", "12", "30", "12", "❓"],
+        resposta: "18",
+        opcoes: ["15", "18", "20", "42"],
+        dica: "15 menos 5 dá 10. É subtração."
+      },
+      {
+        matriz: ["6", "4", "10", "9", "7", "16", "12", "8", "❓"],
+        resposta: "20",
+        opcoes: ["18", "20", "22", "96"],
+        dica: "6 mais 4 dá 10. É soma."
+      },
+      {
+        matriz: ["100", "10", "10", "81", "9", "9", "64", "8", "❓"],
+        resposta: "8",
+        opcoes: ["6", "7", "8", "72"],
+        dica: "Divisão — e repare que os três primeiros são quadrados perfeitos."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_angulos",
+    tipo: "padrao",
+    titulo: "Grade dos Polígonos",
+    descricao: "Lados, triângulos e soma dos ângulos!",
+    emoji: "📐",
+    habilidade: "Raciocínio Espacial",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 12,
+    historinha: "Todo polígono pode ser cortado em triângulos! 📐 E como cada triângulo soma 180°, dá para descobrir a soma dos ângulos de qualquer figura. Complete a grade.",
+    puzzles: [
+      {
+        matriz: ["3", "1", "180", "4", "2", "360", "5", "3", "❓"],
+        resposta: "540",
+        opcoes: ["450", "540", "600", "720"],
+        dica: "Linha: lados, triângulos que cabem, soma. 3 triângulos × 180°."
+      },
+      {
+        matriz: ["4", "2", "360", "5", "3", "540", "6", "4", "❓"],
+        resposta: "720",
+        opcoes: ["630", "720", "810", "900"],
+        dica: "4 triângulos × 180°."
+      },
+      {
+        matriz: ["3", "60", "180", "4", "90", "360", "6", "120", "❓"],
+        resposta: "720",
+        opcoes: ["540", "600", "720", "840"],
+        dica: "Aqui a linha é: lados, ângulo de cada canto, soma total. 6 × 120°."
+      },
+      {
+        matriz: ["90", "90", "180", "60", "60", "120", "45", "45", "❓"],
+        resposta: "90",
+        opcoes: ["45", "90", "135", "180"],
+        dica: "Some os dois primeiros ângulos da linha."
+      },
+      {
+        matriz: ["360", "4", "90", "360", "3", "120", "360", "6", "❓"],
+        resposta: "60",
+        opcoes: ["45", "60", "72", "90"],
+        dica: "360° repartido em partes iguais. 360 ÷ 6."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_negativos",
+    tipo: "padrao",
+    titulo: "Grade Abaixo do Zero",
+    descricao: "A grade atravessa o zero!",
+    emoji: "🌡️",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 11,
+    historinha: "A grade do termômetro começa no negativo e sobe até o positivo! 🌡️ O salto é sempre o mesmo, mesmo passando pelo zero. Qual é a última medida?",
+    puzzles: [
+      {
+        matriz: ["-3", "-2", "-1", "0", "1", "2", "3", "4", "❓"],
+        resposta: "5",
+        opcoes: ["5", "6", "-5", "0"],
+        dica: "De 1 em 1, sem parar no zero."
+      },
+      {
+        matriz: ["-9", "-6", "-3", "0", "3", "6", "9", "12", "❓"],
+        resposta: "15",
+        opcoes: ["13", "15", "18", "-15"],
+        dica: "De 3 em 3."
+      },
+      {
+        matriz: ["5", "3", "1", "-1", "-3", "-5", "-7", "-9", "❓"],
+        resposta: "-11",
+        opcoes: ["-10", "-11", "-12", "11"],
+        dica: "Descendo de 2 em 2 — e já passou do zero."
+      },
+      {
+        matriz: ["-1", "-4", "-9", "-16", "-25", "-36", "-49", "-64", "❓"],
+        resposta: "-81",
+        opcoes: ["-72", "-81", "-100", "81"],
+        dica: "São os quadrados perfeitos, todos negativos."
+      },
+      {
+        matriz: ["-10", "-5", "0", "5", "10", "15", "20", "25", "❓"],
+        resposta: "30",
+        opcoes: ["27", "30", "35", "-30"],
+        dica: "De 5 em 5."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_decimais",
+    tipo: "padrao",
+    titulo: "Grade dos Decimais",
+    descricao: "Uma grade inteira depois da vírgula!",
+    emoji: "🔬",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 11,
+    historinha: "A grade do laboratório trabalha com casas decimais! 🔬 Os passos são menores que 1, mas seguem a mesma lógica dos inteiros. Complete a medida.",
+    puzzles: [
+      {
+        matriz: ["0,1", "0,2", "0,3", "0,4", "0,5", "0,6", "0,7", "0,8", "❓"],
+        resposta: "0,9",
+        opcoes: ["0,9", "1,0", "0,10", "1,9"],
+        dica: "De um décimo em um décimo. Cuidado: 0,10 é o mesmo que 0,1."
+      },
+      {
+        matriz: ["1,5", "2,0", "2,5", "3,0", "3,5", "4,0", "4,5", "5,0", "❓"],
+        resposta: "5,5",
+        opcoes: ["5,1", "5,5", "6,0", "5,05"],
+        dica: "De meio em meio."
+      },
+      {
+        matriz: ["0,5", "1,0", "2,0", "4,0", "8,0", "16,0", "32,0", "64,0", "❓"],
+        resposta: "128,0",
+        opcoes: ["96,0", "128,0", "129,0", "256,0"],
+        dica: "Aqui cada casa é o DOBRO da anterior."
+      },
+      {
+        matriz: ["10,0", "9,0", "8,0", "7,0", "6,0", "5,0", "4,0", "3,0", "❓"],
+        resposta: "2,0",
+        opcoes: ["1,0", "2,0", "2,5", "0,0"],
+        dica: "Descendo de 1 em 1."
+      },
+      {
+        matriz: ["0,25", "0,50", "0,75", "1,00", "1,25", "1,50", "1,75", "2,00", "❓"],
+        resposta: "2,25",
+        opcoes: ["2,10", "2,25", "2,50", "2,75"],
+        dica: "De um quarto em um quarto."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_multiplos",
+    tipo: "padrao",
+    titulo: "Grade dos Múltiplos",
+    descricao: "Cada linha é a tabuada de um número diferente!",
+    emoji: "🔢",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 11,
+    historinha: "Cada linha da grade segue uma tabuada diferente! 🔢 Descubra qual é a de baixo olhando como as de cima crescem. Complete o último múltiplo.",
+    puzzles: [
+      {
+        matriz: ["6", "12", "18", "8", "16", "24", "9", "18", "❓"],
+        resposta: "27",
+        opcoes: ["24", "27", "36", "81"],
+        dica: "Cada linha é a tabuada do primeiro número dela."
+      },
+      {
+        matriz: ["12", "24", "36", "15", "30", "45", "20", "40", "❓"],
+        resposta: "60",
+        opcoes: ["50", "60", "80", "100"],
+        dica: "Três vezes 20."
+      },
+      {
+        matriz: ["4", "8", "12", "6", "12", "18", "10", "20", "❓"],
+        resposta: "30",
+        opcoes: ["25", "30", "40", "100"],
+        dica: "Três vezes 10."
+      },
+      {
+        matriz: ["5", "10", "15", "7", "14", "21", "11", "22", "❓"],
+        resposta: "33",
+        opcoes: ["30", "32", "33", "44"],
+        dica: "Três vezes 11."
+      },
+      {
+        matriz: ["3", "9", "27", "2", "6", "18", "5", "15", "❓"],
+        resposta: "45",
+        opcoes: ["30", "40", "45", "75"],
+        dica: "Atenção: aqui cada casa é TRÊS VEZES a anterior, não mais três."
+      }
+    ]
+  },
+  {
+    id: "cri_padrao_duas_regras",
+    tipo: "padrao",
+    titulo: "Grade de Duas Regras",
+    descricao: "As linhas E as colunas seguem padrões!",
+    emoji: "🧭",
+    habilidade: "Lógica Matemática",
+    xp_reward: 110,
+    coins_reward: 110,
+    tempo_estimado: 12,
+    historinha: "Esta grade é mais esperta: existe um padrão nas LINHAS e outro nas COLUNAS! 🧭 Dá para chegar na resposta por dois caminhos — e conferir se batem.",
+    puzzles: [
+      {
+        matriz: ["1", "2", "3", "2", "4", "6", "3", "6", "❓"],
+        resposta: "9",
+        opcoes: ["8", "9", "12", "18"],
+        dica: "Linha 1 anda de 1, linha 2 de 2, linha 3 de 3. Pela coluna: 3, 6, 9."
+      },
+      {
+        matriz: ["1", "3", "5", "2", "4", "6", "3", "5", "❓"],
+        resposta: "7",
+        opcoes: ["7", "8", "9", "15"],
+        dica: "Toda linha anda de 2 em 2, e cada linha começa 1 acima da anterior."
+      },
+      {
+        matriz: ["10", "20", "30", "20", "40", "60", "30", "60", "❓"],
+        resposta: "90",
+        opcoes: ["80", "90", "100", "120"],
+        dica: "Cada linha é a tabuada do seu primeiro número."
+      },
+      {
+        matriz: ["2", "3", "4", "4", "6", "8", "6", "9", "❓"],
+        resposta: "12",
+        opcoes: ["10", "11", "12", "14"],
+        dica: "Linha 2 é o dobro da linha 1; linha 3 é o triplo."
+      },
+      {
+        matriz: ["5", "10", "15", "10", "20", "30", "15", "30", "❓"],
+        resposta: "45",
+        opcoes: ["40", "45", "50", "60"],
+        dica: "A coluna da direita também cresce: 15, 30, 45."
+      }
+    ]
+  }
+]

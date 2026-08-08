@@ -7252,3 +7252,606 @@ export const quizExtraPorFaixa = [
     ]
   }
 ]
+
+// ── Raciocínio — sequências e padrões (expansão 08/08/2026) ──
+// Aqui o padrão deixa de ser aritmético e vira ESTRUTURA: bases numéricas, fatoriais,
+// aritmética modular, triângulo de Pascal e lógica booleana. Várias destas grades são
+// a mesma coisa que a máquina faz por dentro — o `contexto_matematico` faz essa ponte.
+export const raciocinioExtraPorFaixa = [
+  {
+    id: "inv_seq_fatorial",
+    tipo: "sequencia",
+    titulo: "Fatoriais",
+    descricao: "O número de maneiras de embaralhar as coisas!",
+    emoji: "🎴",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "De quantas formas dá para embaralhar 5 cartas? 🎴 A resposta é 5! = 120. O fatorial multiplica todos os números até ele. Descubra o próximo da fila.",
+    contexto_matematico: "O fatorial cresce mais rápido que qualquer potência: 20! já passa de 2 quintilhões. É por isso que um baralho embaralhado de 52 cartas quase certamente nunca existiu antes na história — 52! é maior que o número de átomos da Via Láctea.",
+    sequencias: [
+      { items: ["1", "2", "6", "24", "❓"], resposta: "120", opcoes: ["48", "96", "120", "720"] },
+      { items: ["2", "6", "24", "120", "❓"], resposta: "720", opcoes: ["240", "600", "720", "5040"] },
+      { items: ["1", "2", "❓", "24", "120"], resposta: "6", opcoes: ["3", "4", "6", "12"] },
+      { items: ["6", "24", "120", "720", "❓"], resposta: "5040", opcoes: ["1440", "2880", "5040", "40320"] },
+      { items: ["24", "120", "720", "5040", "❓"], resposta: "40320", opcoes: ["20160", "35280", "40320", "362880"] }
+    ]
+  },
+  {
+    id: "inv_seq_hexadecimal",
+    tipo: "sequencia",
+    titulo: "Sistema Hexadecimal",
+    descricao: "Contando de 16 em 16, como o computador!",
+    emoji: "🖥️",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "No hexadecimal existem 16 algarismos: 0 a 9 e depois A, B, C, D, E, F! 🖥️ Depois do F, vira 10. Descubra o próximo valor da contagem.",
+    contexto_matematico: "O hexadecimal existe porque 1 dígito hexa vale exatamente 4 bits — então 2 dígitos fazem 1 byte, certinho. É por isso que as cores da web são escritas assim: #FF0000 é vermelho no máximo (FF = 255) e zero de verde e azul.",
+    sequencias: [
+      { items: ["8", "9", "A", "B", "❓"], resposta: "C", opcoes: ["C", "D", "10", "12"] },
+      { items: ["D", "E", "F", "❓"], resposta: "10", opcoes: ["10", "11", "G", "16"] },
+      { items: ["A", "B", "C", "D", "❓"], resposta: "E", opcoes: ["E", "F", "10", "14"] },
+      { items: ["0F", "10", "11", "12", "❓"], resposta: "13", opcoes: ["13", "14", "19", "1A"] },
+      { items: ["F", "1F", "2F", "3F", "❓"], resposta: "4F", opcoes: ["4F", "5F", "40", "FF"] }
+    ]
+  },
+  {
+    id: "inv_seq_potencias2",
+    tipo: "sequencia",
+    titulo: "Potências de 2",
+    descricao: "A escada que o computador sobe!",
+    emoji: "💾",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Toda memória de computador é medida em potências de 2! 💾 1, 2, 4, 8, 16... e é por isso que um pendrive tem 64 GB e nunca 60. Descubra o próximo degrau.",
+    contexto_matematico: "Cada bit novo DOBRA o número de valores possíveis: 8 bits dão 256 combinações, 16 bits dão 65.536. Por isso 1 KB são 1024 bytes e não 1000 — 1024 é 2¹⁰, e a máquina conta em dobros, não em dezenas.",
+    sequencias: [
+      { items: ["1", "2", "4", "8", "❓"], resposta: "16", opcoes: ["10", "12", "16", "32"] },
+      { items: ["64", "128", "256", "512", "❓"], resposta: "1024", opcoes: ["768", "1000", "1024", "2048"] },
+      { items: ["1KB", "2KB", "4KB", "8KB", "❓"], resposta: "16KB", opcoes: ["10KB", "12KB", "16KB", "32KB"] },
+      { items: ["2", "4", "8", "❓", "32"], resposta: "16", opcoes: ["12", "16", "24", "30"] },
+      { items: ["1024", "2048", "4096", "8192", "❓"], resposta: "16384", opcoes: ["10240", "12288", "16384", "32768"] }
+    ]
+  },
+  {
+    id: "inv_seq_collatz",
+    tipo: "sequencia",
+    titulo: "A Conjectura de Collatz",
+    descricao: "Par? Divide. Ímpar? Triplica e soma 1.",
+    emoji: "🌀",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "Pegue um número. Se for par, divida por 2. Se for ímpar, multiplique por 3 e some 1. 🌀 Repita. Todo mundo sempre chega ao 1 — mas ninguém conseguiu PROVAR isso ainda. Continue a sequência!",
+    contexto_matematico: "Esta é a Conjectura de Collatz, proposta em 1937 e ainda EM ABERTO. Já foi testada por computador até 2⁶⁸ e nunca falhou, mas testar não é provar. O matemático Paul Erdős disse: 'a matemática ainda não está pronta para problemas assim'.",
+    sequencias: [
+      { items: ["6", "3", "10", "5", "❓"], resposta: "16", opcoes: ["2", "15", "16", "20"] },
+      { items: ["16", "8", "4", "2", "❓"], resposta: "1", opcoes: ["0", "1", "2", "7"] },
+      { items: ["7", "22", "11", "34", "❓"], resposta: "17", opcoes: ["17", "35", "68", "102"] },
+      { items: ["5", "16", "8", "4", "❓"], resposta: "2", opcoes: ["1", "2", "3", "12"] },
+      { items: ["3", "10", "5", "16", "❓"], resposta: "8", opcoes: ["8", "17", "32", "48"] }
+    ]
+  },
+  {
+    id: "inv_seq_modular",
+    tipo: "sequencia",
+    titulo: "Aritmética Modular",
+    descricao: "Quando os números dão a volta, como no relógio!",
+    emoji: "🕰️",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "No relógio, depois das 11 vem 0, não 12! 🕰️ Isso é aritmética modular: os números dão a volta ao chegar no limite. Descubra o próximo, sem esquecer de dar a volta.",
+    contexto_matematico: "Módulo é o RESTO da divisão. 15 mod 12 = 3 porque 15 ÷ 12 sobra 3 — é assim que 15h vira 3 da tarde. Toda criptografia moderna, do PIX ao HTTPS, é construída em cima de aritmética modular com números gigantes.",
+    sequencias: [
+      { items: ["0", "1", "2", "3", "4", "❓"], resposta: "0", opcoes: ["0", "1", "5", "-1"] },
+      { items: ["1", "3", "0", "2", "4", "❓"], resposta: "1", opcoes: ["0", "1", "5", "6"] },
+      { items: ["2", "4", "6", "8", "10", "❓"], resposta: "0", opcoes: ["0", "2", "12", "14"] },
+      { items: ["0", "3", "6", "9", "❓"], resposta: "0", opcoes: ["0", "3", "12", "15"] },
+      { items: ["1", "2", "4", "1", "2", "❓"], resposta: "4", opcoes: ["1", "4", "8", "16"] }
+    ]
+  },
+  {
+    id: "inv_seq_pascal",
+    tipo: "sequencia",
+    titulo: "Triângulo de Pascal",
+    descricao: "Cada número é a soma dos dois de cima!",
+    emoji: "🔻",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "No triângulo de Pascal, cada número nasce da soma dos dois que estão acima dele! 🔻 Cada linha é simétrica: lê-se igual dos dois lados. Descubra o número que falta na linha.",
+    contexto_matematico: "As linhas de Pascal dão as combinações: a linha 5 (1, 5, 10, 10, 5, 1) diz de quantos jeitos dá para escolher 0, 1, 2... itens entre 5. E a soma de cada linha é uma potência de 2 — porque escolher é sempre 'leva ou não leva' item por item.",
+    sequencias: [
+      { items: ["1", "4", "❓", "4", "1"], resposta: "6", opcoes: ["4", "5", "6", "8"] },
+      { items: ["1", "5", "10", "❓", "5", "1"], resposta: "10", opcoes: ["5", "10", "15", "20"] },
+      { items: ["1", "6", "15", "❓", "15", "6", "1"], resposta: "20", opcoes: ["15", "18", "20", "30"] },
+      { items: ["1", "3", "❓", "1"], resposta: "3", opcoes: ["2", "3", "4", "6"] },
+      { items: ["1", "7", "21", "35", "❓", "21", "7", "1"], resposta: "35", opcoes: ["21", "28", "35", "42"] }
+    ]
+  },
+  {
+    id: "inv_seq_primos_gemeos",
+    tipo: "sequencia",
+    titulo: "Primos Gêmeos",
+    descricao: "Primos que andam de dois em dois!",
+    emoji: "👯",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "Alguns primos vivem em dupla, separados por apenas 2: (3,5), (11,13), (17,19)! 👯 São os primos gêmeos. Descubra o próximo par.",
+    contexto_matematico: "Ninguém sabe se os primos gêmeos são infinitos — é outro problema EM ABERTO. Em 2013 Yitang Zhang provou que existem infinitos pares de primos separados por no máximo 70 milhões; um esforço coletivo já baixou esse número para 246. De 246 para 2 ainda é um abismo.",
+    sequencias: [
+      { items: ["3", "5", "11", "17", "❓"], resposta: "29", opcoes: ["23", "27", "29", "31"] },
+      { items: ["5", "7", "13", "19", "❓"], resposta: "31", opcoes: ["23", "29", "31", "37"] },
+      { items: ["11", "13", "17", "19", "29", "❓"], resposta: "31", opcoes: ["23", "31", "33", "37"] },
+      { items: ["41", "43", "59", "61", "71", "❓"], resposta: "73", opcoes: ["72", "73", "75", "79"] },
+      { items: ["3", "5", "5", "7", "11", "❓"], resposta: "13", opcoes: ["12", "13", "15", "17"] }
+    ]
+  },
+  {
+    id: "inv_seq_geometrica2",
+    tipo: "sequencia",
+    titulo: "Progressões Geométricas",
+    descricao: "Multiplicando sempre pela mesma razão!",
+    emoji: "📉",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "Numa progressão geométrica, cada termo é o anterior vezes uma razão fixa! 📉 A razão pode ser maior que 1 (cresce) ou menor (encolhe). Descubra o próximo termo.",
+    contexto_matematico: "Para achar a razão, DIVIDA um termo pelo anterior — se der sempre o mesmo, é geométrica. Juros compostos, meia-vida radioativa e a queda do som numa sala são todos progressões geométricas.",
+    sequencias: [
+      { items: ["3", "6", "12", "24", "❓"], resposta: "48", opcoes: ["36", "42", "48", "96"] },
+      { items: ["2", "10", "50", "250", "❓"], resposta: "1250", opcoes: ["500", "750", "1250", "2500"] },
+      { items: ["81", "27", "9", "3", "❓"], resposta: "1", opcoes: ["0", "1", "2", "3"] },
+      { items: ["1", "5", "25", "125", "❓"], resposta: "625", opcoes: ["225", "500", "625", "1000"] },
+      { items: ["256", "64", "16", "4", "❓"], resposta: "1", opcoes: ["0", "1", "2", "4"] }
+    ]
+  },
+  {
+    id: "inv_seq_harmonica",
+    tipo: "sequencia",
+    titulo: "Série Harmônica",
+    descricao: "Frações que encolhem, mas somam infinito!",
+    emoji: "🎼",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "1, 1/2, 1/3, 1/4... os termos ficam cada vez menores e se aproximam de zero. 🎼 Mesmo assim, somando todos, o resultado cresce sem limite! Descubra o próximo termo.",
+    contexto_matematico: "A série harmônica DIVERGE: somando 1 + 1/2 + 1/3 + ... o total passa de qualquer número, só que devagar demais — precisa de mais de 10⁴³ termos para chegar a 100. O nome vem da música: as cordas que vibram em 1/2, 1/3, 1/4 do comprimento dão os harmônicos da nota.",
+    sequencias: [
+      { items: ["1", "1/2", "1/3", "1/4", "❓"], resposta: "1/5", opcoes: ["1/5", "1/6", "2/5", "1/8"] },
+      { items: ["1/2", "1/4", "1/6", "1/8", "❓"], resposta: "1/10", opcoes: ["1/9", "1/10", "1/12", "1/16"] },
+      { items: ["1", "1/3", "1/5", "1/7", "❓"], resposta: "1/9", opcoes: ["1/8", "1/9", "1/11", "3/7"] },
+      { items: ["1/1", "1/4", "1/9", "1/16", "❓"], resposta: "1/25", opcoes: ["1/20", "1/25", "1/32", "1/36"] },
+      { items: ["1/2", "1/3", "1/4", "1/5", "❓"], resposta: "1/6", opcoes: ["1/6", "1/7", "2/5", "1/10"] }
+    ]
+  },
+  {
+    id: "inv_seq_notacao",
+    tipo: "sequencia",
+    titulo: "Notação Científica",
+    descricao: "Como escrever números gigantes e minúsculos!",
+    emoji: "🔭",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 12,
+    historinha: "A distância até o Sol é 1,5 × 10¹¹ metros. Um átomo mede 10⁻¹⁰. 🔭 A notação científica cabe o universo inteiro em poucos caracteres. Complete a escala!",
+    contexto_matematico: "O expoente conta quantas casas a vírgula anda: positivo para a direita, negativo para a esquerda. Cada degrau é um fator 10 — por isso um terremoto de magnitude 7 libera 10 vezes mais energia que um de 6, e não 1/6 a mais.",
+    sequencias: [
+      { items: ["10¹", "10²", "10³", "10⁴", "❓"], resposta: "10⁵", opcoes: ["10⁵", "10⁶", "10⁰", "20⁴"] },
+      { items: ["2⁰", "2¹", "2²", "2³", "❓"], resposta: "2⁴", opcoes: ["2⁴", "2⁵", "4²", "8¹"] },
+      { items: ["1", "10", "100", "1000", "❓"], resposta: "10000", opcoes: ["2000", "5000", "10000", "100000"] },
+      { items: ["10⁻¹", "10⁻²", "10⁻³", "❓"], resposta: "10⁻⁴", opcoes: ["10⁻⁴", "10⁻⁵", "10⁰", "10⁴"] },
+      { items: ["3×10¹", "3×10²", "3×10³", "❓"], resposta: "3×10⁴", opcoes: ["3×10⁴", "3×10⁵", "6×10³", "9×10³"] }
+    ]
+  },
+  {
+    id: "inv_padrao_bases",
+    tipo: "padrao",
+    titulo: "Grade das Bases Numéricas",
+    descricao: "O mesmo número em decimal, binário e hexadecimal!",
+    emoji: "🔢",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Cada linha mostra o MESMO número escrito em três bases: decimal, binário e hexadecimal! 🔢 Muda a roupa, não muda o valor. Complete a última.",
+    puzzles: [
+      {
+        matriz: ["10", "1010", "A", "15", "1111", "F", "16", "10000", "❓"],
+        resposta: "10",
+        opcoes: ["10", "F", "16", "1A"],
+        dica: "Em hexadecimal, 16 é o primeiro número de dois dígitos: 10."
+      },
+      {
+        matriz: ["1", "1", "1", "2", "10", "2", "8", "1000", "❓"],
+        resposta: "8",
+        opcoes: ["8", "10", "1000", "F"],
+        dica: "Até o 9, decimal e hexadecimal são iguais."
+      },
+      {
+        matriz: ["4", "100", "4", "8", "1000", "8", "12", "1100", "❓"],
+        resposta: "C",
+        opcoes: ["B", "C", "D", "12"],
+        dica: "Depois do 9 vem A(10), B(11), C(12)."
+      },
+      {
+        matriz: ["3", "11", "3", "5", "101", "5", "11", "1011", "❓"],
+        resposta: "B",
+        opcoes: ["A", "B", "C", "11"],
+        dica: "11 em decimal é a segunda letra do hexa."
+      },
+      {
+        matriz: ["16", "10000", "10", "32", "100000", "20", "255", "11111111", "❓"],
+        resposta: "FF",
+        opcoes: ["EF", "FF", "100", "255"],
+        dica: "255 é o maior valor de 1 byte — oito bits todos em 1."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_booleana",
+    tipo: "padrao",
+    titulo: "Grade da Lógica Booleana",
+    descricao: "E, OU e OU-EXCLUSIVO — a lógica do circuito!",
+    emoji: "🔌",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Todo processador é feito de portas lógicas! 🔌 Elas recebem dois bits e devolvem um. Descubra QUAL porta a grade está usando e complete a última linha.",
+    puzzles: [
+      {
+        matriz: ["1", "1", "1", "1", "0", "0", "0", "1", "❓"],
+        resposta: "0",
+        opcoes: ["0", "1", "2", "10"],
+        dica: "Porta E (AND): só devolve 1 quando os DOIS entram como 1."
+      },
+      {
+        matriz: ["0", "0", "0", "1", "0", "1", "1", "1", "❓"],
+        resposta: "1",
+        opcoes: ["0", "1", "2", "11"],
+        dica: "Porta OU (OR): devolve 1 se PELO MENOS um for 1."
+      },
+      {
+        matriz: ["0", "0", "0", "1", "0", "1", "1", "1", "❓"],
+        resposta: "0",
+        opcoes: ["0", "1", "2", "11"],
+        dica: "Porta OU-EXCLUSIVO (XOR): 1 só quando os dois são DIFERENTES."
+      },
+      {
+        matriz: ["1", "1", "0", "1", "0", "1", "0", "0", "❓"],
+        resposta: "1",
+        opcoes: ["0", "1", "2", "00"],
+        dica: "Porta NÃO-E (NAND): é o contrário do E."
+      },
+      {
+        matriz: ["1", "1", "1", "0", "1", "0", "1", "0", "❓"],
+        resposta: "0",
+        opcoes: ["0", "1", "10", "11"],
+        dica: "Porta E de novo: 1 e 0 não são os dois 1."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_fatoriais",
+    tipo: "padrao",
+    titulo: "Grade de Quadrados e Fatoriais",
+    descricao: "Duas formas muito diferentes de crescer!",
+    emoji: "🎴",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Cada linha traz um número, o quadrado dele e o fatorial dele! 🎴 Repare como o fatorial ultrapassa o quadrado e nunca mais é alcançado. Complete a grade.",
+    puzzles: [
+      {
+        matriz: ["1", "1", "1", "2", "4", "2", "3", "9", "❓"],
+        resposta: "6",
+        opcoes: ["3", "6", "9", "27"],
+        dica: "Linha: n, n², n!. E 3! = 3 × 2 × 1."
+      },
+      {
+        matriz: ["3", "9", "6", "4", "16", "24", "5", "25", "❓"],
+        resposta: "120",
+        opcoes: ["50", "100", "120", "125"],
+        dica: "5! = 5 × 4 × 3 × 2 × 1."
+      },
+      {
+        matriz: ["2", "4", "2", "4", "16", "24", "6", "36", "❓"],
+        resposta: "720",
+        opcoes: ["216", "360", "720", "1296"],
+        dica: "6! = 6 × 120."
+      },
+      {
+        matriz: ["1", "1", "1", "3", "9", "6", "4", "16", "❓"],
+        resposta: "24",
+        opcoes: ["12", "16", "24", "64"],
+        dica: "4! = 4 × 3 × 2 × 1."
+      },
+      {
+        matriz: ["5", "25", "120", "6", "36", "720", "7", "49", "❓"],
+        resposta: "5040",
+        opcoes: ["2520", "4032", "5040", "40320"],
+        dica: "7! = 7 × 720."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_pascal",
+    tipo: "padrao",
+    titulo: "Grade de Pascal",
+    descricao: "Linhas seguidas do triângulo!",
+    emoji: "🔻",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Cada linha da grade é o começo de uma linha do triângulo de Pascal! 🔻 A regra é sempre a mesma: some os dois de cima. Complete o terceiro número da última.",
+    puzzles: [
+      {
+        matriz: ["1", "2", "1", "1", "3", "3", "1", "4", "❓"],
+        resposta: "6",
+        opcoes: ["4", "5", "6", "8"],
+        dica: "Na linha do 4, o terceiro número é 6: some 3 + 3 da linha de cima."
+      },
+      {
+        matriz: ["1", "3", "3", "1", "4", "6", "1", "5", "❓"],
+        resposta: "10",
+        opcoes: ["6", "8", "10", "15"],
+        dica: "Some 4 + 6 da linha anterior."
+      },
+      {
+        matriz: ["1", "4", "6", "1", "5", "10", "1", "6", "❓"],
+        resposta: "15",
+        opcoes: ["10", "12", "15", "20"],
+        dica: "Some 5 + 10 da linha anterior."
+      },
+      {
+        matriz: ["1", "5", "10", "1", "6", "15", "1", "7", "❓"],
+        resposta: "21",
+        opcoes: ["15", "18", "21", "28"],
+        dica: "Some 6 + 15 da linha anterior."
+      },
+      {
+        matriz: ["1", "1", "1", "1", "2", "3", "1", "3", "❓"],
+        resposta: "6",
+        opcoes: ["4", "5", "6", "9"],
+        dica: "Aqui as linhas somam de outro jeito: 1, 3, 6 são os números triangulares."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_modular",
+    tipo: "padrao",
+    titulo: "Grade Modular",
+    descricao: "Números que dão a volta no fim da linha!",
+    emoji: "🕰️",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Nesta grade os números dão a volta ao chegar no limite, como o relógio! 🕰️ Descubra o salto e lembre-se de voltar ao começo quando estourar.",
+    puzzles: [
+      {
+        matriz: ["0", "5", "10", "3", "8", "1", "6", "11", "❓"],
+        resposta: "4",
+        opcoes: ["4", "5", "16", "2"],
+        dica: "Salto de 5, módulo 12: depois do 11 vem 16, que dá a volta e vira 4."
+      },
+      {
+        matriz: ["0", "3", "6", "2", "5", "1", "4", "0", "❓"],
+        resposta: "3",
+        opcoes: ["3", "7", "10", "2"],
+        dica: "Salto de 3, módulo 7: 4, 7 (que vira 0), 10 (que vira 3)."
+      },
+      {
+        matriz: ["2", "4", "8", "6", "2", "4", "8", "6", "❓"],
+        resposta: "2",
+        opcoes: ["2", "4", "8", "16"],
+        dica: "São os ÚLTIMOS dígitos das potências de 2 — eles se repetem de 4 em 4."
+      },
+      {
+        matriz: ["1", "2", "3", "4", "5", "6", "7", "8", "❓"],
+        resposta: "0",
+        opcoes: ["0", "1", "9", "10"],
+        dica: "Módulo 9: o 9 dá a volta e vira 0."
+      },
+      {
+        matriz: ["9", "10", "11", "0", "1", "2", "3", "4", "❓"],
+        resposta: "5",
+        opcoes: ["5", "6", "12", "15"],
+        dica: "As horas do relógio de 12: depois do 11 vem 0."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_complexidade2",
+    tipo: "padrao",
+    titulo: "Grade da Complexidade",
+    descricao: "Como o custo de um algoritmo cresce!",
+    emoji: "⚙️",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Um algoritmo O(n²) faz n×n passos; um O(2ⁿ) dobra a cada item novo. ⚙️ A grade compara os dois. Complete e veja qual explode primeiro.",
+    puzzles: [
+      {
+        matriz: ["10", "10", "100", "20", "20", "400", "30", "30", "❓"],
+        resposta: "900",
+        opcoes: ["600", "900", "1200", "3600"],
+        dica: "Linha: n, n, n². Trinta ao quadrado."
+      },
+      {
+        matriz: ["2", "2", "4", "4", "4", "16", "8", "8", "❓"],
+        resposta: "64",
+        opcoes: ["16", "32", "64", "128"],
+        dica: "Oito ao quadrado."
+      },
+      {
+        matriz: ["3", "8", "6", "4", "16", "24", "5", "32", "❓"],
+        resposta: "120",
+        opcoes: ["64", "100", "120", "125"],
+        dica: "Linha: n, 2ⁿ, n!. Repare que o fatorial já passou a potência."
+      },
+      {
+        matriz: ["4", "16", "24", "5", "32", "120", "6", "64", "❓"],
+        resposta: "720",
+        opcoes: ["128", "360", "720", "4096"],
+        dica: "6! = 720, enquanto 2⁶ é só 64."
+      },
+      {
+        matriz: ["5", "25", "32", "6", "36", "64", "7", "49", "❓"],
+        resposta: "128",
+        opcoes: ["81", "100", "128", "343"],
+        dica: "Linha: n, n², 2ⁿ. Aqui 2⁷."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_binario2",
+    tipo: "padrao",
+    titulo: "Grade dos Bits",
+    descricao: "Expoente, valor e a escrita em bits!",
+    emoji: "💽",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Cada linha mostra um expoente, a potência de 2 correspondente e como ela se escreve em binário! 💽 Repare: é sempre um 1 seguido de zeros. Complete a última.",
+    puzzles: [
+      {
+        matriz: ["0", "1", "1", "1", "2", "10", "2", "4", "❓"],
+        resposta: "100",
+        opcoes: ["11", "100", "110", "1000"],
+        dica: "2² em binário é 1 seguido de DOIS zeros."
+      },
+      {
+        matriz: ["3", "8", "1000", "4", "16", "10000", "5", "32", "❓"],
+        resposta: "100000",
+        opcoes: ["10000", "100000", "110000", "1000000"],
+        dica: "2⁵ é 1 seguido de cinco zeros."
+      },
+      {
+        matriz: ["1", "2", "10", "2", "4", "100", "3", "8", "❓"],
+        resposta: "1000",
+        opcoes: ["110", "1000", "1100", "10000"],
+        dica: "O expoente diz quantos zeros vêm depois do 1."
+      },
+      {
+        matriz: ["4", "16", "10000", "5", "32", "100000", "6", "64", "❓"],
+        resposta: "1000000",
+        opcoes: ["100000", "1000000", "1100000", "10000000"],
+        dica: "Seis zeros depois do 1."
+      },
+      {
+        matriz: ["0", "1", "1", "2", "4", "100", "4", "16", "❓"],
+        resposta: "10000",
+        opcoes: ["1000", "1111", "10000", "100000"],
+        dica: "2⁴ = 16, e em binário é 1 com quatro zeros."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_media",
+    tipo: "padrao",
+    titulo: "Grade da Média",
+    descricao: "Soma, quantidade e média em cada linha!",
+    emoji: "📊",
+    habilidade: "Lógica Matemática",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 13,
+    historinha: "Cada linha traz a soma de um conjunto, quantos elementos ele tem e a média! 📊 A regra é a mesma nas três. Complete a última média.",
+    puzzles: [
+      {
+        matriz: ["10", "2", "5", "12", "3", "4", "20", "4", "❓"],
+        resposta: "5",
+        opcoes: ["4", "5", "6", "16"],
+        dica: "Média = soma ÷ quantidade. Aqui 20 ÷ 4."
+      },
+      {
+        matriz: ["100", "10", "10", "60", "4", "15", "45", "9", "❓"],
+        resposta: "5",
+        opcoes: ["4", "5", "9", "36"],
+        dica: "45 dividido por 9."
+      },
+      {
+        matriz: ["24", "6", "4", "35", "7", "5", "48", "8", "❓"],
+        resposta: "6",
+        opcoes: ["5", "6", "8", "40"],
+        dica: "48 dividido por 8."
+      },
+      {
+        matriz: ["18", "3", "6", "28", "4", "7", "40", "5", "❓"],
+        resposta: "8",
+        opcoes: ["7", "8", "9", "35"],
+        dica: "40 dividido por 5."
+      },
+      {
+        matriz: ["50", "5", "10", "72", "8", "9", "81", "9", "❓"],
+        resposta: "9",
+        opcoes: ["8", "9", "10", "72"],
+        dica: "81 dividido por 9."
+      }
+    ]
+  },
+  {
+    id: "inv_padrao_cesar",
+    tipo: "padrao",
+    titulo: "Grade da Cifra de César",
+    descricao: "Letra, deslocamento e letra cifrada!",
+    emoji: "🗝️",
+    habilidade: "Pensamento Computacional",
+    xp_reward: 130,
+    coins_reward: 130,
+    tempo_estimado: 14,
+    historinha: "Júlio César cifrava mensagens deslocando cada letra algumas casas no alfabeto! 🗝️ A grade mostra a letra, o deslocamento e o resultado. Complete a última — e não esqueça que depois do Z volta ao A.",
+    puzzles: [
+      {
+        matriz: ["A", "1", "B", "B", "1", "C", "C", "1", "❓"],
+        resposta: "D",
+        opcoes: ["A", "C", "D", "E"],
+        dica: "Ande 1 casa no alfabeto a partir do C."
+      },
+      {
+        matriz: ["A", "3", "D", "B", "3", "E", "C", "3", "❓"],
+        resposta: "F",
+        opcoes: ["D", "E", "F", "G"],
+        dica: "Três casas depois do C."
+      },
+      {
+        matriz: ["X", "3", "A", "Y", "3", "B", "Z", "3", "❓"],
+        resposta: "C",
+        opcoes: ["A", "B", "C", "W"],
+        dica: "Depois do Z volta pro A: Z → A → B → C."
+      },
+      {
+        matriz: ["A", "5", "F", "E", "5", "J", "K", "5", "❓"],
+        resposta: "P",
+        opcoes: ["N", "O", "P", "Q"],
+        dica: "Cinco casas depois do K: L, M, N, O, P."
+      },
+      {
+        matriz: ["M", "13", "Z", "A", "13", "N", "N", "13", "❓"],
+        resposta: "A",
+        opcoes: ["A", "B", "M", "Z"],
+        dica: "Isto é o ROT13: 13 casas depois do N dá a volta e cai no A."
+      }
+    ]
+  }
+]
