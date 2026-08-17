@@ -44,6 +44,7 @@ pdf-habilidades-*.png
 # saida das auditorias de responsividade (gerada, nao versionada)
 auditoria-telas/
 auditoria-atividades/
+auditoria-alcance/
 
 # Scripts de OUTRO cliente (TI Verde) que precisam morar aqui porque o playwright
 # está instalado neste projeto e a resolução ESM sobe a partir do ARQUIVO.
