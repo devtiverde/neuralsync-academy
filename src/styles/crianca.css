@@ -138,6 +138,26 @@ h1, h2, h3, .crianca-heading {
   .page-wrapper { max-width: none; padding-bottom: 32px; }
 }
 @media (max-width: 767px) {
+  /* ── A BARRA INFERIOR COBRIA O ÚLTIMO CONTROLE DE TODA TELA DA CRIANÇA ──────────
+     `.menu-bottom` é `position: fixed; bottom: 0` e mede 93px. Ela não ocupa espaço no
+     fluxo, então o fim do conteúdo ficava POR BAIXO dela — e como a página já estava no
+     limite da rolagem, não havia como trazer o que ficou embaixo. Medido em 8 telas:
+     "Ir para Loja" (perfil), "Comprar mais itens" (personalizar), "Já fiz essa!" (offline),
+     "Ver ranking completo" (home), "Praticar digitação" (diário), "Encerrar" (timer ativo),
+     além de cartões em kids/dinossauros e quiz-ia.
+     🔑 Não era só "não dá pra clicar": o toque chegava no BOTÃO DA BARRA que estava por
+     cima. Tocar "🏪 Ir para Loja" abria a Digitação — destino errado, sem erro nenhum.
+     🪤 O `padding-bottom: 32px` que existia estava dentro de `@media (min-width: 768px)`,
+     ou seja aplicado exatamente onde a barra NÃO existe, e ausente onde ela existe.
+     O valor é 96px (3px de folga sobre os 93 medidos) MAIS o `env()`, porque a própria
+     barra cresce com o home indicator do iPhone — sem somar o inset a folga viraria zero
+     no aparelho com entalhe. O `testar-barra-inferior.mjs` afirma que este padding é
+     sempre ≥ que a altura real da barra, então mudar a barra não silencia o conserto. */
+  .ns-conteudo-crianca,
+  .page-wrapper {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
   .ns-sidebar { display: none !important; }
   .ns-two-col { grid-template-columns: 1fr; }
   .ns-three-col { grid-template-columns: repeat(2,1fr); }
@@ -447,16 +467,30 @@ h1, h2, h3, .crianca-heading {
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
 }
-/* Área do jogo em si: fixa, sem rolagem. Se algum conteúdo não couber,
-   é bug de layout daquela atividade e tem que ser corrigido lá — não
-   escondido atrás de uma barra de rolagem que faz o tabuleiro sumir. */
+/* Área do jogo: rola só quando PRECISA.
+   A intenção original era `overflow: hidden` — "se não couber, é bug de layout daquela
+   atividade e conserta-se lá, não se esconde atrás de uma barra que faz o tabuleiro sumir".
+   O medo era o tabuleiro rolar para fora de vista, e ele continua valendo.
+   🔑 Mas quando o conteúdo NÃO cabe, `hidden` não evita o problema: ele CORTA em silêncio,
+   que é pior que rolar. Medido em 17/08: nas 15 atividades de `inventor` (todas elas) o botão
+   "🤖 Avaliar minha invenção" caía entre 58 e 114px ABAIXO da dobra em 1366×768 — o tamanho
+   mais comum de notebook — com a página sem rolagem nenhuma (scrollMax 0). A criança escrevia
+   a invenção e não tinha como enviar: a atividade era impossível de concluir, sem erro nenhum.
+   `auto` preserva a intenção e conserta o caso ruim: quando o conteúdo cabe — que é o caso do
+   tabuleiro do Labirinto, do Robô e do Padrão — não aparece barra e nada muda; quando não
+   cabe, o que sobra fica alcançável em vez de invisível. Continua sendo rolagem DE UM PAINEL:
+   o `.game-shell` segue `position: fixed`, então a página não rola e a roda do mouse não
+   arrasta o jogo (era o bug consertado em 22/07). O `auditar-atividades.mjs` afirma isso —
+   ele reprova se a página rolar com a roda. */
 .game-content {
   flex: 1;
   min-height: 0;
   padding: 32px 40px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 .game-progress-bar {
   height: 6px;
@@ -504,7 +538,13 @@ h1, h2, h3, .crianca-heading {
    exatamente o que faltava para o Labirinto e o Padrão caberem. Em tela
    alta o respiro continua o mesmo. */
 @media (max-height: 800px) {
-  .game-content { padding: 14px 32px; }
+  /* 🔑 10px, não 14px. Com `.game-content` em `overflow-y: auto`, sobra vira BARRA — e num
+     tabuleiro a barra é pior que em texto, porque a roda do mouse passa a arrastar o jogo
+     durante a jogada (o incômodo que motivou o `hidden` original). Medido em 1100×720: o
+     Labirinto sobrava 7px e o Padrão 6px, então os 8px economizados aqui (4px em cima + 4
+     embaixo) zeram a barra nos dois. O `auto` continua valendo como rede para o caso
+     extremo — o Inventor, que precisa mesmo de mais altura do que a janela tem. */
+  .game-content { padding: 10px 32px; }
   .game-topbar  { padding: 10px 24px; }
 }
 

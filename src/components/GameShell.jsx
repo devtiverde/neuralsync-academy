@@ -211,7 +211,17 @@ export default function GameShell({
           </button>
 
           {/* title + progress bar */}
-          <div style={{ flex: 1 }}>
+          {/* 🔑 `minWidth: 0` é obrigatório, não enfeite. Item flex tem mínimo automático
+              igual ao próprio conteúdo, então esta coluna se recusava a encolher abaixo da
+              largura do TÍTULO e empurrava o grupo da direita (badge de XP + botão de tela
+              cheia) para fora da `.game-topbar`. Como a `.game-center` é `overflow: hidden`,
+              o que saía era CORTADO e ficava sem como alcançar: medido em 78 atividades a
+              360px, sempre as de título comprido — "Formas do Corpo Humano" (186px) estourava
+              29px, "Biomas do Brasil" (140px) caberia. O `textOverflow: ellipsis` do título
+              abaixo nunca entrava em ação justamente porque o pai não encolhia.
+              Mesma família do `min-width: 0` do `.pai-nav-desktop` e do `min-height: 0` da
+              `.game-center`. */}
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="game-topbar-titulo" style={{ color: 'white', fontFamily: 'var(--ns-font-display)', fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {atividade?.titulo || ''}
             </div>

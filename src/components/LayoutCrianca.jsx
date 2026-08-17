@@ -172,7 +172,10 @@ export default function LayoutCrianca({ children, child }) {
       </header>
 
       {/* ── MAIN CONTENT ───────────────────────────────── */}
-      <main style={{ flex: 1, width: '100%' }}>
+      {/* A classe existe para reservar, no celular, a altura da `.menu-bottom` — que é
+          `position: fixed` e flutuava por cima do fim do conteúdo. Ver `.ns-conteudo-crianca`
+          em crianca.css. */}
+      <main className="ns-conteudo-crianca" style={{ flex: 1, width: '100%' }}>
         {children}
       </main>
       <MenuLateral tipo="crianca" />
