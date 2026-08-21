@@ -224,14 +224,14 @@ export default function CoresAtividade() {
             {cor.nome}, {cor.exemplo}
           </div>
 
-          {nivel === 'medio' && (
+          {nivel === 'medio' && cor.funfato && (
             <div style={{ marginTop: '12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: '10px', padding: '10px 14px', fontSize: '13px', color: '#fdba74', fontWeight: '600', lineHeight: 1.5 }}>
               💡 {cor.funfato}
             </div>
           )}
-          {nivel === 'avancado' && (
+          {nivel === 'avancado' && (cor.detalhe || cor.funfato) && (
             <div style={{ marginTop: '12px', background: 'rgba(55,138,221,0.15)', border: '1px solid rgba(55,138,221,0.3)', borderRadius: '10px', padding: '10px 14px', fontSize: '12px', color: '#93c5fd', fontWeight: '600', lineHeight: 1.5 }}>
-              🔬 {cor.detalhe}
+              🔬 {cor.detalhe || cor.funfato}
             </div>
           )}
         </div>

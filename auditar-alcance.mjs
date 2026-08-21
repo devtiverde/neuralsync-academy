@@ -51,7 +51,8 @@
  *   node auditar-alcance.mjs <porta>               telas + atividades (tudo)
  *   node auditar-alcance.mjs <porta> --telas       só as telas
  *   node auditar-alcance.mjs <porta> --atividades  só as 528 atividades
- *   node auditar-alcance.mjs <porta> --rapido      só os 2 tamanhos críticos
+" *   node auditar-alcance.mjs <porta> --rapido      só os 2 tamanhos críticos
+ *   node auditar-alcance.mjs <porta> --tamanhos=celular,tablet,janela   só esses
  */
 import { chromium } from 'playwright'
 import { mkdirSync, writeFileSync, readFileSync } from 'node:fs'
@@ -63,6 +64,10 @@ const SO_AUTOTESTE = args.includes('--autoteste')
 const SO_TELAS = args.includes('--telas')
 const SO_ATIVIDADES = args.includes('--atividades')
 const RAPIDO = args.includes('--rapido')
+// `--tamanhos=celular,tablet,janela` roda só os tamanhos pedidos. Existe para completar
+// cobertura sem repetir o que já foi medido: a 1ª varredura das 528 atividades usou só os dois
+// extremos (celular-p e notebook), e refazer os cinco custaria 90 min de máquina à toa.
+const SO_TAMANHOS = (args.find(a => a.startsWith('--tamanhos=')) || '').split('=')[1]
 const SAIDA = 'auditoria-alcance'
 
 if (!PORTA && !SO_AUTOTESTE) {
@@ -72,7 +77,7 @@ if (!PORTA && !SO_AUTOTESTE) {
 }
 const BASE = `http://localhost:${PORTA}`
 
-const TELAS = RAPIDO
+const TODOS_TAMANHOS = RAPIDO
   ? [
       { nome: 'celular-p', largura: 360, altura: 640 },
       { nome: 'notebook', largura: 1366, altura: 768 },
@@ -84,6 +89,16 @@ const TELAS = RAPIDO
       { nome: 'janela', largura: 1100, altura: 720 },    // PC não maximizado
       { nome: 'notebook', largura: 1366, altura: 768 },
     ]
+
+const TELAS = SO_TAMANHOS
+  ? TODOS_TAMANHOS.filter(t => SO_TAMANHOS.split(',').map(x => x.trim()).includes(t.nome))
+  : TODOS_TAMANHOS
+
+if (!TELAS.length) {
+  console.error(`Nenhum tamanho casou com --tamanhos=${SO_TAMANHOS}.`)
+  console.error(`Disponiveis: ${TODOS_TAMANHOS.map(t => t.nome).join(', ')}`)
+  process.exit(2)
+}
 
 const ROTAS = [
   { rota: '/', nome: 'landing', area: 'publica' },

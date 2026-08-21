@@ -234,14 +234,14 @@ export default function AlfabetoAtividade() {
           <div style={{ fontSize: '24px', fontWeight: '900', color: 'white', letterSpacing: '-0.3px' }}>
             {letraData.palavra}
           </div>
-          {nivel === 'medio' && (
+          {nivel === 'medio' && letraData.funfato && (
             <div style={{ marginTop: '12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: '10px', padding: '10px 14px', fontSize: '13px', color: '#fdba74', fontWeight: '600', lineHeight: 1.5 }}>
               💡 {letraData.funfato}
             </div>
           )}
-          {nivel === 'avancado' && (
+          {nivel === 'avancado' && (letraData.detalhe || letraData.funfato) && (
             <div style={{ marginTop: '12px', background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '10px', padding: '10px 14px', fontSize: '12px', color: '#6ee7b7', fontWeight: '600', lineHeight: 1.5 }}>
-              🔬 {letraData.detalhe}
+              🔬 {letraData.detalhe || letraData.funfato}
             </div>
           )}
         </div>
