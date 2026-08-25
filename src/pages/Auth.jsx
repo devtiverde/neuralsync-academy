@@ -1,59 +1,31 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import '../styles/auth.css'
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [nome, setNome] = useState('')
-  const [consentido, setConsentido] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { signIn, signUp } = useAuth()
+  const { signIn } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const ativado = searchParams.get('ativado') === '1'
-  const planoParam = searchParams.get('plano')
-
-  useEffect(() => {
-    if (ativado) setIsLogin(false)
-  }, [ativado])
+  // `ativado=1` é o retorno antigo do pagamento. Hoje quem paga recebe a conta
+  // criada pelo webhook da Kiwify e um link de acesso por e-mail (leva ao
+  // /nova-senha) — não há mais auto-cadastro nesta tela. O parâmetro sobrevive só
+  // em links antigos, então mostramos um aviso apontando para o e-mail.
+  const veioDoPagamento = searchParams.get('ativado') === '1'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    if (!isLogin && password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.')
-      setLoading(false)
-      return
-    }
-    if (!isLogin && !consentido) {
-      setError('Você precisa aceitar os termos e o consentimento de dados para continuar.')
-      setLoading(false)
-      return
-    }
-    if (isLogin) {
-      const { error } = await signIn(email, password)
-      if (error) setError('Email ou senha inválidos. Verifique seus dados.')
-      else navigate('/dashboard')
-    } else {
-      const { error } = await signUp(email, password, nome)
-      if (error) {
-        if (error.message?.includes('already registered')) setError('Este email já está cadastrado. Tente fazer login.')
-        else setError('Não foi possível criar a conta. Verifique seus dados.')
-      } else navigate('/dashboard')
-    }
+    const { error } = await signIn(email, password)
+    if (error) setError('Email ou senha inválidos. Verifique seus dados.')
+    else navigate('/dashboard')
     setLoading(false)
   }
-
-  const subtituloSignup = ativado
-    ? `Pagamento confirmado${planoParam ? ` — plano ${planoParam}` : ''}! Preencha seus dados para ativar o acesso.`
-    // "comece com 7 dias de garantia" soava a teste grátis, e não existe plano
-    // grátis: a garantia é de reembolso, e só vale depois de assinar.
-    : 'Crie sua conta para acessar sua assinatura.'
 
   return (
     <div className="auth-page">
@@ -66,41 +38,24 @@ export default function Auth() {
           </span>
         </div>
 
-        {ativado && (
+        {veioDoPagamento && (
           <div className="auth-success-banner">
-            <div className="auth-success-icon">✅</div>
+            <div className="auth-success-icon">📧</div>
             <div>
               <div className="auth-success-title">Pagamento confirmado!</div>
-              <div className="auth-success-sub">Crie sua conta abaixo para ativar o acesso imediatamente.</div>
+              <div className="auth-success-sub">Enviamos um link de acesso para o seu e-mail. Clique nele para definir sua senha e entrar. Já definiu? É só entrar abaixo.</div>
             </div>
           </div>
         )}
 
-        <h1 className="auth-heading">
-          {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta'}
-        </h1>
-        <p className="auth-subheading">
-          {isLogin ? 'Entre para acompanhar a evolução do seu filho.' : subtituloSignup}
-        </p>
+        <h1 className="auth-heading">Bem-vindo de volta!</h1>
+        <p className="auth-subheading">Entre para acompanhar a evolução do seu filho.</p>
 
         {error && (
           <div className="auth-error">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          {!isLogin && (
-            <div className="auth-field">
-              <label className="auth-label">Seu nome</label>
-              <input
-                className="auth-input"
-                type="text"
-                placeholder="Como podemos te chamar?"
-                value={nome}
-                onChange={e => setNome(e.target.value)}
-                required
-              />
-            </div>
-          )}
           <div className="auth-field">
             <label className="auth-label">Email</label>
             <input
@@ -115,15 +70,13 @@ export default function Auth() {
           <div className="auth-field">
             <div className="auth-label-row">
               <label className="auth-label">Senha</label>
-              {isLogin && (
-                <button
-                  type="button"
-                  className="auth-link"
-                  onClick={() => navigate('/recuperar-senha')}
-                >
-                  Esqueci minha senha
-                </button>
-              )}
+              <button
+                type="button"
+                className="auth-link"
+                onClick={() => navigate('/recuperar-senha')}
+              >
+                Esqueci minha senha
+              </button>
             </div>
             <input
               className="auth-input"
@@ -134,41 +87,14 @@ export default function Auth() {
               required
             />
           </div>
-          {!isLogin && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '12px 14px', background: '#f5f3ff', borderRadius: '10px', border: '1px solid #e0d9ff', marginTop: '4px' }}>
-              <input
-                id="consentimento"
-                type="checkbox"
-                checked={consentido}
-                onChange={e => setConsentido(e.target.checked)}
-                style={{ marginTop: '3px', accentColor: '#7C3AED', width: '16px', height: '16px', flexShrink: 0, cursor: 'pointer' }}
-              />
-              <label htmlFor="consentimento" style={{ fontSize: '12px', color: '#374151', lineHeight: '1.5', cursor: 'pointer' }}>
-                Sou o responsável legal pelas crianças que vou cadastrar e consinto com o tratamento de seus dados conforme a{' '}
-                <Link to="/privacidade" target="_blank" style={{ color: '#7C3AED', fontWeight: '700', textDecoration: 'underline' }}>Política de Privacidade</Link>.
-                Li e aceito os{' '}
-                <Link to="/termos" target="_blank" style={{ color: '#7C3AED', fontWeight: '700', textDecoration: 'underline' }}>Termos de Uso</Link>.
-              </label>
-            </div>
-          )}
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Carregando...' : isLogin ? 'Entrar →' : ativado ? 'Criar conta e ativar plano →' : 'Criar conta →'}
+            {loading ? 'Carregando...' : 'Entrar →'}
           </button>
         </form>
 
+        {/* A conta é criada ao assinar (o acesso chega por e-mail). Não há
+            auto-cadastro aqui: sem assinatura não há conta a criar. */}
         <p className="auth-switch">
-          {isLogin ? 'Não tem conta?' : 'Já tem conta?'}{' '}
-          <button
-            onClick={() => { setIsLogin(!isLogin); setError('') }}
-            className="auth-link"
-          >
-            {isLogin ? 'Criar agora' : 'Entrar'}
-          </button>
-        </p>
-
-        {/* Não havia NENHUM caminho para comprar a partir desta tela: quem caía aqui
-            sem assinatura ficava sem saída além de voltar pelo navegador. */}
-        <p className="auth-switch" style={{ marginTop: 6 }}>
           Ainda não assinou?{' '}
           <button onClick={() => navigate('/planos')} className="auth-link">
             Ver planos →
