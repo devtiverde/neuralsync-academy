@@ -2,6 +2,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
+import { useLarguraMedida } from '../../hooks/useLarguraMedida'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
@@ -69,6 +70,9 @@ export default function RoboAtividade() {
     else if (resultado === 'falhou') playSound('wrong')
   }, [resultado])
 
+  // Largura REAL disponível para o tabuleiro — ver `celSize` abaixo.
+  const [areaRef, larguraArea] = useLarguraMedida(iniciou)
+
   if (!atividade) return null
   if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate(-1)} refazendo={state?.refazendo} kidsLink={getKidsLink(atividade.id)} />
 
@@ -76,7 +80,25 @@ export default function RoboAtividade() {
   if (!nivel || posRobo === null) return null
 
   const { grade, inicio, fim, paredes, passos_max } = nivel
-  const celSize = Math.max(48, Math.floor(360 / grade))
+  // 🔑 O TABULEIRO TEM QUE CABER NA TELA. O cálculo antigo era
+  //   `Math.max(48, Math.floor(360 / grade))`
+  // — 360px fixos, de tela de computador, com um piso de 48px que impedia a
+  // grade de encolher. Medido num celular de 360px: a última coluna ficava
+  // 30px FORA da tela, e o `.game-content` corta a horizontal de propósito —
+  // o pedaço não volta com rolagem, some. Ver `medir-tabuleiros.mjs`.
+  //
+  // 🪤 As auditorias não viam: `auditar-atividades` abre só a PRIMEIRA atividade
+  // de cada tipo (a de grade menor) e a auditoria de alcance mede CONTROLE
+  // inalcançável — as células do tabuleiro não são clicáveis.
+  //
+  // No computador nada muda: lá a largura disponível é maior que a ideal, e o
+  // `Math.min` mantém o tamanho de célula de antes.
+  const recheio = larguraArea && larguraArea < 420 ? 8 : 16
+  const moldura = recheio * 2 + 2 // recheio dos dois lados + a borda
+  const celulaIdeal = Math.max(48, Math.floor(360 / grade))
+  const celSize = larguraArea
+    ? Math.max(20, Math.min(celulaIdeal, Math.floor((larguraArea - moldura) / grade)))
+    : celulaIdeal
   const progresso = Math.round((nivelsConcluidos / atividade.niveis.length) * 100)
 
   function isParede(r, c) {
@@ -145,7 +167,7 @@ export default function RoboAtividade() {
       labelProgresso={`Nível ${nivelIdx + 1}/${atividade.niveis.length}`}
       onVoltar={() => navigate(-1)}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', maxWidth: '700px', width: '100%', margin: '0 auto', animation: 'ns-slide-up 0.3s ease' }}>
+      <div ref={areaRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', maxWidth: '700px', width: '100%', margin: '0 auto', animation: 'ns-slide-up 0.3s ease' }}>
 
         {/* Level info */}
         <div style={{ width: '100%', background: 'rgba(255,255,255,0.05)', borderRadius: '14px', padding: '12px 18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -158,7 +180,7 @@ export default function RoboAtividade() {
 
         <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
           {/* Grid */}
-          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '18px', padding: '16px', border: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
+          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '18px', padding: recheio + 'px', border: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
             {Array.from({ length: grade }, (_, r) => (
               <div key={r} style={{ display: 'flex' }}>
                 {Array.from({ length: grade }, (_, c) => {

@@ -2,6 +2,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
+import { useLarguraMedida } from '../../hooks/useLarguraMedida'
 import { playSound } from '../../lib/sounds'
 import '../../styles/crianca.css'
 
@@ -43,6 +44,9 @@ export default function LabirintoAtividade() {
   const [passos, setPasos] = useState(0)
   const [tempo, setTempo] = useState(0)
   const [ganhou, setGanhou] = useState(false)
+
+  // Largura REAL disponível para a grade — ver o cálculo de `cellPx` abaixo.
+  const [areaRef, larguraArea] = useLarguraMedida(iniciou && !ganhou)
 
   useEffect(() => {
     if (!atividade) navigate(-1)
@@ -88,7 +92,28 @@ export default function LabirintoAtividade() {
   if (!atividade) return null
   if (!iniciou) return <IntroAtividade atividade={atividade} onComecar={() => setIniciou(true)} onVoltar={() => navigate(-1)} refazendo={state?.refazendo} kidsLink={null} />
 
-  const cellPx = Math.max(28, Math.floor(400 / tamanho))
+  // 🔑 A GRADE TEM QUE CABER NA TELA. O cálculo antigo era
+  //   `Math.max(28, Math.floor(400 / tamanho))`
+  // — 400px fixos, de tela de computador, com um piso de 28px que impedia a
+  // grade de encolher. Medido: a moldura saía com 432 a 462px de largura em
+  // TODOS os tamanhos, e num celular de 360px a bandeira 🏁 do canto inferior
+  // direito ficava FORA da tela — sem rolagem horizontal para trazê-la de
+  // volta, porque o `.game-content` corta a horizontal de propósito. A criança
+  // andava às cegas justamente no trecho final, e o jogo não dava erro nenhum.
+  //
+  // 🪤 Nenhuma auditoria via: `auditar-atividades` abre só a PRIMEIRA atividade
+  // de cada tipo, e a auditoria de alcance mede CONTROLE inalcançável — as
+  // células não são clicáveis (quem move é a seta), então a grade cortada
+  // passava limpa. Ver `medir-labirinto.mjs`.
+  //
+  // No computador nada muda: lá a largura disponível é maior que a ideal, e o
+  // `Math.min` mantém exatamente o tamanho de célula de antes.
+  const recheio = larguraArea && larguraArea < 420 ? 10 : 20
+  const moldura = recheio * 2 + 4 // recheio dos dois lados + a borda de 1px
+  const celulaIdeal = Math.max(28, Math.floor(400 / tamanho))
+  const cellPx = larguraArea
+    ? Math.max(14, Math.min(celulaIdeal, Math.floor((larguraArea - moldura) / tamanho)))
+    : celulaIdeal
   const min = String(Math.floor(tempo / 60)).padStart(2, '0')
   const seg = String(tempo % 60).padStart(2, '0')
   const estrelas = passos <= tamanho * 2 ? 3 : passos <= tamanho * 4 ? 2 : 1
@@ -127,7 +152,7 @@ export default function LabirintoAtividade() {
             ))}
           </div>
           <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
-            <button onClick={() => { setPos([0, 0]); setPasos(0); setTempo(0); setGanhou(false) }} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>ðŸ” Novo labirinto</button>
+            <button onClick={() => { setPos([0, 0]); setPasos(0); setTempo(0); setGanhou(false) }} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>🔄 Novo labirinto</button>
             <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
               style={{ flex: 1, background: 'linear-gradient(135deg,#ef4444,#f87171)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(239,68,68,0.4)' }}>
               Concluir ✓
@@ -146,10 +171,10 @@ export default function LabirintoAtividade() {
       labelProgresso={`${passos} passos • ${min}:${seg}`}
       onVoltar={() => navigate(-1)}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', maxWidth: '680px', width: '100%', margin: '0 auto' }}>
+      <div ref={areaRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', maxWidth: '680px', width: '100%', margin: '0 auto' }}>
 
         {/* Maze */}
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '20px', padding: '20px', border: '1px solid rgba(255,255,255,0.08)', display: 'inline-block' }}>
+        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '20px', padding: recheio + 'px', border: '1px solid rgba(255,255,255,0.08)', display: 'inline-block' }}>
           {maze.map((row, r) => (
             <div key={r} style={{ display: 'flex' }}>
               {row.map((cell, c) => {
