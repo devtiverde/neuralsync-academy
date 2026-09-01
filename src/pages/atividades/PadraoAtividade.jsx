@@ -71,7 +71,7 @@ export default function PadraoAtividade() {
             ))}
           </div>
           <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '420px' }}>
-            <button onClick={() => { setAtual(0); setSelecionado(null); setAcertos(0); setEncerrado(false) }} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>ðŸ” Repetir</button>
+            <button onClick={() => { setAtual(0); setSelecionado(null); setAcertos(0); setEncerrado(false) }} style={{ flex: 1, background: 'rgba(255,255,255,0.08)', border: '1.5px solid rgba(255,255,255,0.15)', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '700', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>🔄 Repetir</button>
             <button onClick={() => navigate('/encerramento', { state: { xp: xpGanho, coins: coinsGanho, titulo: atividade.titulo, emoji: atividade.emoji, tipo: atividade.tipo, atividade_id: atividade.id } })}
               style={{ flex: 1, background: 'linear-gradient(135deg,#f59e0b,#fbbf24)', border: 'none', borderRadius: '12px', padding: '14px', color: 'white', cursor: 'pointer', fontWeight: '900', fontSize: '14px', fontFamily: 'Plus Jakarta Sans, sans-serif', boxShadow: '0 6px 20px rgba(245,158,11,0.4)' }}>
               Concluir ✓
