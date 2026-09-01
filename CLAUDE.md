@@ -35,7 +35,12 @@ but the instruction stayed behind and would lead a new dev to reintroduce the le
 
 **Stack:** React 19 + Vite 8 + Tailwind CSS v4 (via `@tailwindcss/vite` plugin — no `tailwind.config.js`) + Supabase (auth + database).
 
-**Key libraries:** `react-router-dom` v7, `framer-motion`, `recharts`, `jspdf`, `lucide-react`.
+**Key libraries:** `react-router-dom` v7, `recharts`, `jspdf`, `@phosphor-icons/react`.
+
+⚠️ `framer-motion`, `lucide-react` and `@anthropic-ai/sdk` were listed here but had **zero
+imports** anywhere in the repo — removed from `package.json` on 2026-09-01. Animation is
+hand-written CSS keyframes in `crianca.css`/`pai.css`, icons are Phosphor, and the Anthropic
+calls go through the `ai-proxy` Edge Function. Don't reinstall them to "match the docs".
 
 ### Two user worlds
 

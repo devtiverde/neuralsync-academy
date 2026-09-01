@@ -50,7 +50,6 @@ h1, h2, h3, .crianca-heading {
 .ns-icon-bounce:hover { animation: ns-bounce 0.4s ease; }
 @keyframes ns-spin   { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 @keyframes ns-slide-up { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
-@keyframes ns-shine  { 0%{left:-100%} 100%{left:200%} }
 @keyframes ns-fade-filter { from{opacity:0} to{opacity:1} }
 @keyframes ns-pulse  { 0%,100%{opacity:1} 50%{opacity:0.5} }
 @keyframes ns-stars  { 0%{transform:translateY(0) rotate(0)} 100%{transform:translateY(-20px) rotate(360deg)} }
@@ -670,9 +669,13 @@ h1, h2, h3, .crianca-heading {
   animation: ns-shine-sweep 0.55s ease forwards;
 }
 
+/* Anima `transform`, não `left`: `left` força layout+repaint a cada quadro, e este
+   brilho passa nos cartões do hub — a tela mais vista da criança. A distância é a
+   mesma: o elemento tem 55% da largura do cartão e viajava de -80% a 140% dele
+   (220% do cartão) = 400% da própria largura. */
 @keyframes ns-shine-sweep {
-  from { left: -80%; }
-  to   { left: 140%; }
+  from { transform: translateX(0); }
+  to   { transform: translateX(400%); }
 }
 
 /* Stat card (hero section) */

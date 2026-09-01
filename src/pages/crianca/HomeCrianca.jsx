@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { tipoConfig } from '../../data/atividadesData'
 import { tamanhoDaFaixa } from '../../data/mundos'
 import { useAtividades } from '../../hooks/useAtividades'
+import { prefetchIntroAtividade } from '../../lib/prefetch'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import SplashScreen from '../../components/SplashScreen'
 import { StatCard, XPBar, Card, Button, Badge } from '../../components/ui'
@@ -64,6 +65,10 @@ export default function HomeCrianca() {
   const [posicaoRanking, setPosicaoRanking] = useState(null)
 
   const { atividades } = useAtividades(faixa)
+
+  // Adianta, no ocioso, a tela que abre ANTES de toda atividade — a espera de rede
+  // sai do clique da criança. Ver `src/lib/prefetch.js`.
+  useEffect(() => { prefetchIntroAtividade() }, [])
 
   useEffect(() => {
     async function init() {
