@@ -105,6 +105,11 @@ function medir(regiao) {
       return caixaDePontos(String(p.points).trim().split(/\s+/).map(par => par.split(',').map(Number)))
     case 'radial':
       return caixaDePontos(pontosDoTriangulo(p.cx, p.cy, p.rInner, p.rOuter, p.n, 0, p.largura ?? 0.32))
+    case 'path':
+      // 🔑 Bézier não se mede por regra de três. O importador grava o `bbox` já
+      // calculado; sem ele, devolvemos null DE PROPÓSITO — o desenho aparece como
+      // "não medida" em vez de passar calado. Medida que não existe não pode virar ✅.
+      return Array.isArray(p.bbox) && p.bbox.length === 2 ? p.bbox : null
     default:
       return null
   }

@@ -42,8 +42,21 @@ function slug(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 }
 
+// Monta a frase só com o que EXISTE. Antes era um template cru:
+// `${cor.nome}. ${cor.nome}, ${cor.exemplo}.` — faltando o campo, a criança ouvia
+// literalmente "undefined", e nada no código acusava. Hoje o dado está completo nos
+// 1.806 itens narráveis (conferido por `npm run auditar-fala`), mas a proteção é
+// estrutural de propósito: dado novo entra por arquivo escrito à mão e pelo Supabase,
+// e nenhum dos dois garante campo.
+export function frasePorCor(cor) {
+  const nome = String(cor?.nome ?? '').trim()
+  const exemplo = String(cor?.exemplo ?? '').trim()
+  if (!nome) return ''
+  return exemplo ? `${nome}. ${nome}, ${exemplo}.` : `${nome}.`
+}
+
 function falar(cor, atividadeId, temTema) {
-  const texto = `${cor.nome}. ${cor.nome}, ${cor.exemplo}.`
+  const texto = frasePorCor(cor)
   const caminho = temTema
     ? `/audio/cores/_temas/${slug(atividadeId)}/${slug(cor.id)}.mp3`
     : `/audio/cores/${cor.id}.mp3`
@@ -220,9 +233,13 @@ export default function CoresAtividade() {
             {cor.nome}
           </div>
 
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '15px', fontWeight: '600' }}>
-            {cor.nome}, {cor.exemplo}
-          </div>
+          {/* Sem guarda esta linha escrevia "Vermelho, undefined" na tela — o mesmo
+              defeito da fala, na versão visível. Some inteira se não houver exemplo. */}
+          {cor.exemplo && (
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '15px', fontWeight: '600' }}>
+              {cor.nome}, {cor.exemplo}
+            </div>
+          )}
 
           {nivel === 'medio' && cor.funfato && (
             <div style={{ marginTop: '12px', background: 'rgba(249,115,22,0.12)', border: '1px solid rgba(249,115,22,0.3)', borderRadius: '10px', padding: '10px 14px', fontSize: '13px', color: '#fdba74', fontWeight: '600', lineHeight: 1.5 }}>

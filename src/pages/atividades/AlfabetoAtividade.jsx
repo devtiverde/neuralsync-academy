@@ -66,7 +66,9 @@ function slug(s) {
 }
 
 function falar(letraData, atividadeId, temTema) {
-  const texto = `${letraData.letra}. ${letraData.palavra}.`
+  // Só junta o que existe: template cru com campo faltando faz o TTS FALAR "undefined".
+  const texto = [String(letraData?.letra ?? '').trim(), String(letraData?.palavra ?? '').trim()]
+    .filter(Boolean).join('. ')
   const letra = letraData.letra.toLowerCase()
   const base = temTema ? `/audio/alfabeto/_temas/${slug(atividadeId)}` : '/audio/alfabeto'
 

@@ -19,7 +19,15 @@ const NUMEROS_DEFAULT = [
   { n: 10, word: 'Dez',    emoji: '🎉', cor: '#EF9F27' },
 ]
 
+// Reserva do número: `word` é o ÚNICO campo falado aqui, então sem ele a criança ouviria
+// "undefined". Melhor não falar nada do que falar isso.
 function falarTTS(palavra) {
+  const limpo = String(palavra ?? '').trim()
+  if (!limpo) return
+  return falarTTSInterno(limpo)
+}
+
+function falarTTSInterno(palavra) {
   if (!window.speechSynthesis) return
   const utt = new SpeechSynthesisUtterance(palavra)
   utt.lang = 'pt-BR'

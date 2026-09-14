@@ -106,7 +106,10 @@ function slug(s) {
 }
 
 function falar(forma, atividadeId, temTema) {
-  const texto = `${forma.nome}. ${forma.frase}`
+  // Só junta o que existe: template cru com campo faltando faz o TTS FALAR "undefined".
+  // Ver a mesma proteção em CoresAtividade e `npm run auditar-fala`.
+  const texto = [String(forma?.nome ?? '').trim(), String(forma?.frase ?? '').trim()]
+    .filter(Boolean).join('. ')
   const caminho = temTema
     ? `/audio/formas/_temas/${slug(atividadeId)}/${slug(forma.id)}.mp3`
     : `/audio/formas/${forma.id}.mp3`

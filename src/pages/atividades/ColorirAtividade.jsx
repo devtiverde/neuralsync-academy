@@ -41,6 +41,14 @@ function RegiaoSVG({ regiao, cor, onClick }) {
     ? { fill: regiao.cor || CONTORNO, stroke: CONTORNO, strokeWidth: 1.5, style: { pointerEvents: 'none' } }
     : { fill: cor, stroke: CONTORNO, strokeWidth: 3, style: { cursor: 'pointer', transition: 'fill 0.15s' }, onClick }
 
+  // `path` existe para o desenho VINDO DE FORA (clipart vetorial). Todo o resto do
+  // formato — circle/rect/ellipse/polygon/radial — é geometria escrita à mão, e é por
+  // isso que cada desenho custava uma tarde. Um `<path>` carrega curva de Bézier, que
+  // é como qualquer banco de vetor distribui arte de verdade.
+  // 🔑 A regra de alvo continua valendo: região pintável precisa de ~24px na tela do
+  // celular. Path importado NÃO é medido pela conta do `auditar-colorir` — ele mede
+  // forma por forma a partir dos props; por isso o importador grava `bbox` junto.
+  if (regiao.tipo === 'path')    return <path d={regiao.props.d} fillRule={regiao.props.fillRule || 'nonzero'} {...comum} />
   if (regiao.tipo === 'circle')  return <circle cx={regiao.props.cx} cy={regiao.props.cy} r={regiao.props.r} {...comum} />
   if (regiao.tipo === 'rect')    return <rect x={regiao.props.x} y={regiao.props.y} width={regiao.props.width} height={regiao.props.height} rx={regiao.props.rx || 0} {...comum} />
   if (regiao.tipo === 'ellipse') return <ellipse cx={regiao.props.cx} cy={regiao.props.cy} rx={regiao.props.rx} ry={regiao.props.ry} {...comum} />
