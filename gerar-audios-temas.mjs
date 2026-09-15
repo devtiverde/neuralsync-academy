@@ -1,5 +1,6 @@
 import { execFileSync } from 'child_process'
-import { mkdirSync, existsSync } from 'fs'
+import { mkdirSync, existsSync, readFileSync } from 'fs'
+import { createHash } from 'node:crypto'
 import * as dataMod from './src/data/atividadesData.js'
 import * as extraMod from './src/data/atividadesExtra.js'
 
@@ -23,6 +24,14 @@ for (const val of Object.values(all)) {
     }
   }
 }
+
+// O manifesto responde "já existe E veio deste texto?" — a pergunta que o sistema de
+// arquivos não responde. Sem ele, "retomável" vira "mantém o áudio velho para sempre".
+const CAMINHO_MANIFESTO = 'audio-manifesto.json'
+const manifesto = existsSync(CAMINHO_MANIFESTO)
+  ? JSON.parse(readFileSync(CAMINHO_MANIFESTO, 'utf8'))
+  : {}
+const hashTexto = t => createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 16)
 
 const tarefas = []
 
@@ -98,7 +107,15 @@ let ok = 0, falhas = []
 for (const t of unicos) {
   mkdirSync(`public/audio/${t.categoria}`, { recursive: true })
   const destino = `public/audio/${t.categoria}/${t.arquivo}.mp3`
-  if (existsSync(destino)) { ok++; continue } // retomável — pula o que já existe
+  // 🔴 NÃO PULE POR "O ARQUIVO EXISTE". Isto aqui já custou caro duas vezes:
+  // arquivo existir não diz NADA sobre o texto que ele contém. Foi assim que o
+  // `triangulino` passou a narrar queijo (julho/2026) e é a explicação viva para o
+  // áudio de cores relatado em 15/09.
+  // Retomar é legítimo, mas a pergunta certa é "já existe E VEIO DESTE TEXTO?" —
+  // quem responde isso é o manifesto de deriva, não o sistema de arquivos.
+  if (existsSync(destino) && manifesto[`${t.categoria}/${t.arquivo}.mp3`] === hashTexto(t.texto)) {
+    ok++; continue
+  }
   try {
     execFileSync('python', [
       '-m', 'edge_tts',
