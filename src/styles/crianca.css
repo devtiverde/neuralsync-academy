@@ -911,3 +911,48 @@ h1, h2, h3, .crianca-heading {
     min-height: 44px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARA DE JOGO — passada 1: peso no toque e entrada de tela   (15/09/2026)
+
+   O pedido dele foi "tirar a cara de HTML". A maior parte dessa sensação não
+   vem de 3D: vem de a tela responder ao dedo e de uma tela não trocar pela
+   outra num corte seco. Estas duas regras são CSS puro, sem custo de GPU e sem
+   mexer em lógica — funcionam no celular mais fraco.
+
+   Tudo anima `transform`/`opacity`, que o navegador compõe sem repintar.
+   O bloco global de `prefers-reduced-motion` lá em cima já neutraliza isto
+   para quem pediu menos movimento.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* A atividade não aparece mais de estalo: sobe 10px e ganha nitidez.
+   Escala de 0.985 dá a sensação de "entrar" na tela em vez de ser trocado. */
+@keyframes ns-entrada-jogo {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+.game-shell {
+  animation: ns-entrada-jogo 0.32s cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+/* Peso no toque. Sem isto o botão só muda de cor, que é o que faz uma tela
+   parecer um formulário — o dedo não sente que apertou nada.
+
+   🔑 De propósito SEM `!important`: muitos botões do projeto trazem `transform`
+   no atributo `style`, e estilo inline vence seletor. Sem o `!important`, esses
+   simplesmente mantêm o comportamento que já tinham, em vez de quebrar. */
+.ns-app button,
+.game-shell button,
+.game-content [role="button"] {
+  transition: transform 0.09s ease-out, filter 0.09s ease-out;
+}
+.ns-app button:active,
+.game-shell button:active,
+.game-content [role="button"]:active {
+  transform: scale(0.955);
+  filter: brightness(1.06);
+}
+
+/* Cartão de atividade afunda menos que botão: ele é superfície, não gatilho. */
+.ns-card-jogo { transition: transform 0.12s ease-out; }
+.ns-card-jogo:active { transform: scale(0.98); }
