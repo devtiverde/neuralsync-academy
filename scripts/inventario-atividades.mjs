@@ -1,7 +1,9 @@
-// Conta as atividades por TIPO × FAIXA e mostra o que falta para a meta de 15.
+// Conta as atividades por TIPO × FAIXA e mostra o que falta para a meta de 20.
 //
 // POR QUE ISTO EXISTE
-// A meta "15 por categoria/faixa" foi decidida em 02/08 e a expansão é feita em lotes, ao
+// A meta era 15 (02/08) e SUBIU PARA 20 em 14/09/2026, a pedido do Cláudio: a criança
+// escolhe um tipo e esgota aquele tipo, então o que importa é profundidade POR TIPO.
+// A expansão é feita em lotes, ao
 // longo de várias sessões. Sem uma medida, cada sessão recomeça contando à mão — e contar à
 // mão já errou antes: em 08/08 o `checar-ids` continuou dizendo "421 ids, ok" com 30
 // atividades novas já no disco, porque ele enumera os exports à mão e o export novo não
@@ -23,7 +25,7 @@ import { dirname, resolve } from 'node:path'
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const carregar = rel => import(pathToFileURL(resolve(raiz, rel)).href)
 
-const META = 15
+const META = 20
 const FAIXAS = ['exploradores', 'construtores', 'criadores', 'inventores']
 
 // Combinações deliberadamente vazias — decisão de produto registrada em 08/08.
