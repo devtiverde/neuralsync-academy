@@ -4,7 +4,7 @@
 -- Gerado por scripts/gerar-economia-seed.mjs a partir de:
 --   src/data/atividadesData.js · src/data/atividadesExtra.js · src/data/lojaCatalogo.js
 --
--- Atividades: 721   ·   Itens da Loja: 79
+-- Atividades: 722   ·   Itens da Loja: 79
 --
 -- Ao acrescentar atividade ou mexer em preço: rodar `npm run gerar-economia` e aplicar
 -- este arquivo de novo. Sem isso o servidor não conhece a atividade nova e a criança
@@ -392,6 +392,7 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('exp_colorir_borboleta', 'colorir', 60, 60),
   ('exp_colorir_carrinho', 'colorir', 60, 60),
   ('exp_colorir_casa', 'colorir', 60, 60),
+  ('exp_colorir_casinha', 'colorir', 60, 60),
   ('exp_colorir_chuva', 'colorir', 60, 60),
   ('exp_colorir_coelho', 'colorir', 60, 60),
   ('exp_colorir_flor', 'colorir', 60, 60),
@@ -822,5 +823,5 @@ ON CONFLICT (item_id) DO UPDATE
   SET preco = excluded.preco, nivel_min = excluded.nivel_min;
 
 -- Conferência rápida depois de aplicar:
---   select count(*) from public.ns_recompensas;  -- esperado: 721
+--   select count(*) from public.ns_recompensas;  -- esperado: 722
 --   select count(*) from public.ns_loja_precos;  -- esperado: 79

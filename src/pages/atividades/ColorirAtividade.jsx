@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
+import ColorirImagem from './ColorirImagem'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
 import '../../styles/crianca.css'
@@ -81,6 +82,25 @@ export default function ColorirAtividade() {
 
   useEffect(() => { if (!atividade) navigate(-1) }, [])
   if (!atividade) return null
+
+  // Dois modos convivem, e o dado decide qual:
+  //   `dados.imagem`  → desenho de TRAÇO, pintado a balde de tinta (ColorirImagem)
+  //   `dados.desenho` → regiões declaradas, o modo original
+  // O primeiro aceita desenho de livro de colorir de verdade; o segundo continua
+  // sendo o certo para figura geométrica, onde cada peça é uma forma.
+  // A intro é a mesma nos dois, por isso a bifurcação vem DEPOIS dela.
+  if (atividade?.dados?.imagem) {
+    if (!iniciou) return (
+      <IntroAtividade
+        atividade={atividade}
+        onComecar={() => setIniciou(true)}
+        onVoltar={() => navigate(-1)}
+        refazendo={state?.refazendo}
+        kidsLink={getKidsLink(atividade.id)}
+      />
+    )
+    return <ColorirImagem atividade={atividade} onVoltar={() => navigate(-1)} />
+  }
 
   const desenho = atividade?.dados?.desenho
   const regioes = desenho?.regioes || []

@@ -3154,6 +3154,26 @@ export const colorirExtraPorFaixa = [
       },
     },
   },
+  // ── 15/09/2026: primeiro desenho do modo BALDE DE TINTA ──────────────
+  {
+    id: 'exp_colorir_casinha',
+    tipo: 'colorir',
+    titulo: 'Colorir: Casinha no Campo',
+    descricao: 'Pinte com o balde de tinta: toque em cada pedacinho!',
+    emoji: '🏡',
+    habilidade: 'Criatividade',
+    xp_reward: 60,
+    coins_reward: 60,
+    tempo_estimado: 8,
+    historinha: 'A casinha no campo está só de risquinho! 🏡 Toque em cada pedaço e escolha a cor — o sol, o telhado, a árvore, tudo é seu.',
+    dados: {
+      imagem: {
+        src: '/colorir/casinha.png',
+        fonte: 'desenhado no projeto (sem licença de terceiro)',
+        areas: 17,
+      },
+    },
+  },
 ]
 
 // ── Cores ──
