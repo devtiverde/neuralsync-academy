@@ -260,7 +260,13 @@ export default function CoresAtividade() {
               <span key={i} style={{ fontSize: '20px', animation: `ns-bounce ${0.8 + i * 0.25}s ease-in-out infinite` }}>⭐</span>
             ))}
             <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '600' }}>
-              {ouvidas.size} de {CORES.length} cores ouvidas
+              {/* DADOS, não CORES: `CORES` é o conjunto PADRÃO de 10 cores, e a atividade
+                  temática tem a lista dela. Com `CORES.length` a tela mostrava
+                  "2 de 10 cores ouvidas" numa atividade de 8 — enquanto a barra de
+                  progresso, que usa DADOS, mostrava "2 / 8" na mesma tela.
+                  Mesmo defeito que já foi corrigido na conta das estrelas em 29/06;
+                  esta segunda ocorrência passou. */}
+              {ouvidas.size} de {DADOS.length} cores ouvidas
             </span>
           </div>
         )}

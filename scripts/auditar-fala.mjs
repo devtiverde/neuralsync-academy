@@ -99,7 +99,12 @@ for (const [tipo, cfg] of Object.entries(TIPOS)) {
     if (!Array.isArray(itens)) continue // usa o conjunto padrão embutido no componente
     for (const [i, it] of itens.entries()) {
       itensTotal++
-      const faltando = cfg.campos.filter(c => it[c] === undefined || it[c] === null || String(it[c]).trim() === '')
+      // 🔑 Campo AUSENTE não é o único jeito de a criança ouvir "undefined": o campo
+      // pode CONTER a palavra, se alguma vez foi preenchido por um template que
+      // interpolou um valor vazio. A auditoria só olhava ausência e teria aprovado isso.
+      const faltando = cfg.campos.filter(c =>
+        it[c] === undefined || it[c] === null || String(it[c]).trim() === '' ||
+        /\bundefined\b|\[object Object\]/.test(String(it[c])))
       const pasta = join(raiz, 'public', 'audio', cfg.pasta, '_temas', slug(a.id))
       const temAudio = cfg.arquivo(it, i).every(nome => existsSync(join(pasta, nome)))
       if (!temAudio) semAudio++
