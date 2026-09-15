@@ -1,4 +1,8 @@
-const CACHE = 'neuralsync-v6'
+// v7 (15/09/2026): subir este número é o que faz TODO aparelho descartar o que guardou
+// e buscar tudo de novo — o `activate` apaga qualquer cache com nome diferente deste.
+// Foi assim que a fonte quebrada se curou sozinha em 08/08, e é a única saída que
+// alcança o aparelho de quem está com uma versão velha presa.
+const CACHE = 'neuralsync-v7'
 const PRECACHE = ['/manifest.webmanifest']
 
 self.addEventListener('install', e => {
