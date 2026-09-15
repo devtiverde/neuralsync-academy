@@ -387,6 +387,16 @@ const map = {
   exp_colorir_pipa:         'formas_cores',
   exp_colorir_tartaruga:    'animais',
   exp_colorir_casinha:   'formas_cores',
+  exp_colorir_coelho2:    'animais',
+  exp_colorir_coruja:     'animais',
+  exp_colorir_fantasma:   'arte',
+  exp_colorir_rosa:       'planeta_terra',
+  exp_colorir_flor_feliz: 'planeta_terra',
+  exp_colorir_leao:       'animais',
+  exp_colorir_maca:       'frutas',
+  exp_colorir_tartaruga2: 'animais',
+  con_colorir_esquilo:    'animais',
+  cri_colorir_lirios:     'planeta_terra',
 
   // ── QUIZ IA ───────────────────────────────────────
   exp_quizia:   'tecnologia',

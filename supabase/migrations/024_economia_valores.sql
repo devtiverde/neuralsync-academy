@@ -4,7 +4,7 @@
 -- Gerado por scripts/gerar-economia-seed.mjs a partir de:
 --   src/data/atividadesData.js · src/data/atividadesExtra.js · src/data/lojaCatalogo.js
 --
--- Atividades: 722   ·   Itens da Loja: 79
+-- Atividades: 732   ·   Itens da Loja: 79
 --
 -- Ao acrescentar atividade ou mexer em preço: rodar `npm run gerar-economia` e aplicar
 -- este arquivo de novo. Sem isso o servidor não conhece a atividade nova e a criança
@@ -30,6 +30,7 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('con_blocos_4', 'blocos', 120, 120),
   ('con_colorir_borboleta', 'colorir', 80, 80),
   ('con_colorir_coruja', 'colorir', 80, 80),
+  ('con_colorir_esquilo', 'colorir', 80, 80),
   ('con_colorir_foguete', 'colorir', 80, 80),
   ('con_colorir_peixe', 'colorir', 80, 80),
   ('con_colorir_pipa', 'colorir', 80, 80),
@@ -212,6 +213,7 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('cri_colorir_carro', 'colorir', 100, 100),
   ('cri_colorir_castelo', 'colorir', 100, 100),
   ('cri_colorir_dinossauro', 'colorir', 100, 100),
+  ('cri_colorir_lirios', 'colorir', 100, 100),
   ('cri_colorir_pinguim', 'colorir', 100, 100),
   ('cri_colorir_praia', 'colorir', 100, 100),
   ('cri_colorir_robo', 'colorir', 100, 100),
@@ -395,17 +397,25 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('exp_colorir_casinha', 'colorir', 60, 60),
   ('exp_colorir_chuva', 'colorir', 60, 60),
   ('exp_colorir_coelho', 'colorir', 60, 60),
+  ('exp_colorir_coelho2', 'colorir', 60, 60),
+  ('exp_colorir_coruja', 'colorir', 60, 60),
+  ('exp_colorir_fantasma', 'colorir', 60, 60),
   ('exp_colorir_flor', 'colorir', 60, 60),
+  ('exp_colorir_flor_feliz', 'colorir', 60, 60),
   ('exp_colorir_gato', 'colorir', 60, 60),
   ('exp_colorir_guarda_chuva', 'colorir', 60, 60),
+  ('exp_colorir_leao', 'colorir', 60, 60),
+  ('exp_colorir_maca', 'colorir', 60, 60),
   ('exp_colorir_macas', 'colorir', 60, 60),
   ('exp_colorir_noite', 'colorir', 60, 60),
   ('exp_colorir_patinho', 'colorir', 60, 60),
   ('exp_colorir_peixe', 'colorir', 60, 60),
   ('exp_colorir_pipa', 'colorir', 60, 60),
+  ('exp_colorir_rosa', 'colorir', 60, 60),
   ('exp_colorir_sol', 'colorir', 60, 60),
   ('exp_colorir_sorvete', 'colorir', 60, 60),
   ('exp_colorir_tartaruga', 'colorir', 60, 60),
+  ('exp_colorir_tartaruga2', 'colorir', 60, 60),
   ('exp_cores', 'cores', 70, 70),
   ('exp_cores_alimentos', 'cores', 60, 60),
   ('exp_cores_arcoiris', 'cores', 60, 60),
@@ -823,5 +833,5 @@ ON CONFLICT (item_id) DO UPDATE
   SET preco = excluded.preco, nivel_min = excluded.nivel_min;
 
 -- Conferência rápida depois de aplicar:
---   select count(*) from public.ns_recompensas;  -- esperado: 722
+--   select count(*) from public.ns_recompensas;  -- esperado: 732
 --   select count(*) from public.ns_loja_precos;  -- esperado: 79

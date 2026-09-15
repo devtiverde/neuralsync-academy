@@ -2820,7 +2820,27 @@ export const colorirExtraPorFaixa = [
         ]
       }
     }
-  }
+  },
+  // ── lote 15/09/2026: desenhos enviados pelo Cláudio (balde de tinta) ──
+{
+    id: 'con_colorir_esquilo',
+    tipo: 'colorir',
+    titulo: 'Colorir: Esquilo',
+    descricao: 'Pinte o desenho do jeito que você quiser!',
+    emoji: '🎨',
+    habilidade: 'Criatividade',
+    xp_reward: 80,
+    coins_reward: 80,
+    tempo_estimado: 8,
+    historinha: 'Um desenho esperando a sua cor! 🎨 Toque em cada pedacinho e pinte do jeito que você gosta.',
+    dados: {
+      imagem: {
+        src: '/colorir/esquilo.png',
+        fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
+        areas: 56,
+      },
+    },
+  },
 ]
 
 // ── Cores ──

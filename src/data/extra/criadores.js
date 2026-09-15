@@ -2935,7 +2935,27 @@ export const colorirExtraPorFaixa = [
         ]
       }
     }
-  }
+  },
+  // ── lote 15/09/2026: desenhos enviados pelo Cláudio (balde de tinta) ──
+{
+    id: 'cri_colorir_lirios',
+    tipo: 'colorir',
+    titulo: 'Colorir: Lírios',
+    descricao: 'Pinte o desenho do jeito que você quiser!',
+    emoji: '🎨',
+    habilidade: 'Criatividade',
+    xp_reward: 100,
+    coins_reward: 100,
+    tempo_estimado: 8,
+    historinha: 'Um desenho esperando a sua cor! 🎨 Toque em cada pedacinho e pinte do jeito que você gosta.',
+    dados: {
+      imagem: {
+        src: '/colorir/lirios.png',
+        fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
+        areas: 39,
+      },
+    },
+  },
 ]
 
 // ── Cores ──
