@@ -372,6 +372,21 @@ const map = {
   inv_quiz_historia_mundial: 'historia_brasil',
   inv_quiz_matematica_av:    'matematica',
 
+  // ── lote 15/09/2026: colorir a 20 em exploradores ──────
+  exp_colorir_peixe:        'golfinhos',
+  exp_colorir_borboleta:    'animais',
+  exp_colorir_arvore:       'planeta_terra',
+  exp_colorir_carrinho:     'transporte',
+  exp_colorir_barquinho:    'transporte',
+  exp_colorir_patinho:      'animais',
+  exp_colorir_coelho:       'animais',
+  exp_colorir_noite:        'fisica',
+  exp_colorir_guarda_chuva: 'planeta_terra',
+  exp_colorir_macas:        'frutas',
+  exp_colorir_chuva:        'planeta_terra',
+  exp_colorir_pipa:         'formas_cores',
+  exp_colorir_tartaruga:    'animais',
+
   // ── QUIZ IA ───────────────────────────────────────
   exp_quizia:   'tecnologia',
   exp_quizia_2: 'tecnologia',

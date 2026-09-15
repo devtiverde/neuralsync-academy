@@ -4,7 +4,7 @@
 -- Gerado por scripts/gerar-economia-seed.mjs a partir de:
 --   src/data/atividadesData.js · src/data/atividadesExtra.js · src/data/lojaCatalogo.js
 --
--- Atividades: 708   ·   Itens da Loja: 79
+-- Atividades: 721   ·   Itens da Loja: 79
 --
 -- Ao acrescentar atividade ou mexer em preço: rodar `npm run gerar-economia` e aplicar
 -- este arquivo de novo. Sem isso o servidor não conhece a atividade nova e a criança
@@ -385,13 +385,26 @@ INSERT INTO public.ns_recompensas (atividade_id, tipo, xp, coins) VALUES
   ('exp_blocos_2', 'blocos', 70, 70),
   ('exp_blocos_3', 'blocos', 75, 75),
   ('exp_blocos_4', 'blocos', 80, 80),
+  ('exp_colorir_arvore', 'colorir', 60, 60),
   ('exp_colorir_balao', 'colorir', 60, 60),
+  ('exp_colorir_barquinho', 'colorir', 60, 60),
   ('exp_colorir_bolo', 'colorir', 60, 60),
+  ('exp_colorir_borboleta', 'colorir', 60, 60),
+  ('exp_colorir_carrinho', 'colorir', 60, 60),
   ('exp_colorir_casa', 'colorir', 60, 60),
+  ('exp_colorir_chuva', 'colorir', 60, 60),
+  ('exp_colorir_coelho', 'colorir', 60, 60),
   ('exp_colorir_flor', 'colorir', 60, 60),
   ('exp_colorir_gato', 'colorir', 60, 60),
+  ('exp_colorir_guarda_chuva', 'colorir', 60, 60),
+  ('exp_colorir_macas', 'colorir', 60, 60),
+  ('exp_colorir_noite', 'colorir', 60, 60),
+  ('exp_colorir_patinho', 'colorir', 60, 60),
+  ('exp_colorir_peixe', 'colorir', 60, 60),
+  ('exp_colorir_pipa', 'colorir', 60, 60),
   ('exp_colorir_sol', 'colorir', 60, 60),
   ('exp_colorir_sorvete', 'colorir', 60, 60),
+  ('exp_colorir_tartaruga', 'colorir', 60, 60),
   ('exp_cores', 'cores', 70, 70),
   ('exp_cores_alimentos', 'cores', 60, 60),
   ('exp_cores_arcoiris', 'cores', 60, 60),
@@ -809,5 +822,5 @@ ON CONFLICT (item_id) DO UPDATE
   SET preco = excluded.preco, nivel_min = excluded.nivel_min;
 
 -- Conferência rápida depois de aplicar:
---   select count(*) from public.ns_recompensas;  -- esperado: 708
+--   select count(*) from public.ns_recompensas;  -- esperado: 721
 --   select count(*) from public.ns_loja_precos;  -- esperado: 79

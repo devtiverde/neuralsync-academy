@@ -38,6 +38,11 @@ function svgDaRegiao(r, cor) {
   const traco = `stroke="${CONTORNO}" stroke-width="${dec ? 1.5 : 3}"`
   const p = r.props
   switch (r.tipo) {
+    // 🔑 `path` é o formato do desenho que vem de vetor (curva de Bézier). Sem este
+    // caso o render devolvia a folha SEM essas regiões — e, como o `auditar-colorir`
+    // media tudo certinho pelo bbox, o desenho passava por bom estando invisível aqui.
+    // Foi assim que 10 dos 13 desenhos novos apareceram vazios na primeira folha.
+    case 'path':    return `<path d="${p.d}" fill="${fill}" ${traco}/>`
     case 'circle':  return `<circle cx="${p.cx}" cy="${p.cy}" r="${p.r}" fill="${fill}" ${traco}/>`
     case 'rect':    return `<rect x="${p.x}" y="${p.y}" width="${p.width}" height="${p.height}" rx="${p.rx || 0}" fill="${fill}" ${traco}/>`
     case 'ellipse': return `<ellipse cx="${p.cx}" cy="${p.cy}" rx="${p.rx}" ry="${p.ry}" fill="${fill}" ${traco}/>`
