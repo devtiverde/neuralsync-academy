@@ -36,9 +36,16 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-5e9V94+BPvB4jwqEZZWPBIYg6qzV5b90BsbGbMMKo9Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
-# Os áudios e assets com hash no nome podem ser cacheados agressivamente
+# Assets com hash no nome podem ser cacheados para sempre: o Vite renomeia o arquivo a
+# cada build, então "imutável" é literalmente verdade.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+# 🪤 Os mp3 NÃO têm hash no nome — o caminho é sempre o mesmo. Este cabeçalho, escrito
+# sob a frase "áudios e assets com hash no nome", guardava o arquivo por sete dias no
+# aparelho, e o Service Worker guardava por tempo indeterminado. Em 18/09 isso quase fez
+# a correção de 165 falas erradas de `numeros` não chegar em quem já tinha jogado.
+# O que resolve é a URL carregar a versão do acervo: ver `src/lib/audioUrl.js` (AUDIO_V).
+# Com a versão na query, cache longo passa a ser vantagem em vez de armadilha.
 /audio/*
   Cache-Control: public, max-age=604800

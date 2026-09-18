@@ -1,8 +1,16 @@
-// v7 (15/09/2026): subir este número é o que faz TODO aparelho descartar o que guardou
+// v8 (18/09/2026): subir este número é o que faz TODO aparelho descartar o que guardou
 // e buscar tudo de novo — o `activate` apaga qualquer cache com nome diferente deste.
 // Foi assim que a fonte quebrada se curou sozinha em 08/08, e é a única saída que
 // alcança o aparelho de quem está com uma versão velha presa.
-const CACHE = 'neuralsync-v7'
+//
+// 🔴 MEXEU EM ÁUDIO? SOBE ESTE NÚMERO. Não é opcional.
+// A última regra do `fetch` é cache-first e se justifica dizendo "seguro porque o hash
+// muda com o conteúdo" — isso vale para `/assets/`, que o Vite renomeia a cada build.
+// Os mp3 de `/audio/` NÃO têm hash no nome: o caminho é sempre o mesmo. Para quem já
+// abriu a atividade uma vez, o arquivo antigo fica guardado no aparelho PARA SEMPRE, e
+// um deploy novo não alcança. Foi o que aconteceu com o áudio de `numeros` (v8) e com o
+// de cores (v7): o conserto do arquivo é metade do trabalho; a outra metade é esta linha.
+const CACHE = 'neuralsync-v8'
 const PRECACHE = ['/manifest.webmanifest']
 
 self.addEventListener('install', e => {

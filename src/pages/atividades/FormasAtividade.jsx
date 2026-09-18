@@ -4,6 +4,7 @@ import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { audioUrl } from '../../lib/audioUrl'
 import '../../styles/crianca.css'
 
 const FORMAS_DEFAULT = [
@@ -113,7 +114,7 @@ function falar(forma, atividadeId, temTema) {
   const caminho = temTema
     ? `/audio/formas/_temas/${slug(atividadeId)}/${slug(forma.id)}.mp3`
     : `/audio/formas/${forma.id}.mp3`
-  const audio = new Audio(caminho)
+  const audio = new Audio(audioUrl(caminho))
   audio.addEventListener('error', () => falarTTS(texto))
   audio.play().catch(() => falarTTS(texto))
 }

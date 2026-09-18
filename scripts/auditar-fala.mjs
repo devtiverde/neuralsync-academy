@@ -14,6 +14,7 @@
  * Trocar um pelo outro no dado não dá erro nenhum, só "undefined" na voz.
  */
 import { existsSync } from 'node:fs'
+import { falasEsperadas } from './lib-fala.mjs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -89,6 +90,34 @@ function autoteste() {
 
 const todas = await carregar()
 autoteste()
+
+// 🔑 GUARDA CONTRA A DIVERGÊNCIA — a causa das três vozes erradas deste projeto.
+// Este arquivo tem a sua própria tabela `TIPOS` porque precisa também da FRASE DE RESERVA
+// (o texto do TTS), que é assunto dele. Mas o NOME DO ARQUIVO tem que ser exatamente o
+// que `lib-fala.mjs` diz, e aquilo é conferido contra o .jsx. Se as duas discordarem, o
+// build para aqui: foi assim que `auditar-audio-arquivos.mjs` passou meses procurando
+// `<n>.mp3` enquanto o app pedia `<índice>.mp3` e dizia "✅ todos existem".
+{
+  const daLib = new Set((await falasEsperadas(['cores', 'formas', 'numeros', 'alfabeto']))
+    .map(f => `${f.pasta}/${f.arquivo}`))
+  const daqui = new Set()
+  for (const [tipo, cfg] of Object.entries(TIPOS)) {
+    for (const a of todas.filter(x => x.tipo === tipo)) {
+      const itens = a?.dados?.[cfg.lista]
+      if (!Array.isArray(itens)) continue
+      itens.forEach((it, i) => cfg.arquivo(it, i).forEach(n =>
+        daqui.add(`public/audio/${cfg.pasta}/_temas/${slug(a.id)}/${n}`)))
+    }
+  }
+  const soAqui = [...daqui].filter(x => !daLib.has(x))
+  const soLa = [...daLib].filter(x => !daqui.has(x) && !x.includes('/alfabeto/'))
+  if (soAqui.length || soLa.length) {
+    console.error(`\n🔴 a regra de nome de arquivo divergiu de scripts/lib-fala.mjs:`)
+    soAqui.slice(0, 5).forEach(x => console.error(`   só aqui: ${x}`))
+    soLa.slice(0, 5).forEach(x => console.error(`   só na lib: ${x}`))
+    process.exit(1)
+  }
+}
 
 let itensTotal = 0, semCampo = 0, semAudio = 0, tocandoUndefined = 0
 const achados = []

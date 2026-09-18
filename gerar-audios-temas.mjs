@@ -1,138 +1,82 @@
+/**
+ * gerar-audios-temas.mjs — gera o áudio temático das atividades faladas (alfabeto,
+ * formas, números, cores) com a voz Francisca.
+ *
+ * 🔑 A REGRA DE "QUAL ARQUIVO, QUAL TEXTO" NÃO MORA MAIS AQUI — mora em
+ * `scripts/lib-fala.mjs`, junto com o detector de deriva, o regravador e os auditores.
+ * Enquanto cada script tinha a sua cópia, elas divergiram três vezes e as três viraram
+ * voz errada no ouvido da criança (queijo no `triangulino`, "undefined" nas cores,
+ * `numeros` deslocado em um). Copiar a regra É o defeito.
+ *
+ * uso: node gerar-audios-temas.mjs
+ */
 import { execFileSync } from 'child_process'
-import { mkdirSync, existsSync, readFileSync } from 'fs'
+import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'fs'
 import { createHash } from 'node:crypto'
-import * as dataMod from './src/data/atividadesData.js'
-import * as extraMod from './src/data/atividadesExtra.js'
+import { join } from 'node:path'
+import { falasEsperadas, conferir } from './scripts/lib-fala.mjs'
 
 const VOICE = 'pt-BR-FranciscaNeural'
 const RATE = '-8%'
+const CAMINHO_MANIFESTO = 'audio-manifesto.json'
+const hashTexto = t => createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 16)
 
-function slug(s) {
-  return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+const divergencias = conferir()
+if (divergencias.length) {
+  console.error('\n🔴 a regra de caminho não bate com o componente — não gero nada:')
+  divergencias.forEach(d => console.error('   ', d))
+  process.exit(1)
 }
 
-const all = { ...dataMod, ...extraMod }
+const falas = await falasEsperadas()
 
-// coleta todas as atividades de cada tipo, com override (dados.*) ou não
-const buckets = { alfabeto: [], formas: [], numeros: [], cores: [] }
-for (const val of Object.values(all)) {
-  if (!val || typeof val !== 'object') continue
-  for (const arr of Object.values(val)) {
-    if (!Array.isArray(arr)) continue
-    for (const at of arr) {
-      if (at && at.tipo && buckets[at.tipo]) buckets[at.tipo].push(at)
-    }
-  }
+// 🔴 Fala vazia ou com "undefined" para ANTES de gravar: o mp3 sai dizendo a palavra
+// "undefined" e nada no sistema acusa — foi assim por meses nas cores.
+const comDefeito = falas.filter(f => f.defeito)
+if (comDefeito.length) {
+  console.error(`\n🔴 ${comDefeito.length} fala(s) com defeito no DADO — corrija o dado antes de gerar:`)
+  comDefeito.slice(0, 10).forEach(f => console.error(`   ${f.caminho}: ${f.defeito}`))
+  process.exit(1)
 }
 
 // O manifesto responde "já existe E veio deste texto?" — a pergunta que o sistema de
 // arquivos não responde. Sem ele, "retomável" vira "mantém o áudio velho para sempre".
-const CAMINHO_MANIFESTO = 'audio-manifesto.json'
 const manifesto = existsSync(CAMINHO_MANIFESTO)
   ? JSON.parse(readFileSync(CAMINHO_MANIFESTO, 'utf8'))
   : {}
-const hashTexto = t => createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 16)
 
-const tarefas = []
+const porTipo = {}
+for (const f of falas) porTipo[f.tipo] = (porTipo[f.tipo] || 0) + 1
+console.log(Object.entries(porTipo).map(([t, n]) => `${n} ${t}`).join(' | '))
+console.log(`Gerando ${falas.length} áudios temáticos com a voz Francisca...`)
 
-// ── Alfabeto: letra e palavra em arquivos SEPARADOS (tocados em sequência com
-// pausa real via JS) ──────────────────────────────────────────────────────────
-for (const at of buckets.alfabeto) {
-  if (!at.dados?.letras) continue // sem override -> já usa o arquivo padrão a-z.mp3
-  for (const l of at.dados.letras) {
-    tarefas.push({
-      categoria: `alfabeto/_temas/${slug(at.id)}`,
-      arquivo: l.letra.toLowerCase(),
-      texto: `${l.letra}.`,
-    })
-    tarefas.push({
-      categoria: `alfabeto/_temas/${slug(at.id)}`,
-      arquivo: `${l.letra.toLowerCase()}-palavra`,
-      texto: `${l.palavra}.`,
-    })
-  }
-}
-
-// ── Formas: texto = "{Nome}. {Frase}" ────────────────────────────────────────
-for (const at of buckets.formas) {
-  if (!at.dados?.formas) continue
-  for (const f of at.dados.formas) {
-    tarefas.push({
-      categoria: `formas/_temas/${slug(at.id)}`,
-      arquivo: slug(f.id),
-      texto: `${f.nome}. ${f.frase}`,
-    })
-  }
-}
-
-// ── Números: texto = word ─────────────────────────────────────────────────────
-// chave por ÍNDICE (não por n): varias atividades reaproveitam o mesmo "n" pra
-// entradas diferentes (frações com numerador 1, negativos e positivos, etc.)
-for (const at of buckets.numeros) {
-  if (!at.dados?.numeros) continue
-  at.dados.numeros.forEach((n, idx) => {
-    tarefas.push({
-      categoria: `numeros/_temas/${slug(at.id)}`,
-      arquivo: String(idx),
-      texto: n.word,
-    })
-  })
-}
-
-// ── Cores: texto = "{Nome}. {Nome}, {exemplo}." ─────────────────────────────
-for (const at of buckets.cores) {
-  if (!at.dados?.cores) continue
-  for (const c of at.dados.cores) {
-    tarefas.push({
-      categoria: `cores/_temas/${slug(at.id)}`,
-      arquivo: slug(c.id),
-      texto: `${c.nome}. ${c.nome}, ${c.exemplo}.`,
-    })
-  }
-}
-
-// dedup por caminho de destino (algumas atividades podem repetir item id+texto)
-const vistos = new Set()
-const unicos = tarefas.filter(t => {
-  const chave = `${t.categoria}/${t.arquivo}`
-  if (vistos.has(chave)) return false
-  vistos.add(chave)
-  return true
-})
-
-console.log(`${buckets.alfabeto.length} atividades alfabeto | ${buckets.formas.length} formas | ${buckets.numeros.length} numeros | ${buckets.cores.length} cores`)
-console.log(`Gerando ${unicos.length} áudios temáticos com a voz Francisca...`)
-
-let ok = 0, falhas = []
-for (const t of unicos) {
-  mkdirSync(`public/audio/${t.categoria}`, { recursive: true })
-  const destino = `public/audio/${t.categoria}/${t.arquivo}.mp3`
-  // 🔴 NÃO PULE POR "O ARQUIVO EXISTE". Isto aqui já custou caro duas vezes:
-  // arquivo existir não diz NADA sobre o texto que ele contém. Foi assim que o
-  // `triangulino` passou a narrar queijo (julho/2026) e é a explicação viva para o
-  // áudio de cores relatado em 15/09.
-  // Retomar é legítimo, mas a pergunta certa é "já existe E VEIO DESTE TEXTO?" —
-  // quem responde isso é o manifesto de deriva, não o sistema de arquivos.
-  if (existsSync(destino) && manifesto[`${t.categoria}/${t.arquivo}.mp3`] === hashTexto(t.texto)) {
-    ok++; continue
-  }
+let ok = 0, pulados = 0
+const falhas = []
+for (const f of falas) {
+  mkdirSync(f.pasta, { recursive: true })
+  const destino = join(f.pasta, f.arquivo)
+  // 🔴 NÃO PULE POR "O ARQUIVO EXISTE". Arquivo existir não diz NADA sobre o texto que
+  // ele contém. Retomar é legítimo, mas a pergunta certa é "já existe E VEIO DESTE
+  // TEXTO?" — quem responde isso é o manifesto, não o sistema de arquivos.
+  if (existsSync(destino) && manifesto[f.caminho] === hashTexto(f.texto)) { ok++; pulados++; continue }
   try {
-    execFileSync('python', [
-      '-m', 'edge_tts',
-      '-t', t.texto,
-      '-v', VOICE,
-      `--rate=${RATE}`,
-      '--write-media', destino,
-    ], { stdio: ['ignore', 'ignore', 'pipe'] })
+    execFileSync('python', ['-m', 'edge_tts', '-t', f.texto, '-v', VOICE, `--rate=${RATE}`, '--write-media', destino],
+      { stdio: ['ignore', 'ignore', 'pipe'] })
+    // 🔑 Gravou, ANOTA. A versão anterior lia o manifesto e nunca escrevia nele: todo
+    // arquivo que ela gerava continuava "desconhecido" para o detector de deriva, e o
+    // retomável não retomava nada. Manifesto só vale se quem grava o alimenta.
+    manifesto[f.caminho] = hashTexto(f.texto)
     ok++
-    if (ok % 10 === 0) process.stdout.write(`\r${ok}/${unicos.length} gerados...`)
+    if ((ok - pulados) % 10 === 0) process.stdout.write(`\r${ok}/${falas.length} ...`)
   } catch (e) {
-    falhas.push(`${t.categoria}/${t.arquivo}: ${e.stderr?.toString() || e.message}`)
+    falhas.push(`${f.caminho}: ${e.stderr?.toString() || e.message}`)
   }
 }
 
-console.log(`\n\nConcluído: ${ok}/${unicos.length} áudios (gerados ou já existentes).`)
+writeFileSync(CAMINHO_MANIFESTO, JSON.stringify(manifesto, null, 0), 'utf8')
+console.log(`\n\nConcluído: ${ok}/${falas.length} áudios (${pulados} já conferiam com o manifesto).`)
 if (falhas.length) {
   console.log(`${falhas.length} falha(s):`)
-  falhas.forEach(f => console.log(' - ' + f))
+  falhas.slice(0, 10).forEach(f => console.log(' - ' + f))
+  process.exitCode = 1
 }

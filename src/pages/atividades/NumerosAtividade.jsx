@@ -4,6 +4,7 @@ import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { audioUrl } from '../../lib/audioUrl'
 import '../../styles/crianca.css'
 
 const NUMEROS_DEFAULT = [
@@ -50,7 +51,7 @@ function falar(numero, atividadeId, temTema, indice) {
   const caminho = temTema
     ? `/audio/numeros/_temas/${slug(atividadeId)}/${indice}.mp3`
     : `/audio/numeros/${numero.n}.mp3`
-  const audio = new Audio(caminho)
+  const audio = new Audio(audioUrl(caminho))
   audio.addEventListener('error', () => falarTTS(numero.word))
   audio.play().catch(() => falarTTS(numero.word))
 }

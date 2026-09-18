@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import { audioUrl } from '../../lib/audioUrl'
 
 const ATIVIDADE = {
   id: 'historia-interativa',
@@ -224,7 +225,7 @@ function pararNarracao() {
 }
 function falar(historiaId, noId, texto) {
   if (!historiaId || !noId) { falarTTS(texto); return }
-  const audio = new Audio(`/audio/historia-interativa/${historiaId}/${noId}.mp3`)
+  const audio = new Audio(audioUrl(`/audio/historia-interativa/${historiaId}/${noId}.mp3`))
   audioAtual = audio
   audio.addEventListener('error', () => falarTTS(texto))
   audio.play().catch(() => falarTTS(texto))

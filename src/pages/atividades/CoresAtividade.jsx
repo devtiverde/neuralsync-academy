@@ -4,6 +4,7 @@ import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { audioUrl } from '../../lib/audioUrl'
 import '../../styles/crianca.css'
 
 const CORES = [
@@ -60,7 +61,7 @@ function falar(cor, atividadeId, temTema) {
   const caminho = temTema
     ? `/audio/cores/_temas/${slug(atividadeId)}/${slug(cor.id)}.mp3`
     : `/audio/cores/${cor.id}.mp3`
-  const audio = new Audio(caminho)
+  const audio = new Audio(audioUrl(caminho))
   audio.addEventListener('error', () => falarTTS(texto))
   audio.play().catch(() => falarTTS(texto))
 }

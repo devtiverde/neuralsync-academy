@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import IntroAtividade from './IntroAtividade'
+import { audioUrl } from '../../lib/audioUrl'
 
 // ─── Conteúdo ──────────────────────────────────────────────────────────────
 
@@ -147,7 +148,7 @@ function slug(s) {
 // toca a gravação em inglês quando existir (vocabulário/flashcards); cai pro TTS
 // pra frases/opções que ainda não têm áudio gravado (ex: quiz de gramática)
 function falar(texto, lang = 'en-US') {
-  const audio = new Audio(`/audio/ingles/${slug(texto)}.mp3`)
+  const audio = new Audio(audioUrl(`/audio/ingles/${slug(texto)}.mp3`))
   audio.addEventListener('error', () => falarTTS(texto, lang))
   audio.play().catch(() => falarTTS(texto, lang))
 }

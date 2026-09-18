@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { audioUrl } from '../../lib/audioUrl'
 import { useKids } from '../../hooks/useKids'
 import { kidsStorias } from '../../data/kidsStorias'
 import { kidsExperimentos } from '../../data/kidsExperimentos'
@@ -153,7 +154,7 @@ function HistoriaIlustrada({ historia, cor, categoria }) {
         {/* narração gravada da cena — nomes dos arquivos combinados no guia de gravação */}
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '18px' }}>
           <BotaoNarracao
-            src={`/audio/kids-storias/${categoria}/${cenaAtiva + 1}.mp3`}
+            src={audioUrl(`/audio/kids-storias/${categoria}/${cenaAtiva + 1}.mp3`)}
             texto={cena.texto}
             cor={cor}
           />

@@ -4,6 +4,7 @@ import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { audioUrl } from '../../lib/audioUrl'
 import '../../styles/crianca.css'
 
 const LETRAS = [
@@ -77,8 +78,8 @@ function falar(letraData, atividadeId, temTema) {
   let jaCaiuNoTTS = false
   const cairNoTTS = () => { if (!jaCaiuNoTTS) { jaCaiuNoTTS = true; falarTTS(texto) } }
 
-  const audioLetra = new Audio(`${base}/${letra}.mp3`)
-  const audioPalavra = new Audio(`${base}/${letra}-palavra.mp3`)
+  const audioLetra = new Audio(audioUrl(`${base}/${letra}.mp3`))
+  const audioPalavra = new Audio(audioUrl(`${base}/${letra}-palavra.mp3`))
   audioLetra.addEventListener('error', cairNoTTS)
   audioPalavra.addEventListener('error', cairNoTTS)
   audioLetra.addEventListener('ended', () => {

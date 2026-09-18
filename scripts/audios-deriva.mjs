@@ -26,6 +26,14 @@ import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { pathToFileURL } from 'node:url'
 import { resolve, dirname } from 'node:path'
+import { falasEsperadas, conferir, slug } from './lib-fala.mjs'
+
+const divergencias = conferir()
+if (divergencias.length) {
+  console.error('\n🔴 a regra de caminho não bate mais com o componente:')
+  divergencias.forEach(d => console.error('   ', d))
+  process.exit(1)
+}
 
 const raiz = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..')
 const p = rel => resolve(raiz, rel)
@@ -37,46 +45,25 @@ const MANIFESTO = p('audio-manifesto.json')
 const GRAVAR = process.argv.includes('--gravar')
 const VERIFICAR = process.argv.includes('--verificar')
 
-const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 const hash = t => createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 16)
 
 // ── o que DEVERIA existir, derivado do dado de hoje ─────────────────────────────
-// Mesmas regras de nome e de frase do gerador original — se divergirem, o app procura
-// um arquivo e o gerador escreve outro.
-const dataMod = await import(pathToFileURL(p('src/data/atividadesData.js')).href)
-const extraMod = await import(pathToFileURL(p('src/data/atividadesExtra.js')).href)
-
-const buckets = { alfabeto: [], formas: [], numeros: [], cores: [] }
-for (const val of Object.values({ ...dataMod, ...extraMod })) {
-  if (!val || typeof val !== 'object') continue
-  for (const arr of Object.values(val)) {
-    if (!Array.isArray(arr)) continue
-    for (const at of arr) if (at?.tipo && buckets[at.tipo]) buckets[at.tipo].push(at)
-  }
-}
-
-const esperados = []
+// 🔑 A REGRA NÃO MORA MAIS AQUI. Ela mora em `lib-fala.mjs`, e isto não é arrumação:
+// a versão anterior deste bloco dizia seguir "as mesmas regras do gerador" e não seguia.
+// Ela nomeava o arquivo de `numeros` pelo NÚMERO (`n`) quando o app pede pelo ÍNDICE, e
+// montava a frase das cores com `${c.frase}`, campo que não existe no dado (é `exemplo`).
+// Rodar este script com `--gravar` foi o que, em 03/08, gravou "1." no arquivo do índice
+// 1 — a criança clicava no 2 e ouvia "um" — e o que pôs "undefined" na fala das cores.
+// Um detector que carrega a regra errada não detecta: ele PROPAGA.
+const esperados = (await falasEsperadas()).map(f => ({ caminho: f.caminho, texto: f.texto, defeito: f.defeito }))
 const juntar = (caminho, texto) => esperados.push({ caminho, texto })
 
-for (const at of buckets.alfabeto) {
-  if (!at.dados?.letras) continue
-  for (const l of at.dados.letras) {
-    const base = `alfabeto/_temas/${slug(at.id)}`
-    juntar(`${base}/${l.letra.toLowerCase()}.mp3`, `${l.letra}.`)
-    juntar(`${base}/${l.letra.toLowerCase()}-palavra.mp3`, `${l.palavra}.`)
-  }
-}
-for (const at of buckets.formas) {
-  if (!at.dados?.formas) continue
-  for (const f of at.dados.formas) juntar(`formas/_temas/${slug(at.id)}/${slug(f.id)}.mp3`, `${f.nome}. ${f.frase}`)
-}
-for (const at of buckets.numeros) {
-  if (!at.dados?.numeros) continue
-  for (const n of at.dados.numeros) juntar(`numeros/_temas/${slug(at.id)}/${slug(String(n.n ?? n.id))}.mp3`, `${n.nome ?? n.display ?? n.n}.`)
-}
-for (const at of buckets.cores) {
-  if (!at.dados?.cores) continue
-  for (const c of at.dados.cores) juntar(`cores/_temas/${slug(at.id)}/${slug(c.id)}.mp3`, `${c.nome}. ${c.frase}`)
+const comDefeito = esperados.filter(e => e.defeito)
+if (comDefeito.length) {
+  console.error(`
+🔴 ${comDefeito.length} fala(s) com defeito no DADO — corrija o dado antes de gravar:`)
+  comDefeito.slice(0, 10).forEach(e => console.error(`   ${e.caminho}: ${e.defeito}`))
+  process.exit(1)
 }
 
 // A lista PADRÃO do alfabeto mora dentro do componente, não nos dados — e foi

@@ -4,6 +4,7 @@ import IntroAtividade from './IntroAtividade'
 import GameShell from '../../components/GameShell'
 import { playSound } from '../../lib/sounds'
 import { getKidsLink } from '../../lib/kidsLinks'
+import { audioUrl } from '../../lib/audioUrl'
 import '../../styles/crianca.css'
 
 // O TTS pt-BR do navegador expande sigla de 2 letras MAIÚSCULAS como abreviação de
@@ -35,7 +36,7 @@ function tocar(src, textoFallback) {
 // ou quando a palavra não tem áudio gravado (ex: novas palavras temáticas futuras)
 function falarPalavra(id, texto) {
   if (!id) { falarTTS(texto); return }
-  tocar(`/audio/silabas/${id}.mp3`, texto)
+  tocar(audioUrl(`/audio/silabas/${id}.mp3`), texto)
 }
 
 // ficha de sílaba individual — gravações em `_fichas/`, geradas por
@@ -43,7 +44,7 @@ function falarPalavra(id, texto) {
 function falarSilaba(texto) {
   const slug = String(texto).toLowerCase()
   if (!/^[a-z]+$/.test(slug)) { falarTTS(texto); return }
-  tocar(`/audio/silabas/_fichas/${slug}.mp3`, texto)
+  tocar(audioUrl(`/audio/silabas/_fichas/${slug}.mp3`), texto)
 }
 
 function embaralhar(silabas) {
