@@ -20,7 +20,10 @@
     "inventario": "node scripts/inventario-atividades.mjs",
     "auditar-raciocinio": "node scripts/auditar-sequencia-padrao.mjs",
     "render-colorir": "node scripts/render-colorir.mjs",
-    "preparar-sql-economia": "node scripts/preparar-sql-economia.mjs"
+    "preparar-sql-economia": "node scripts/preparar-sql-economia.mjs",
+    "auditar-audio": "node scripts/auditar-audio-onda.mjs",
+    "auditar-audio-orfao": "node scripts/auditar-audio-orfao.mjs",
+    "regravar-falas": "node scripts/regravar-falas.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

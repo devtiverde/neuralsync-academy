@@ -9,6 +9,14 @@
  * 🪤 Fala curta satura num piso (10.656 na versão de agosto) e aí o tamanho não
  * distingue mais nada: este método só vale para frases.
  *
+ * 🔴 E ESSA RESSALVA JÁ CUSTOU CARO. Em `numeros` o texto é UMA PALAVRA: "Um", "Dois" e
+ * "Quatro" saem todos com exatamente 11.232 bytes. Enquanto a prova disponível era o
+ * tamanho, 165 falas erradas eram indistinguíveis das certas — e ficaram no ar.
+ * Para palavra curta, use o sucessor, que compara a ONDA decodificada e separa as duas
+ * nuvens com folga (mesmo texto 1,0000 · texto diferente ≈ 0,00):
+ *     node scripts/auditar-audio-onda.mjs --tipo <tipo> --ouvir
+ * Ver `scripts/lib-onda.mjs`. Este aqui continua útil para frase e não precisa de ffmpeg.
+ *
  * Existe porque o detector de deriva NÃO pega este caso: ele compara o hash do texto de
  * hoje com o que está no MANIFESTO, e o manifesto pode ter sido escrito para um arquivo
  * que nunca foi regravado. Manifesto é promessa; isto aqui é medida.

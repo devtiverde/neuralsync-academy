@@ -54,11 +54,33 @@ export function semelhanca(x, y) {
   return den ? (pxy / den) * (n / m) : 0
 }
 
-/** Grava um candidato com a MESMA voz e velocidade do gerador. */
-export function gravar(texto, destino) {
-  execFileSync('python', ['-m', 'edge_tts', '-t', texto, '-v', VOZ, `--rate=${RATE}`, '--write-media', destino],
-    { stdio: 'pipe' })
-  return destino
+/**
+ * Grava um candidato com a MESMA voz e velocidade do gerador.
+ *
+ * 🪤 O edge-tts vai à rede a cada chamada e falha de vez em quando — numa auditoria de
+ * centenas de falas, uma falha é quase certa. A 1ª versão disto derrubava o processo
+ * inteiro na primeira, deixando o relatório pela metade com aparência de concluído.
+ * Job em segundo plano que morre no meio é pior que job que não roda: ver
+ * [[feedback_manifesto_e_promessa_nao_medida]]. Agora tenta de novo e, se ainda assim
+ * não vier, devolve `null` — quem chama conta como NÃO MEDIDO, nunca como aprovado.
+ */
+export function gravar(texto, destino, { tentativas = 3, silencioso = false } = {}) {
+  for (let i = 1; i <= tentativas; i++) {
+    try {
+      execFileSync('python', ['-m', 'edge_tts', '-t', texto, '-v', VOZ, `--rate=${RATE}`, '--write-media', destino],
+        { stdio: 'pipe' })
+      return destino
+    } catch (e) {
+      if (i === tentativas) {
+        if (!silencioso) console.error(`   ⚠️  não consegui gravar o controle "${texto}" em ${tentativas} tentativas`)
+        return null
+      }
+      // espera curta e crescente: a falha típica é de rede, não de argumento
+      const ate = Date.now() + i * 800
+      while (Date.now() < ate) { /* pausa síncrona: o resto do script é síncrono */ }
+    }
+  }
+  return null
 }
 
 export function pastaTemp(prefixo = 'ns-onda-') {
@@ -79,6 +101,7 @@ export function autoteste(log = console.log) {
     const a = gravar('Dois', join(t.caminho, 'a.mp3'))
     const b = gravar('Dois', join(t.caminho, 'b.mp3'))
     const c = gravar('Um', join(t.caminho, 'c.mp3'))
+    if (!a || !b || !c) throw new Error('não consegui gravar os controles do autoteste — sem isso não há medida, só chute')
     const igual = semelhanca(onda(a), onda(b))
     const diferente = semelhanca(onda(a), onda(c))
     log(`   autoteste: mesmo texto ${igual.toFixed(4)} · texto diferente ${diferente.toFixed(4)}`)
