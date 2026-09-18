@@ -23,8 +23,9 @@ import { existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync, readFile
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
+import { statSync } from 'node:fs'
 import { falasEsperadas, conferir, REGRAS } from './lib-fala.mjs'
-import { VOZ, RATE } from './lib-onda.mjs'
+import { VOZ, RATE, PISO_BYTES } from './lib-onda.mjs'
 
 const hash = t => createHash('sha256').update(t, 'utf8').digest('hex').slice(0, 16)
 
@@ -85,14 +86,28 @@ export async function regravar(tipo, { soListar = false, so = null, log = consol
   for (const f of falas) {
     mkdirSync(f.pasta, { recursive: true })
     const destino = join(f.pasta, f.arquivo)
-    try {
-      execFileSync('python', ['-m', 'edge_tts', '-t', f.texto, '-v', VOZ, `--rate=${RATE}`, '--write-media', destino], { stdio: 'pipe' })
-      manifesto[f.caminho] = hash(f.texto)
-      ok++
-      if (ok % 40 === 0) log(`   ... ${ok}/${falas.length}`)
-    } catch (e) {
-      falhas.push(`${f.caminho}: ${String(e.message).slice(0, 60)}`)
+    // 🔑 "O comando voltou sem erro" NÃO é o mesmo que "o arquivo está inteiro". Em agosto
+    // 8 mp3 do alfabeto saíram truncados assim — um com 0,36s no lugar de 1,78s — e o
+    // manifesto anotou sucesso nos oito. Por isso cada gravação é conferida pelo tamanho e
+    // repetida até 3 vezes. Ver [[feedback_manifesto_e_promessa_nao_medida]].
+    let gravou = false
+    for (let tentativa = 1; tentativa <= 3 && !gravou; tentativa++) {
+      try {
+        execFileSync('python', ['-m', 'edge_tts', '-t', f.texto, '-v', VOZ, `--rate=${RATE}`, '--write-media', destino], { stdio: 'pipe' })
+        const tam = statSync(destino).size
+        if (tam < PISO_BYTES) {
+          if (tentativa === 3) falhas.push(`${f.caminho}: saiu truncado (${tam} bytes) em 3 tentativas`)
+          continue
+        }
+        gravou = true
+      } catch (e) {
+        if (tentativa === 3) falhas.push(`${f.caminho}: ${String(e.message).slice(0, 60)}`)
+      }
     }
+    if (!gravou) continue
+    manifesto[f.caminho] = hash(f.texto)
+    ok++
+    if (ok % 40 === 0) log(`   ... ${ok}/${falas.length}`)
   }
 
   writeFileSync('audio-manifesto.json', JSON.stringify(manifesto, null, 0), 'utf8')

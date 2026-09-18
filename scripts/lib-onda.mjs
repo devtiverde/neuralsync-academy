@@ -26,10 +26,27 @@ import { join } from 'node:path'
 export const VOZ = 'pt-BR-FranciscaNeural'
 export const RATE = '-8%'
 
-/** Decodifica o mp3 em mono 24 kHz e devolve as amostras SEM o silêncio das pontas. */
-export function onda(caminho) {
-  const bruto = execFileSync('ffmpeg', ['-v', 'quiet', '-i', caminho, '-f', 's16le', '-ac', '1', '-ar', '24000', '-'],
-    { maxBuffer: 1 << 28 })
+/**
+ * Decodifica o mp3 em mono 24 kHz e devolve as amostras SEM o silêncio das pontas.
+ *
+ * 🪤 Tenta de novo antes de desistir: numa auditoria de centenas de arquivos o `ffmpeg`
+ * falhou uma vez ao abrir um mp3 que, rodado à mão em seguida, decodificou sem reclamar
+ * nenhuma. Era disputa de processo, não arquivo corrompido — e derrubou a auditoria
+ * inteira no meio, o que é pior que não medir.
+ */
+export function onda(caminho, { tentativas = 3 } = {}) {
+  let bruto = null
+  for (let i = 1; i <= tentativas; i++) {
+    try {
+      bruto = execFileSync('ffmpeg', ['-v', 'quiet', '-i', caminho, '-f', 's16le', '-ac', '1', '-ar', '24000', '-'],
+        { maxBuffer: 1 << 28 })
+      break
+    } catch (e) {
+      if (i === tentativas) throw new Error(`ffmpeg não decodificou ${caminho} em ${tentativas} tentativas: ${e.message.slice(0, 80)}`)
+      const ate = Date.now() + i * 400
+      while (Date.now() < ate) { /* pausa curta */ }
+    }
+  }
   const total = Math.floor(bruto.length / 2)
   const a = new Float64Array(total)
   for (let i = 0; i < total; i++) a[i] = bruto.readInt16LE(i * 2)
@@ -40,19 +57,43 @@ export function onda(caminho) {
 }
 
 /**
- * 1,0 = mesma fala. Perto de 0 = fala diferente.
- * O fator de comprimento existe porque cosseno sobre o trecho comum daria nota alta para
- * uma fala que é só o COMEÇO da outra ("Um" dentro de "Um milhão").
+ * Compara duas ondas e devolve as DUAS medidas separadas:
+ *   `cos`   — o quanto o trecho comum é a mesma fala (1,0 = idêntica).
+ *   `razao` — o quanto os comprimentos batem (1,0 = mesma duração).
+ *
+ * 🔑 Separar as duas foi conserto de FALSO POSITIVO, não refinamento. A 1ª versão
+ * devolvia `cos * razao` num número só, e isso reprovou `z-palavra.mp3` do
+ * `exp_alfabeto_esportes` com 0,865 — mas o cosseno dele contra "Zumba." era **1,0000**:
+ * o arquivo diz a palavra certa e tem só ~96 ms de cauda a mais. Eu quase reportei como
+ * defeito um áudio perfeito. Ver [[feedback_validar_o_instrumento_antes_da_medida]].
+ *
+ * A razão continua necessária: sem ela, "Um" casaria com o começo de "Um milhão" com
+ * cosseno alto. Mas ali a razão desaba (~0,35), enquanto uma cauda a mais mal a arranha.
  */
-export function semelhanca(x, y) {
+export function comparar(x, y) {
   const n = Math.min(x.length, y.length)
   const m = Math.max(x.length, y.length)
-  if (!n) return 0
+  if (!n) return { cos: 0, razao: 0 }
   let px = 0, py = 0, pxy = 0
   for (let i = 0; i < n; i++) { px += x[i] * x[i]; py += y[i] * y[i]; pxy += x[i] * y[i] }
   const den = Math.sqrt(px) * Math.sqrt(py)
-  return den ? (pxy / den) * (n / m) : 0
+  return { cos: den ? pxy / den : 0, razao: n / m }
 }
+
+/** Compatibilidade: um número só, para quem não precisa distinguir as duas causas. */
+export function semelhanca(x, y) {
+  const { cos, razao } = comparar(x, y)
+  return cos * razao
+}
+
+/**
+ * Menor tamanho plausível de um mp3 do edge-tts. Fala curta satura num piso (~10.656 na
+ * versão de agosto), então qualquer coisa MUITO abaixo disso é download interrompido, não
+ * fala curta. Foi assim que apareceram 8 arquivos truncados de agosto — um deles com
+ * 0,36s no lugar de 1,78s, e o manifesto jurando que estava tudo certo, porque o comando
+ * tinha retornado sem erro. Ver [[feedback_manifesto_e_promessa_nao_medida]].
+ */
+export const PISO_BYTES = 6000
 
 /**
  * Grava um candidato com a MESMA voz e velocidade do gerador.
