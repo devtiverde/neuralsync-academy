@@ -3170,7 +3170,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/casinha.png',
         fonte: 'desenhado no projeto (sem licença de terceiro)',
-        areas: 17,
+        areas: 9,
       },
     },
   },
@@ -3190,7 +3190,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/coelho2.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 34,
+        areas: 14,
       },
     },
   },
@@ -3209,7 +3209,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/coruja.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 17,
+        areas: 9,
       },
     },
   },
@@ -3228,7 +3228,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/fantasma.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 18,
+        areas: 8,
       },
     },
   },
@@ -3247,7 +3247,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/rosa.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 16,
+        areas: 14,
       },
     },
   },
@@ -3266,7 +3266,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/flor_feliz.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 23,
+        areas: 19,
       },
     },
   },
@@ -3285,7 +3285,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/leao.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 12,
+        areas: 10,
       },
     },
   },
@@ -3304,7 +3304,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/maca.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 15,
+        areas: 12,
       },
     },
   },
@@ -3323,7 +3323,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/tartaruga2.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 14,
+        areas: 11,
       },
     },
   },

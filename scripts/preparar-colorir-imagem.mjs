@@ -69,7 +69,7 @@ const limpo = await base
 
 // ── 4: conferir com o MESMO rotulador do app ────────────────────────────────
 const { data, info } = await sharp(limpo).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
-const { total, contaveis, tamanhos, fundo } = rotularAreas({
+const { total, contaveis, tamanhos, fundo, candidatas } = rotularAreas({
   width: info.width, height: info.height, data,
 })
 
@@ -81,6 +81,10 @@ console.log(`\n🖌️  ${basename(entrada)}`)
 console.log(`   origem ........... ${meta.width}×${meta.height} ${meta.format}`)
 console.log(`   preparado ........ ${info.width}×${info.height} png`)
 console.log(`   áreas pintáveis .. ${total}`)
+// Fresta = área fechada que o dedo não alcança (rachadura do traço). Ela pinta,
+// mas não conta no progresso — senão o desenho ficaria INCONCLUÍVEL. Fresta demais
+// é sinal de traço sujo: vale tentar um `--limiar` mais alto.
+console.log(`   frestas ignoradas  ${(candidatas?.length ?? total) - total}`)
 console.log(`   fundo ............ ${(areaFundo / pixels * 100).toFixed(1)}% da folha`)
 if (maiores.length) console.log(`   maiores áreas .... ${maiores.map(t => (t / pixels * 100).toFixed(1) + '%').join(' · ')}`)
 

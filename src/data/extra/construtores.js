@@ -2837,7 +2837,7 @@ export const colorirExtraPorFaixa = [
       imagem: {
         src: '/colorir/esquilo.png',
         fonte: 'enviado pelo Cláudio (Google Imagens) — uso autorizado por ele em 15/09/2026',
-        areas: 56,
+        areas: 8,
       },
     },
   },

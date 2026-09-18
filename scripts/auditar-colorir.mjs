@@ -118,6 +118,7 @@ function medir(regiao) {
 let reprovadas = 0
 let apontadas = 0
 let contagemErrada = 0
+let balderros = 0
 let totalRegioes = 0
 const desconhecidas = []
 
@@ -131,7 +132,12 @@ for (const faixa of FAIXAS) {
 
   for (const atividade of faixa.lista) {
     const desenho = atividade?.dados?.desenho
-    if (!desenho) { console.log(`  ⚠️  ${atividade.id}: sem desenho`); continue }
+    // Atividade do modo BALDE não tem regiões declaradas — é imagem. Ela é medida
+    // na seção de baixo, com o rotulador do app. 🪤 Antes caía aqui como
+    // "sem desenho", o que LIA como defeito em 11 atividades saudáveis e, pior,
+    // deixava o modo novo sem auditoria nenhuma.
+    if (!desenho && atividade?.dados?.imagem) continue
+    if (!desenho) { console.log(`  ⚠️  ${atividade.id}: sem desenho e sem imagem`); continue }
 
     const escala = LARGURA_SVG / desenho.viewBox
     const duros = []
@@ -169,6 +175,71 @@ for (const faixa of FAIXAS) {
   console.log('')
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// MODO BALDE (dados.imagem) — a conta é outra: as áreas não são declaradas, são
+// DESCOBERTAS na imagem pelo mesmo rotulador que o app usa em tempo de execução.
+//
+// 🔑 O que se mede aqui, e por quê: a atividade só termina quando TODAS as áreas
+// contáveis são pintadas. Então o número que importa não é "quantas áreas tem" —
+// é "todas elas são alcançáveis pelo dedo?". Se uma não for, a criança pinta tudo
+// o que vê, o progresso empaca e a tela de "Ficou lindo!" (com o XP) nunca vem.
+// Foi exatamente o que acontecia com as 11 do lote de 15/09.
+// ════════════════════════════════════════════════════════════════════════════
+const balde = FAIXAS.flatMap(f => f.lista.filter(a => a?.dados?.imagem).map(a => ({ faixa: f, a })))
+
+if (balde.length) {
+  const { default: sharp } = await import('sharp')
+  const { rotularAreas, discosInscritos, DISCO_MINIMO_REL } = await import('../src/lib/balde.js')
+  const { readFileSync, existsSync } = await import('node:fs')
+
+  // Piso e teto DUROS. Fora deles o desenho não serve: abaixo de 4 áreas é pobre
+  // de pintar, acima de 60 vira caça-níquel para qualquer idade.
+  const MIN_AREAS = 4
+  const MAX_AREAS = 60
+  // Faixa confortável (só 🟡): quantas áreas a idade aguenta pintar ATÉ O FIM.
+  const CONFORTAVEL = {
+    exploradores: 20, construtores: 30, criadores: 40, inventores: 60,
+  }
+
+  console.log('🪣 Modo balde de tinta (desenho de traço, áreas descobertas na imagem)')
+  console.log(`   piso de alcance: disco de ${(DISCO_MINIMO_REL * 100).toFixed(1)}% da largura da folha`)
+  console.log(`   medido aqui a ${LARGURA_SVG}px de tela, junto com o resto (o motor decide em`)
+  console.log(`   pixels da imagem, então a régua da tela é a mesma nos dois lados da conta)\n`)
+
+  for (const { faixa, a } of balde) {
+    const caminho = `public${a.dados.imagem.src}`
+    if (!existsSync(caminho)) {
+      console.log(`  🔴 ${a.id.padEnd(24)} arquivo não existe: ${caminho}`)
+      balderros++
+      continue
+    }
+    const { data, info } = await sharp(readFileSync(caminho))
+      .ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    const r = rotularAreas({ width: info.width, height: info.height, data })
+    const raios = r.raios ?? discosInscritos(r.rotulos, info.width, info.height)
+    const escalaTela = LARGURA_SVG / info.width
+    const menorDisco = Math.min(...[...r.contaveis].map(rot => (raios.get(rot)?.raio ?? 0) * 2 * escalaTela))
+    const piso = DISCO_MINIMO_REL * info.width * escalaTela
+
+    const problemas = []
+    if (a.dados.imagem.areas !== r.total) {
+      problemas.push(`o dado diz ${a.dados.imagem.areas} áreas e a imagem tem ${r.total} — o progresso é calculado na imagem, então o dado está desatualizado`)
+    }
+    if (r.total < MIN_AREAS) problemas.push(`só ${r.total} área(s) contável(eis)`)
+    if (r.total > MAX_AREAS) problemas.push(`${r.total} áreas para pintar até o fim — caça-níquel`)
+    if (menorDisco + 0.01 < piso) problemas.push(`área de ${menorDisco.toFixed(1)}px abaixo do piso de ${piso.toFixed(1)}px — inalcançável, trava a conclusão`)
+    if (!a.dados.imagem.fonte) problemas.push('sem campo `fonte`: origem e licença não declaradas')
+
+    const folgado = r.total > (CONFORTAVEL[faixa.nome] ?? 60)
+    const icone = problemas.length ? '🔴' : folgado ? '🟡' : '✅'
+    console.log(`  ${icone} ${a.id.padEnd(24)} ${String(r.total).padStart(3)} áreas · menor alcance ${menorDisco.toFixed(0)}px · ${r.candidatas.length - r.total} fresta(s) ignorada(s)`)
+    if (folgado && !problemas.length) console.log(`       🟡 ${r.total} áreas é muito para ${faixa.nome} pintar até o fim (confortável: ${CONFORTAVEL[faixa.nome]})`)
+    for (const p of problemas) console.log(`       🔴 ${p}`)
+    balderros += problemas.length
+  }
+  console.log('')
+}
+
 if (desconhecidas.length) {
   console.log('❓ Tipos que este script não sabe medir (e portanto NÃO foram verificados):')
   for (const d of desconhecidas) console.log(`   ${d}`)
@@ -176,8 +247,8 @@ if (desconhecidas.length) {
 }
 
 console.log(`${totalRegioes} regiões analisadas.`)
-console.log(`🔴 ${reprovadas} abaixo de ${PISO_DURO}px · 🟡 ${apontadas} modestas para a faixa · ${contagemErrada} desenho(s) com contagem fora da faixa`)
+console.log(`🔴 ${reprovadas} abaixo de ${PISO_DURO}px · 🟡 ${apontadas} modestas para a faixa · ${contagemErrada} desenho(s) com contagem fora da faixa · ${balderros} problema(s) no modo balde (${balde.length} desenho(s) medido(s))`)
 
-const falhou = reprovadas > 0 || contagemErrada > 0 || desconhecidas.length > 0
+const falhou = reprovadas > 0 || contagemErrada > 0 || desconhecidas.length > 0 || balderros > 0
 console.log(falhou ? '' : '✅ Colorir dentro do esperado em todas as faixas.\n')
 process.exit(falhou ? 1 : 0)

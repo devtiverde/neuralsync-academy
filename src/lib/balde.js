@@ -28,8 +28,84 @@ export const LIMIAR_CLARO = 200
 export const LIMIAR_TRACO = 110
 /** Área menor que isto (em pixels) não conta para o progresso — é respingo do traço. */
 export const AREA_MINIMA = 120
+/**
+ * Diâmetro mínimo, em FRAÇÃO DA LARGURA da folha, do maior círculo que cabe dentro
+ * da área para ela contar no progresso.
+ *
+ * 🔑 POR QUE ISTO EXISTE (e por que `AREA_MINIMA` não bastava)
+ * `AREA_MINIMA` conta PIXELS, e uma rachadura do traço tem pixels de sobra: no
+ * esquilo havia uma fenda de 36×1px (197px²) que passava folgado pelos 120. Como a
+ * atividade só termina quando TODAS as áreas contáveis são pintadas, essas frestas
+ * — invisíveis e impossíveis de acertar com o dedo — tornavam o desenho
+ * INCONCLUÍVEL: a criança pintava tudo que vê, a barra parava em 7 de 56 e a tela
+ * de "Ficou lindo!" (e o XP) nunca chegava.
+ *
+ * 🔑 E por que DISCO, não lado da caixa: forma comprida (a moldura de uma janela,
+ * 200×20) é perfeitamente alcançável pelo lado longo, e medir pelo lado menor a
+ * reprovaria. O que decide é o maior círculo que cabe dentro — mesmo erro que o
+ * `auditar-colorir.mjs` já documenta ter cometido na 1ª versão.
+ *
+ * O número: no pior caso realista a folha ocupa 312px (celular de 360px menos os
+ * paddings), e 10px de tela com o anel de 12px do `areaPerto` dá alvo efetivo de
+ * ~34px — acima do piso de 24px do WCAG 2.5.8 (AA). 10 ÷ 312 ≈ 0,032.
+ */
+export const DISCO_MINIMO_REL = 0.032
 
 const luz = (d, i) => (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000
+
+/**
+ * Raio do maior círculo que cabe dentro de cada área, em pixels da imagem.
+ *
+ * Transformada de distância em duas varreduras (chamfer 3-4, dividido por 3 ≈
+ * euclidiana). Semente = traço e pixel de borda da própria área; para o pixel de
+ * dentro, a borda mais próxima É a borda da área dele.
+ *
+ * Devolve Map(rótulo → { raio, x, y }), onde (x, y) é o centro desse círculo — o
+ * ponto mais "gordo" da área, que é onde um dedo tem mais chance de acertar (o
+ * teste de jogabilidade toca exatamente ali). Área de 1px de espessura não aparece
+ * no Map (raio 0), que é justamente o caso que não se alcança com o dedo.
+ */
+export function discosInscritos(rotulos, w, h) {
+  const d = new Int32Array(w * h).fill(0x3fffffff)
+
+  for (let p = 0; p < w * h; p++) {
+    const rot = rotulos[p]
+    if (rot === 0) { d[p] = 0; continue }
+    const x = p % w, y = (p / w) | 0
+    if (x === 0 || y === 0 || x === w - 1 || y === h - 1) { d[p] = 0; continue }
+    if (rotulos[p - 1] !== rot || rotulos[p + 1] !== rot ||
+        rotulos[p - w] !== rot || rotulos[p + w] !== rot) d[p] = 0
+  }
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const p = y * w + x
+      if (d[p] === 0) continue
+      if (x > 0) d[p] = Math.min(d[p], d[p - 1] + 3)
+      if (y > 0) d[p] = Math.min(d[p], d[p - w] + 3)
+      if (x > 0 && y > 0) d[p] = Math.min(d[p], d[p - w - 1] + 4)
+      if (x < w - 1 && y > 0) d[p] = Math.min(d[p], d[p - w + 1] + 4)
+    }
+  }
+  for (let y = h - 1; y >= 0; y--) {
+    for (let x = w - 1; x >= 0; x--) {
+      const p = y * w + x
+      if (x < w - 1) d[p] = Math.min(d[p], d[p + 1] + 3)
+      if (y < h - 1) d[p] = Math.min(d[p], d[p + w] + 3)
+      if (x < w - 1 && y < h - 1) d[p] = Math.min(d[p], d[p + w + 1] + 4)
+      if (x > 0 && y < h - 1) d[p] = Math.min(d[p], d[p + w - 1] + 4)
+    }
+  }
+
+  const raios = new Map()
+  for (let p = 0; p < w * h; p++) {
+    const rot = rotulos[p]
+    if (!rot) continue
+    const v = d[p] / 3
+    if (v > (raios.get(rot)?.raio ?? 0)) raios.set(rot, { raio: v, x: p % w, y: (p / w) | 0 })
+  }
+  return raios
+}
 
 /**
  * Rotula as áreas fechadas do desenho.
@@ -85,12 +161,25 @@ export function rotularAreas(imageData, opts = {}) {
     if (tocaBorda[r] && tamanhos[r] > maiorBorda) { maiorBorda = tamanhos[r]; fundo = r }
   }
 
-  const contaveis = new Set()
+  // Candidatas: tudo que não é o fundo e tem pixels de sobra.
+  const candidatas = []
   for (let r = 1; r <= proximo; r++) {
-    if (r !== fundo && tamanhos[r] >= minima) contaveis.add(r)
+    if (r !== fundo && tamanhos[r] >= minima) candidatas.push(r)
   }
 
-  return { rotulos, total: contaveis.size, contaveis, fundo, tamanhos }
+  // 🔑 O segundo filtro é o que torna o desenho CONCLUÍVEL: área que o dedo não
+  // alcança não pode entrar no progresso, senão a criança pinta tudo o que vê e a
+  // atividade nunca termina. Ver DISCO_MINIMO_REL.
+  const discoMinimo = opts.discoMinimo ?? (DISCO_MINIMO_REL * w)
+  const raios = discoMinimo > 0 ? discosInscritos(rotulos, w, h) : null
+
+  const contaveis = new Set()
+  for (const r of candidatas) {
+    if (!raios) { contaveis.add(r); continue }
+    if ((raios.get(r)?.raio ?? 0) * 2 >= discoMinimo) contaveis.add(r)
+  }
+
+  return { rotulos, total: contaveis.size, contaveis, fundo, tamanhos, raios, candidatas }
 }
 
 /** Converte '#RRGGBB' em [r,g,b]. */
