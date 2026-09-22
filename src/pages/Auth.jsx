@@ -92,6 +92,23 @@ export default function Auth() {
           </button>
         </form>
 
+        {/* 🔑 Esta orientação é PERMANENTE, e não depende do `?ativado=1` de propósito.
+            22/09/2026, numa compra real de teste: o cliente pagou, caiu nesta tela sem o
+            parâmetro e ficou olhando um formulário de login sem ter senha nenhuma — sem
+            uma linha dizendo que o acesso tinha ido para o e-mail. O banner de cima existe
+            e estava certo; ele só nunca apareceu, porque quem redireciona é a Kiwify e o
+            parâmetro se perde em qualquer caminho que não seja o previsto (botão da página
+            de obrigado, link salvo, e-mail antigo, digitar a URL).
+            Instrução que só aparece quando tudo dá certo não é instrução — é sorte. */}
+        <p className="auth-switch">
+          Acabou de assinar?{' '}
+          <strong>O acesso vai por e-mail</strong> — abra o link que enviamos para criar sua
+          senha.{' '}
+          <button onClick={() => navigate('/recuperar-senha')} className="auth-link">
+            Não recebi →
+          </button>
+        </p>
+
         {/* A conta é criada ao assinar (o acesso chega por e-mail). Não há
             auto-cadastro aqui: sem assinatura não há conta a criar. */}
         <p className="auth-switch">

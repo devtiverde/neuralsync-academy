@@ -175,6 +175,10 @@
   font-size: var(--text-sm);
 }
 
+/* Duas linhas de rodapé seguidas (o aviso de quem acabou de assinar e o "ainda não
+   assinou") ficariam com o espaço de duas seções entre elas. A segunda encosta. */
+.auth-switch + .auth-switch { margin-top: var(--space-3); }
+
 .auth-link {
   background: none;
   border: none;
