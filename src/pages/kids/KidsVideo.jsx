@@ -16,7 +16,6 @@ export default function KidsVideo() {
   const [selecionada, setSelecionada] = useState(null)
   const [mostrarFeedback, setMostrarFeedback] = useState(false)
   const [acertos, setAcertos] = useState(0)
-  const [coins, setCoins] = useState(0)
   const [progresso, setProgresso] = useState(0)
 
   const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
@@ -39,6 +38,13 @@ export default function KidsVideo() {
     return () => clearInterval(timer)
   }, [loading, fase, videoId])
 
+  // 🔑 O QUE A TELA MOSTRAVA NÃO ERA O QUE A CRIANÇA GANHAVA.
+  // O total exibido era `acertos * 10 + 30`, calculado aqui no navegador, enquanto o
+  // servidor credita um valor FIXO (20) e só uma vez por categoria. A criança via
+  // "+50 NeuralCoins ganhos!" e o saldo subia 20 — ou nada, se já tivesse assistido
+  // aquela categoria antes. Mesma família do bônus offline (22/09/2026): a tela
+  // comemorava por conta própria em vez de dizer o que o servidor respondeu.
+  const [ganho, setGanho] = useState(null)   // null = ainda perguntando ao servidor
   useEffect(() => {
     if (fase === 'resultado') salvarCoins()
   }, [fase])
@@ -54,7 +60,7 @@ export default function KidsVideo() {
     setSelecionada(index)
     setMostrarFeedback(true)
     const correto = index === perguntas[perguntaAtual].correta
-    if (correto) { setAcertos(a => a + 1); setCoins(c => c + 10) }
+    if (correto) setAcertos(a => a + 1)
     setTimeout(() => {
       if (perguntaAtual < perguntas.length - 1) {
         setPerguntaAtual(p => p + 1); setSelecionada(null); setMostrarFeedback(false)
@@ -68,10 +74,18 @@ export default function KidsVideo() {
   // calculado aqui e era gravado como TOTAL de moedas — dava para mandar qualquer número.
   // O `ref` é a categoria: o bônus vale uma vez por categoria assistida, não por vez que
   // a criança refizer o mesmo quiz.
-  function salvarCoins() {
-    if (!child) return
-    creditarBonus({ childId: child.id, tipo: 'kids', ref: categoriaKey ?? 'video' })
-      .then(r => { if (r?.ok) aplicarNoFilhoLocal(r) })
+  async function salvarCoins() {
+    if (!child) { setGanho({ estado: 'erro' }); return }
+    const r = await creditarBonus({ childId: child.id, tipo: 'kids', ref: categoriaKey ?? 'video' })
+    if (!r) { setGanho({ estado: 'erro' }); return }
+    if (r.ok) {
+      aplicarNoFilhoLocal(r)
+      setGanho({ estado: 'ok', coins: r.ganho_coins ?? 0 })
+    } else if (r.motivo === 'ja_resgatado') {
+      setGanho({ estado: 'ja' })
+    } else {
+      setGanho({ estado: 'erro' })
+    }
   }
 
   const cor = categoriaData?.cor || '#7C3AED'
@@ -158,7 +172,10 @@ export default function KidsVideo() {
             <div style={{ marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '8px', fontWeight: '600' }}>
                 <span>Pergunta {perguntaAtual + 1} de {perguntas.length}</span>
-                <span style={{ color: '#fbbf24', fontWeight: '700' }}>💰 +{coins}</span>
+                {/* Contador de ACERTOS, não de moedas. Antes mostrava "💰 +40" durante o
+                    quiz e o servidor creditava 20 no fim: a criança acompanhava um número
+                    que não era o dela. Acerto é o que esta tela sabe de verdade. */}
+                <span style={{ color: '#fbbf24', fontWeight: '700' }}>⭐ {acertos} acerto{acertos === 1 ? '' : 's'}</span>
               </div>
               <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '999px', height: '6px', overflow: 'hidden' }}>
                 <div style={{ background: '#F07A20', width: ((perguntaAtual / perguntas.length) * 100) + '%', height: '100%', borderRadius: '999px', transition: 'width 0.3s' }} />
@@ -202,7 +219,6 @@ export default function KidsVideo() {
     )
   }
 
-  const totalCoins = coins + 30
   return (
     <LayoutCrianca child={child}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100%', padding: '40px 24px', textAlign: 'center' }}>
@@ -210,8 +226,30 @@ export default function KidsVideo() {
         <h2 style={{ fontSize: '28px', fontWeight: '900', marginBottom: '8px', color: 'white' }}>Quiz concluído!</h2>
         <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '32px', fontSize: '15px' }}>Você acertou {acertos} de {perguntas.length}!</p>
         <div style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.15))', borderRadius: '20px', padding: '24px 48px', marginBottom: '32px', border: '1.5px solid rgba(251,191,36,0.35)' }}>
-          <div style={{ fontSize: '40px', fontWeight: '900', color: '#fbbf24' }}>+{totalCoins} 💰</div>
-          <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '600', fontSize: '14px' }}>NeuralCoins ganhos!</div>
+          {ganho === null && (
+            <>
+              <div style={{ fontSize: '32px', fontWeight: '900', color: '#fbbf24' }}>💰</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '600', fontSize: '14px' }}>Contando suas moedas…</div>
+            </>
+          )}
+          {ganho?.estado === 'ok' && (
+            <>
+              <div style={{ fontSize: '40px', fontWeight: '900', color: '#fbbf24' }}>+{ganho.coins} 💰</div>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '600', fontSize: '14px' }}>NeuralCoins ganhos!</div>
+            </>
+          )}
+          {ganho?.estado === 'ja' && (
+            <>
+              <div style={{ fontSize: '32px', fontWeight: '900', color: '#fbbf24' }}>😉</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontWeight: '600', fontSize: '14px' }}>Você já ganhou moedas por esta categoria</div>
+            </>
+          )}
+          {ganho?.estado === 'erro' && (
+            <>
+              <div style={{ fontSize: '32px', fontWeight: '900', color: '#fbbf24' }}>💰</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontWeight: '600', fontSize: '14px' }}>Não deu para registrar agora — tente de novo mais tarde</div>
+            </>
+          )}
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button onClick={() => navigate('/kids')} style={{ background: 'rgba(255,255,255,0.1)', border: '1.5px solid rgba(255,255,255,0.2)', borderRadius: '14px', padding: '14px 24px', color: 'white', cursor: 'pointer', fontWeight: '700', fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Voltar</button>

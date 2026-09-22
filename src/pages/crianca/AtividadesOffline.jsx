@@ -40,7 +40,7 @@ const TEMPO_FILTROS = [
   { label: '1 hora', value: 60 },
 ]
 
-function CardAtividade({ atividade, feita, onFazer }) {
+function CardAtividade({ atividade, feita, ocupado, onFazer }) {
   const [expandido, setExpandido] = useState(false)
 
   return (
@@ -118,8 +118,8 @@ function CardAtividade({ atividade, feita, onFazer }) {
 
       {/* Botão Já fiz essa */}
       <button
-        onClick={() => !feita && onFazer(atividade.id)}
-        disabled={feita}
+        onClick={() => !feita && !ocupado && onFazer(atividade.id)}
+        disabled={feita || ocupado}
         style={{
           marginTop: '14px',
           width: '100%',
@@ -128,13 +128,17 @@ function CardAtividade({ atividade, feita, onFazer }) {
           borderRadius: '12px', padding: '12px 20px',
           color: feita ? '#10b981' : 'white',
           fontSize: '14px', fontWeight: '800',
-          cursor: feita ? 'default' : 'pointer',
+          cursor: feita || ocupado ? 'default' : 'pointer',
           fontFamily: 'Plus Jakarta Sans, sans-serif',
           transition: 'all 0.15s',
-          opacity: feita ? 0.8 : 1,
+          opacity: feita ? 0.8 : ocupado ? 0.7 : 1,
         }}
       >
-        {feita ? '✓ Concluída! +' + COINS_POR_ATIVIDADE + ' coins' : '🏅 Já fiz essa! +' + COINS_POR_ATIVIDADE + ' coins'}
+        {feita
+          ? '✓ Concluída! +' + COINS_POR_ATIVIDADE + ' coins'
+          : ocupado
+            ? 'Registrando…'
+            : '🏅 Já fiz essa! +' + COINS_POR_ATIVIDADE + ' coins'}
       </button>
     </div>
   )
@@ -148,6 +152,9 @@ export default function AtividadesOffline() {
   const [filtroTempo, setFiltroTempo] = useState(0)
   const [feitas, setFeitas] = useState([])
   const [toast, setToast] = useState(null)
+  // trava o botão enquanto o servidor responde: sem isto dois toques viram dois
+  // pedidos, e o segundo volta como 'ja_resgatado' — parecendo defeito.
+  const [creditando, setCreditando] = useState(null)
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return }
@@ -174,23 +181,45 @@ export default function AtividadesOffline() {
   const ativadasFiltradas = liberado ? ativadasNaCategoria : ativadasNaCategoria.slice(0, LIMITE_FREE)
   const qtdBloqueadas = liberado ? 0 : Math.max(0, atividadesOffline.filter(a => a.categoria === categoriaAtiva).length - LIMITE_FREE)
 
+  // 🔑 22/09/2026 — ESTA TELA COMEMORAVA ANTES DE O SERVIDOR RESPONDER.
+  // Ela somava +15 na cópia local, gravava no localStorage, mostrava "+15 NeuralCoins! 🎉"
+  // e SÓ DEPOIS chamava o servidor, aplicando o retorno apenas quando dava certo. Quando
+  // o servidor recusava — porque aquela atividade já tinha sido resgatada, ou porque a
+  // rede falhou — nada acontecia na tela: o número inflado ficava até recarregar e então
+  // sumia. Relato do Cláudio: "já fiz +15, não funciona".
+  //
+  // Quem decide é o servidor, então quem fala é o servidor. É a mesma forma que a Trilha
+  // já usava para a missão e o desafio; aqui tinha ficado para trás.
+  // 🪤 `ja_resgatado` NÃO é erro: é o banco dizendo que essa atividade já foi paga. A
+  // resposta certa é marcar como feita e dizer isso — insistir mostraria um botão que
+  // nunca funciona.
   async function marcarFeita(atividadeId) {
-    if (!child) return
+    if (!child || creditando) return
+    setCreditando(atividadeId)
+
+    const r = await creditarBonus({ childId: child.id, tipo: 'offline', ref: atividadeId })
+    setCreditando(null)
+
+    if (!r) {
+      setToast('Não deu para registrar agora. Tente de novo em instantes.')
+      setTimeout(() => setToast(null), 3200)
+      return
+    }
+
+    if (r.ok) {
+      aplicarNoFilhoLocal(r)
+      setChild(c => ({ ...c, neural_coins: r.coins, xp: r.xp ?? c.xp, nivel: r.nivel ?? c.nivel }))
+      setToast(`+${COINS_POR_ATIVIDADE} NeuralCoins! 🎉`)
+    } else if (r.motivo === 'ja_resgatado') {
+      setToast('Você já ganhou moedas por essa atividade 😉')
+    } else {
+      setToast('Não deu para registrar agora. Tente de novo em instantes.')
+      setTimeout(() => setToast(null), 3200)
+      return
+    }
 
     salvarFeita(child.id, atividadeId)
     setFeitas(getFeitasDoChild(child.id))
-
-    const novasCoins = (child.neural_coins || 0) + COINS_POR_ATIVIDADE
-    const childAtualizado = { ...child, neural_coins: novasCoins }
-    localStorage.setItem('ns_active_child', JSON.stringify(childAtualizado))
-    setChild(childAtualizado)
-
-    // valor e limite por atividade decididos no servidor (migration 023): antes esta
-    // linha mandava o total de moedas, que era o caminho mais curto para inventar saldo.
-    creditarBonus({ childId: child.id, tipo: 'offline', ref: atividadeId })
-      .then(r => { if (r?.ok) { aplicarNoFilhoLocal(r); setChild(c => ({ ...c, neural_coins: r.coins })) } })
-
-    setToast(`+${COINS_POR_ATIVIDADE} NeuralCoins! 🎉`)
     setTimeout(() => setToast(null), 2800)
   }
 
@@ -313,6 +342,7 @@ export default function AtividadesOffline() {
                 key={ativ.id}
                 atividade={ativ}
                 feita={feitas.includes(ativ.id)}
+                ocupado={creditando === ativ.id}
                 onFazer={marcarFeita}
               />
             ))}
