@@ -23,7 +23,8 @@
     "preparar-sql-economia": "node scripts/preparar-sql-economia.mjs",
     "auditar-audio": "node scripts/auditar-audio-onda.mjs",
     "auditar-audio-orfao": "node scripts/auditar-audio-orfao.mjs",
-    "regravar-falas": "node scripts/regravar-falas.mjs"
+    "regravar-falas": "node scripts/regravar-falas.mjs",
+    "auditar-orientacao": "node auditar-orientacao.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
