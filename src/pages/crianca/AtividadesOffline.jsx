@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { categoriasOffline, atividadesOffline } from '../../data/atividadesOffline'
 import { creditarBonus, aplicarNoFilhoLocal } from '../../lib/economia'
+import { carregarFilhoAtivo, fraseSemFilho } from '../../lib/filhoAtivo'
 import LayoutCrianca from '../../components/LayoutCrianca'
 import '../../styles/crianca.css'
 
@@ -151,18 +152,29 @@ export default function AtividadesOffline() {
   const [categoriaAtiva, setCategoriaAtiva] = useState('natureza')
   const [filtroTempo, setFiltroTempo] = useState(0)
   const [feitas, setFeitas] = useState([])
-  const [toast, setToast] = useState(null)
+  // O toast era sempre verde de sucesso. Uma recusa e uma falha saindo com a mesma
+  // cara do acerto é a mesma doença de outro lugar do app: a tela comemorando o que
+  // não aconteceu. Agora ele carrega o tipo.
+  const [toast, setToast] = useState(null)   // { texto, tipo: 'ok' | 'aviso' | 'erro' }
   // trava o botão enquanto o servidor responde: sem isto dois toques viram dois
   // pedidos, e o segundo volta como 'ja_resgatado' — parecendo defeito.
   const [creditando, setCreditando] = useState(null)
+  // Por que o filho não veio — para a tela poder DIZER, em vez de engolir o clique.
+  // Ver o comentário longo em `src/lib/filhoAtivo.js`.
+  const [motivoSemFilho, setMotivoSemFilho] = useState(null)
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return }
-    const stored = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
-    if (stored) {
-      setChild(stored)
-      setFeitas(getFeitasDoChild(stored.id))
-    }
+    let vivo = true
+    // 🔑 23/09/2026 — antes isto lia SÓ o localStorage. Quem chegasse aqui pelo menu
+    // de baixo, por link direto ou logo depois de entrar ficava com `child = null`, e
+    // aí todo clique era engolido em silêncio: botão habilitado, nada acontecendo.
+    carregarFilhoAtivo(user.id).then(({ filho, motivo }) => {
+      if (!vivo) return
+      if (filho) { setChild(filho); setFeitas(getFeitasDoChild(filho.id)); setMotivoSemFilho(null) }
+      else setMotivoSemFilho(motivo)
+    })
+    return () => { vivo = false }
   }, [user])
 
   const LIMITE_FREE = 4
@@ -194,14 +206,23 @@ export default function AtividadesOffline() {
   // resposta certa é marcar como feita e dizer isso — insistir mostraria um botão que
   // nunca funciona.
   async function marcarFeita(atividadeId) {
-    if (!child || creditando) return
+    if (creditando) return
+    // 🔑 Nunca sair daqui em silêncio. Era este `return` mudo — com `child` nulo —
+    // que fazia o botão parecer "não clicável": habilitado, com o rótulo certo, e
+    // sem produzir pedido, mensagem ou erro. Um botão que não faz nada tem que dizer
+    // por quê. Ver `src/lib/filhoAtivo.js`.
+    if (!child) {
+      setToast({ texto: fraseSemFilho(motivoSemFilho), tipo: 'erro' })
+      setTimeout(() => setToast(null), 4200)
+      return
+    }
     setCreditando(atividadeId)
 
     const r = await creditarBonus({ childId: child.id, tipo: 'offline', ref: atividadeId })
     setCreditando(null)
 
     if (!r) {
-      setToast('Não deu para registrar agora. Tente de novo em instantes.')
+      setToast({ texto: 'Não deu para registrar agora. Tente de novo em instantes.', tipo: 'erro' })
       setTimeout(() => setToast(null), 3200)
       return
     }
@@ -209,11 +230,11 @@ export default function AtividadesOffline() {
     if (r.ok) {
       aplicarNoFilhoLocal(r)
       setChild(c => ({ ...c, neural_coins: r.coins, xp: r.xp ?? c.xp, nivel: r.nivel ?? c.nivel }))
-      setToast(`+${COINS_POR_ATIVIDADE} NeuralCoins! 🎉`)
+      setToast({ texto: `+${COINS_POR_ATIVIDADE} NeuralCoins! 🎉`, tipo: 'ok' })
     } else if (r.motivo === 'ja_resgatado') {
-      setToast('Você já ganhou moedas por essa atividade 😉')
+      setToast({ texto: 'Você já ganhou moedas por essa atividade 😉', tipo: 'aviso' })
     } else {
-      setToast('Não deu para registrar agora. Tente de novo em instantes.')
+      setToast({ texto: 'Não deu para registrar agora. Tente de novo em instantes.', tipo: 'erro' })
       setTimeout(() => setToast(null), 3200)
       return
     }
@@ -234,13 +255,18 @@ export default function AtividadesOffline() {
         {toast && (
           <div style={{
             position: 'fixed', top: '90px', left: '50%', transform: 'translateX(-50%)',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
+            background: toast.tipo === 'erro'
+              ? 'linear-gradient(135deg, #ef4444, #b91c1c)'
+              : toast.tipo === 'aviso'
+                ? 'linear-gradient(135deg, #f59e0b, #b45309)'
+                : 'linear-gradient(135deg, #10b981, #059669)',
             color: 'white', padding: '12px 28px', borderRadius: '14px',
             fontWeight: '800', fontSize: '16px', zIndex: 1000,
-            boxShadow: '0 8px 32px rgba(16,185,129,0.4)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+            maxWidth: 'min(92vw, 460px)', textAlign: 'center', lineHeight: 1.4,
             animation: 'ns-slide-up 0.3s ease',
           }}>
-            {toast}
+            {toast.texto}
           </div>
         )}
 

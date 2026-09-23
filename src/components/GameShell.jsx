@@ -4,6 +4,7 @@ import { ArrowsOut, ArrowsIn } from '@phosphor-icons/react'
 import { getHintUses, consumePowerup } from '../lib/powerups'
 import { Badge, Button } from './ui'
 import MenuLateral from './MenuLateral'
+import useGuardaHorario from '../hooks/useGuardaHorario'
 import '../styles/crianca.css'
 
 const AVATAR_MAP = {
@@ -57,6 +58,9 @@ export default function GameShell({
   sidebarRight,
 }) {
   const navigate = useNavigate()
+  // Idem `LayoutCrianca`: a atividade aberta também precisa obedecer à agenda. Sem
+  // isto, começar a jogar às 19h59 dava tempo ilimitado a partir das 20h.
+  useGuardaHorario()
   const child = (() => { try { return JSON.parse(localStorage.getItem('ns_active_child') || 'null') } catch { return null } })()
   const t = tipo ? (tipoTheme[tipo] || tipoTheme.quiz) : tipoTheme.quiz
   const [hintModal, setHintModal] = useState(false)

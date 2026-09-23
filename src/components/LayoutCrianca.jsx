@@ -3,6 +3,7 @@ import { Brain, CoinVertical, Fire } from '@phosphor-icons/react'
 import FAQButton from './FAQButton'
 import FeedbackButton from './FeedbackButton'
 import MenuLateral from './MenuLateral'
+import useGuardaHorario from '../hooks/useGuardaHorario'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../lib/lojaConfig'
 import '../styles/crianca.css'
 
@@ -32,6 +33,10 @@ const NAV_INVENTORES_EXTRA = { icon: '🤖', label: 'NeuralAI', path: '/neural-a
 export default function LayoutCrianca({ children, child }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  // A trava de horário mora AQUI, e não em cada tela: até 23/09/2026 a verificação
+  // existia só na `/home-crianca`, então quem entrasse pelo menu de baixo ou já
+  // estivesse dentro do app nunca era barrado. Ver `src/hooks/useGuardaHorario.js`.
+  useGuardaHorario()
 
   const faixaAtual = child?.faixa_etaria || 'construtores'
   const nav = faixaAtual === 'inventores'

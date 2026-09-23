@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import LayoutPai from '../../components/LayoutPai'
+import ProximoPasso from '../../components/ProximoPasso'
 import { CalendarBlank } from '@phosphor-icons/react'
 import '../../styles/pai.css'
 
@@ -19,6 +20,8 @@ export default function Agenda() {
   const { user } = useAuth()
   const [schedule, setSchedule] = useState(defaultSchedule)
   const [salvo, setSalvo] = useState(false)
+  // fica depois que o '✓' pisca e some — sustenta o cartão do próximo passo
+  const [concluido, setConcluido] = useState(false)
   const [salvando, setSalvando] = useState(false)
   const [erroAgenda, setErroAgenda] = useState('')
 
@@ -62,6 +65,7 @@ export default function Agenda() {
     }
     setSalvando(false)
     setSalvo(true)
+    setConcluido(true)
     setTimeout(() => setSalvo(false), 2000)
   }
 
@@ -134,6 +138,17 @@ export default function Agenda() {
         }}>
           {salvo ? '✓ Agenda salva!' : salvando ? 'Salvando...' : 'Salvar agenda'}
         </button>
+
+        {/* Até 23/09/2026 a tela acabava aqui: "✓ Agenda salva!" e nada mais. Para ver
+            o próximo dos seis passos era preciso adivinhar o caminho de volta. */}
+        <ProximoPasso
+          visivel={concluido}
+          titulo="Pronto — horários marcados ✅"
+          texto="Fora desses horários a plataforma se tranca sozinha. O próximo passo é conhecer a área da criança antes de sentar junto com ele."
+          rota="/primeiros-passos"
+          rotulo="Ver o próximo passo →"
+          secundario={{ rota: '/dashboard', rotulo: 'Voltar ao painel' }}
+        />
       </div>
     </LayoutPai>
   )

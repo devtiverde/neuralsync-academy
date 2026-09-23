@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import LayoutPai from '../../components/LayoutPai'
+import ProximoPasso from '../../components/ProximoPasso'
 import '../../styles/pai.css'
 
 const STORAGE_KEY = 'ns_timer_config'
@@ -35,6 +36,8 @@ export default function Timer() {
   const [permiteExtensao, setPermiteExtensao] = useState(defaultConfig.permiteExtensao)
   const [encerramentoAuto, setEncerramentoAuto] = useState(defaultConfig.encerramentoAuto)
   const [salvo, setSalvo] = useState(false)
+  const [concluido, setConcluido] = useState(false)
+  const [erro, setErro] = useState('')
   const [faixaRec, setFaixaRec] = useState(null)
   const opcoes = [15, 30, 45, 60, 90]
 
@@ -89,9 +92,21 @@ export default function Timer() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg))
     if (user) {
       const { error } = await supabase.from('users').update({ timer_config: cfg }).eq('id', user.id)
-      if (error) console.error('[Timer] Erro ao salvar timer_config no Supabase:', error.message)
+      // 🔑 23/09/2026 — antes isto só fazia `console.error` e a tela mostrava
+      // "✓ Configuração salva!" do mesmo jeito. O responsável saía convencido de
+      // que tinha configurado o tempo do filho, e no outro aparelho não valia nada.
+      // Mesma família do botão que comemorava recompensa que o servidor não deu.
+      if (error) {
+        setErro(`Não deu para salvar no servidor: ${error.message}. Vale só neste aparelho por enquanto.`)
+        setTimeout(() => setErro(''), 5000)
+        return
+      }
     }
+    setErro('')
     setSalvo(true)
+    // `salvo` é o "✓" que pisca e some. `concluido` fica: é o que sustenta o cartão
+    // do próximo passo, que não pode evaporar em 2 segundos.
+    setConcluido(true)
     setTimeout(() => setSalvo(false), 2000)
   }
 
@@ -167,6 +182,23 @@ export default function Timer() {
         }}>
           {salvo ? '✓ Configuração salva!' : 'Salvar configuração'}
         </button>
+
+        {erro && (
+          <div style={{ marginTop: '12px', background: '#fef2f2', border: '1px solid #fecaca',
+            borderRadius: '12px', padding: '12px 14px', color: '#b91c1c', fontSize: '13px',
+            fontFamily: 'Plus Jakarta Sans, sans-serif', lineHeight: 1.5 }}>
+            {erro}
+          </div>
+        )}
+
+        <ProximoPasso
+          visivel={concluido}
+          titulo="Pronto — tempo definido ✅"
+          texto="Agora marque em que horários da semana ele pode usar. É o que faz a plataforma se trancar sozinha fora da hora."
+          rota="/agenda"
+          rotulo="Marcar os horários da semana →"
+          secundario={{ rota: '/primeiros-passos', rotulo: 'Ver todos os passos' }}
+        />
       </div>
     </LayoutPai>
   )

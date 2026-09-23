@@ -12,6 +12,7 @@ import { kidsResumo } from '../../data/kidsResumo'
 import { INTRO_SLIDES } from '../../data/introSlides'
 import { podeAcessar, isDesbloqueado, desbloquear, getFaixaFromId, FAIXA_LABELS } from '../../lib/faixaGuard'
 import ParentUnlockModal from '../../components/ParentUnlockModal'
+import useGuardaHorario from '../../hooks/useGuardaHorario'
 import '../../styles/crianca.css'
 
 export function getAssistidoKey(childId, atividadeId) {
@@ -88,6 +89,11 @@ function botaoDoTema(accent) {
 
 export default function IntroAtividade({ atividade, onComecar, onVoltar, refazendo = false, kidsLink = null }) {
   const navigate = useNavigate()
+  // Esta tela abre ANTES DE TODA atividade e não usa `LayoutCrianca` nem `GameShell`,
+  // então era o furo que sobrava depois de pôr a guarda nos dois layouts: com a agenda
+  // fechada, `/digitacao` entrava normalmente porque começa por aqui. Medido em
+  // `testar-trava-horario.mjs`.
+  useGuardaHorario()
   const t = tipoTheme[atividade?.tipo] || tipoTheme.quiz
   if (atividade) sessionStorage.setItem('ns_last_atividade', JSON.stringify(atividade))
 
