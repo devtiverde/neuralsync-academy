@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { SUPPORT } from '../../config/support'
 import { assinaturaVigente } from '../../lib/assinatura'
 import LayoutPai from '../../components/LayoutPai'
-import { lerProgresso, montarPassos, CHAVE_DISPENSA } from '../../lib/primeirosPassos'
+import { lerProgresso, montarPassos, passoAtual, CHAVE_DISPENSA } from '../../lib/primeirosPassos'
 import { Button, Card } from '../../components/ui'
 import { CheckCircle, Brain, GearSix } from '@phosphor-icons/react'
 import '../../styles/pai.css'
@@ -136,7 +136,24 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [children, setChildren] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
+  // 🪤 O passo 1 do guia mandava para `/dashboard`, e o cadastro mora num MODAL aqui
+  // dentro: a pessoa chegava num painel cheio e tinha que achar "+ Adicionar filho".
+  // Com `?novoFilho=1` a janela nasce aberta.
+  //
+  // 🔑 Derivado no PRIMEIRO render, não num `useEffect`. A versão com efeito chamava
+  // `setShowModal` sincronamente e o lint acusou com razão: a tela pintava uma vez sem
+  // o modal e outra com, e quem veio do guia via o painel piscar antes da janela.
+  // Limpar o parâmetro é `history.replaceState`, não estado do React — rodar duas vezes
+  // no StrictMode é inofensivo, porque na segunda ele já não está lá.
+  const [showModal, setShowModal] = useState(() => {
+    try {
+      const u = new URL(window.location.href)
+      if (u.searchParams.get('novoFilho') !== '1') return false
+      u.searchParams.delete('novoFilho')
+      window.history.replaceState(null, '', u.pathname + u.search + u.hash)
+      return true
+    } catch { return false }
+  })
   const [novoFilho, setNovoFilho] = useState({ nome: '', idade: '', faixa_etaria: 'construtores' })
   const [salvando, setSalvando] = useState(false)
   const [childToDelete, setChildToDelete] = useState(null)
@@ -164,7 +181,15 @@ export default function Dashboard() {
       if (!vivo) return
       const passos = montarPassos(p, () => {})
       const feitos = passos.filter(x => x.feito).length
-      setProgressoInicial({ completo: feitos === passos.length, faltam: passos.length - feitos })
+      // 24/09: a faixa dizia só "faltam N passos". Um número não diz o que fazer —
+      // agora ela NOMEIA o próximo, que é a única informação que move alguém.
+      const proximo = passoAtual(passos)
+      setProgressoInicial({
+        completo: feitos === passos.length,
+        faltam: passos.length - feitos,
+        proximoTitulo: proximo?.titulo ?? null,
+        proximoMinutos: proximo?.minutos ?? null,
+      })
     })
     return () => { vivo = false }
   }, [user, ppDispensado, children.length])
@@ -423,10 +448,14 @@ export default function Dashboard() {
             <span style={{ fontSize: 22, flexShrink: 0 }}>🧭</span>
             <div style={{ flex: '1 1 260px', minWidth: 0 }}>
               <p style={{ fontWeight: 700, fontSize: 14, color: '#5b21b6', marginBottom: 3 }}>
-                Faltam {progressoInicial.faltam} {progressoInicial.faltam === 1 ? 'passo' : 'passos'} para deixar tudo configurado
+                {progressoInicial.proximoTitulo
+                  ? `Próximo passo: ${progressoInicial.proximoTitulo.toLowerCase()}`
+                  : `Faltam ${progressoInicial.faltam} ${progressoInicial.faltam === 1 ? 'passo' : 'passos'} para deixar tudo configurado`}
               </p>
               <p style={{ fontSize: 13, color: '#7c5cc4', lineHeight: 1.6 }}>
-                Tempo de tela, horários da semana e o primeiro relatório — em ordem, leva poucos minutos.
+                {progressoInicial.proximoMinutos
+                  ? `Leva cerca de ${progressoInicial.proximoMinutos} minuto${progressoInicial.proximoMinutos > 1 ? 's' : ''}. Ainda faltam ${progressoInicial.faltam} de 6.`
+                  : 'Tempo de tela, horários da semana e o primeiro relatório — em ordem, leva poucos minutos.'}
               </p>
             </div>
             <button
