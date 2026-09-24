@@ -14,6 +14,7 @@ import { podeAcessar, isDesbloqueado, desbloquear, getFaixaFromId, FAIXA_LABELS 
 import ParentUnlockModal from '../../components/ParentUnlockModal'
 import useGuardaHorario from '../../hooks/useGuardaHorario'
 import '../../styles/crianca.css'
+import AjudaFlutuante from '../../components/AjudaFlutuante'
 
 export function getAssistidoKey(childId, atividadeId) {
   return `ns_estudou_antes_${childId}_${atividadeId}`
@@ -466,6 +467,7 @@ export default function IntroAtividade({ atividade, onComecar, onVoltar, refazen
           .intro-left .hero-emoji { font-size: 72px !important; }
         }
       `}</style>
+      <AjudaFlutuante tipo="crianca" />
     </div>
   )
 }

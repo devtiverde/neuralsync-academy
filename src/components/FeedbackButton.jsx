@@ -13,9 +13,13 @@ const TIPOS = [
   { id: 'elogio',   label: 'Quero elogiar', emoji: '💜', cor: '#a855f7' },
 ]
 
-export default function FeedbackButton({ tipo: area = 'pai' }) {
+/** Ver a nota em `FAQButton.jsx`: `semBotao` + `abertoExterno` permitem que o
+ *  `AjudaFlutuante` abra este painel sem que ele desenhe o próprio círculo fixo. */
+export default function FeedbackButton({ tipo: area = 'pai', semBotao = false, abertoExterno = false, aoFechar }) {
   const { user } = useAuth()
-  const [aberto, setAberto] = useState(false)
+  const [abertoLocal, setAbertoLocal] = useState(false)
+  const aberto = semBotao ? abertoExterno : abertoLocal
+  const setAberto = v => (semBotao ? (!v && aoFechar?.()) : setAbertoLocal(v))
   const [tipoSel, setTipoSel] = useState(null)
   const [mensagem, setMensagem] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -78,7 +82,7 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
 
   return (
     <>
-      <button
+      {!semBotao && <button
         className="feedback-float-btn"
         onClick={() => setAberto(true)}
         aria-label="Enviar feedback ou reportar um erro"
@@ -93,7 +97,7 @@ export default function FeedbackButton({ tipo: area = 'pai' }) {
         }}
       >
         💬
-      </button>
+      </button>}
 
       {aberto && (
         <>

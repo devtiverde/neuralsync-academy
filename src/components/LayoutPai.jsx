@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Brain, List, X } from '@phosphor-icons/react'
 import { useAuth } from '../contexts/AuthContext'
-import FAQButton from './FAQButton'
-import FeedbackButton from './FeedbackButton'
+import AjudaFlutuante from './AjudaFlutuante'
 import MenuLateral from './MenuLateral'
 import '../styles/pai.css'
 
@@ -170,8 +169,7 @@ export default function LayoutPai({ children }) {
         {children}
       </main>
       <MenuLateral tipo="pai" />
-      <FAQButton tipo="pai" />
-      <FeedbackButton tipo="pai" />
+      <AjudaFlutuante tipo="pai" />
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import '../styles/auth.css'
+import AjudaFlutuante from '../components/AjudaFlutuante'
 
 export default function Auth() {
   const [email, setEmail] = useState('')
@@ -161,6 +162,7 @@ export default function Auth() {
           </div>
         </div>
       </div>
+      <AjudaFlutuante tipo="pai" somenteFaq />
     </div>
   )
 }

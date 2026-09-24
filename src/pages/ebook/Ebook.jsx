@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { temPlano, assinaturaCarregando, PLANOS_PAGOS } from '../../lib/assinatura'
 import { ebooks, MATERIAS } from '../../data/ebooks'
 import '../../styles/pai.css'
+import AjudaFlutuante from '../../components/AjudaFlutuante'
 
 const ferramentas = [
   { faixa: 'Exploradores (3–5 anos)', itens: ['Scratch Jr (programação visual)', 'Khan Academy Kids', 'ABCmouse', 'Duolingo ABC', 'Endless Alphabet', 'PBS Kids Games', 'Starfall', 'Teach Your Monster to Read', 'Kodable', 'Toca Boca (série completa)'] },
@@ -177,6 +178,7 @@ export default function Ebook() {
           ))}
         </div>
       </div>
+      <AjudaFlutuante tipo="crianca" />
     </div>
   )
 }

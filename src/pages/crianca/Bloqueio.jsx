@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import ParentUnlockModal from '../../components/ParentUnlockModal'
 import { dentroDoHorario, liberarPorMinutos, sincronizarLiberacao, OPCOES_LIBERACAO } from '../../lib/horarioAcesso'
 import '../../styles/crianca.css'
+import AjudaFlutuante from '../../components/AjudaFlutuante'
 
 const DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 
@@ -219,6 +220,7 @@ export default function Bloqueio() {
           Entrar como responsável
         </button>
       </div>
+      <AjudaFlutuante tipo="crianca" />
     </div>
   )
 }

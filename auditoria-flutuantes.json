@@ -1,0 +1,287 @@
+[
+  {
+    "rota": "/dashboard",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/primeiros-passos",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/timer",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/agenda",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/perfil-filho",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/relatorio",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/trilha-pai",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/configuracoes",
+    "area": "pai",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/home-crianca",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/trilha",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/loja",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/personalizar",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/perfil-crianca",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/coins",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/atividades-offline",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/kids",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/quiz-ia",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/timer-ativo",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  },
+  {
+    "rota": "/diario",
+    "area": "crianca",
+    "presos": [],
+    "soFeios": [],
+    "textos": [
+      {
+        "botao": "?",
+        "tamanho": "48×48",
+        "cobre": "?",
+        "clicavel": false,
+        "marca": null
+      }
+    ]
+  }
+]

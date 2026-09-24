@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Brain, CoinVertical, Fire } from '@phosphor-icons/react'
-import FAQButton from './FAQButton'
-import FeedbackButton from './FeedbackButton'
+import AjudaFlutuante from './AjudaFlutuante'
 import MenuLateral from './MenuLateral'
 import useGuardaHorario from '../hooks/useGuardaHorario'
 import { MOLDURA_STYLES, TEMA_CONFIG } from '../lib/lojaConfig'
@@ -184,8 +183,7 @@ export default function LayoutCrianca({ children, child }) {
         {children}
       </main>
       <MenuLateral tipo="crianca" />
-      <FAQButton tipo="crianca" />
-      <FeedbackButton tipo="crianca" />
+      <AjudaFlutuante tipo="crianca" />
 
       {/* ── BOTTOM MENU (mobile only, hidden desktop via CSS) ── */}
       <div className="menu-bottom">

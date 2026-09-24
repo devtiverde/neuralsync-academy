@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import AjudaFlutuante from '../components/AjudaFlutuante'
 
 export default function RecuperarSenha() {
   const navigate = useNavigate()
@@ -127,6 +128,7 @@ export default function RecuperarSenha() {
           )}
         </div>
       </div>
+      <AjudaFlutuante tipo="pai" somenteFaq />
     </div>
   )
 }

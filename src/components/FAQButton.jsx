@@ -2,8 +2,15 @@ import { useState } from 'react'
 import { faqPais, faqCriancas } from '../data/faq'
 import { SUPPORT } from '../config/support'
 
-export default function FAQButton({ tipo = 'pai' }) {
-  const [aberto, setAberto] = useState(false)
+/**
+ * `semBotao` + `abertoExterno` deixam este componente ser aberto por FORA.
+ * Serve ao `AjudaFlutuante`, que juntou os dois círculos fixos num só — ver o
+ * comentário longo lá. Sem essas props o componente continua exatamente como era.
+ */
+export default function FAQButton({ tipo = 'pai', semBotao = false, abertoExterno = false, aoFechar }) {
+  const [abertoLocal, setAbertoLocal] = useState(false)
+  const aberto = semBotao ? abertoExterno : abertoLocal
+  const setAberto = v => (semBotao ? (!v && aoFechar?.()) : setAbertoLocal(v))
   const [aba, setAba] = useState(tipo === 'crianca' ? 'crianca' : 'pai')
   const [busca, setBusca] = useState('')
   const [abertos, setAbertos] = useState({})
@@ -20,7 +27,7 @@ export default function FAQButton({ tipo = 'pai' }) {
   return (
     <>
       {/* Botão flutuante */}
-      <button
+      {!semBotao && <button
         onClick={() => setAberto(true)}
         title="Ajuda / FAQ"
         className="faq-float-btn"
@@ -35,7 +42,7 @@ export default function FAQButton({ tipo = 'pai' }) {
         }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(124,58,237,0.7)' }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(124,58,237,0.5)' }}
-      >?</button>
+      >?</button>}
 
       {/* Overlay */}
       {aberto && (
